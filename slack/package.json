@@ -1,0 +1,11 @@
+{
+  "name": "howsure-slack",
+  "private": true,
+  "type": "module",
+  "scripts": {
+    "test": "node --test --disable-warning=ExperimentalWarning test/*.test.js"
+  },
+  "devDependencies": {
+    "wrangler": "^4.147.0"
+  }
+}

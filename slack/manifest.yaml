@@ -1,0 +1,35 @@
+# Slack app manifest for HowSure. Replace YOUR-WORKER-HOST (3 places) with your Worker's host,
+# e.g. howsure-slack.your-subdomain.workers.dev, then paste this at https://api.slack.com/apps
+# -> Create New App -> From an app manifest.
+display_information:
+  name: HowSure
+  description: A daily 5-question estimation game. Give ranges you are 90% sure about and see how your team does.
+  background_color: "#1d1c1d"
+features:
+  bot_user:
+    display_name: HowSure
+    always_online: true
+  slash_commands:
+    - command: /howsure
+      url: https://YOUR-WORKER-HOST/slack/events
+      description: Post today's game, set the daily channel, or see the leaderboard
+      usage_hint: "[setup #channel hour | stats]"
+      should_escape: true
+oauth_config:
+  redirect_urls:
+    - https://YOUR-WORKER-HOST/slack/oauth/callback
+  scopes:
+    bot:
+      - commands
+      - chat:write
+      - chat:write.public
+      - channels:read
+      - groups:read
+      - users:read
+settings:
+  interactivity:
+    is_enabled: true
+    request_url: https://YOUR-WORKER-HOST/slack/events
+  org_deploy_enabled: false
+  socket_mode_enabled: false
+  token_rotation_enabled: false

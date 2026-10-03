@@ -18,7 +18,7 @@ Status: draft. The final version is committed **before** the public launch of th
 
 **Timing and sample size.** First confirmatory analysis when passed full-assessment sessions ≥ 5,000; H3 when ≥ 1,000 players have ≥ 7 completed daily plays. Interim looks are for data quality only; no result-dependent stopping.
 
-**Exclusions (pre-specified).** Session fails either attention item; any item answered in < 1,500 ms; incomplete session; honeypot field filled; interval entries outside the item's sanity bounds (item-level exclusion); repeat sessions from the same browser identifier (keep the first). Exclusion flags are kept in the released data, not deleted.
+**Exclusions (pre-specified).** Session fails either attention item; any item answered in < 1,500 ms (web surface only; Slack response times are approximate and not used for exclusion); incomplete session; honeypot field filled; interval entries outside the item's sanity bounds (item-level exclusion); repeat sessions from the same browser identifier (keep the first). Exclusion flags are kept in the released data, not deleted.
 
 **Inference.** Bootstrap 95% CIs resampling participants; α = 0.05.
 
