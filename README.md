@@ -2,14 +2,15 @@
 
 Free tools that show people how overconfident they are, and an open study built on the anonymous answers.
 
-Two surfaces, one item bank, one question: do people know what they know?
+Three surfaces, one item bank, one question: do people know what they know?
 
 | Surface | What it is | Folder |
 |---|---|---|
-| Web test | 5-minute test in English and Chinese: pick an answer and say how sure you are; give ranges you are 90% sure about. Results, global comparison, share card, classroom mode for instructors. | `web/` |
+| Daily game + full assessment (web) | Five numbers a day: give a range you are 90% sure contains the answer, see the truth and your share grid, keep a streak. The 5-minute full assessment, global comparison, share card and classroom mode for instructors live at `/test`. English only. | `web/` |
+| Slack app | Install once per workspace: the day's game is posted to a channel with a Play button and a team leaderboard. | `slack/` |
 | Anki add-on | In the flashcard app Anki, press 1–5 before each answer to say how sure you are; the add-on shows you where your confidence is wrong. Local by default. | `anki/` |
 
-- Questions: `items/` (single source of truth for both surfaces; every item has a source; see `items/REVIEW.md`).
+- Questions: `items/items.json` (hand-checked bank for the full assessment) and `items/pool.json` (2,074 numeric items generated from Wikidata with a source link each; `daily/schedule.json` says which five air on which day; `npm run tomorrow` in `web/` prints tomorrow's five for the nightly review).
 - Pre-registered hypotheses: `prereg/PREREG.md`. Privacy: `PRIVACY.md`. Design docs: `docs/`.
 - Metrics are defined once in `analysis/test_vectors.json`; the JavaScript and Python implementations must both pass it.
 

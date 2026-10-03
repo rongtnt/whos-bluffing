@@ -17,7 +17,7 @@ export const onRequestPost = safe(async ({ request, env }) => {
     const res = await env.DB.prepare('INSERT OR IGNORE INTO classes (code, secret, label, created_at) VALUES (?, ?, ?, ?)')
       .bind(code, secret, label?.trim() || null, new Date().toISOString()).run();
     if (res.meta.changes === 1) {
-      return json({ code, secret, join_url: `${origin}/?c=${code}`, dashboard_url: `${origin}/class/d/${secret}` });
+      return json({ code, secret, join_url: `${origin}/test?c=${code}`, dashboard_url: `${origin}/class/d/${secret}` });
     }
   }
   return fail(503, 'could not create a class code, try again');

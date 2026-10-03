@@ -26,10 +26,11 @@ fail() {
   exit 1
 }
 
-# req METHOD PATH [JSON] -> sets STATUS, TYPE, BODY
+# req METHOD PATH [JSON] [HEADER] -> sets STATUS, TYPE, BODY
 req() {
   local args=(-s -X "$1" "$BASE$2" -w '\n%{http_code} %{content_type}')
   [ -n "${3:-}" ] && args+=(-H 'content-type: application/json' --data-binary "$3")
+  [ -n "${4:-}" ] && args+=(-H "$4")
   local out
   out=$(curl "${args[@]}")
   local meta=${out##*$'\n'}
@@ -48,10 +49,10 @@ expect() {
   pass "$1"
 }
 
-# submission LANG [VARIANT] [CLASS_CODE] -> a complete answer set built from the synced item bank
+# submission LANG [VARIANT] [CLASS_CODE] [ANON_ID] -> a complete answer set built from the synced item bank
 submission() {
   node -e '
-    const [lang, variant = "ok", classCode = ""] = process.argv.slice(1);
+    const [lang, variant = "ok", classCode = "", anonId = ""] = process.argv.slice(1);
     const items = JSON.parse(require("fs").readFileSync("public/items.json", "utf8")).items;
     const of = (t, n) => items.filter((i) => i.type === t).slice(0, n);
     const LEVELS = [50, 60, 70, 80, 90, 100];
@@ -69,6 +70,7 @@ submission() {
     if (variant === "short") answers.pop();
     const body = { lang, answers, website: variant === "honeypot" ? "http://spam.example" : "" };
     if (classCode) body.class_code = classCode;
+    if (anonId) body.anon_id = anonId;
     process.stdout.write(JSON.stringify(body));
   ' "$@"
 }
@@ -82,7 +84,8 @@ node scripts/sync-items.js
 pass "local D1 migrated"
 
 set -m # own process group, so cleanup can stop wrangler and its workerd children together
-"${WRANGLER[@]}" pages dev --ip 127.0.0.1 --port "$PORT" --persist-to "$STATE" > "$LOG" 2>&1 &
+KPI_KEY=smoke-kpi-key
+"${WRANGLER[@]}" pages dev --ip 127.0.0.1 --port "$PORT" --persist-to "$STATE" --binding "KPI_KEY=$KPI_KEY" > "$LOG" 2>&1 &
 DEV_PID=$!
 set +m
 for _ in $(seq 1 120); do
@@ -94,9 +97,19 @@ curl -fs -o /dev/null "$BASE/" || fail "wrangler pages dev did not start within 
 pass "wrangler pages dev is up on $BASE"
 
 echo "== static pages"
-for p in / /stats /class /class/d/AAAAAAAAAAAAAAAAAAAAAAAA /items.json /vendor/qrcode.js; do
+for p in / /test /stats /class /class/d/AAAAAAAAAAAAAAAAAAAAAAAA /items.json /vendor/qrcode.js; do
   req GET "$p"; [ "$STATUS" = 200 ] || fail "GET $p (status $STATUS)"; pass "GET $p -> 200"
 done
+# Unknown paths also answer 200 (the app's index.html), so these check content, not just the status.
+content() { req GET "$1"; [ "$STATUS" = 200 ] && [[ "$BODY" == *"$2"* ]] || fail "GET $1 should contain '$2' (status $STATUS)" "$BODY"; pass "GET $1 -> $3"; }
+content /tests/overconfidence-test '<title>Overconfidence test' 'SEO page'
+content /tests/estimation-test '<title>Estimation test' 'SEO page'
+content /tests/calibration-test '<title>Calibration test' 'SEO page'
+content /sitemap.xml '<loc>https://howsure.me/tests/calibration-test</loc>' 'sitemap'
+content /robots.txt 'Sitemap: https://howsure.me/sitemap.xml' 'robots.txt'
+req GET /pool.json
+expect "GET /pool.json -> prompts only (no answers, sources or ranges)" 200 \
+  'r.items.length >= 1500 && r.items.every((i) => Object.keys(i).sort().join() === "category,id,prompt,unit")'
 
 echo "== submit"
 req POST /api/submit "$(submission en)"
@@ -110,18 +123,20 @@ req POST /api/submit "$(submission en short)"
 expect "wrong answer count -> 400" 400 '/expected/.test(r.error)'
 req POST /api/submit "$(submission fr)"
 expect "bad lang -> 400" 400 '/lang/.test(r.error)'
+req POST /api/submit "$(submission zh)"
+expect "zh -> 400 (English only)" 400 'r.error === "lang must be en"'
 req POST /api/submit '{not json'
 expect "invalid JSON -> 400" 400 'r.error === "invalid JSON"'
 
 echo "== stats"
 req GET /api/stats
 expect "stats -> counts (passed sessions only)" 200 \
-  'r.n_sessions === 1 && r.n_answers === 18 && r.by_lang.en.n === 1 && r.by_lang.zh.n === 0 && r.by_lang.en.bins.length === 6 && r.by_lang.en.overconf_mean === 0.083333 && r.updated_at'
+  'r.n_sessions === 1 && r.n_answers === 18 && r.by_lang.en.n === 1 && !("zh" in r.by_lang) && r.by_lang.en.bins.length === 6 && r.by_lang.en.overconf_mean === 0.083333 && r.updated_at'
 
 echo "== class mode"
 req POST /api/class '{"label":"Smoke test class"}'
 expect "create class -> code, secret, links" 200 \
-  '/^[ABCDEFGHJKLMNPQRSTUVWXYZ23456789]{6}$/.test(r.code) && /^[A-Za-z0-9_-]{24}$/.test(r.secret) && r.join_url.endsWith("/?c=" + r.code) && r.dashboard_url.endsWith("/class/d/" + r.secret)'
+  '/^[ABCDEFGHJKLMNPQRSTUVWXYZ23456789]{6}$/.test(r.code) && /^[A-Za-z0-9_-]{24}$/.test(r.secret) && r.join_url.endsWith("/test?c=" + r.code) && r.dashboard_url.endsWith("/class/d/" + r.secret)'
 CODE=$(field code)
 SECRET=$(field secret)
 req GET "/api/class/$CODE"
@@ -161,15 +176,10 @@ for _ in $(seq 1 24); do
 done
 req POST /api/submit "$(submission en)"
 expect "percentile appears from n >= 30" 200 'r.percentile && r.percentile.overconf === 50 && r.percentile.int_hit === 50'
-req POST /api/submit "$(submission zh)"
-expect "zh session gets no percentile yet (n < 30 in zh)" 200 'r.percentile === null'
 
 echo "== aggregates match a direct computation over the sessions table"
 for m in $(seq 1 12); do
   req POST /api/submit "$(submission en "mix:$m")"; [ "$STATUS" = 200 ] || fail "varied en submit $m" "$BODY"
-done
-for m in 1 2 3; do
-  req POST /api/submit "$(submission zh "mix:$m")"; [ "$STATUS" = 200 ] || fail "varied zh submit $m" "$BODY"
 done
 for _ in 1 2; do
   req POST /api/submit "$(submission en failatt)"; [ "$STATUS" = 200 ] || fail "attention-failing submit" "$BODY"
@@ -197,7 +207,7 @@ DIRECT=$(node -e '
     n_countries: new Set(passed.map((r) => r.country).filter((c) => !["ZZ", "XX", "T1"].includes(c))).size,
     by_lang: {},
   };
-  for (const lang of ["en", "zh"]) {
+  for (const lang of ["en"]) {
     const L = passed.filter((r) => r.lang === lang);
     const two = L.flatMap((r) => JSON.parse(r.answers)).filter((a) => a.type === "2afc");
     expected.by_lang[lang] = {
@@ -234,5 +244,136 @@ pass "stats and percentile from the aggregates match the sessions table ($DIRECT
 node -e 'const r = JSON.parse(require("fs").readFileSync(process.argv[1], "utf8"))[1].results; process.exit(r.some((x) => /USING INDEX idx_sessions_class/.test(x.detail)) ? 0 : 1)' "$STATE/direct.json" \
   || fail "class dashboard query should use idx_sessions_class"
 pass "class dashboard query uses idx_sessions_class (reads only that class)"
+
+echo "== daily game"
+TODAY=$(date -u +%F)
+TOMORROW=$(node -e 'process.stdout.write(new Date(Date.now() + 864e5).toISOString().slice(0, 10))')
+export TODAY DAILY="$STATE/daily.json"
+node -e 'process.exit(require("./functions/_schedule.json")[process.argv[1]] ? 0 : 1)' "$TODAY" \
+  || fail "no daily game scheduled for $TODAY: run npm run schedule, then npm run sync-items"
+pass "today ($TODAY) is in daily/schedule.json"
+
+req GET /api/daily
+expect "GET /api/daily -> today's 5 items, prompts only (no answers or sources)" 200 \
+  'r.date === process.env.TODAY && Number.isInteger(r.number) && r.items.length === 5 && r.items.every((i) => Object.keys(i).sort().join() === "accept,id,prompt,unit") && !/wikidata|"answer"|"source"/.test(JSON.stringify(r))'
+printf '%s' "$BODY" > "$DAILY"
+req GET "/api/daily?date=$TOMORROW"
+expect "GET /api/daily for tomorrow -> 404 (never early)" 404 'r.error === "no game for that date"'
+
+# answer_body ANON SURFACE K HIT(1|0) [COMMUNITY] -> body for item K of today's game: a range around the truth or above it
+answer_body() {
+  node -e '
+    const fs = require("fs");
+    const [anon, surface, k, hit, community] = process.argv.slice(1);
+    const day = JSON.parse(fs.readFileSync(process.env.DAILY, "utf8"));
+    const pool = new Map(JSON.parse(fs.readFileSync("functions/_pool.json", "utf8")).items.map((i) => [i.id, i]));
+    const t = pool.get(day.items[Number(k)].id).answer;
+    const w = Math.abs(t) + 1;
+    const [low, high] = hit === "1" ? [t - w, t + w] : [t + w, t + 2 * w];
+    const body = { date: day.date, item_id: day.items[Number(k)].id, low, high, anon_id: anon, surface, rt_ms: 3000 };
+    if (community) body.community = community;
+    process.stdout.write(JSON.stringify(body));
+  ' "$@"
+}
+complete_body() { node -e 'const [a, s, c] = process.argv.slice(1); const b = { date: process.env.TODAY, anon_id: a, surface: s }; if (c) b.community = c; process.stdout.write(JSON.stringify(b))' "$@"; }
+
+# play ANON SURFACE HITS(e.g. 11011) [COMMUNITY]: answers all 5 items, then completes (response in BODY)
+play() {
+  for k in 0 1 2 3 4; do
+    req POST /api/daily/answer "$(answer_body "$1" "$2" "$k" "${3:$k:1}" "${4:-}")"
+    [ "$STATUS" = 200 ] || fail "answer $k for $1" "$BODY"
+  done
+  req POST /api/daily/complete "$(complete_body "$1" "$2" "${4:-}")"
+}
+
+ANON_A=smokeAAAAAAAAAAAAAAAAA
+ANON_B=smokeBBBBBBBBBBBBBBBBB
+ANON_C=$(printf 'smoke-slack-member' | shasum -a 256 | cut -c1-64) # Slack ids are sha256 hex
+req POST /api/daily/complete "$(complete_body "$ANON_A" web)"
+expect "complete before answering -> 400" 400 'r.error === "answer every question first"'
+req POST /api/daily/answer "$(answer_body "$ANON_A" web 0 1)"
+expect "answer -> server-computed hit, truth, Wikidata source, log ratio error" 200 \
+  'r.hit === true && typeof r.truth === "number" && /^https:\/\/www\.wikidata\.org\/wiki\/Q\d+#P\d+$/.test(r.source) && "log_ratio_error" in r'
+FIRST_ANSWER=$BODY
+play "$ANON_A" web 11011
+expect "complete (web, 4 hits) -> 4/5, streak 1, share text in the brief's format" 200 \
+  'r.hits === 4 && r.n === 5 && r.streak === 1 && /^HowSure #-?\d+ 🟩🟩🟥🟩🟩 4\/5 at 90%\nToday\x27s average 4\.0\/5\nhttp:\/\/127\.0\.0\.1:\d+\/$/.test(r.share_text) && r.today.players === 1'
+play "$ANON_B" web 10010
+expect "complete (web, 2 hits)" 200 'r.hits === 2 && r.today.players === 2'
+play "$ANON_C" slack 00000 smoke-team-hash
+expect "complete (slack + community, 0 hits) -> today's histogram over 3 players" 200 \
+  'r.hits === 0 && r.today.players === 3 && r.today.avg_hits === 2 && r.today.hist.join() === "1,0,1,0,1,0"'
+
+req GET "/api/daily/stats?date=$TODAY"
+expect "GET /api/daily/stats -> players 3, average 2, histogram [1,0,1,0,1,0]" 200 \
+  'r.players === 3 && r.avg_hits === 2 && r.hist.join() === "1,0,1,0,1,0"'
+req POST /api/daily/answer "$(answer_body "$ANON_A" web 0 0)"
+[ "$STATUS" = 200 ] && [ "$BODY" = "$FIRST_ANSWER" ] || fail "second answer -> the first result" "$BODY"
+pass "second answer (different range) -> the first result, unchanged"
+req POST /api/daily/complete "$(complete_body "$ANON_A" web)"
+expect "second complete -> same play, not counted again" 200 'r.hits === 4 && r.streak === 1 && r.today.players === 3'
+req POST /api/daily/answer "$(answer_body "$ANON_A" web 0 1 | node -e 'const b = JSON.parse(require("fs").readFileSync(0, "utf8")); b.date = process.argv[1]; process.stdout.write(JSON.stringify(b))' "$TOMORROW")"
+expect "answer for tomorrow -> 400 (today or yesterday only)" 400 'r.error === "date must be today or yesterday (UTC)"'
+req POST /api/daily/answer "$(answer_body "$ANON_A" web 1 1 | node -e 'const b = JSON.parse(require("fs").readFileSync(0, "utf8")); b.low = b.high + 1; process.stdout.write(JSON.stringify(b))')"
+expect "answer with low > high -> 400" 400 '/low <= high/.test(r.error)'
+
+echo "== flag -> retire -> recompute"
+FLAGGED=$(node -e 'process.stdout.write(JSON.parse(require("fs").readFileSync(process.env.DAILY, "utf8")).items[1].id)')
+flag_body() { printf '{"item_id":"%s","anon_id":"%s","reason":"smoke test"}' "$FLAGGED" "$1"; }
+req POST /api/flag "$(flag_body smokeDDDDDDDDDDDDDDDDD)"
+expect "flag from someone who never answered it -> 403" 403 '/answer this question/.test(r.error)'
+req POST /api/flag "$(flag_body "$ANON_A")"; expect "flag 1 (A)" 200 'r.ok === true'
+req POST /api/flag "$(flag_body "$ANON_A")"; expect "same id again counts once" 200 'r.ok === true'
+req POST /api/flag "$(flag_body "$ANON_B")"; expect "flag 2 (B)" 200 'r.ok === true'
+req GET /api/daily
+expect "two flags: item still in the game" 200 'r.items.length === 5'
+req POST /api/flag "$(flag_body "$ANON_C")"; expect "flag 3 (C) retires the item" 200 'r.ok === true'
+req GET /api/daily
+expect "retired item left out of today's game" 200 "r.items.length === 4 && !r.items.some((i) => i.id === '$FLAGGED')"
+# /api/daily/stats is cached for 60 s per URL; asking through another host name reads the recomputed aggregates.
+STATUS=$(curl -s -o "$STATE/stats2.json" -w '%{http_code}' "http://localhost:$PORT/api/daily/stats?date=$TODAY"); BODY=$(cat "$STATE/stats2.json")
+expect "stats recomputed without the retired item (4->3, 2->2, 0->0)" 200 'r.players === 3 && r.avg_hits === 1.67 && r.hist.join() === "1,0,1,1,0,0"'
+req POST /api/daily/complete "$(complete_body "$ANON_A" web)"
+expect "A's result now counts 4 items" 200 'r.hits === 3 && r.n === 4 && /🟩🟥🟩🟩 3\/4 at 90%/.test(r.share_text)'
+
+echo "== KPI job"
+req POST /api/submit "$(submission en ok '' "$ANON_A")"
+expect "full assessment with A's browser id (MAU must count A once)" 200 'r.session_id'
+req POST /api/kpi/run
+expect "KPI run without the key -> 401" 401 'r.error === "unauthorized"'
+req POST /api/kpi/run '' 'x-kpi-key: wrong'
+expect "KPI run with a wrong key -> 401" 401 'r.error === "unauthorized"'
+req POST /api/kpi/run '' "x-kpi-key: $KPI_KEY"
+expect "KPI run with the key -> MAU 3 (web 2, slack 1), DAU 3, workspaces 1, classrooms 1" 200 \
+  'r.as_of === process.env.TODAY && r.mau === 3 && r.dau === 3 && r.mau_web === 2 && r.mau_slack === 1 && r.mau_classroom === 0 && r.workspaces === 1 && r.classrooms === 1'
+req GET /api/kpi
+expect "GET /api/kpi -> the stored row" 200 \
+  'r.as_of === process.env.TODAY && r.mau === 3 && r.dau === 3 && r.mau_by_surface.web === 2 && r.mau_by_surface.slack === 1 && r.communities.workspaces === 1 && r.communities.classrooms === 1'
+
+echo "== daily tables: counts, idempotency, no IP or user agent, request queries use indexes"
+"${WRANGLER[@]}" d1 execute howsure --local --persist-to "$STATE" --json --command \
+  "SELECT (SELECT COUNT(*) FROM daily_answers) AS answers, (SELECT COUNT(*) FROM plays) AS plays, (SELECT n_answers FROM items_runtime WHERE item_id = '$(node -e 'process.stdout.write(JSON.parse(require("fs").readFileSync(process.env.DAILY, "utf8")).items[0].id)')') AS first_item_answers, (SELECT community FROM players WHERE surface = 'slack') AS team;
+   SELECT name, sql FROM sqlite_master WHERE type = 'table' AND name NOT LIKE 'sqlite_%' AND name NOT LIKE '_cf_%';
+   EXPLAIN QUERY PLAN SELECT surface, players, hits_hist, patterns FROM daily_agg WHERE date = '2026-10-20';
+   EXPLAIN QUERY PLAN SELECT item_id, hit FROM daily_answers WHERE anon_id = 'x' AND date = '2026-10-20';
+   EXPLAIN QUERY PLAN SELECT hits, n, streak FROM plays WHERE anon_id = 'x' AND date = '2026-10-20' ORDER BY completed_at LIMIT 1;
+   EXPLAIN QUERY PLAN SELECT item_id FROM items_runtime WHERE retired_at IS NOT NULL AND item_id IN ('a', 'b', 'c', 'd', 'e')" \
+  > "$STATE/daily_db.json" 2>/dev/null || fail "d1 execute (daily tables)"
+CHECK=$(node -e '
+  const out = JSON.parse(require("fs").readFileSync(process.argv[1], "utf8"));
+  const [counts, tables, ...plans] = out.map((x) => x.results);
+  const c = counts[0];
+  const problems = [];
+  if (c.answers !== 15 || c.plays !== 3) problems.push(`answers ${c.answers}, plays ${c.plays}`);
+  if (c.first_item_answers !== 3) problems.push(`items_runtime counted ${c.first_item_answers} answers for item 1 (repeat answers must not count)`);
+  if (c.team !== "smoke-team-hash") problems.push(`slack community ${c.team}`);
+  const sneaky = tables.filter((t) => /\b(ip|ip_address|ip_hash|user_agent|ua|useragent)\b/i.test(t.sql)).map((t) => t.name);
+  if (sneaky.length) problems.push(`IP/UA-like columns in: ${sneaky}`);
+  if (tables.length < 13) problems.push(`only ${tables.length} tables`);
+  plans.forEach((p, i) => { const d = p.map((x) => x.detail).join(" | "); if (!/SEARCH/.test(d) || /SCAN/.test(d)) problems.push(`plan ${i}: ${d}`); });
+  if (problems.length) { console.log(problems.join("; ")); process.exit(1); }
+  console.log(`${c.answers} answers, ${c.plays} plays, ${tables.length} table definitions without IP/UA columns, ${plans.length} request queries use an index`);
+' "$STATE/daily_db.json") || fail "daily tables" "$CHECK"
+pass "daily tables ($CHECK)"
 
 echo "smoke: $PASSED checks passed, 0 failed"

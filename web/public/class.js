@@ -5,7 +5,7 @@ const POLL_MS = 10000;
 
 function showCreated(ctx, el, d) {
   const { t } = ctx;
-  const host = new URL(d.join_url).host;
+  const host = `${new URL(d.join_url).host}/test`;
   el.innerHTML = html`<section class="card">
   <p class="label">${t('class.code')}</p>
   <p class="code">${d.code}</p>

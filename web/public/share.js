@@ -6,27 +6,23 @@ const SIZES = {
   square: { w: 1080, h: 1080, pad: 80, qr: 260, brand: 46, h1: 84, h2: 52, foot: 36 },
   wide: { w: 1200, h: 630, pad: 60, qr: 220, brand: 36, h1: 50, h2: 34, foot: 28 },
 };
-const FONT = 'system-ui, -apple-system, "PingFang SC", "Hiragino Sans GB", "Microsoft YaHei", "Noto Sans CJK SC", "Segoe UI", Roboto, sans-serif';
+const FONT = 'system-ui, -apple-system, "Segoe UI", Roboto, sans-serif, "Apple Color Emoji", "Segoe UI Emoji", "Noto Color Emoji"';
 const COLORS = { bg: '#fbfaf7', fg: '#1d1d1f', muted: '#5f6368', accent: '#1f5eff' };
-const CJK = '⺀-鿿豈-﫿＀-￯';
-const TOKEN = new RegExp(`[${CJK}]|[^\\s${CJK}]+|\\s+`, 'g');
-const NO_LINE_START = /^[，。、！？；：）」』%,.!?;:)]/;
 
-// Greedy wrap that works for both languages: CJK breaks between characters, other text between words,
-// and closing punctuation never starts a line. measure(str) returns the width of str.
+// Greedy word wrap. measure(str) returns the width of str.
 export function wrap(text, maxWidth, measure) {
   const lines = [];
   let line = '';
-  for (const tok of text.match(TOKEN) ?? []) {
-    const breakable = line.trim() && !/^\s+$/.test(tok) && !NO_LINE_START.test(tok);
-    if (breakable && measure((line + tok).trimEnd()) > maxWidth) {
-      lines.push(line.trimEnd());
-      line = tok;
+  for (const word of text.split(/\s+/).filter(Boolean)) {
+    const next = line ? `${line} ${word}` : word;
+    if (line && measure(next) > maxWidth) {
+      lines.push(line);
+      line = word;
     } else {
-      line += tok;
+      line = next;
     }
   }
-  if (line.trim()) lines.push(line.trimEnd());
+  if (line) lines.push(line);
   return lines;
 }
 
@@ -73,7 +69,7 @@ export function drawCard(kind, { t, lines, url }) {
   // Footer, bottom-aligned left of the QR: call to action, then the site address on the last line.
   const footW = z.w - 3 * z.pad - z.qr;
   const urlY = z.h - z.pad - z.foot;
-  const cta = layout(g, `${t('share.card_question')} ${t('share.card_cta')}`, footW, z.foot, 600);
+  const cta = layout(g, `${t('share.card_question')} ${lines.cta ?? t('share.card_cta')}`, footW, z.foot, 600);
   const ctaY = urlY - cta.length * lineHeight(z.foot) - z.foot * 0.3;
   drawLines(g, cta, z.pad, ctaY, z.foot, 600, COLORS.muted);
   drawLines(g, [url.replace(/^https?:\/\//, '').replace(/\/$/, '')], z.pad, urlY, z.foot, 700, COLORS.accent);
@@ -94,6 +90,7 @@ export function drawCard(kind, { t, lines, url }) {
 const canCopyImage = () => Boolean(navigator.clipboard?.write) && typeof ClipboardItem !== 'undefined';
 const toBlob = (canvas) => new Promise((resolve, reject) => canvas.toBlob((b) => (b ? resolve(b) : reject(new Error('toBlob'))), 'image/png'));
 
+// lines: {ranges, conf, cta?, copy?}. cta replaces the card's call to action; copy adds a one-tap "Copy result" button.
 export function renderShare(ctx, el, lines) {
   const { t } = ctx;
   const url = `${location.origin}/`;
@@ -104,6 +101,7 @@ export function renderShare(ctx, el, lines) {
 <img class="card-img" alt="${lines.ranges} ${lines.conf}">
 <p class="muted small">${t('share.long_press')}</p>
 <div class="row">
+  ${lines.copy ? html`<button type="button" class="primary" data-a="text">${t('share.copy_result')}</button>` : ''}
   <button type="button" data-a="download">${t('share.download')}</button>
   ${canCopyImage() ? html`<button type="button" data-a="image">${t('share.copy_image')}</button>` : ''}
   <button type="button" data-a="link">${t('share.copy_link')}</button>
@@ -135,6 +133,7 @@ export function renderShare(ctx, el, lines) {
     },
     image: () => navigator.clipboard.write([new ClipboardItem({ 'image/png': toBlob(canvas) })]).then(() => say(t('share.copied'))),
     link: () => navigator.clipboard.writeText(url).then(() => say(t('share.copied'))),
+    text: () => navigator.clipboard.writeText(lines.copy).then(() => say(t('share.copied'))),
   };
   for (const b of el.querySelectorAll('[data-a]')) {
     b.onclick = () => {

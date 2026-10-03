@@ -11,7 +11,7 @@ const COUNTRIES_SQL = "SELECT COUNT(*) AS n FROM agg_country WHERE country NOT I
 async function computeStats(db) {
   const [totals, bins, countries] = await db.batch([db.prepare(TOTALS_SQL), db.prepare(BINS_SQL), db.prepare(COUNTRIES_SQL)]);
   const by_lang = {};
-  for (const lang of ['en', 'zh']) {
+  for (const lang of ['en']) {
     const t = totals.results.find((r) => r.lang === lang);
     const n = t?.n_sessions ?? 0;
     by_lang[lang] = {

@@ -52,4 +52,28 @@ for i in items:
 print("items OK")
 PY
 
+
+say "daily schedule: live-file guard (5 ids/day, distinct categories, no reuse within 180 days)"
+python3 - "$root" <<'PY' || fail=1
+import json, sys, datetime as dt
+root = sys.argv[1]
+pool = json.load(open(f"{root}/items/pool.json")); items = pool["items"] if isinstance(pool, dict) else pool
+cat = {i["id"]: i.get("category") for i in items}
+sched = json.load(open(f"{root}/daily/schedule.json"))
+last = {}; bad = []
+for d in sorted(sched):
+    ids = sched[d]
+    if len(ids) != 5 or len(set(ids)) != 5: bad.append((d, "not 5 unique")); continue
+    cats = [cat.get(i) for i in ids]
+    if None in cats: bad.append((d, "unknown id")); continue
+    if len(set(cats)) != 5: bad.append((d, "category repeated"))
+    day = dt.date.fromisoformat(d)
+    for i in ids:
+        if i in last and (day - last[i]).days < 180: bad.append((d, f"{i} reused within 180d"))
+        last[i] = day
+print(len(sched), "days checked")
+if bad: print("schedule problems:", bad[:10]); sys.exit(1)
+print("schedule OK")
+PY
+
 say "result"; [ $fail -eq 0 ] && echo "ALL CHECKS PASSED" || { echo "FAILURES PRESENT"; exit 1; }

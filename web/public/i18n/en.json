@@ -1,14 +1,12 @@
 {
   "meta": {
-    "title": "HowSure — How sure are you?",
-    "other_lang": "中文",
-    "lang_en": "English",
-    "lang_zh": "Chinese"
+    "title": "HowSure — How sure are you?"
   },
   "nav": {
+    "daily": "Daily game",
+    "test": "Full assessment",
     "stats": "Live stats",
-    "teach": "For teachers",
-    "home": "Take the test"
+    "teach": "For teachers"
   },
   "landing": {
     "h1": "How sure are you?",
@@ -34,8 +32,8 @@
     "high": "To",
     "next": "Next",
     "need_numbers": "Enter a number in both boxes.",
-    "swap": "The first number is bigger than the second. Press Next again and we'll swap them.",
-    "unusual": "That looks unusual for this question. Check the unit ({unit}), or press Next again to keep it."
+    "swap": "The From number is bigger than the To number. Press the button again and we’ll swap them.",
+    "unusual": "That looks unusual for this question. Check the unit ({unit}), or press the button again to keep it."
   },
   "demo": {
     "title": "Four optional questions",
@@ -48,10 +46,41 @@
     "submit": "See my results",
     "skip": "Skip",
     "options": {
-      "age": {"u18": "Under 18", "18_24": "18–24", "25_34": "25–34", "35_44": "35–44", "45_54": "45–54", "55_64": "55–64", "65p": "65 or older"},
-      "edu": {"secondary": "Secondary school or less", "vocational": "Vocational training, or some university", "bachelor": "Bachelor's degree", "graduate": "Master's or doctorate"},
-      "native": {"en": "English", "zh": "Chinese", "both": "Both English and Chinese", "other": "Another language"},
-      "region": {"cn_mainland": "Mainland China", "hk_mo_tw": "Hong Kong, Macao or Taiwan", "east_asia_other": "Japan, Korea or elsewhere in East Asia", "southeast_asia": "Southeast Asia", "south_asia": "South Asia", "mena": "Middle East or North Africa", "subsaharan_africa": "Sub-Saharan Africa", "europe": "Europe", "north_america": "North America", "latin_america": "Latin America or the Caribbean", "oceania": "Australia, New Zealand or the Pacific", "other": "Somewhere else"}
+      "age": {
+        "u18": "Under 18",
+        "18_24": "18–24",
+        "25_34": "25–34",
+        "35_44": "35–44",
+        "45_54": "45–54",
+        "55_64": "55–64",
+        "65p": "65 or older"
+      },
+      "edu": {
+        "secondary": "Secondary school or less",
+        "vocational": "Vocational training, or some university",
+        "bachelor": "Bachelor's degree",
+        "graduate": "Master's or doctorate"
+      },
+      "native": {
+        "en": "English",
+        "zh": "Chinese",
+        "both": "Both English and Chinese",
+        "other": "Another language"
+      },
+      "region": {
+        "cn_mainland": "Mainland China",
+        "hk_mo_tw": "Hong Kong, Macao or Taiwan",
+        "east_asia_other": "Japan, Korea or elsewhere in East Asia",
+        "southeast_asia": "Southeast Asia",
+        "south_asia": "South Asia",
+        "mena": "Middle East or North Africa",
+        "subsaharan_africa": "Sub-Saharan Africa",
+        "europe": "Europe",
+        "north_america": "North America",
+        "latin_america": "Latin America or the Caribbean",
+        "oceania": "Australia, New Zealand or the Pacific",
+        "other": "Somewhere else"
+      }
     }
   },
   "submit": {
@@ -78,14 +107,11 @@
     "range_row": "{low} – {high} {unit} · answer: {truth}",
     "hit": "contains it",
     "miss": "missed",
-    "pct_over": "You were more overconfident than {p}% of people who took the test in English.",
+    "pct_over": "You were more overconfident than {p}% of people who took the test.",
     "pct_int": "Your ranges caught the answer more often than {p}% of them.",
-    "compare_title": "English vs. Chinese so far",
-    "compare_row": "{lang}: {n} people · overconfidence {x} points · 90% ranges right {h}% of the time",
     "global": "{n} people in {k} countries have taken the test so far.",
-    "again": "Read Chinese too? Take it again in 中文",
-    "again_note": "New questions, same length. Your two sessions are linked anonymously so the research can compare languages.",
-    "stats_link": "See live stats"
+    "stats_link": "See live stats",
+    "daily_link": "Play today’s daily game"
   },
   "share": {
     "title": "Share your result",
@@ -98,7 +124,8 @@
     "copy_failed": "Couldn't copy. Select the link and copy it yourself.",
     "long_press": "On a phone, press and hold the image to save it.",
     "card_question": "How sure are you?",
-    "card_cta": "Free 5-minute test"
+    "card_cta": "Free 5-minute test",
+    "copy_result": "Copy result"
   },
   "class": {
     "title": "Use HowSure in class",
@@ -136,9 +163,64 @@
     "answers": "answers",
     "countries": "countries",
     "curve_title": "Everyone: how sure vs. how often right",
-    "row": "{lang}: {n} people · average overconfidence {x} points · 90% ranges right {h}% of the time",
+    "row": "{n} people · average overconfidence {x} points · 90% ranges right {h}% of the time",
     "note": "Counts only sessions that passed both attention checks. Updated every minute.",
     "empty": "No results yet.",
-    "failed": "Couldn't load the stats. Try again later."
+    "failed": "Couldn't load the stats. Try again later.",
+    "everyone": "Everyone",
+    "kpi_title": "Players",
+    "mau": "monthly players (MAU)",
+    "dau": "daily players (DAU)",
+    "communities": "communities",
+    "kpi_detail": "As of {date} (UTC), updated once a day. Monthly players by surface: web {web}, Slack {slack}, classroom {classroom}. Communities: {workspaces} Slack workspaces and {classrooms} classrooms.",
+    "kpi_empty": "Player counts appear once the daily update has run.",
+    "mau_definition": "MAU: anonymous ids with ≥ 1 completed play (full assessment or daily game) in the trailing 30 days, summed across web and Slack without cross-surface deduplication (a person who plays on both counts twice). DAU likewise for one UTC day.",
+    "communities_definition": "Communities: Slack workspaces with ≥ 1 completed play in the trailing 30 days plus classrooms with ≥ 5 finished assessments.",
+    "daily_title": "Today’s daily game",
+    "daily_row": "{players} played · on average {avg} ranges caught",
+    "daily_empty": "No one has finished today’s game yet.",
+    "test_title": "Full assessment"
+  },
+  "daily": {
+    "title": "HowSure #{number}",
+    "lead": "Five questions, the same for everyone today. For each one, give a range you are 90% sure contains the answer.",
+    "consent": "About a minute. Anonymous — no account, no tracking. Your answers go into a public research dataset.",
+    "start": "Start",
+    "resume": "Continue ({done} of {n} answered)",
+    "full_note": "Want the 5-minute version with a calibration chart?",
+    "lock_in": "Lock in",
+    "sending": "Checking…",
+    "offline": "We couldn’t reach the server. Your answer is still here.",
+    "retry": "Try again",
+    "failed": "Couldn’t load today’s game. Check your connection and try again.",
+    "no_game": "There’s no game today. Come back tomorrow, or take the full assessment.",
+    "inside": "Inside your range",
+    "outside": "Outside your range",
+    "truth": "The answer:",
+    "source": "source",
+    "your_range": "Your range: {low} – {high}",
+    "note_hit": "Caught it. Ranges you are truly 90% sure of catch about 9 answers in 10.",
+    "note_above": "The answer was above your range. Misses like this usually mean the range was too narrow.",
+    "note_below": "The answer was below your range. Misses like this usually mean the range was too narrow.",
+    "next": "Next question",
+    "see_result": "See your result",
+    "flag": "Something wrong with this question?",
+    "flag_reason": "What’s wrong? (optional)",
+    "flag_send": "Report",
+    "flag_thanks": "Thanks. A question reported by several players is taken out and checked.",
+    "flag_failed": "Couldn’t send the report. Try again later.",
+    "result_hits": "{hits} of {n} inside your 90% ranges.",
+    "result_explain": "If your ranges were truly 90% sure, you would catch 4 or 5 on most days.",
+    "streak": "day streak",
+    "rate_30": "30-day hit rate (aim: 90%)",
+    "plays_30": "games in 30 days",
+    "today_title": "Today",
+    "today_avg": "Average {avg} of {n} · {players} played",
+    "hist_title": "How many ranges each player caught today",
+    "hist_note": "Your bar is highlighted.",
+    "card_line": "{hits}/{n} at 90% · Today’s average {avg}/{n}",
+    "card_cta": "Play today’s five questions",
+    "come_back": "A new game every day at midnight UTC.",
+    "full_link": "Take the full assessment (5 minutes)"
   }
 }

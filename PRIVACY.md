@@ -2,17 +2,23 @@
 
 HowSure is an independent, unaffiliated, non-commercial project. No accounts, no advertising, no tracking scripts, no sale of data.
 
-## Web test (howsure web)
+## Web (daily game and full assessment)
 
-**What is stored when you finish a test:** your answers and confidence ratings, how long each question took, the language of the test, the two-letter country code supplied by our hosting provider (never your IP address), the optional demographic answers you choose to give (age band, education, native language, region), a random session identifier, and a class code if you entered one. Nothing is stored if you close the page before the end.
+**Daily game:** each completed play stores your anonymous id, the UTC date, which surface you played on (web, Slack, classroom), your five ranges, whether each contained the truth, response times, and the day's score. The anonymous id lives in your browser's local storage so your streak and personal calibration curve persist; clearing site data resets it. Flagging a question stores your anonymous id with the flag so each person counts once.
+
+**Full assessment — what is stored when you finish:** your answers and confidence ratings, how long each question took, the language of the test, the two-letter country code supplied by our hosting provider (never your IP address), the optional demographic answers you choose to give (age band, education, native language, region), a random session identifier, and a class code if you entered one. Nothing is stored if you close the page before the end.
 
 **What is never stored:** IP address, browser fingerprint, device identifiers, cookies for tracking, names, emails.
 
-**Repeat visits:** your browser keeps a random id (not linked to you) so that later sessions from the same browser can be tied to your first one. This is needed for two things: letting bilingual participants take the test in both languages, and keeping only one session per browser in the research analysis. Clearing site data removes it.
+**Repeat visits:** your browser keeps a random id (not linked to you) so that later sessions from the same browser can be tied together. This is what makes streaks and the practice-effect analysis possible, and it lets the research analysis keep only one full assessment per browser. Clearing site data removes it.
 
 **What it is used for:** the results page you see, aggregate statistics on the public stats page, and a public research dataset (see `prereg/PREREG.md`). Row-level data is anonymous and will be released openly.
 
 **Classroom mode:** an instructor who creates a class code sees only aggregates for that class, never individual rows, and sees nothing until at least 5 students have finished.
+
+**Slack:** the Slack app stores, per workspace, the workspace id, the chosen channel, the bot token, the posting hour and per-day scores keyed by a salted hash of the member id. It never stores message text, names or emails; display names are fetched from Slack only while drawing a leaderboard.
+
+**Public numbers:** monthly and daily active players are computed from anonymous ids once a day and published on the stats page using the definitions in `prereg/PREREG.md`.
 
 **Retention:** indefinitely, as anonymous research data.
 

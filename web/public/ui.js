@@ -35,9 +35,24 @@ export const store = {
   },
 };
 
+const ANON_ALPHABET = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789-_'; // 64 symbols: no modulo bias
+let anon = null;
+
+// This browser's anonymous id: 22 random characters kept in localStorage (a new one per page load if storage is
+// blocked). Sent with daily answers and full assessments so a repeat visitor counts once (PRIVACY.md).
+export function anonId() {
+  if (anon) return anon;
+  const saved = store.get('hs_anon', null);
+  anon = typeof saved === 'string' && /^[A-Za-z0-9_-]{22}$/.test(saved)
+    ? saved
+    : Array.from(crypto.getRandomValues(new Uint8Array(22)), (b) => ANON_ALPHABET[b % 64]).join('');
+  store.set('hs_anon', anon);
+  return anon;
+}
+
 export const pct = (x) => Math.round(x * 100);
 export const signed = (n) => (n > 0 ? `+${n}` : n < 0 ? `−${-n}` : '0');
-export const num = (x, lang) => x.toLocaleString(lang === 'zh' ? 'zh-CN' : 'en-US', { maximumFractionDigits: 3 });
+export const num = (x) => x.toLocaleString('en-US', { maximumFractionDigits: 3 });
 
 export const chartLabels = (t) => ({
   title: t('results.chart_title'), x: t('results.chart_x'), y: t('results.chart_y'), diag: t('results.chart_diag'),

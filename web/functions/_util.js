@@ -1,4 +1,5 @@
 // Shared helpers for the API: responses, error wrapper, random codes, request validation.
+import { ANON_RE } from './_daily.js';
 
 export const json = (data, status = 200, headers = {}) =>
   new Response(JSON.stringify(data), {
@@ -80,9 +81,10 @@ function answerError(a, it) {
 // Out-of-bounds ranges and fast answers are NOT rejected here: they are analysis-time exclusions (PREREG).
 export function validateSubmit(body, items) {
   if (!isObject(body)) return 'body must be a JSON object';
-  if (body.lang !== 'en' && body.lang !== 'zh') return 'lang must be en or zh';
+  if (body.lang !== 'en') return 'lang must be en';
   if (body.class_code != null && !CODE_RE.test(body.class_code)) return 'bad class_code';
   if (body.first_session_id != null && !UUID_RE.test(body.first_session_id)) return 'bad first_session_id';
+  if (body.anon_id != null && !(typeof body.anon_id === 'string' && ANON_RE.test(body.anon_id))) return 'bad anon_id';
   const demoErr = demographicsError(body.demographics);
   if (demoErr) return demoErr;
   if (!Array.isArray(body.answers)) return 'answers must be an array';

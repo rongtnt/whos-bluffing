@@ -7,8 +7,11 @@
     "dev": "npm run sync-items && wrangler pages dev --ip 127.0.0.1 --port 8788",
     "migrate:local": "wrangler d1 migrations apply howsure --local",
     "pretest": "npm run sync-items",
-    "test": "node --test test/*.test.js",
-    "smoke": "bash test/smoke.sh"
+    "test": "node --disable-warning=ExperimentalWarning --test test/*.test.js && npm run test:pool",
+    "smoke": "bash test/smoke.sh",
+    "test:pool": "python3 -m unittest discover -s ../analysis/items_pipeline -p 'test_*.py'",
+    "schedule": "node scripts/schedule.js",
+    "tomorrow": "node scripts/tomorrow.js"
   },
   "devDependencies": {
     "wrangler": "^4.147.0"

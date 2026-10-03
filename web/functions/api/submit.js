@@ -7,8 +7,8 @@ import { getStats } from './stats.js';
 const ITEMS = new Map(bank.items.map((i) => [i.id, i]));
 
 const INSERT_SQL = `INSERT INTO sessions (id, created_at, lang, country, class_code, first_session_id, demographics,
-  answers, n_2afc, n_interval, acc, mean_conf, overconf, brier, auroc, int_hit, passed_attention, total_rt_ms)
-  VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)`;
+  answers, n_2afc, n_interval, acc, mean_conf, overconf, brier, auroc, int_hit, passed_attention, total_rt_ms, anon_id)
+  VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)`;
 
 export const onRequestPost = safe(async (ctx) => {
   const { request, env } = ctx;
@@ -30,7 +30,7 @@ export const onRequestPost = safe(async (ctx) => {
       id, new Date().toISOString(), body.lang, country, body.class_code ?? null,
       body.first_session_id ?? null, demographics, JSON.stringify(s.answers), s.n_2afc, s.n_interval,
       s.scores.acc, s.scores.mean_conf, s.scores.overconf, s.scores.brier, s.scores.auroc, s.scores.int_hit,
-      s.passed_attention ? 1 : 0, s.total_rt_ms,
+      s.passed_attention ? 1 : 0, s.total_rt_ms, body.anon_id ?? null,
     ),
     ...aggregateWrites(db, body.lang, country, s),
   ]);

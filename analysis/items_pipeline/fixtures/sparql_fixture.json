@@ -1,0 +1,2708 @@
+{
+ "country_area": {
+  "head": {
+   "vars": [
+    "item",
+    "itemLabel",
+    "sitelinks",
+    "amount",
+    "unit",
+    "rank"
+   ]
+  },
+  "results": {
+   "bindings": [
+    {
+     "item": {
+      "type": "uri",
+      "value": "http://www.wikidata.org/entity/Q33"
+     },
+     "amount": {
+      "datatype": "http://www.w3.org/2001/XMLSchema#decimal",
+      "type": "literal",
+      "value": "390905.42"
+     },
+     "unit": {
+      "type": "uri",
+      "value": "http://www.wikidata.org/entity/Q712226"
+     },
+     "sitelinks": {
+      "datatype": "http://www.w3.org/2001/XMLSchema#integer",
+      "type": "literal",
+      "value": "403"
+     },
+     "itemLabel": {
+      "xml:lang": "en",
+      "type": "literal",
+      "value": "Finland"
+     },
+     "rank": {
+      "type": "uri",
+      "value": "http://wikiba.se/ontology#NormalRank"
+     }
+    },
+    {
+     "item": {
+      "type": "uri",
+      "value": "http://www.wikidata.org/entity/Q225"
+     },
+     "amount": {
+      "datatype": "http://www.w3.org/2001/XMLSchema#decimal",
+      "type": "literal",
+      "value": "51209.2"
+     },
+     "unit": {
+      "type": "uri",
+      "value": "http://www.wikidata.org/entity/Q712226"
+     },
+     "sitelinks": {
+      "datatype": "http://www.w3.org/2001/XMLSchema#integer",
+      "type": "literal",
+      "value": "342"
+     },
+     "itemLabel": {
+      "xml:lang": "en",
+      "type": "literal",
+      "value": "Bosnia and Herzegovina"
+     },
+     "rank": {
+      "type": "uri",
+      "value": "http://wikiba.se/ontology#NormalRank"
+     }
+    },
+    {
+     "item": {
+      "type": "uri",
+      "value": "http://www.wikidata.org/entity/Q33"
+     },
+     "amount": {
+      "datatype": "http://www.w3.org/2001/XMLSchema#decimal",
+      "type": "literal",
+      "value": "338145"
+     },
+     "unit": {
+      "type": "uri",
+      "value": "http://www.wikidata.org/entity/Q712226"
+     },
+     "sitelinks": {
+      "datatype": "http://www.w3.org/2001/XMLSchema#integer",
+      "type": "literal",
+      "value": "403"
+     },
+     "itemLabel": {
+      "xml:lang": "en",
+      "type": "literal",
+      "value": "Finland"
+     },
+     "rank": {
+      "type": "uri",
+      "value": "http://wikiba.se/ontology#NormalRank"
+     }
+    },
+    {
+     "item": {
+      "type": "uri",
+      "value": "http://www.wikidata.org/entity/Q33"
+     },
+     "amount": {
+      "datatype": "http://www.w3.org/2001/XMLSchema#decimal",
+      "type": "literal",
+      "value": "52427.08"
+     },
+     "unit": {
+      "type": "uri",
+      "value": "http://www.wikidata.org/entity/Q712226"
+     },
+     "sitelinks": {
+      "datatype": "http://www.w3.org/2001/XMLSchema#integer",
+      "type": "literal",
+      "value": "403"
+     },
+     "itemLabel": {
+      "xml:lang": "en",
+      "type": "literal",
+      "value": "Finland"
+     },
+     "rank": {
+      "type": "uri",
+      "value": "http://wikiba.se/ontology#NormalRank"
+     }
+    },
+    {
+     "item": {
+      "type": "uri",
+      "value": "http://www.wikidata.org/entity/Q142"
+     },
+     "amount": {
+      "datatype": "http://www.w3.org/2001/XMLSchema#decimal",
+      "type": "literal",
+      "value": "643801"
+     },
+     "unit": {
+      "type": "uri",
+      "value": "http://www.wikidata.org/entity/Q712226"
+     },
+     "sitelinks": {
+      "datatype": "http://www.w3.org/2001/XMLSchema#integer",
+      "type": "literal",
+      "value": "428"
+     },
+     "itemLabel": {
+      "xml:lang": "en",
+      "type": "literal",
+      "value": "France"
+     },
+     "rank": {
+      "type": "uri",
+      "value": "http://wikiba.se/ontology#NormalRank"
+     }
+    },
+    {
+     "item": {
+      "type": "uri",
+      "value": "http://www.wikidata.org/entity/Q225"
+     },
+     "amount": {
+      "datatype": "http://www.w3.org/2001/XMLSchema#decimal",
+      "type": "literal",
+      "value": "10"
+     },
+     "unit": {
+      "type": "uri",
+      "value": "http://www.wikidata.org/entity/Q712226"
+     },
+     "sitelinks": {
+      "datatype": "http://www.w3.org/2001/XMLSchema#integer",
+      "type": "literal",
+      "value": "342"
+     },
+     "itemLabel": {
+      "xml:lang": "en",
+      "type": "literal",
+      "value": "Bosnia and Herzegovina"
+     },
+     "rank": {
+      "type": "uri",
+      "value": "http://wikiba.se/ontology#NormalRank"
+     }
+    },
+    {
+     "item": {
+      "type": "uri",
+      "value": "http://www.wikidata.org/entity/Q33"
+     },
+     "amount": {
+      "datatype": "http://www.w3.org/2001/XMLSchema#decimal",
+      "type": "literal",
+      "value": "338478.34"
+     },
+     "unit": {
+      "type": "uri",
+      "value": "http://www.wikidata.org/entity/Q712226"
+     },
+     "sitelinks": {
+      "datatype": "http://www.w3.org/2001/XMLSchema#integer",
+      "type": "literal",
+      "value": "403"
+     },
+     "itemLabel": {
+      "xml:lang": "en",
+      "type": "literal",
+      "value": "Finland"
+     },
+     "rank": {
+      "type": "uri",
+      "value": "http://wikiba.se/ontology#PreferredRank"
+     }
+    },
+    {
+     "item": {
+      "type": "uri",
+      "value": "http://www.wikidata.org/entity/Q33"
+     },
+     "amount": {
+      "datatype": "http://www.w3.org/2001/XMLSchema#decimal",
+      "type": "literal",
+      "value": "303963.28"
+     },
+     "unit": {
+      "type": "uri",
+      "value": "http://www.wikidata.org/entity/Q712226"
+     },
+     "sitelinks": {
+      "datatype": "http://www.w3.org/2001/XMLSchema#integer",
+      "type": "literal",
+      "value": "403"
+     },
+     "itemLabel": {
+      "xml:lang": "en",
+      "type": "literal",
+      "value": "Finland"
+     },
+     "rank": {
+      "type": "uri",
+      "value": "http://wikiba.se/ontology#NormalRank"
+     }
+    },
+    {
+     "item": {
+      "type": "uri",
+      "value": "http://www.wikidata.org/entity/Q33"
+     },
+     "amount": {
+      "datatype": "http://www.w3.org/2001/XMLSchema#decimal",
+      "type": "literal",
+      "value": "34515.06"
+     },
+     "unit": {
+      "type": "uri",
+      "value": "http://www.wikidata.org/entity/Q712226"
+     },
+     "sitelinks": {
+      "datatype": "http://www.w3.org/2001/XMLSchema#integer",
+      "type": "literal",
+      "value": "403"
+     },
+     "itemLabel": {
+      "xml:lang": "en",
+      "type": "literal",
+      "value": "Finland"
+     },
+     "rank": {
+      "type": "uri",
+      "value": "http://wikiba.se/ontology#NormalRank"
+     }
+    },
+    {
+     "item": {
+      "type": "uri",
+      "value": "http://www.wikidata.org/entity/Q225"
+     },
+     "amount": {
+      "datatype": "http://www.w3.org/2001/XMLSchema#decimal",
+      "type": "literal",
+      "value": "51187"
+     },
+     "unit": {
+      "type": "uri",
+      "value": "http://www.wikidata.org/entity/Q712226"
+     },
+     "sitelinks": {
+      "datatype": "http://www.w3.org/2001/XMLSchema#integer",
+      "type": "literal",
+      "value": "342"
+     },
+     "itemLabel": {
+      "xml:lang": "en",
+      "type": "literal",
+      "value": "Bosnia and Herzegovina"
+     },
+     "rank": {
+      "type": "uri",
+      "value": "http://wikiba.se/ontology#NormalRank"
+     }
+    },
+    {
+     "item": {
+      "type": "uri",
+      "value": "http://www.wikidata.org/entity/Q33"
+     },
+     "amount": {
+      "datatype": "http://www.w3.org/2001/XMLSchema#decimal",
+      "type": "literal",
+      "value": "303947"
+     },
+     "unit": {
+      "type": "uri",
+      "value": "http://www.wikidata.org/entity/Q712226"
+     },
+     "sitelinks": {
+      "datatype": "http://www.w3.org/2001/XMLSchema#integer",
+      "type": "literal",
+      "value": "403"
+     },
+     "itemLabel": {
+      "xml:lang": "en",
+      "type": "literal",
+      "value": "Finland"
+     },
+     "rank": {
+      "type": "uri",
+      "value": "http://wikiba.se/ontology#NormalRank"
+     }
+    },
+    {
+     "item": {
+      "type": "uri",
+      "value": "http://www.wikidata.org/entity/Q33"
+     },
+     "amount": {
+      "datatype": "http://www.w3.org/2001/XMLSchema#decimal",
+      "type": "literal",
+      "value": "305396"
+     },
+     "unit": {
+      "type": "uri",
+      "value": "http://www.wikidata.org/entity/Q712226"
+     },
+     "sitelinks": {
+      "datatype": "http://www.w3.org/2001/XMLSchema#integer",
+      "type": "literal",
+      "value": "403"
+     },
+     "itemLabel": {
+      "xml:lang": "en",
+      "type": "literal",
+      "value": "Finland"
+     },
+     "rank": {
+      "type": "uri",
+      "value": "http://wikiba.se/ontology#DeprecatedRank"
+     }
+    },
+    {
+     "item": {
+      "type": "uri",
+      "value": "http://www.wikidata.org/entity/Q30"
+     },
+     "amount": {
+      "datatype": "http://www.w3.org/2001/XMLSchema#decimal",
+      "type": "literal",
+      "value": "9826675"
+     },
+     "unit": {
+      "type": "uri",
+      "value": "http://www.wikidata.org/entity/Q712226"
+     },
+     "sitelinks": {
+      "datatype": "http://www.w3.org/2001/XMLSchema#integer",
+      "type": "literal",
+      "value": "427"
+     },
+     "itemLabel": {
+      "xml:lang": "en",
+      "type": "literal",
+      "value": "United States"
+     },
+     "rank": {
+      "type": "uri",
+      "value": "http://wikiba.se/ontology#NormalRank"
+     }
+    },
+    {
+     "item": {
+      "type": "uri",
+      "value": "http://www.wikidata.org/entity/Q846"
+     },
+     "amount": {
+      "datatype": "http://www.w3.org/2001/XMLSchema#decimal",
+      "type": "literal",
+      "value": "11437"
+     },
+     "unit": {
+      "type": "uri",
+      "value": "http://www.wikidata.org/entity/Q712226"
+     },
+     "sitelinks": {
+      "datatype": "http://www.w3.org/2001/XMLSchema#integer",
+      "type": "literal",
+      "value": "290"
+     },
+     "itemLabel": {
+      "xml:lang": "en",
+      "type": "literal",
+      "value": "Qatar"
+     },
+     "rank": {
+      "type": "uri",
+      "value": "http://wikiba.se/ontology#NormalRank"
+     }
+    }
+   ]
+  }
+ },
+ "river_length": {
+  "head": {
+   "vars": [
+    "item",
+    "itemLabel",
+    "sitelinks",
+    "amount",
+    "unit",
+    "rank"
+   ]
+  },
+  "results": {
+   "bindings": [
+    {
+     "item": {
+      "type": "uri",
+      "value": "http://www.wikidata.org/entity/Q3783"
+     },
+     "amount": {
+      "datatype": "http://www.w3.org/2001/XMLSchema#decimal",
+      "type": "literal",
+      "value": "6436"
+     },
+     "unit": {
+      "type": "uri",
+      "value": "http://www.wikidata.org/entity/Q828224"
+     },
+     "sitelinks": {
+      "datatype": "http://www.w3.org/2001/XMLSchema#integer",
+      "type": "literal",
+      "value": "217"
+     },
+     "itemLabel": {
+      "xml:lang": "en",
+      "type": "literal",
+      "value": "Amazon River"
+     },
+     "rank": {
+      "type": "uri",
+      "value": "http://wikiba.se/ontology#NormalRank"
+     }
+    },
+    {
+     "item": {
+      "type": "uri",
+      "value": "http://www.wikidata.org/entity/Q3392"
+     },
+     "amount": {
+      "datatype": "http://www.w3.org/2001/XMLSchema#decimal",
+      "type": "literal",
+      "value": "2850"
+     },
+     "unit": {
+      "type": "uri",
+      "value": "http://www.wikidata.org/entity/Q828224"
+     },
+     "sitelinks": {
+      "datatype": "http://www.w3.org/2001/XMLSchema#integer",
+      "type": "literal",
+      "value": "247"
+     },
+     "itemLabel": {
+      "xml:lang": "en",
+      "type": "literal",
+      "value": "Nile"
+     },
+     "rank": {
+      "type": "uri",
+      "value": "http://wikiba.se/ontology#NormalRank"
+     }
+    },
+    {
+     "item": {
+      "type": "uri",
+      "value": "http://www.wikidata.org/entity/Q3783"
+     },
+     "amount": {
+      "datatype": "http://www.w3.org/2001/XMLSchema#decimal",
+      "type": "literal",
+      "value": "6400"
+     },
+     "unit": {
+      "type": "uri",
+      "value": "http://www.wikidata.org/entity/Q828224"
+     },
+     "sitelinks": {
+      "datatype": "http://www.w3.org/2001/XMLSchema#integer",
+      "type": "literal",
+      "value": "217"
+     },
+     "itemLabel": {
+      "xml:lang": "en",
+      "type": "literal",
+      "value": "Amazon River"
+     },
+     "rank": {
+      "type": "uri",
+      "value": "http://wikiba.se/ontology#PreferredRank"
+     }
+    },
+    {
+     "item": {
+      "type": "uri",
+      "value": "http://www.wikidata.org/entity/Q3783"
+     },
+     "amount": {
+      "datatype": "http://www.w3.org/2001/XMLSchema#decimal",
+      "type": "literal",
+      "value": "6800"
+     },
+     "unit": {
+      "type": "uri",
+      "value": "http://www.wikidata.org/entity/Q828224"
+     },
+     "sitelinks": {
+      "datatype": "http://www.w3.org/2001/XMLSchema#integer",
+      "type": "literal",
+      "value": "217"
+     },
+     "itemLabel": {
+      "xml:lang": "en",
+      "type": "literal",
+      "value": "Amazon River"
+     },
+     "rank": {
+      "type": "uri",
+      "value": "http://wikiba.se/ontology#NormalRank"
+     }
+    },
+    {
+     "item": {
+      "type": "uri",
+      "value": "http://www.wikidata.org/entity/Q3783"
+     },
+     "amount": {
+      "datatype": "http://www.w3.org/2001/XMLSchema#decimal",
+      "type": "literal",
+      "value": "3690"
+     },
+     "unit": {
+      "type": "uri",
+      "value": "http://www.wikidata.org/entity/Q828224"
+     },
+     "sitelinks": {
+      "datatype": "http://www.w3.org/2001/XMLSchema#integer",
+      "type": "literal",
+      "value": "217"
+     },
+     "itemLabel": {
+      "xml:lang": "en",
+      "type": "literal",
+      "value": "Amazon River"
+     },
+     "rank": {
+      "type": "uri",
+      "value": "http://wikiba.se/ontology#NormalRank"
+     }
+    },
+    {
+     "item": {
+      "type": "uri",
+      "value": "http://www.wikidata.org/entity/Q3392"
+     },
+     "amount": {
+      "datatype": "http://www.w3.org/2001/XMLSchema#decimal",
+      "type": "literal",
+      "value": "6650"
+     },
+     "unit": {
+      "type": "uri",
+      "value": "http://www.wikidata.org/entity/Q828224"
+     },
+     "sitelinks": {
+      "datatype": "http://www.w3.org/2001/XMLSchema#integer",
+      "type": "literal",
+      "value": "247"
+     },
+     "itemLabel": {
+      "xml:lang": "en",
+      "type": "literal",
+      "value": "Nile"
+     },
+     "rank": {
+      "type": "uri",
+      "value": "http://wikiba.se/ontology#PreferredRank"
+     }
+    },
+    {
+     "item": {
+      "type": "uri",
+      "value": "http://www.wikidata.org/entity/Q3783"
+     },
+     "amount": {
+      "datatype": "http://www.w3.org/2001/XMLSchema#decimal",
+      "type": "literal",
+      "value": "6992.15"
+     },
+     "unit": {
+      "type": "uri",
+      "value": "http://www.wikidata.org/entity/Q828224"
+     },
+     "sitelinks": {
+      "datatype": "http://www.w3.org/2001/XMLSchema#integer",
+      "type": "literal",
+      "value": "217"
+     },
+     "itemLabel": {
+      "xml:lang": "en",
+      "type": "literal",
+      "value": "Amazon River"
+     },
+     "rank": {
+      "type": "uri",
+      "value": "http://wikiba.se/ontology#NormalRank"
+     }
+    }
+   ]
+  }
+ },
+ "lake_area": {
+  "head": {
+   "vars": [
+    "item",
+    "itemLabel",
+    "sitelinks",
+    "amount",
+    "unit",
+    "rank"
+   ]
+  },
+  "results": {
+   "bindings": [
+    {
+     "item": {
+      "type": "uri",
+      "value": "http://www.wikidata.org/entity/Q179970"
+     },
+     "amount": {
+      "datatype": "http://www.w3.org/2001/XMLSchema#decimal",
+      "type": "literal",
+      "value": "9300"
+     },
+     "unit": {
+      "type": "uri",
+      "value": "http://www.wikidata.org/entity/Q712226"
+     },
+     "sitelinks": {
+      "datatype": "http://www.w3.org/2001/XMLSchema#integer",
+      "type": "literal",
+      "value": "71"
+     },
+     "itemLabel": {
+      "xml:lang": "en",
+      "type": "literal",
+      "value": "Kati Thanda–Lake Eyre"
+     },
+     "rank": {
+      "type": "uri",
+      "value": "http://wikiba.se/ontology#NormalRank"
+     }
+    },
+    {
+     "item": {
+      "type": "uri",
+      "value": "http://www.wikidata.org/entity/Q337"
+     },
+     "amount": {
+      "datatype": "http://www.w3.org/2001/XMLSchema#decimal",
+      "type": "literal",
+      "value": "5.83"
+     },
+     "unit": {
+      "type": "uri",
+      "value": "http://www.wikidata.org/entity/Q712226"
+     },
+     "sitelinks": {
+      "datatype": "http://www.w3.org/2001/XMLSchema#integer",
+      "type": "literal",
+      "value": "45"
+     },
+     "itemLabel": {
+      "xml:lang": "en",
+      "type": "literal",
+      "value": "Lake Chaubunagungamaug"
+     },
+     "rank": {
+      "type": "uri",
+      "value": "http://wikiba.se/ontology#NormalRank"
+     }
+    },
+    {
+     "item": {
+      "type": "uri",
+      "value": "http://www.wikidata.org/entity/Q337"
+     },
+     "amount": {
+      "datatype": "http://www.w3.org/2001/XMLSchema#decimal",
+      "type": "literal",
+      "value": "1442"
+     },
+     "unit": {
+      "type": "uri",
+      "value": "http://www.wikidata.org/entity/Q81292"
+     },
+     "sitelinks": {
+      "datatype": "http://www.w3.org/2001/XMLSchema#integer",
+      "type": "literal",
+      "value": "45"
+     },
+     "itemLabel": {
+      "xml:lang": "en",
+      "type": "literal",
+      "value": "Lake Chaubunagungamaug"
+     },
+     "rank": {
+      "type": "uri",
+      "value": "http://wikiba.se/ontology#NormalRank"
+     }
+    },
+    {
+     "item": {
+      "type": "uri",
+      "value": "http://www.wikidata.org/entity/Q5513"
+     },
+     "amount": {
+      "datatype": "http://www.w3.org/2001/XMLSchema#decimal",
+      "type": "literal",
+      "value": "31722"
+     },
+     "unit": {
+      "type": "uri",
+      "value": "http://www.wikidata.org/entity/Q712226"
+     },
+     "sitelinks": {
+      "datatype": "http://www.w3.org/2001/XMLSchema#integer",
+      "type": "literal",
+      "value": "183"
+     },
+     "itemLabel": {
+      "xml:lang": "en",
+      "type": "literal",
+      "value": "Lake Baikal"
+     },
+     "rank": {
+      "type": "uri",
+      "value": "http://wikiba.se/ontology#NormalRank"
+     }
+    }
+   ]
+  }
+ },
+ "city_population": {
+  "head": {
+   "vars": [
+    "item",
+    "itemLabel",
+    "sitelinks",
+    "amount",
+    "time",
+    "precision",
+    "rank"
+   ]
+  },
+  "results": {
+   "bindings": [
+    {
+     "time": {
+      "datatype": "http://www.w3.org/2001/XMLSchema#dateTime",
+      "type": "literal",
+      "value": "1881-01-01T00:00:00Z"
+     },
+     "precision": {
+      "datatype": "http://www.w3.org/2001/XMLSchema#integer",
+      "type": "literal",
+      "value": "9"
+     },
+     "item": {
+      "type": "uri",
+      "value": "http://www.wikidata.org/entity/Q220"
+     },
+     "amount": {
+      "datatype": "http://www.w3.org/2001/XMLSchema#decimal",
+      "type": "literal",
+      "value": "273952"
+     },
+     "sitelinks": {
+      "datatype": "http://www.w3.org/2001/XMLSchema#integer",
+      "type": "literal",
+      "value": "344"
+     },
+     "itemLabel": {
+      "xml:lang": "en",
+      "type": "literal",
+      "value": "Rome"
+     },
+     "rank": {
+      "type": "uri",
+      "value": "http://wikiba.se/ontology#NormalRank"
+     }
+    },
+    {
+     "time": {
+      "datatype": "http://www.w3.org/2001/XMLSchema#dateTime",
+      "type": "literal",
+      "value": "2015-08-31T00:00:00Z"
+     },
+     "precision": {
+      "datatype": "http://www.w3.org/2001/XMLSchema#integer",
+      "type": "literal",
+      "value": "11"
+     },
+     "item": {
+      "type": "uri",
+      "value": "http://www.wikidata.org/entity/Q220"
+     },
+     "amount": {
+      "datatype": "http://www.w3.org/2001/XMLSchema#decimal",
+      "type": "literal",
+      "value": "2864348"
+     },
+     "sitelinks": {
+      "datatype": "http://www.w3.org/2001/XMLSchema#integer",
+      "type": "literal",
+      "value": "344"
+     },
+     "itemLabel": {
+      "xml:lang": "en",
+      "type": "literal",
+      "value": "Rome"
+     },
+     "rank": {
+      "type": "uri",
+      "value": "http://wikiba.se/ontology#NormalRank"
+     }
+    },
+    {
+     "time": {
+      "datatype": "http://www.w3.org/2001/XMLSchema#dateTime",
+      "type": "literal",
+      "value": "1951-01-01T00:00:00Z"
+     },
+     "precision": {
+      "datatype": "http://www.w3.org/2001/XMLSchema#integer",
+      "type": "literal",
+      "value": "9"
+     },
+     "item": {
+      "type": "uri",
+      "value": "http://www.wikidata.org/entity/Q220"
+     },
+     "amount": {
+      "datatype": "http://www.w3.org/2001/XMLSchema#decimal",
+      "type": "literal",
+      "value": "1651754"
+     },
+     "sitelinks": {
+      "datatype": "http://www.w3.org/2001/XMLSchema#integer",
+      "type": "literal",
+      "value": "344"
+     },
+     "itemLabel": {
+      "xml:lang": "en",
+      "type": "literal",
+      "value": "Rome"
+     },
+     "rank": {
+      "type": "uri",
+      "value": "http://wikiba.se/ontology#NormalRank"
+     }
+    },
+    {
+     "time": {
+      "datatype": "http://www.w3.org/2001/XMLSchema#dateTime",
+      "type": "literal",
+      "value": "-0549-01-01T00:00:00Z"
+     },
+     "precision": {
+      "datatype": "http://www.w3.org/2001/XMLSchema#integer",
+      "type": "literal",
+      "value": "9"
+     },
+     "item": {
+      "type": "uri",
+      "value": "http://www.wikidata.org/entity/Q220"
+     },
+     "amount": {
+      "datatype": "http://www.w3.org/2001/XMLSchema#decimal",
+      "type": "literal",
+      "value": "35000"
+     },
+     "sitelinks": {
+      "datatype": "http://www.w3.org/2001/XMLSchema#integer",
+      "type": "literal",
+      "value": "344"
+     },
+     "itemLabel": {
+      "xml:lang": "en",
+      "type": "literal",
+      "value": "Rome"
+     },
+     "rank": {
+      "type": "uri",
+      "value": "http://wikiba.se/ontology#NormalRank"
+     }
+    },
+    {
+     "time": {
+      "datatype": "http://www.w3.org/2001/XMLSchema#dateTime",
+      "type": "literal",
+      "value": "1981-01-01T00:00:00Z"
+     },
+     "precision": {
+      "datatype": "http://www.w3.org/2001/XMLSchema#integer",
+      "type": "literal",
+      "value": "9"
+     },
+     "item": {
+      "type": "uri",
+      "value": "http://www.wikidata.org/entity/Q220"
+     },
+     "amount": {
+      "datatype": "http://www.w3.org/2001/XMLSchema#decimal",
+      "type": "literal",
+      "value": "2840259"
+     },
+     "sitelinks": {
+      "datatype": "http://www.w3.org/2001/XMLSchema#integer",
+      "type": "literal",
+      "value": "344"
+     },
+     "itemLabel": {
+      "xml:lang": "en",
+      "type": "literal",
+      "value": "Rome"
+     },
+     "rank": {
+      "type": "uri",
+      "value": "http://wikiba.se/ontology#NormalRank"
+     }
+    },
+    {
+     "time": {
+      "datatype": "http://www.w3.org/2001/XMLSchema#dateTime",
+      "type": "literal",
+      "value": "1936-01-01T00:00:00Z"
+     },
+     "precision": {
+      "datatype": "http://www.w3.org/2001/XMLSchema#integer",
+      "type": "literal",
+      "value": "9"
+     },
+     "item": {
+      "type": "uri",
+      "value": "http://www.wikidata.org/entity/Q220"
+     },
+     "amount": {
+      "datatype": "http://www.w3.org/2001/XMLSchema#decimal",
+      "type": "literal",
+      "value": "1150589"
+     },
+     "sitelinks": {
+      "datatype": "http://www.w3.org/2001/XMLSchema#integer",
+      "type": "literal",
+      "value": "344"
+     },
+     "itemLabel": {
+      "xml:lang": "en",
+      "type": "literal",
+      "value": "Rome"
+     },
+     "rank": {
+      "type": "uri",
+      "value": "http://wikiba.se/ontology#NormalRank"
+     }
+    },
+    {
+     "time": {
+      "datatype": "http://www.w3.org/2001/XMLSchema#dateTime",
+      "type": "literal",
+      "value": "2001-01-01T00:00:00Z"
+     },
+     "precision": {
+      "datatype": "http://www.w3.org/2001/XMLSchema#integer",
+      "type": "literal",
+      "value": "9"
+     },
+     "item": {
+      "type": "uri",
+      "value": "http://www.wikidata.org/entity/Q220"
+     },
+     "amount": {
+      "datatype": "http://www.w3.org/2001/XMLSchema#decimal",
+      "type": "literal",
+      "value": "2663182"
+     },
+     "sitelinks": {
+      "datatype": "http://www.w3.org/2001/XMLSchema#integer",
+      "type": "literal",
+      "value": "344"
+     },
+     "itemLabel": {
+      "xml:lang": "en",
+      "type": "literal",
+      "value": "Rome"
+     },
+     "rank": {
+      "type": "uri",
+      "value": "http://wikiba.se/ontology#NormalRank"
+     }
+    },
+    {
+     "time": {
+      "datatype": "http://www.w3.org/2001/XMLSchema#dateTime",
+      "type": "literal",
+      "value": "1931-01-01T00:00:00Z"
+     },
+     "precision": {
+      "datatype": "http://www.w3.org/2001/XMLSchema#integer",
+      "type": "literal",
+      "value": "9"
+     },
+     "item": {
+      "type": "uri",
+      "value": "http://www.wikidata.org/entity/Q220"
+     },
+     "amount": {
+      "datatype": "http://www.w3.org/2001/XMLSchema#decimal",
+      "type": "literal",
+      "value": "930926"
+     },
+     "sitelinks": {
+      "datatype": "http://www.w3.org/2001/XMLSchema#integer",
+      "type": "literal",
+      "value": "344"
+     },
+     "itemLabel": {
+      "xml:lang": "en",
+      "type": "literal",
+      "value": "Rome"
+     },
+     "rank": {
+      "type": "uri",
+      "value": "http://wikiba.se/ontology#NormalRank"
+     }
+    },
+    {
+     "time": {
+      "datatype": "http://www.w3.org/2001/XMLSchema#dateTime",
+      "type": "literal",
+      "value": "1961-01-01T00:00:00Z"
+     },
+     "precision": {
+      "datatype": "http://www.w3.org/2001/XMLSchema#integer",
+      "type": "literal",
+      "value": "9"
+     },
+     "item": {
+      "type": "uri",
+      "value": "http://www.wikidata.org/entity/Q220"
+     },
+     "amount": {
+      "datatype": "http://www.w3.org/2001/XMLSchema#decimal",
+      "type": "literal",
+      "value": "2188160"
+     },
+     "sitelinks": {
+      "datatype": "http://www.w3.org/2001/XMLSchema#integer",
+      "type": "literal",
+      "value": "344"
+     },
+     "itemLabel": {
+      "xml:lang": "en",
+      "type": "literal",
+      "value": "Rome"
+     },
+     "rank": {
+      "type": "uri",
+      "value": "http://wikiba.se/ontology#NormalRank"
+     }
+    },
+    {
+     "time": {
+      "datatype": "http://www.w3.org/2001/XMLSchema#dateTime",
+      "type": "literal",
+      "value": "1871-01-01T00:00:00Z"
+     },
+     "precision": {
+      "datatype": "http://www.w3.org/2001/XMLSchema#integer",
+      "type": "literal",
+      "value": "9"
+     },
+     "item": {
+      "type": "uri",
+      "value": "http://www.wikidata.org/entity/Q220"
+     },
+     "amount": {
+      "datatype": "http://www.w3.org/2001/XMLSchema#decimal",
+      "type": "literal",
+      "value": "212432"
+     },
+     "sitelinks": {
+      "datatype": "http://www.w3.org/2001/XMLSchema#integer",
+      "type": "literal",
+      "value": "344"
+     },
+     "itemLabel": {
+      "xml:lang": "en",
+      "type": "literal",
+      "value": "Rome"
+     },
+     "rank": {
+      "type": "uri",
+      "value": "http://wikiba.se/ontology#NormalRank"
+     }
+    },
+    {
+     "time": {
+      "datatype": "http://www.w3.org/2001/XMLSchema#dateTime",
+      "type": "literal",
+      "value": "2017-01-01T00:00:00Z"
+     },
+     "precision": {
+      "datatype": "http://www.w3.org/2001/XMLSchema#integer",
+      "type": "literal",
+      "value": "11"
+     },
+     "item": {
+      "type": "uri",
+      "value": "http://www.wikidata.org/entity/Q220"
+     },
+     "amount": {
+      "datatype": "http://www.w3.org/2001/XMLSchema#decimal",
+      "type": "literal",
+      "value": "2873494"
+     },
+     "sitelinks": {
+      "datatype": "http://www.w3.org/2001/XMLSchema#integer",
+      "type": "literal",
+      "value": "344"
+     },
+     "itemLabel": {
+      "xml:lang": "en",
+      "type": "literal",
+      "value": "Rome"
+     },
+     "rank": {
+      "type": "uri",
+      "value": "http://wikiba.se/ontology#NormalRank"
+     }
+    },
+    {
+     "time": {
+      "datatype": "http://www.w3.org/2001/XMLSchema#dateTime",
+      "type": "literal",
+      "value": "-0508-01-01T00:00:00Z"
+     },
+     "precision": {
+      "datatype": "http://www.w3.org/2001/XMLSchema#integer",
+      "type": "literal",
+      "value": "9"
+     },
+     "item": {
+      "type": "uri",
+      "value": "http://www.wikidata.org/entity/Q220"
+     },
+     "amount": {
+      "datatype": "http://www.w3.org/2001/XMLSchema#decimal",
+      "type": "literal",
+      "value": "130000"
+     },
+     "sitelinks": {
+      "datatype": "http://www.w3.org/2001/XMLSchema#integer",
+      "type": "literal",
+      "value": "344"
+     },
+     "itemLabel": {
+      "xml:lang": "en",
+      "type": "literal",
+      "value": "Rome"
+     },
+     "rank": {
+      "type": "uri",
+      "value": "http://wikiba.se/ontology#NormalRank"
+     }
+    },
+    {
+     "time": {
+      "datatype": "http://www.w3.org/2001/XMLSchema#dateTime",
+      "type": "literal",
+      "value": "2014-01-01T00:00:00Z"
+     },
+     "precision": {
+      "datatype": "http://www.w3.org/2001/XMLSchema#integer",
+      "type": "literal",
+      "value": "9"
+     },
+     "item": {
+      "type": "uri",
+      "value": "http://www.wikidata.org/entity/Q220"
+     },
+     "amount": {
+      "datatype": "http://www.w3.org/2001/XMLSchema#decimal",
+      "type": "literal",
+      "value": "2870493"
+     },
+     "sitelinks": {
+      "datatype": "http://www.w3.org/2001/XMLSchema#integer",
+      "type": "literal",
+      "value": "344"
+     },
+     "itemLabel": {
+      "xml:lang": "en",
+      "type": "literal",
+      "value": "Rome"
+     },
+     "rank": {
+      "type": "uri",
+      "value": "http://wikiba.se/ontology#NormalRank"
+     }
+    },
+    {
+     "time": {
+      "datatype": "http://www.w3.org/2001/XMLSchema#dateTime",
+      "type": "literal",
+      "value": "1991-01-01T00:00:00Z"
+     },
+     "precision": {
+      "datatype": "http://www.w3.org/2001/XMLSchema#integer",
+      "type": "literal",
+      "value": "9"
+     },
+     "item": {
+      "type": "uri",
+      "value": "http://www.wikidata.org/entity/Q220"
+     },
+     "amount": {
+      "datatype": "http://www.w3.org/2001/XMLSchema#decimal",
+      "type": "literal",
+      "value": "2775250"
+     },
+     "sitelinks": {
+      "datatype": "http://www.w3.org/2001/XMLSchema#integer",
+      "type": "literal",
+      "value": "344"
+     },
+     "itemLabel": {
+      "xml:lang": "en",
+      "type": "literal",
+      "value": "Rome"
+     },
+     "rank": {
+      "type": "uri",
+      "value": "http://wikiba.se/ontology#NormalRank"
+     }
+    },
+    {
+     "time": {
+      "datatype": "http://www.w3.org/2001/XMLSchema#dateTime",
+      "type": "literal",
+      "value": "1921-01-01T00:00:00Z"
+     },
+     "precision": {
+      "datatype": "http://www.w3.org/2001/XMLSchema#integer",
+      "type": "literal",
+      "value": "9"
+     },
+     "item": {
+      "type": "uri",
+      "value": "http://www.wikidata.org/entity/Q220"
+     },
+     "amount": {
+      "datatype": "http://www.w3.org/2001/XMLSchema#decimal",
+      "type": "literal",
+      "value": "660235"
+     },
+     "sitelinks": {
+      "datatype": "http://www.w3.org/2001/XMLSchema#integer",
+      "type": "literal",
+      "value": "344"
+     },
+     "itemLabel": {
+      "xml:lang": "en",
+      "type": "literal",
+      "value": "Rome"
+     },
+     "rank": {
+      "type": "uri",
+      "value": "http://wikiba.se/ontology#NormalRank"
+     }
+    },
+    {
+     "time": {
+      "datatype": "http://www.w3.org/2001/XMLSchema#dateTime",
+      "type": "literal",
+      "value": "-0149-01-01T00:00:00Z"
+     },
+     "precision": {
+      "datatype": "http://www.w3.org/2001/XMLSchema#integer",
+      "type": "literal",
+      "value": "9"
+     },
+     "item": {
+      "type": "uri",
+      "value": "http://www.wikidata.org/entity/Q220"
+     },
+     "amount": {
+      "datatype": "http://www.w3.org/2001/XMLSchema#decimal",
+      "type": "literal",
+      "value": "300000"
+     },
+     "sitelinks": {
+      "datatype": "http://www.w3.org/2001/XMLSchema#integer",
+      "type": "literal",
+      "value": "344"
+     },
+     "itemLabel": {
+      "xml:lang": "en",
+      "type": "literal",
+      "value": "Rome"
+     },
+     "rank": {
+      "type": "uri",
+      "value": "http://wikiba.se/ontology#NormalRank"
+     }
+    },
+    {
+     "time": {
+      "datatype": "http://www.w3.org/2001/XMLSchema#dateTime",
+      "type": "literal",
+      "value": "1901-01-01T00:00:00Z"
+     },
+     "precision": {
+      "datatype": "http://www.w3.org/2001/XMLSchema#integer",
+      "type": "literal",
+      "value": "9"
+     },
+     "item": {
+      "type": "uri",
+      "value": "http://www.wikidata.org/entity/Q220"
+     },
+     "amount": {
+      "datatype": "http://www.w3.org/2001/XMLSchema#decimal",
+      "type": "literal",
+      "value": "422411"
+     },
+     "sitelinks": {
+      "datatype": "http://www.w3.org/2001/XMLSchema#integer",
+      "type": "literal",
+      "value": "344"
+     },
+     "itemLabel": {
+      "xml:lang": "en",
+      "type": "literal",
+      "value": "Rome"
+     },
+     "rank": {
+      "type": "uri",
+      "value": "http://wikiba.se/ontology#NormalRank"
+     }
+    },
+    {
+     "time": {
+      "datatype": "http://www.w3.org/2001/XMLSchema#dateTime",
+      "type": "literal",
+      "value": "1861-01-01T00:00:00Z"
+     },
+     "precision": {
+      "datatype": "http://www.w3.org/2001/XMLSchema#integer",
+      "type": "literal",
+      "value": "9"
+     },
+     "item": {
+      "type": "uri",
+      "value": "http://www.wikidata.org/entity/Q220"
+     },
+     "amount": {
+      "datatype": "http://www.w3.org/2001/XMLSchema#decimal",
+      "type": "literal",
+      "value": "194500"
+     },
+     "sitelinks": {
+      "datatype": "http://www.w3.org/2001/XMLSchema#integer",
+      "type": "literal",
+      "value": "344"
+     },
+     "itemLabel": {
+      "xml:lang": "en",
+      "type": "literal",
+      "value": "Rome"
+     },
+     "rank": {
+      "type": "uri",
+      "value": "http://wikiba.se/ontology#NormalRank"
+     }
+    },
+    {
+     "time": {
+      "datatype": "http://www.w3.org/2001/XMLSchema#dateTime",
+      "type": "literal",
+      "value": "1377-01-01T00:00:00Z"
+     },
+     "precision": {
+      "datatype": "http://www.w3.org/2001/XMLSchema#integer",
+      "type": "literal",
+      "value": "9"
+     },
+     "item": {
+      "type": "uri",
+      "value": "http://www.wikidata.org/entity/Q220"
+     },
+     "amount": {
+      "datatype": "http://www.w3.org/2001/XMLSchema#decimal",
+      "type": "literal",
+      "value": "17000"
+     },
+     "sitelinks": {
+      "datatype": "http://www.w3.org/2001/XMLSchema#integer",
+      "type": "literal",
+      "value": "344"
+     },
+     "itemLabel": {
+      "xml:lang": "en",
+      "type": "literal",
+      "value": "Rome"
+     },
+     "rank": {
+      "type": "uri",
+      "value": "http://wikiba.se/ontology#NormalRank"
+     }
+    },
+    {
+     "time": {
+      "datatype": "http://www.w3.org/2001/XMLSchema#dateTime",
+      "type": "literal",
+      "value": "2018-01-01T00:00:00Z"
+     },
+     "precision": {
+      "datatype": "http://www.w3.org/2001/XMLSchema#integer",
+      "type": "literal",
+      "value": "11"
+     },
+     "item": {
+      "type": "uri",
+      "value": "http://www.wikidata.org/entity/Q220"
+     },
+     "amount": {
+      "datatype": "http://www.w3.org/2001/XMLSchema#decimal",
+      "type": "literal",
+      "value": "2872800"
+     },
+     "sitelinks": {
+      "datatype": "http://www.w3.org/2001/XMLSchema#integer",
+      "type": "literal",
+      "value": "344"
+     },
+     "itemLabel": {
+      "xml:lang": "en",
+      "type": "literal",
+      "value": "Rome"
+     },
+     "rank": {
+      "type": "uri",
+      "value": "http://wikiba.se/ontology#NormalRank"
+     }
+    },
+    {
+     "time": {
+      "datatype": "http://www.w3.org/2001/XMLSchema#dateTime",
+      "type": "literal",
+      "value": "2023-01-01T00:00:00Z"
+     },
+     "precision": {
+      "datatype": "http://www.w3.org/2001/XMLSchema#integer",
+      "type": "literal",
+      "value": "11"
+     },
+     "item": {
+      "type": "uri",
+      "value": "http://www.wikidata.org/entity/Q220"
+     },
+     "amount": {
+      "datatype": "http://www.w3.org/2001/XMLSchema#decimal",
+      "type": "literal",
+      "value": "2748109"
+     },
+     "sitelinks": {
+      "datatype": "http://www.w3.org/2001/XMLSchema#integer",
+      "type": "literal",
+      "value": "344"
+     },
+     "itemLabel": {
+      "xml:lang": "en",
+      "type": "literal",
+      "value": "Rome"
+     },
+     "rank": {
+      "type": "uri",
+      "value": "http://wikiba.se/ontology#PreferredRank"
+     }
+    },
+    {
+     "time": {
+      "datatype": "http://www.w3.org/2001/XMLSchema#dateTime",
+      "type": "literal",
+      "value": "1911-01-01T00:00:00Z"
+     },
+     "precision": {
+      "datatype": "http://www.w3.org/2001/XMLSchema#integer",
+      "type": "literal",
+      "value": "9"
+     },
+     "item": {
+      "type": "uri",
+      "value": "http://www.wikidata.org/entity/Q220"
+     },
+     "amount": {
+      "datatype": "http://www.w3.org/2001/XMLSchema#decimal",
+      "type": "literal",
+      "value": "518917"
+     },
+     "sitelinks": {
+      "datatype": "http://www.w3.org/2001/XMLSchema#integer",
+      "type": "literal",
+      "value": "344"
+     },
+     "itemLabel": {
+      "xml:lang": "en",
+      "type": "literal",
+      "value": "Rome"
+     },
+     "rank": {
+      "type": "uri",
+      "value": "http://wikiba.se/ontology#NormalRank"
+     }
+    },
+    {
+     "time": {
+      "datatype": "http://www.w3.org/2001/XMLSchema#dateTime",
+      "type": "literal",
+      "value": "1971-01-01T00:00:00Z"
+     },
+     "precision": {
+      "datatype": "http://www.w3.org/2001/XMLSchema#integer",
+      "type": "literal",
+      "value": "9"
+     },
+     "item": {
+      "type": "uri",
+      "value": "http://www.wikidata.org/entity/Q220"
+     },
+     "amount": {
+      "datatype": "http://www.w3.org/2001/XMLSchema#decimal",
+      "type": "literal",
+      "value": "2781993"
+     },
+     "sitelinks": {
+      "datatype": "http://www.w3.org/2001/XMLSchema#integer",
+      "type": "literal",
+      "value": "344"
+     },
+     "itemLabel": {
+      "xml:lang": "en",
+      "type": "literal",
+      "value": "Rome"
+     },
+     "rank": {
+      "type": "uri",
+      "value": "http://wikiba.se/ontology#NormalRank"
+     }
+    },
+    {
+     "time": {
+      "datatype": "http://www.w3.org/2001/XMLSchema#dateTime",
+      "type": "literal",
+      "value": "2011-01-01T00:00:00Z"
+     },
+     "precision": {
+      "datatype": "http://www.w3.org/2001/XMLSchema#integer",
+      "type": "literal",
+      "value": "9"
+     },
+     "item": {
+      "type": "uri",
+      "value": "http://www.wikidata.org/entity/Q220"
+     },
+     "amount": {
+      "datatype": "http://www.w3.org/2001/XMLSchema#decimal",
+      "type": "literal",
+      "value": "2617175"
+     },
+     "sitelinks": {
+      "datatype": "http://www.w3.org/2001/XMLSchema#integer",
+      "type": "literal",
+      "value": "344"
+     },
+     "itemLabel": {
+      "xml:lang": "en",
+      "type": "literal",
+      "value": "Rome"
+     },
+     "rank": {
+      "type": "uri",
+      "value": "http://wikiba.se/ontology#NormalRank"
+     }
+    },
+    {
+     "item": {
+      "type": "uri",
+      "value": "http://www.wikidata.org/entity/Q213026"
+     },
+     "amount": {
+      "datatype": "http://www.w3.org/2001/XMLSchema#decimal",
+      "type": "literal",
+      "value": "1000000"
+     },
+     "sitelinks": {
+      "datatype": "http://www.w3.org/2001/XMLSchema#integer",
+      "type": "literal",
+      "value": "67"
+     },
+     "itemLabel": {
+      "xml:lang": "en",
+      "type": "literal",
+      "value": "Bareilly"
+     },
+     "rank": {
+      "type": "uri",
+      "value": "http://wikiba.se/ontology#NormalRank"
+     }
+    }
+   ]
+  }
+ },
+ "first_flight": {
+  "head": {
+   "vars": [
+    "item",
+    "itemLabel",
+    "sitelinks",
+    "time",
+    "precision",
+    "rank"
+   ]
+  },
+  "results": {
+   "bindings": [
+    {
+     "item": {
+      "type": "uri",
+      "value": "http://www.wikidata.org/entity/Q179"
+     },
+     "time": {
+      "datatype": "http://www.w3.org/2001/XMLSchema#dateTime",
+      "type": "literal",
+      "value": "1969-02-09T00:00:00Z"
+     },
+     "precision": {
+      "datatype": "http://www.w3.org/2001/XMLSchema#integer",
+      "type": "literal",
+      "value": "11"
+     },
+     "sitelinks": {
+      "datatype": "http://www.w3.org/2001/XMLSchema#integer",
+      "type": "literal",
+      "value": "88"
+     },
+     "itemLabel": {
+      "xml:lang": "en",
+      "type": "literal",
+      "value": "Boeing 747"
+     },
+     "rank": {
+      "type": "uri",
+      "value": "http://wikiba.se/ontology#NormalRank"
+     }
+    },
+    {
+     "item": {
+      "type": "uri",
+      "value": "http://www.wikidata.org/entity/Q425677"
+     },
+     "time": {
+      "datatype": "http://www.w3.org/2001/XMLSchema#dateTime",
+      "type": "literal",
+      "value": "1997-05-17T00:00:00Z"
+     },
+     "precision": {
+      "datatype": "http://www.w3.org/2001/XMLSchema#integer",
+      "type": "literal",
+      "value": "11"
+     },
+     "sitelinks": {
+      "datatype": "http://www.w3.org/2001/XMLSchema#integer",
+      "type": "literal",
+      "value": "27"
+     },
+     "itemLabel": {
+      "xml:lang": "en",
+      "type": "literal",
+      "value": "X-36試驗機"
+     },
+     "rank": {
+      "type": "uri",
+      "value": "http://wikiba.se/ontology#NormalRank"
+     }
+    },
+    {
+     "item": {
+      "type": "uri",
+      "value": "http://www.wikidata.org/entity/Q618985"
+     },
+     "time": {
+      "datatype": "http://www.w3.org/2001/XMLSchema#dateTime",
+      "type": "literal",
+      "value": "2020-01-01T00:00:00Z"
+     },
+     "precision": {
+      "datatype": "http://www.w3.org/2001/XMLSchema#integer",
+      "type": "literal",
+      "value": "8"
+     },
+     "sitelinks": {
+      "datatype": "http://www.w3.org/2001/XMLSchema#integer",
+      "type": "literal",
+      "value": "23"
+     },
+     "itemLabel": {
+      "xml:lang": "en",
+      "type": "literal",
+      "value": "Skylon"
+     },
+     "rank": {
+      "type": "uri",
+      "value": "http://wikiba.se/ontology#NormalRank"
+     }
+    }
+   ]
+  }
+ },
+ "university_founded": {
+  "head": {
+   "vars": [
+    "item",
+    "itemLabel",
+    "sitelinks",
+    "time",
+    "precision",
+    "rank"
+   ]
+  },
+  "results": {
+   "bindings": [
+    {
+     "item": {
+      "type": "uri",
+      "value": "http://www.wikidata.org/entity/Q173959"
+     },
+     "time": {
+      "datatype": "http://www.w3.org/2001/XMLSchema#dateTime",
+      "type": "literal",
+      "value": "1961-01-01T00:00:00Z"
+     },
+     "precision": {
+      "datatype": "http://www.w3.org/2001/XMLSchema#integer",
+      "type": "literal",
+      "value": "9"
+     },
+     "sitelinks": {
+      "datatype": "http://www.w3.org/2001/XMLSchema#integer",
+      "type": "literal",
+      "value": "88"
+     },
+     "itemLabel": {
+      "xml:lang": "en",
+      "type": "literal",
+      "value": "Al-Azhar University"
+     },
+     "rank": {
+      "type": "uri",
+      "value": "http://wikiba.se/ontology#NormalRank"
+     }
+    },
+    {
+     "item": {
+      "type": "uri",
+      "value": "http://www.wikidata.org/entity/Q173959"
+     },
+     "time": {
+      "datatype": "http://www.w3.org/2001/XMLSchema#dateTime",
+      "type": "literal",
+      "value": "0970-01-01T00:00:00Z"
+     },
+     "precision": {
+      "datatype": "http://www.w3.org/2001/XMLSchema#integer",
+      "type": "literal",
+      "value": "8"
+     },
+     "sitelinks": {
+      "datatype": "http://www.w3.org/2001/XMLSchema#integer",
+      "type": "literal",
+      "value": "88"
+     },
+     "itemLabel": {
+      "xml:lang": "en",
+      "type": "literal",
+      "value": "Al-Azhar University"
+     },
+     "rank": {
+      "type": "uri",
+      "value": "http://wikiba.se/ontology#NormalRank"
+     }
+    },
+    {
+     "item": {
+      "type": "uri",
+      "value": "http://www.wikidata.org/entity/Q34433"
+     },
+     "time": {
+      "datatype": "http://www.w3.org/2001/XMLSchema#dateTime",
+      "type": "literal",
+      "value": "1096-01-01T00:00:00Z"
+     },
+     "precision": {
+      "datatype": "http://www.w3.org/2001/XMLSchema#integer",
+      "type": "literal",
+      "value": "9"
+     },
+     "sitelinks": {
+      "datatype": "http://www.w3.org/2001/XMLSchema#integer",
+      "type": "literal",
+      "value": "149"
+     },
+     "itemLabel": {
+      "xml:lang": "en",
+      "type": "literal",
+      "value": "University of Oxford"
+     },
+     "rank": {
+      "type": "uri",
+      "value": "http://wikiba.se/ontology#NormalRank"
+     }
+    },
+    {
+     "item": {
+      "type": "uri",
+      "value": "http://www.wikidata.org/entity/Q13371"
+     },
+     "time": {
+      "datatype": "http://www.w3.org/2001/XMLSchema#dateTime",
+      "type": "literal",
+      "value": "1636-09-08T00:00:00Z"
+     },
+     "precision": {
+      "datatype": "http://www.w3.org/2001/XMLSchema#integer",
+      "type": "literal",
+      "value": "11"
+     },
+     "sitelinks": {
+      "datatype": "http://www.w3.org/2001/XMLSchema#integer",
+      "type": "literal",
+      "value": "151"
+     },
+     "itemLabel": {
+      "xml:lang": "en",
+      "type": "literal",
+      "value": "Harvard University"
+     },
+     "rank": {
+      "type": "uri",
+      "value": "http://wikiba.se/ontology#NormalRank"
+     }
+    }
+   ]
+  }
+ },
+ "element_melting_point": {
+  "head": {
+   "vars": [
+    "item",
+    "itemLabel",
+    "sitelinks",
+    "amount",
+    "unit",
+    "rank"
+   ]
+  },
+  "results": {
+   "bindings": [
+    {
+     "item": {
+      "type": "uri",
+      "value": "http://www.wikidata.org/entity/Q677"
+     },
+     "amount": {
+      "datatype": "http://www.w3.org/2001/XMLSchema#decimal",
+      "type": "literal",
+      "value": "1538"
+     },
+     "unit": {
+      "type": "uri",
+      "value": "http://www.wikidata.org/entity/Q25267"
+     },
+     "sitelinks": {
+      "datatype": "http://www.w3.org/2001/XMLSchema#integer",
+      "type": "literal",
+      "value": "253"
+     },
+     "itemLabel": {
+      "xml:lang": "en",
+      "type": "literal",
+      "value": "iron"
+     },
+     "rank": {
+      "type": "uri",
+      "value": "http://wikiba.se/ontology#NormalRank"
+     }
+    },
+    {
+     "item": {
+      "type": "uri",
+      "value": "http://www.wikidata.org/entity/Q925"
+     },
+     "amount": {
+      "datatype": "http://www.w3.org/2001/XMLSchema#decimal",
+      "type": "literal",
+      "value": "-38.83"
+     },
+     "unit": {
+      "type": "uri",
+      "value": "http://www.wikidata.org/entity/Q25267"
+     },
+     "sitelinks": {
+      "datatype": "http://www.w3.org/2001/XMLSchema#integer",
+      "type": "literal",
+      "value": "185"
+     },
+     "itemLabel": {
+      "xml:lang": "en",
+      "type": "literal",
+      "value": "mercury"
+     },
+     "rank": {
+      "type": "uri",
+      "value": "http://wikiba.se/ontology#NormalRank"
+     }
+    },
+    {
+     "item": {
+      "type": "uri",
+      "value": "http://www.wikidata.org/entity/Q925"
+     },
+     "amount": {
+      "datatype": "http://www.w3.org/2001/XMLSchema#decimal",
+      "type": "literal",
+      "value": "-37.89"
+     },
+     "unit": {
+      "type": "uri",
+      "value": "http://www.wikidata.org/entity/Q42289"
+     },
+     "sitelinks": {
+      "datatype": "http://www.w3.org/2001/XMLSchema#integer",
+      "type": "literal",
+      "value": "185"
+     },
+     "itemLabel": {
+      "xml:lang": "en",
+      "type": "literal",
+      "value": "mercury"
+     },
+     "rank": {
+      "type": "uri",
+      "value": "http://wikiba.se/ontology#NormalRank"
+     }
+    }
+   ]
+  }
+ },
+ "mountain_elevation": {
+  "head": {
+   "vars": [
+    "item",
+    "itemLabel",
+    "sitelinks",
+    "amount",
+    "unit",
+    "rank"
+   ]
+  },
+  "results": {
+   "bindings": [
+    {
+     "item": {
+      "type": "uri",
+      "value": "http://www.wikidata.org/entity/Q513"
+     },
+     "amount": {
+      "datatype": "http://www.w3.org/2001/XMLSchema#decimal",
+      "type": "literal",
+      "value": "8850"
+     },
+     "unit": {
+      "type": "uri",
+      "value": "http://www.wikidata.org/entity/Q11573"
+     },
+     "sitelinks": {
+      "datatype": "http://www.w3.org/2001/XMLSchema#integer",
+      "type": "literal",
+      "value": "237"
+     },
+     "itemLabel": {
+      "xml:lang": "en",
+      "type": "literal",
+      "value": "Mount Everest"
+     },
+     "rank": {
+      "type": "uri",
+      "value": "http://wikiba.se/ontology#NormalRank"
+     }
+    },
+    {
+     "item": {
+      "type": "uri",
+      "value": "http://www.wikidata.org/entity/Q513"
+     },
+     "amount": {
+      "datatype": "http://www.w3.org/2001/XMLSchema#decimal",
+      "type": "literal",
+      "value": "29030"
+     },
+     "unit": {
+      "type": "uri",
+      "value": "http://www.wikidata.org/entity/Q3710"
+     },
+     "sitelinks": {
+      "datatype": "http://www.w3.org/2001/XMLSchema#integer",
+      "type": "literal",
+      "value": "237"
+     },
+     "itemLabel": {
+      "xml:lang": "en",
+      "type": "literal",
+      "value": "Mount Everest"
+     },
+     "rank": {
+      "type": "uri",
+      "value": "http://wikiba.se/ontology#DeprecatedRank"
+     }
+    },
+    {
+     "item": {
+      "type": "uri",
+      "value": "http://www.wikidata.org/entity/Q513"
+     },
+     "amount": {
+      "datatype": "http://www.w3.org/2001/XMLSchema#decimal",
+      "type": "literal",
+      "value": "8848"
+     },
+     "unit": {
+      "type": "uri",
+      "value": "http://www.wikidata.org/entity/Q11573"
+     },
+     "sitelinks": {
+      "datatype": "http://www.w3.org/2001/XMLSchema#integer",
+      "type": "literal",
+      "value": "237"
+     },
+     "itemLabel": {
+      "xml:lang": "en",
+      "type": "literal",
+      "value": "Mount Everest"
+     },
+     "rank": {
+      "type": "uri",
+      "value": "http://wikiba.se/ontology#NormalRank"
+     }
+    },
+    {
+     "item": {
+      "type": "uri",
+      "value": "http://www.wikidata.org/entity/Q513"
+     },
+     "amount": {
+      "datatype": "http://www.w3.org/2001/XMLSchema#decimal",
+      "type": "literal",
+      "value": "8844.43"
+     },
+     "unit": {
+      "type": "uri",
+      "value": "http://www.wikidata.org/entity/Q11573"
+     },
+     "sitelinks": {
+      "datatype": "http://www.w3.org/2001/XMLSchema#integer",
+      "type": "literal",
+      "value": "237"
+     },
+     "itemLabel": {
+      "xml:lang": "en",
+      "type": "literal",
+      "value": "Mount Everest"
+     },
+     "rank": {
+      "type": "uri",
+      "value": "http://wikiba.se/ontology#NormalRank"
+     }
+    },
+    {
+     "item": {
+      "type": "uri",
+      "value": "http://www.wikidata.org/entity/Q513"
+     },
+     "amount": {
+      "datatype": "http://www.w3.org/2001/XMLSchema#decimal",
+      "type": "literal",
+      "value": "8848.86"
+     },
+     "unit": {
+      "type": "uri",
+      "value": "http://www.wikidata.org/entity/Q11573"
+     },
+     "sitelinks": {
+      "datatype": "http://www.w3.org/2001/XMLSchema#integer",
+      "type": "literal",
+      "value": "237"
+     },
+     "itemLabel": {
+      "xml:lang": "en",
+      "type": "literal",
+      "value": "Mount Everest"
+     },
+     "rank": {
+      "type": "uri",
+      "value": "http://wikiba.se/ontology#PreferredRank"
+     }
+    },
+    {
+     "item": {
+      "type": "uri",
+      "value": "http://www.wikidata.org/entity/Q4675"
+     },
+     "amount": {
+      "datatype": "http://www.w3.org/2001/XMLSchema#decimal",
+      "type": "literal",
+      "value": "2549"
+     },
+     "unit": {
+      "type": "uri",
+      "value": "http://www.wikidata.org/entity/Q11573"
+     },
+     "sitelinks": {
+      "datatype": "http://www.w3.org/2001/XMLSchema#integer",
+      "type": "literal",
+      "value": "82"
+     },
+     "itemLabel": {
+      "type": "literal",
+      "value": "Q4675"
+     },
+     "rank": {
+      "type": "uri",
+      "value": "http://wikiba.se/ontology#NormalRank"
+     }
+    }
+   ]
+  }
+ },
+ "building_height": {
+  "head": {
+   "vars": [
+    "item",
+    "itemLabel",
+    "sitelinks",
+    "amount",
+    "unit",
+    "rank"
+   ]
+  },
+  "results": {
+   "bindings": [
+    {
+     "item": {
+      "type": "uri",
+      "value": "http://www.wikidata.org/entity/Q521935"
+     },
+     "amount": {
+      "datatype": "http://www.w3.org/2001/XMLSchema#decimal",
+      "type": "literal",
+      "value": "138"
+     },
+     "unit": {
+      "type": "uri",
+      "value": "http://www.wikidata.org/entity/Q1992056"
+     },
+     "sitelinks": {
+      "datatype": "http://www.w3.org/2001/XMLSchema#integer",
+      "type": "literal",
+      "value": "32"
+     },
+     "itemLabel": {
+      "xml:lang": "en",
+      "type": "literal",
+      "value": "Seven Sisters"
+     },
+     "rank": {
+      "type": "uri",
+      "value": "http://wikiba.se/ontology#NormalRank"
+     }
+    },
+    {
+     "item": {
+      "type": "uri",
+      "value": "http://www.wikidata.org/entity/Q521935"
+     },
+     "amount": {
+      "datatype": "http://www.w3.org/2001/XMLSchema#decimal",
+      "type": "literal",
+      "value": "176"
+     },
+     "unit": {
+      "type": "uri",
+      "value": "http://www.wikidata.org/entity/Q2022067"
+     },
+     "sitelinks": {
+      "datatype": "http://www.w3.org/2001/XMLSchema#integer",
+      "type": "literal",
+      "value": "32"
+     },
+     "itemLabel": {
+      "xml:lang": "en",
+      "type": "literal",
+      "value": "Seven Sisters"
+     },
+     "rank": {
+      "type": "uri",
+      "value": "http://wikiba.se/ontology#NormalRank"
+     }
+    },
+    {
+     "item": {
+      "type": "uri",
+      "value": "http://www.wikidata.org/entity/Q521935"
+     },
+     "amount": {
+      "datatype": "http://www.w3.org/2001/XMLSchema#decimal",
+      "type": "literal",
+      "value": "136"
+     },
+     "unit": {
+      "type": "uri",
+      "value": "http://www.wikidata.org/entity/Q2269257"
+     },
+     "sitelinks": {
+      "datatype": "http://www.w3.org/2001/XMLSchema#integer",
+      "type": "literal",
+      "value": "32"
+     },
+     "itemLabel": {
+      "xml:lang": "en",
+      "type": "literal",
+      "value": "Seven Sisters"
+     },
+     "rank": {
+      "type": "uri",
+      "value": "http://wikiba.se/ontology#NormalRank"
+     }
+    },
+    {
+     "item": {
+      "type": "uri",
+      "value": "http://www.wikidata.org/entity/Q521935"
+     },
+     "amount": {
+      "datatype": "http://www.w3.org/2001/XMLSchema#decimal",
+      "type": "literal",
+      "value": "240"
+     },
+     "unit": {
+      "type": "uri",
+      "value": "http://www.wikidata.org/entity/Q2387534"
+     },
+     "sitelinks": {
+      "datatype": "http://www.w3.org/2001/XMLSchema#integer",
+      "type": "literal",
+      "value": "32"
+     },
+     "itemLabel": {
+      "xml:lang": "en",
+      "type": "literal",
+      "value": "Seven Sisters"
+     },
+     "rank": {
+      "type": "uri",
+      "value": "http://wikiba.se/ontology#NormalRank"
+     }
+    },
+    {
+     "item": {
+      "type": "uri",
+      "value": "http://www.wikidata.org/entity/Q521935"
+     },
+     "amount": {
+      "datatype": "http://www.w3.org/2001/XMLSchema#decimal",
+      "type": "literal",
+      "value": "156"
+     },
+     "unit": {
+      "type": "uri",
+      "value": "http://www.wikidata.org/entity/Q2388422"
+     },
+     "sitelinks": {
+      "datatype": "http://www.w3.org/2001/XMLSchema#integer",
+      "type": "literal",
+      "value": "32"
+     },
+     "itemLabel": {
+      "xml:lang": "en",
+      "type": "literal",
+      "value": "Seven Sisters"
+     },
+     "rank": {
+      "type": "uri",
+      "value": "http://wikiba.se/ontology#NormalRank"
+     }
+    },
+    {
+     "item": {
+      "type": "uri",
+      "value": "http://www.wikidata.org/entity/Q521935"
+     },
+     "amount": {
+      "datatype": "http://www.w3.org/2001/XMLSchema#decimal",
+      "type": "literal",
+      "value": "206"
+     },
+     "unit": {
+      "type": "uri",
+      "value": "http://www.wikidata.org/entity/Q2570624"
+     },
+     "sitelinks": {
+      "datatype": "http://www.w3.org/2001/XMLSchema#integer",
+      "type": "literal",
+      "value": "32"
+     },
+     "itemLabel": {
+      "xml:lang": "en",
+      "type": "literal",
+      "value": "Seven Sisters"
+     },
+     "rank": {
+      "type": "uri",
+      "value": "http://wikiba.se/ontology#NormalRank"
+     }
+    },
+    {
+     "item": {
+      "type": "uri",
+      "value": "http://www.wikidata.org/entity/Q521935"
+     },
+     "amount": {
+      "datatype": "http://www.w3.org/2001/XMLSchema#decimal",
+      "type": "literal",
+      "value": "172"
+     },
+     "unit": {
+      "type": "uri",
+      "value": "http://www.wikidata.org/entity/Q3954120"
+     },
+     "sitelinks": {
+      "datatype": "http://www.w3.org/2001/XMLSchema#integer",
+      "type": "literal",
+      "value": "32"
+     },
+     "itemLabel": {
+      "xml:lang": "en",
+      "type": "literal",
+      "value": "Seven Sisters"
+     },
+     "rank": {
+      "type": "uri",
+      "value": "http://wikiba.se/ontology#NormalRank"
+     }
+    },
+    {
+     "item": {
+      "type": "uri",
+      "value": "http://www.wikidata.org/entity/Q12495"
+     },
+     "amount": {
+      "datatype": "http://www.w3.org/2001/XMLSchema#decimal",
+      "type": "literal",
+      "value": "828"
+     },
+     "unit": {
+      "type": "uri",
+      "value": "http://www.wikidata.org/entity/Q11573"
+     },
+     "sitelinks": {
+      "datatype": "http://www.w3.org/2001/XMLSchema#integer",
+      "type": "literal",
+      "value": "140"
+     },
+     "itemLabel": {
+      "xml:lang": "en",
+      "type": "literal",
+      "value": "Burj Khalifa"
+     },
+     "rank": {
+      "type": "uri",
+      "value": "http://wikiba.se/ontology#PreferredRank"
+     }
+    },
+    {
+     "item": {
+      "type": "uri",
+      "value": "http://www.wikidata.org/entity/Q12495"
+     },
+     "amount": {
+      "datatype": "http://www.w3.org/2001/XMLSchema#decimal",
+      "type": "literal",
+      "value": "584.5"
+     },
+     "unit": {
+      "type": "uri",
+      "value": "http://www.wikidata.org/entity/Q11573"
+     },
+     "sitelinks": {
+      "datatype": "http://www.w3.org/2001/XMLSchema#integer",
+      "type": "literal",
+      "value": "140"
+     },
+     "itemLabel": {
+      "xml:lang": "en",
+      "type": "literal",
+      "value": "Burj Khalifa"
+     },
+     "rank": {
+      "type": "uri",
+      "value": "http://wikiba.se/ontology#NormalRank"
+     }
+    },
+    {
+     "item": {
+      "type": "uri",
+      "value": "http://www.wikidata.org/entity/Q12495"
+     },
+     "amount": {
+      "datatype": "http://www.w3.org/2001/XMLSchema#decimal",
+      "type": "literal",
+      "value": "829.8"
+     },
+     "unit": {
+      "type": "uri",
+      "value": "http://www.wikidata.org/entity/Q11573"
+     },
+     "sitelinks": {
+      "datatype": "http://www.w3.org/2001/XMLSchema#integer",
+      "type": "literal",
+      "value": "140"
+     },
+     "itemLabel": {
+      "xml:lang": "en",
+      "type": "literal",
+      "value": "Burj Khalifa"
+     },
+     "rank": {
+      "type": "uri",
+      "value": "http://wikiba.se/ontology#NormalRank"
+     }
+    }
+   ]
+  }
+ },
+ "first_ascent": {
+  "head": {
+   "vars": [
+    "item",
+    "itemLabel",
+    "sitelinks",
+    "time",
+    "precision",
+    "rank"
+   ]
+  },
+  "results": {
+   "bindings": [
+    {
+     "item": {
+      "type": "uri",
+      "value": "http://www.wikidata.org/entity/Q513"
+     },
+     "time": {
+      "datatype": "http://www.w3.org/2001/XMLSchema#dateTime",
+      "type": "literal",
+      "value": "1953-05-29T00:00:00Z"
+     },
+     "precision": {
+      "datatype": "http://www.w3.org/2001/XMLSchema#integer",
+      "type": "literal",
+      "value": "11"
+     },
+     "sitelinks": {
+      "datatype": "http://www.w3.org/2001/XMLSchema#integer",
+      "type": "literal",
+      "value": "237"
+     },
+     "itemLabel": {
+      "xml:lang": "en",
+      "type": "literal",
+      "value": "Mount Everest"
+     },
+     "rank": {
+      "type": "uri",
+      "value": "http://wikiba.se/ontology#NormalRank"
+     }
+    }
+   ]
+  }
+ },
+ "solar_system_size": {
+  "head": {
+   "vars": [
+    "item",
+    "itemLabel",
+    "sitelinks",
+    "amount",
+    "unit",
+    "rank",
+    "parentLabel"
+   ]
+  },
+  "results": {
+   "bindings": [
+    {
+     "item": {
+      "type": "uri",
+      "value": "http://www.wikidata.org/entity/Q2"
+     },
+     "amount": {
+      "datatype": "http://www.w3.org/2001/XMLSchema#decimal",
+      "type": "literal",
+      "value": "12742"
+     },
+     "unit": {
+      "type": "uri",
+      "value": "http://www.wikidata.org/entity/Q828224"
+     },
+     "sitelinks": {
+      "datatype": "http://www.w3.org/2001/XMLSchema#integer",
+      "type": "literal",
+      "value": "368"
+     },
+     "itemLabel": {
+      "xml:lang": "en",
+      "type": "literal",
+      "value": "Earth"
+     },
+     "rank": {
+      "type": "uri",
+      "value": "http://wikiba.se/ontology#NormalRank"
+     }
+    },
+    {
+     "item": {
+      "type": "uri",
+      "value": "http://www.wikidata.org/entity/Q405"
+     },
+     "amount": {
+      "datatype": "http://www.w3.org/2001/XMLSchema#decimal",
+      "type": "literal",
+      "value": "3476.2"
+     },
+     "unit": {
+      "type": "uri",
+      "value": "http://www.wikidata.org/entity/Q828224"
+     },
+     "sitelinks": {
+      "datatype": "http://www.w3.org/2001/XMLSchema#integer",
+      "type": "literal",
+      "value": "358"
+     },
+     "itemLabel": {
+      "xml:lang": "en",
+      "type": "literal",
+      "value": "Moon"
+     },
+     "rank": {
+      "type": "uri",
+      "value": "http://wikiba.se/ontology#NormalRank"
+     },
+     "parentLabel": {
+      "xml:lang": "en",
+      "type": "literal",
+      "value": "Earth"
+     }
+    }
+   ]
+  }
+ },
+ "moon_distance": {
+  "head": {
+   "vars": [
+    "item",
+    "itemLabel",
+    "sitelinks",
+    "amount",
+    "unit",
+    "rank",
+    "parentLabel"
+   ]
+  },
+  "results": {
+   "bindings": [
+    {
+     "item": {
+      "type": "uri",
+      "value": "http://www.wikidata.org/entity/Q405"
+     },
+     "amount": {
+      "datatype": "http://www.w3.org/2001/XMLSchema#decimal",
+      "type": "literal",
+      "value": "384400"
+     },
+     "unit": {
+      "type": "uri",
+      "value": "http://www.wikidata.org/entity/Q828224"
+     },
+     "sitelinks": {
+      "datatype": "http://www.w3.org/2001/XMLSchema#integer",
+      "type": "literal",
+      "value": "358"
+     },
+     "itemLabel": {
+      "xml:lang": "en",
+      "type": "literal",
+      "value": "Moon"
+     },
+     "parentLabel": {
+      "xml:lang": "en",
+      "type": "literal",
+      "value": "Earth"
+     },
+     "rank": {
+      "type": "uri",
+      "value": "http://wikiba.se/ontology#NormalRank"
+     }
+    },
+    {
+     "item": {
+      "type": "uri",
+      "value": "http://www.wikidata.org/entity/Q2565"
+     },
+     "amount": {
+      "datatype": "http://www.w3.org/2001/XMLSchema#decimal",
+      "type": "literal",
+      "value": "1221870"
+     },
+     "unit": {
+      "type": "uri",
+      "value": "http://www.wikidata.org/entity/Q828224"
+     },
+     "sitelinks": {
+      "datatype": "http://www.w3.org/2001/XMLSchema#integer",
+      "type": "literal",
+      "value": "121"
+     },
+     "itemLabel": {
+      "xml:lang": "en",
+      "type": "literal",
+      "value": "Titan"
+     },
+     "parentLabel": {
+      "xml:lang": "en",
+      "type": "literal",
+      "value": "Saturn"
+     },
+     "rank": {
+      "type": "uri",
+      "value": "http://wikiba.se/ontology#NormalRank"
+     }
+    }
+   ]
+  }
+ }
+}

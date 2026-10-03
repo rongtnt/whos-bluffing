@@ -2,12 +2,13 @@
 // class aggregates. HTTP behaviour is covered by test/smoke.sh.
 import { test } from 'node:test';
 import assert from 'node:assert/strict';
-import { readFileSync } from 'node:fs';
+import { readFileSync, readdirSync } from 'node:fs';
 import { validateBank } from '../scripts/sync-items.js';
 import { buildSession, pickBalanced } from '../public/test.js';
 import { validateSubmit, DEMOGRAPHICS } from '../functions/_util.js';
 import { wrap } from '../public/share.js';
 import { html } from '../public/ui.js';
+import { fmtValue, fmtNumber, noteKey, personalStats, hitsChart } from '../public/daily.js';
 import { classAggregate, toCsv } from '../functions/api/class/d/[secret].js';
 import { overconfBin, intHitBin, histPercentile, percentiles, aggregateWrites, MIN_PERCENTILE_N } from '../functions/_aggregates.js';
 
@@ -16,7 +17,6 @@ const bank = read('../../items/items.json');
 const items = bank.items;
 const ITEMS = new Map(items.map((i) => [i.id, i]));
 const en = read('../public/i18n/en.json');
-const zh = read('../public/i18n/zh.json');
 
 // Deterministic PRNG so failures reproduce.
 function seeded(seed) {
@@ -96,9 +96,10 @@ function validBody() {
 
 test('validateSubmit accepts a complete session and rejects each kind of bad input', () => {
   assert.equal(validateSubmit(validBody(), ITEMS), null);
-  assert.equal(validateSubmit({ ...validBody(), class_code: 'ABC234', first_session_id: crypto.randomUUID(), demographics: { age: '18_24', region: 'europe' } }, ITEMS), null);
+  assert.equal(validateSubmit({ ...validBody(), class_code: 'ABC234', first_session_id: crypto.randomUUID(), anon_id: 'Ab3_-xYz012345678901_Q', demographics: { age: '18_24', region: 'europe' } }, ITEMS), null);
   const bad = (mutate) => { const b = validBody(); mutate(b); return validateSubmit(b, ITEMS); };
   assert.match(bad((b) => { b.lang = 'fr'; }), /lang/);
+  assert.match(bad((b) => { b.lang = 'zh'; }), /lang must be en/); // English only
   assert.match(bad((b) => { b.answers[0].conf = 55; }), /conf/);
   assert.match(bad((b) => { b.answers[0].choice = 2; }), /choice/);
   assert.match(bad((b) => { b.answers[12].low = 5; }), /range/);
@@ -109,6 +110,7 @@ test('validateSubmit accepts a complete session and rejects each kind of bad inp
   assert.match(bad((b) => { b.answers.pop(); }), /expected 2 attention/);
   assert.match(bad((b) => { b.class_code = 'abc'; }), /class_code/);
   assert.match(bad((b) => { b.first_session_id = 'nope'; }), /first_session_id/);
+  assert.match(bad((b) => { b.anon_id = 'x'.repeat(65); }), /anon_id/);
   assert.match(bad((b) => { b.demographics = { age: '99' }; }), /age/);
   assert.match(bad((b) => { b.demographics = { email: 'x' }; }), /unknown demographic/);
   assert.match(validateSubmit([], ITEMS), /object/);
@@ -116,29 +118,30 @@ test('validateSubmit accepts a complete session and rejects each kind of bad inp
   assert.equal(bad((b) => { b.answers[12].low = -1e9; b.answers[12].high = 1e12; }), null);
 });
 
-function keyPaths(o, prefix = '') {
-  return Object.entries(o).flatMap(([k, v]) => (typeof v === 'object' ? keyPaths(v, `${prefix}${k}.`) : [`${prefix}${k}`]));
-}
-const placeholders = (s) => (s.match(/\{\w+\}/g) ?? []).sort().join();
-const at = (o, path) => path.split('.').reduce((x, k) => x[k], o);
+const at = (o, path) => path.split('.').reduce((x, k) => x?.[k], o);
+const PUBLIC = new URL('../public/', import.meta.url);
 
-test('i18n: en and zh have the same keys and placeholders; demographic codes match the API', () => {
-  assert.deepEqual(keyPaths(zh).sort(), keyPaths(en).sort());
-  for (const p of keyPaths(en)) assert.equal(placeholders(at(zh, p)), placeholders(at(en, p)), p);
-  for (const [field, codes] of Object.entries(DEMOGRAPHICS)) {
-    assert.deepEqual(Object.keys(en.demo.options[field]), codes, `en ${field}`);
-    assert.deepEqual(Object.keys(zh.demo.options[field]), codes, `zh ${field}`);
-  }
+test('i18n: one English file; every t() key used in public/*.js exists; demographic codes match the API', () => {
+  assert.deepEqual(readdirSync(new URL('i18n/', PUBLIC)), ['en.json']);
+  const keys = readdirSync(PUBLIC).filter((f) => f.endsWith('.js'))
+    .flatMap((f) => [...readFileSync(new URL(f, PUBLIC), 'utf8').matchAll(/\bt\('([a-z_]+(?:\.[a-z0-9_]+)+)'/g)].map((m) => m[1]));
+  assert.ok(keys.length > 60, `found only ${keys.length} keys`);
+  for (const k of keys) assert.equal(typeof at(en, k), 'string', `missing string ${k}`);
+  for (const [field, codes] of Object.entries(DEMOGRAPHICS)) assert.deepEqual(Object.keys(en.demo.options[field]), codes, field);
+});
+
+test('English only: no Chinese characters in any shipped file', () => {
+  const CJK = /[\u2e80-\u9fff\u3000-\u303f\uf900-\ufaff\uff00-\uffef]/;
+  const files = readdirSync(PUBLIC, { recursive: true }).filter((f) => /\.(js|json|html|css|txt|xml)$/.test(f));
+  assert.ok(files.length > 10);
+  for (const f of files) assert.ok(!CJK.test(readFileSync(new URL(f, PUBLIC), 'utf8')), f);
 });
 
 test('i18n: consent and headline copy match the brief', () => {
   assert.equal(en.landing.consent, '5 minutes. Anonymous — no account, no tracking. Your answers go into a public research dataset. Close the page any time to stop.');
-  assert.equal(zh.landing.consent, '5 分钟。匿名，不用注册，不追踪。你的答案会进入一个公开的研究数据集。随时关掉页面即可退出。');
-  const fill = (s, v) => s.replace(/\{(\w+)\}/g, (_, k) => v[k]);
+  const fill = (str, v) => str.replace(/\{(\w+)\}/g, (_, k) => v[k]);
   assert.equal(fill(en.results.int_headline, { k: 4, n: 6 }), 'Your 90% ranges were right 4 of 6 times.');
-  assert.equal(fill(zh.results.int_headline, { k: 4, n: 6 }), '你给的 90% 范围，6 次里有 4 次包含真实答案。');
   assert.equal(fill(en.results.over_headline, { x: 12 }), 'You were 12 points more confident than you were right.');
-  assert.equal(fill(zh.results.over_headline, { x: 12 }), '你的信心比你的正确率高了 12 个百分点。');
 });
 
 test('html template escapes interpolated text but not nested templates', () => {
@@ -147,12 +150,11 @@ test('html template escapes interpolated text but not nested templates', () => {
   assert.equal(String(html`<ul>${['a', 'b'].map((x) => html`<li>${x}</li>`)}</ul>`), '<ul><li>a</li><li>b</li></ul>');
 });
 
-test('wrap: words for English, characters for Chinese, punctuation never starts a line', () => {
+test('wrap: greedy word wrap; long words and emoji grids stay whole', () => {
   const measure = (s) => [...s].length; // one unit per character
   assert.deepEqual(wrap('Your 90% ranges were right', 12, measure), ['Your 90%', 'ranges were', 'right']);
-  const zhLines = wrap('你给的 90% 范围，6 次里有', 7, measure);
-  assert.ok(zhLines.every((l) => !/^[，。]/.test(l)), zhLines.join('|'));
-  assert.equal(zhLines.join('').replace(/\s/g, ''), '你给的90%范围，6次里有');
+  assert.deepEqual(wrap('#12 🟩🟩🟥🟩🟩 4/5', 6, measure), ['#12', '🟩🟩🟥🟩🟩', '4/5']);
+  assert.deepEqual(wrap('  spaced   out  ', 40, measure), ['spaced out']);
   assert.deepEqual(wrap('', 10, measure), []);
 });
 
@@ -240,4 +242,34 @@ test('aggregate writes: four upserts for a passed session, none after a failed a
   assert.deepEqual(w[2].params, ['zh', 80, 2, 1, 'zh', 100, 1, 1]); // attention answers never enter the curve
   assert.deepEqual(w[3].params, ['CN']);
   assert.deepEqual(aggregateWrites(db, 'zh', 'CN', { ...s, passed_attention: false }), []);
+});
+
+test('daily UI: years without separators, units elsewhere; calibration note; 30-day stats from local plays', () => {
+  assert.equal(fmtValue(1969, 'year'), '1969');
+  assert.equal(fmtValue(8038, 'm'), '8,038 m');
+  assert.equal(fmtValue(-38.8, '°C'), '-38.8 °C');
+  assert.equal(fmtNumber(2748109, 'people'), '2,748,109');
+  assert.equal(noteKey({ hit: true, truth: 5, low: 1, high: 9 }), 'daily.note_hit');
+  assert.equal(noteKey({ hit: false, truth: 50, low: 1, high: 9 }), 'daily.note_above');
+  assert.equal(noteKey({ hit: false, truth: 0, low: 1, high: 9 }), 'daily.note_below');
+  const plays = {
+    '2026-09-20': { result: { hits: 5, n: 5 } }, // 31 days before: outside the window
+    '2026-09-21': { result: { hits: 2, n: 5 } },
+    '2026-10-10': { answers: {} }, // started, not finished
+    '2026-10-20': { result: { hits: 3, n: 4 } },
+  };
+  assert.deepEqual(personalStats(plays, '2026-10-20'), { plays: 2, hits: 5, n: 9, rate: 5 / 9 });
+  assert.deepEqual(personalStats({}, '2026-10-20'), { plays: 0, hits: 0, n: 0, rate: null });
+  const svg = String(hitsChart([1, 0, 2, 0, 5, 1], 4, 'Today'));
+  assert.equal((svg.match(/<rect /g) ?? []).length, 6);
+  assert.equal((svg.match(/class="bar mine"/g) ?? []).length, 1);
+  assert.match(svg, /aria-label="Today"/);
+});
+
+test('stats page definitions match PREREG word for word', () => {
+  const prereg = readFileSync(new URL('../../prereg/PREREG.md', import.meta.url), 'utf8').replace(/\*\*/g, '');
+  const mau = prereg.match(/- MAU: (.*)/)[1].replace('; stated wherever MAU is reported', '');
+  assert.equal(en.stats.mau_definition, `MAU: ${mau}`);
+  assert.ok(en.stats.mau_definition.includes('a person who plays on both counts twice'));
+  assert.equal(en.stats.communities_definition, prereg.match(/- (Communities: .*)/)[1]);
 });

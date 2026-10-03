@@ -1,0 +1,12 @@
+# Tiny cron Worker: Pages Functions cannot run on a schedule, so once a day this Worker asks the HowSure Pages app
+# to compute the KPIs for the day that just ended (POST /api/kpi/run?as_of=<yesterday>, header x-kpi-key).
+# Deploy (you run these): cd web/kpi-worker && npx wrangler secret put KPI_KEY && npx wrangler deploy
+name = "howsure-kpi"
+main = "src/index.js"
+compatibility_date = "2026-09-01"
+
+[vars]
+RUN_URL = "https://howsure.pages.dev/api/kpi/run" # replace with the deployed site's address
+
+[triggers]
+crons = ["10 0 * * *"] # 00:10 UTC every day

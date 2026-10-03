@@ -1,47 +1,40 @@
-// Entry point: loads strings and items, routes by path, renders the landing page.
+// Entry point: loads strings and items, routes by path. / = daily game, /test = full assessment.
 import { html, api } from './ui.js';
 import { startTest } from './test.js';
+import { renderDaily } from './daily.js';
 import { renderStats } from './stats.js';
 import { renderClassCreate, renderDashboard } from './class.js';
 
 const app = document.getElementById('app');
-const toggle = document.getElementById('lang-toggle');
 const foot = document.getElementById('foot');
 
-let lang = /^zh/i.test(navigator.language || '') ? 'zh' : 'en';
 let strings = {};
 let items = [];
 
 function t(key, vars = {}) {
-  const s = key.split('.').reduce((o, k) => o?.[k], strings[lang]);
+  const s = key.split('.').reduce((o, k) => o?.[k], strings);
   return typeof s === 'string' ? s.replace(/\{(\w+)\}/g, (m, k) => (k in vars ? vars[k] : m)) : key;
 }
 
-function setLang(next) {
-  lang = next;
-  document.documentElement.lang = lang === 'zh' ? 'zh-CN' : 'en';
-  document.title = t('meta.title');
-  toggle.textContent = t('meta.other_lang');
-}
+const NAV = [['/', 'nav.daily'], ['/test', 'nav.test'], ['/stats', 'nav.stats'], ['/class', 'nav.teach']];
 
-// Header toggle and footer links are hidden while a test is running.
+// Footer links (all but the current page) are hidden while questions are on screen.
 function chrome(visible) {
-  toggle.hidden = !visible;
   foot.hidden = !visible;
-  foot.innerHTML = html`${location.pathname !== '/' ? html`<a href="/">${t('nav.home')}</a> · ` : ''}<a href="/stats">${t('nav.stats')}</a> · <a href="/class">${t('nav.teach')}</a>`;
+  const here = location.pathname.replace(/\/$/, '') || '/';
+  foot.innerHTML = html`${NAV.filter(([path]) => path !== here).map(([path, key], i) => html`${i ? ' · ' : ''}<a href="${path}">${t(key)}</a>`)}`;
 }
 
 const ctx = {
   app,
   t,
-  get lang() { return lang; },
-  get strings() { return strings[lang]; },
+  get strings() { return strings; },
   get items() { return items; },
-  setLang,
   chrome,
 };
 
-function renderLanding() {
+// /test: the 5-minute full assessment (?c=CODE pre-fills a class code).
+function renderTestLanding() {
   const code = (new URLSearchParams(location.search).get('c') || '').toUpperCase().slice(0, 6);
   app.innerHTML = html`
 <section>
@@ -75,24 +68,24 @@ function route() {
   chrome(true);
   const p = location.pathname;
   const dash = p.match(/^\/class\/d\/([A-Za-z0-9_-]{24})\/?$/);
+  if (/^\/test\/?$/.test(p)) return renderTestLanding();
   if (/^\/stats\/?$/.test(p)) return renderStats(ctx);
   if (/^\/class\/?$/.test(p)) return renderClassCreate(ctx);
   if (dash) return renderDashboard(ctx, dash[1]);
-  return renderLanding();
+  return renderDaily(ctx);
 }
 
 async function boot() {
   const load = (path) => fetch(path).then((r) => (r.ok ? r.json() : Promise.reject(new Error(path))));
   try {
-    const [en, zh, bank] = await Promise.all([load('/i18n/en.json'), load('/i18n/zh.json'), load('/items.json')]);
-    strings = { en, zh };
+    const [en, bank] = await Promise.all([load('/i18n/en.json'), load('/items.json')]);
+    strings = en;
     items = bank.items;
   } catch {
-    app.innerHTML = html`<p class="msg">Couldn't load the test. Check your connection and reload. 加载失败，请检查网络后刷新。</p>`;
+    app.innerHTML = html`<p class="msg">Couldn't load HowSure. Check your connection and reload.</p>`;
     return;
   }
-  setLang(lang);
-  toggle.onclick = () => { setLang(lang === 'en' ? 'zh' : 'en'); route(); };
+  document.title = t('meta.title');
   route();
 }
 

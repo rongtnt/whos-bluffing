@@ -1,5 +1,5 @@
 // The test: picks 20 items, shows them one by one, asks the optional demographics, submits.
-import { html, api, store } from './ui.js';
+import { html, api, store, anonId } from './ui.js';
 import { LEVELS } from './metrics.js';
 import { showResults } from './results.js';
 
@@ -54,7 +54,7 @@ const progress = (t, i, n) => html`<div class="progress"><progress value="${i}" 
 
 function showChoice(ctx, item, i, n, done) {
   const { app, t } = ctx;
-  const q = item[ctx.lang];
+  const q = item.en;
   const t0 = performance.now();
   app.innerHTML = html`${progress(t, i, n)}
 <h2 class="q" tabindex="-1">${q.prompt}</h2>
@@ -82,9 +82,10 @@ function showChoice(ctx, item, i, n, done) {
   }
 }
 
-function showRange(ctx, item, i, n, done) {
+// Range question (also used by the daily game, with its own button label). item: {id, accept, en: {prompt, unit}}.
+export function showRange(ctx, item, i, n, done, button = ctx.t('test.next')) {
   const { app, t } = ctx;
-  const q = item[ctx.lang];
+  const q = item.en;
   const t0 = performance.now();
   app.innerHTML = html`${progress(t, i, n)}
 <p class="sub">${t('test.range_intro')}</p>
@@ -93,7 +94,7 @@ function showRange(ctx, item, i, n, done) {
   <label>${t('test.low')}<span class="field"><input name="low" type="number" inputmode="decimal" step="any" autocomplete="off"><span class="unit">${q.unit}</span></span></label>
   <label>${t('test.high')}<span class="field"><input name="high" type="number" inputmode="decimal" step="any" autocomplete="off"><span class="unit">${q.unit}</span></span></label>
   <p class="msg" role="alert"></p>
-  <button class="primary block" type="submit">${t('test.next')}</button>
+  <button class="primary block" type="submit">${button}</button>
 </form>`;
   const form = app.querySelector('form');
   const say = (s) => { form.querySelector('.msg').textContent = s; };
@@ -136,7 +137,7 @@ async function submit(ctx, run) {
   const { app, t } = ctx;
   app.innerHTML = html`<p class="muted" role="status">${t('submit.sending')}</p>`;
   const first = store.get('hs_first', null);
-  const body = { lang: ctx.lang, answers: run.answers, website: run.website || '' };
+  const body = { lang: 'en', answers: run.answers, website: run.website || '', anon_id: anonId() };
   if (run.classCode) body.class_code = run.classCode;
   if (first) body.first_session_id = first;
   if (run.demographics) body.demographics = run.demographics;
@@ -144,7 +145,7 @@ async function submit(ctx, run) {
   if (r.ok) {
     if (!first) store.set('hs_first', r.data.session_id);
     store.set('hs_seen', [...new Set([...store.get('hs_seen', []), ...run.session.map((i) => i.id)])]);
-    showResults(ctx, r.data, run, () => startTest(ctx, { lang: ctx.lang === 'en' ? 'zh' : 'en', round: 2 }));
+    showResults(ctx, r.data, run);
     return;
   }
   const message = r.status === 400 ? t('submit.rejected', { error: r.data?.error ?? r.status }) : t('submit.offline');
@@ -152,9 +153,8 @@ async function submit(ctx, run) {
   app.querySelector('button').onclick = () => submit(ctx, run);
 }
 
-// opts: {classCode?, classLabel?, lang?, round?} — round 2 is the bilingual re-take.
+// opts: {classCode?, classLabel?}
 export function startTest(ctx, opts) {
-  if (opts.lang && opts.lang !== ctx.lang) ctx.setLang(opts.lang);
   ctx.chrome(false);
   window.scrollTo(0, 0);
   const session = buildSession(ctx.items, new Set(store.get('hs_seen', [])));
