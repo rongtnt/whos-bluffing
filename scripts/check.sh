@@ -22,6 +22,17 @@ say "anki: build"
 say "anki: no network code"
 if grep -rniE "\b(http|urllib|requests|socket)\b" "$root/anki/src" 2>/dev/null; then echo "network reference found"; fail=1; else echo "clean"; fi
 
+
+say "slack: tests"
+( cd "$root/slack" && npm test --silent 2>&1 | grep -E "^# (tests|pass|fail)" ) || fail=1
+( cd "$root/slack" && npm test --silent >/dev/null 2>&1 ) || { echo "slack tests failed"; fail=1; }
+
+say "slack: dry-run deploy"
+( cd "$root/slack" && npx wrangler deploy --dry-run --outdir dist >/dev/null 2>&1 && echo "dry-run ok" ) || { echo "dry-run failed"; fail=1; }
+
+say "slack: no token/body logging"
+if grep -rn "console.log(" "$root/slack/src" 2>/dev/null; then echo "console.log found"; fail=1; else echo "clean"; fi
+
 say "items: counts"
 python3 - "$root/items/items.json" <<'PY' || fail=1
 import json, sys, collections
