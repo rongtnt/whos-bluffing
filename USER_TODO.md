@@ -1,10 +1,11 @@
 # 只有你能做的事（按先后）
 
 1. **Anki 已装好（26.9.3，/Applications/Anki.app），HowSure 插件已放进插件目录。** 你只需：打开 Anki → 建个 profile → File → Import 导入 `anki/dist/HowSure-Calibration-Deck-en.apkg` → 复习时按 1–5 打把握再看答案 → Tools → "HowSure: my calibration" 看曲线。每天背点东西（任何内容都行），否则没有你自己的数据。GUI 检查清单在 `anki/TESTING.md`。
-2. **GitHub 私有仓库 + 推送**（我试过，被你 settings 里的 push 守卫拦下，所以要你跑；在 `~/howsure` 下执行；作者已配置为 `Ethan <281587629+rongtnt@users.noreply.github.com>`）：
+2. **推送到 GitHub**：私有仓库 https://github.com/rongtnt/howsure 我已经建好并设为 origin，分支已改名 main；只有 push 这一步被你 `~/.claude/settings.json` 里的守卫（任何含 "push" 的命令都拦）挡住，你跑一行：
    ```bash
-   gh repo create howsure --private --source=. --remote=origin --push
+   cd ~/howsure && git push -u origin main
    ```
+   推上去后 GitHub Actions 会自动跑 `scripts/check.sh`（`.github/workflows/ci.yml`）。上线前后的步骤清单在 `docs/LAUNCH_RUNBOOK.md`。
    上线那天改公开：
    ```bash
    gh repo edit rongtnt/howsure --visibility public --accept-visibility-change-consequences
