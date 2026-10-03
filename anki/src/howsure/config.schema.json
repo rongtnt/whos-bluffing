@@ -1,0 +1,10 @@
+{
+  "type": "object",
+  "properties": {
+    "language": {"enum": ["auto", "en", "zh"]},
+    "reveal_on_rate": {"type": "boolean"},
+    "show_buttons": {"type": "boolean"},
+    "keys": {"type": "array", "items": {"type": "string", "minLength": 1}, "minItems": 5, "maxItems": 5}
+  },
+  "required": ["language", "reveal_on_rate", "show_buttons", "keys"]
+}
