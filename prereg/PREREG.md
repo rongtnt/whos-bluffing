@@ -4,19 +4,19 @@ Status: draft. The final version is committed **before** the public launch of th
 
 ## Study A — Web test (cross-sectional, with a within-subject bilingual arm)
 
-**Design.** Free 5-minute web test in English (en) and Chinese (zh). Each session: 12 two-alternative general-knowledge items with a confidence rating (50/60/70/80/90/100%), 6 numeric items answered with a range the participant is 90% sure contains the truth, 2 attention-check items. Items are drawn at random from a bank of 40 + 20 + 2 per language; en and zh items ask the same facts. Optional demographics (age band, education, native language, region). Country at ISO-country level from the request, never IP. Participants who report being bilingual may take a second set in the other language; the second session is linked to the first.
+**Design.** English-only (the Chinese arm was removed on 2026-10-03 before launch; see CHANGELOG). Two formats: the full 5-minute assessment, and a daily game of 5 interval items (same items for everyone each UTC day) with immediate feedback and a shareable result. Each session: 12 two-alternative general-knowledge items with a confidence rating (50/60/70/80/90/100%), 6 numeric items answered with a range the participant is 90% sure contains the truth, 2 attention-check items. Full-assessment items are drawn at random from the hand-checked bank (40 + 20 + 2). Daily items come from a generated pool (Wikidata and official sources; every item carries a source link and sanity bounds); the maintainer reviews the next day's five items before they air. Optional demographics (age band, education, native language, region). Country at ISO-country level from the request, never IP. Players are identified only by an anonymous local id (web) or a salted hash of workspace and member ids (Slack).
 
 **Measures.** Overconfidence = mean confidence − accuracy. Brier score. Calibration bins per confidence level. Interval hit rate = share of ranges containing the truth (inclusive); interval overconfidence = 0.90 − hit rate. AUROC (exploratory). Definitions and test vectors: `analysis/test_vectors.json`.
 
 **Hypotheses.**
 - H1 (replication). (a) Overconfidence > 0 in both languages (one-sided). (b) Interval hit rate < 0.90 in both languages (one-sided). (c) Hard–easy effect: across items, item accuracy and item overconfidence are negatively correlated (Spearman, one-sided).
-- H2 (test-language difference). Participant-level overconfidence differs between zh-test and en-test sessions (two-sided; the literature is mixed, no direction predicted). Analysis: regression of overconfidence on test language with available covariates (age band, education, region). Run first with all items, then excluding DIF-flagged items (below). Both results reported.
-- H3 (foreign-language effect, within-subject). Among participants who complete both languages, overconfidence is lower in the self-reported non-native language than in the native language. Paired difference with bootstrap 95% CI; smallest effect size of interest = 2 percentage points; the order of languages is self-selected (participants choose their first language), so order is entered as a covariate and the effect is also reported separately for the native-first and non-native-first subgroups. A null is reported as a null.
+- H2 (format and difficulty). Overconfidence is larger for interval items than for two-alternative items (format effect; two-sided), and item-level overconfidence increases with item difficulty estimated by a 1-PL IRT model on the large daily-game samples.
+- H3 (practice effect, within-person; daily game). Among players with ≥ 7 completed daily plays, the interval hit rate rises and interval width (log ratio of high/low) falls across plays 1–14. Analysis: mixed-effects regression of hit (logistic) and log-width (linear) on play index with player random intercepts and slopes; items as crossed random effects. Survivorship check (pre-specified): compare play-1 hit rate and width of players who later reach ≥ 7 plays with those who stop before 3; if they differ, the practice effect is reported conditional on persistence and labelled as such. A null is reported as a null.
 - Exploratory (labelled as such in all reports): age band, education, region; relation between two-alternative and interval overconfidence (format effect); comparison with language models answering identical items.
 
-**Item fairness (before H2).** For each two-alternative item: logistic DIF, correct ~ total score + language + total score × language; flag if Zumbo ΔR² ≥ 0.035. For each interval item: flag if the median absolute log-ratio error differs between languages by more than 0.5 after matching on total score. Flagged items are listed in the report.
+**Item integrity.** Every item carries a source. Players can flag an item; three distinct flags retire it pending review, and the affected day's scores are recomputed without it. Retired items are listed in the report and excluded from H1–H3.
 
-**Timing and sample size.** First confirmatory analysis when passed sessions ≥ 5,000 in total and ≥ 2,000 per language; H3 when ≥ 500 linked bilingual pairs exist. Interim looks are for data quality only; no result-dependent stopping.
+**Timing and sample size.** First confirmatory analysis when passed full-assessment sessions ≥ 5,000; H3 when ≥ 1,000 players have ≥ 7 completed daily plays. Interim looks are for data quality only; no result-dependent stopping.
 
 **Exclusions (pre-specified).** Session fails either attention item; any item answered in < 1,500 ms; incomplete session; honeypot field filled; interval entries outside the item's sanity bounds (item-level exclusion); repeat sessions from the same browser identifier (keep the first). Exclusion flags are kept in the released data, not deleted.
 
@@ -34,6 +34,11 @@ Status: draft. The final version is committed **before** the public launch of th
 **Exclusions.** Users with < 200 rated reviews; ratings with question-side response time < 300 ms; decks with < 30 reviews for per-deck statistics.
 
 **Models.** Mixed-effects logistic regression: recall ~ rating + log(days since last review) + (1 + rating | user).
+
+## Metric definitions (for any public number)
+- **MAU**: anonymous ids with ≥ 1 completed play (full assessment or daily game) in the trailing 30 days, summed across web and Slack without cross-surface deduplication (a person who plays on both counts twice; stated wherever MAU is reported). **DAU** likewise for one UTC day.
+- **Communities**: Slack workspaces with ≥ 1 completed play in the trailing 30 days plus classrooms with ≥ 5 finished assessments.
+- Computed once a day by a scheduled job into a `kpi` table; the public stats page and any application text use only that table.
 
 ## Data release
 

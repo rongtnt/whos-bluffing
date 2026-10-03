@@ -18,8 +18,14 @@
    npx wrangler pages deploy public --project-name howsure
    ```
    然后在 Cloudflare 控制台给 `/api/*` 加一条免费的 rate-limit 规则（例如每 IP 每分钟 20 次）。这不经过我们的数据库，不存 IP。
-   域名：`*.pages.dev` 在中国大陆大概率打不开；中文渠道上线前买一个自定义域名（howsure.io 或 howsure.me 可注册；howsure.org / .app 已被注册）并在 Cloudflare 里绑定。
+   域名：买一个短域名用于分享文案和 Slack 应用（howsure.io 或 howsure.me 可注册；howsure.org / .app 已被注册），在 Cloudflare 里绑定。
    规模：免费层每天约 7,500 份完成卷（写入是瓶颈：每份约 8–13 行）；一天超过这个量就开 Workers Paid（5 美元/月）。读取已做成常数级，不会因为样本变大而崩。
 4. **校对题库**：`items/REVIEW.md` 逐条核对打勾（约 3–4 小时）。改错直接改 `items/items.json`，然后 `cd web && npm run sync-items`。这是你必须亲手做的部分：每道题的事实你要能当场说出来源。
 5. **AnkiWeb 账号**（上传插件那天）：https://ankiweb.net/shared/addons/ → 上传 `anki/dist/howsure.ankiaddon`。
-6. **发帖**（第 3 周）：文案草稿在 `posts/`，你改成自己的话再发。
+6. **Slack 应用注册**（只有你能做，约 15 分钟）：到 https://api.slack.com/apps → Create New App → From an app manifest → 粘贴 `slack/manifest.yaml` → 在 Basic Information 复制 Client ID / Client Secret / Signing Secret → 按 `slack/README.md` 用 `npx wrangler secret put` 写入 → 部署 → 用 "Add to Slack" 链接装进你自己的一个测试工作区。App Directory 上架是后话，不阻塞。
+7. **发布日历**（都是你发；草稿在 `posts/`，改成自己的话）：
+   - 10/20（周二）Show HN（`posts/show-hn.md`）+ r/InternetIsBeautiful + r/samplesize（`posts/reddit-samplesize.md`）+ LessWrong / EA Forum 短帖（`posts/lesswrong.md`）+ 给 Astral Codex Ten / forecasting newsletter 发一封邮件（`posts/newsletter-email.md`）
+   - 10/21 r/Professors 课堂帖（`posts/reddit-professors.md`）+ 发给你认识的 3 位老师（`posts/instructor-pitch.txt`）
+   - 11/18（周二）Product Hunt 上线 Slack 应用 + 每日一局（`posts/producthunt.md`）；同日 r/slack、r/startups
+   - 12 月：第一篇数据帖（结果本身可晒）；1/25 冻结数字
+   中文平台不做（英文单语）。
