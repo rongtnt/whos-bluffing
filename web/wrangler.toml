@@ -1,0 +1,9 @@
+name = "howsure"
+pages_build_output_dir = "public"
+compatibility_date = "2026-09-01"
+
+[[d1_databases]]
+binding = "DB"
+database_name = "howsure"
+# Placeholder for local dev. Before deploying, replace it with the id printed by `npx wrangler d1 create howsure`.
+database_id = "00000000-0000-0000-0000-000000000000"

@@ -8,6 +8,8 @@ HowSure is an independent, unaffiliated, non-commercial project. No accounts, no
 
 **What is never stored:** IP address, browser fingerprint, device identifiers, cookies for tracking, names, emails.
 
+**Repeat visits:** your browser keeps a random id (not linked to you) so that later sessions from the same browser can be tied to your first one. This is needed for two things: letting bilingual participants take the test in both languages, and keeping only one session per browser in the research analysis. Clearing site data removes it.
+
 **What it is used for:** the results page you see, aggregate statistics on the public stats page, and a public research dataset (see `prereg/PREREG.md`). Row-level data is anonymous and will be released openly.
 
 **Classroom mode:** an instructor who creates a class code sees only aggregates for that class, never individual rows, and sees nothing until at least 5 students have finished.
