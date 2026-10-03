@@ -1,9 +1,9 @@
-Title: Show HN: A 5-minute test of how overconfident you are, in English and Chinese
+Title: Show HN: HowSure – a daily 30-second game that measures how overconfident you are
 
-I built a free, no-account web test of overconfidence. 12 two-choice questions where you also say how sure you are (50–100%), and 6 questions where you give a range you're 90% sure contains the answer. You get your calibration curve, how your 90% ranges actually did, and how you compare with everyone else.
+Five questions a day, same for everyone. For each one you give a range you're 90% sure contains the answer ("How tall is Angel Falls, in metres?"). Then you see the truth, the source, and whether you were inside. Most people get 2 or 3 of 5 — at "90% sure".
 
-Two things make it more than a quiz. It runs in English and Chinese with the same items, so bilinguals can take it in both languages and I can test whether people are less overconfident in their second language. And the hypotheses were published before any data came in; the anonymous data and all code are open.
+Share grid like Wordle (🟩🟩🟥🟩🟩 4/5), streaks, and a personal calibration curve that builds over days. There's a Slack app that posts the day's game to a channel with a team leaderboard, and a classroom mode for instructors.
 
-Instructors: there's a classroom mode — create a code, students join, and the class's confidence curve builds live on the projector. Aggregates only, nothing shows until 5 students finish.
+Why I built it: I wanted a dataset nobody has — does getting daily feedback actually make people better calibrated? Hypotheses were published before launch; anonymous data and code are open. No accounts, no tracking, no ads. Cloudflare Pages + Workers + D1, vanilla JS; every question comes from Wikidata or an official source with the link attached, and players can flag bad ones.
 
-No tracking, no accounts, no ads. Cloudflare Pages + D1, vanilla JS. {URL}
+Prior art I learned from: Quantified Intuitions' Estimation Game and Calibration Training. {URL}

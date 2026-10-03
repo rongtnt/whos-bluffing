@@ -1,3 +1,3 @@
-Title: [Casual] How overconfident are you? 5-minute test with instant results (everyone, English or Chinese)
+Title: [Casual] How overconfident are you? A 30-second daily game with instant results (everyone)
 
-Pick an answer, say how sure you are, give a few 90% ranges. At the end you see your calibration curve and how often your 90% ranges actually contained the truth (for most people: not 90%). Anonymous, no account. Answers go into an open research dataset; the hypotheses are pre-registered and public. If you speak both English and Chinese, you can take it twice, once per language — that comparison is the part no one has data on yet. {URL}
+Five numbers a day; for each you give a range you're 90% sure about. At the end you see how many of your "90% ranges" actually contained the truth (for most people: 2–3 of 5), today's average, and a share grid. Anonymous, no account. The answers go into an open research dataset on whether daily feedback improves calibration; the hypotheses were posted before launch. {URL}
