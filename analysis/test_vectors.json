@@ -1,0 +1,288 @@
+{
+  "version": 1,
+  "conf_scale": "probability 0.5-1.0 (UI shows 50-100%)",
+  "nominal_interval": 0.9,
+  "auroc_ties": 0.5,
+  "interval_inclusive": true,
+  "cases": [
+    {
+      "name": "2afc_basic",
+      "input": {
+        "conf": [
+          0.5,
+          0.6,
+          0.7,
+          0.8,
+          0.9,
+          1.0
+        ],
+        "correct": [
+          1,
+          0,
+          1,
+          1,
+          0,
+          1
+        ]
+      },
+      "expected": {
+        "overconfidence": 0.083333,
+        "brier": 0.258333,
+        "auroc": 0.5,
+        "bins": [
+          {
+            "conf": 0.5,
+            "n": 1,
+            "acc": 1.0
+          },
+          {
+            "conf": 0.6,
+            "n": 1,
+            "acc": 0.0
+          },
+          {
+            "conf": 0.7,
+            "n": 1,
+            "acc": 1.0
+          },
+          {
+            "conf": 0.8,
+            "n": 1,
+            "acc": 1.0
+          },
+          {
+            "conf": 0.9,
+            "n": 1,
+            "acc": 0.0
+          },
+          {
+            "conf": 1.0,
+            "n": 1,
+            "acc": 1.0
+          }
+        ]
+      }
+    },
+    {
+      "name": "2afc_ties",
+      "input": {
+        "conf": [
+          0.9,
+          0.9,
+          0.9,
+          0.6
+        ],
+        "correct": [
+          1,
+          1,
+          0,
+          0
+        ]
+      },
+      "expected": {
+        "overconfidence": 0.325,
+        "brier": 0.2975,
+        "auroc": 0.75,
+        "bins": [
+          {
+            "conf": 0.5,
+            "n": 0,
+            "acc": null
+          },
+          {
+            "conf": 0.6,
+            "n": 1,
+            "acc": 0.0
+          },
+          {
+            "conf": 0.7,
+            "n": 0,
+            "acc": null
+          },
+          {
+            "conf": 0.8,
+            "n": 0,
+            "acc": null
+          },
+          {
+            "conf": 0.9,
+            "n": 3,
+            "acc": 0.666667
+          },
+          {
+            "conf": 1.0,
+            "n": 0,
+            "acc": null
+          }
+        ]
+      }
+    },
+    {
+      "name": "2afc_all_correct_auroc_null",
+      "input": {
+        "conf": [
+          0.7,
+          1.0
+        ],
+        "correct": [
+          1,
+          1
+        ]
+      },
+      "expected": {
+        "overconfidence": -0.15,
+        "brier": 0.045,
+        "auroc": null,
+        "bins": [
+          {
+            "conf": 0.5,
+            "n": 0,
+            "acc": null
+          },
+          {
+            "conf": 0.6,
+            "n": 0,
+            "acc": null
+          },
+          {
+            "conf": 0.7,
+            "n": 1,
+            "acc": 1.0
+          },
+          {
+            "conf": 0.8,
+            "n": 0,
+            "acc": null
+          },
+          {
+            "conf": 0.9,
+            "n": 0,
+            "acc": null
+          },
+          {
+            "conf": 1.0,
+            "n": 1,
+            "acc": 1.0
+          }
+        ]
+      }
+    },
+    {
+      "name": "2afc_perfect_calibration",
+      "input": {
+        "conf": [
+          0.5,
+          0.5,
+          1.0,
+          1.0
+        ],
+        "correct": [
+          1,
+          0,
+          1,
+          1
+        ]
+      },
+      "expected": {
+        "overconfidence": 0.0,
+        "brier": 0.125,
+        "auroc": 0.833333,
+        "bins": [
+          {
+            "conf": 0.5,
+            "n": 2,
+            "acc": 0.5
+          },
+          {
+            "conf": 0.6,
+            "n": 0,
+            "acc": null
+          },
+          {
+            "conf": 0.7,
+            "n": 0,
+            "acc": null
+          },
+          {
+            "conf": 0.8,
+            "n": 0,
+            "acc": null
+          },
+          {
+            "conf": 0.9,
+            "n": 0,
+            "acc": null
+          },
+          {
+            "conf": 1.0,
+            "n": 2,
+            "acc": 1.0
+          }
+        ]
+      }
+    },
+    {
+      "name": "interval_basic",
+      "input": {
+        "low": [
+          1,
+          0,
+          100,
+          -5,
+          3
+        ],
+        "high": [
+          10,
+          1,
+          200,
+          5,
+          3
+        ],
+        "truth": [
+          5,
+          2,
+          100,
+          6,
+          3
+        ]
+      },
+      "expected": {
+        "interval_hit_rate": 0.6,
+        "interval_overconfidence": 0.3
+      }
+    },
+    {
+      "name": "interval_all_hit",
+      "input": {
+        "low": [
+          0,
+          0
+        ],
+        "high": [
+          1,
+          1
+        ],
+        "truth": [
+          0,
+          1
+        ]
+      },
+      "expected": {
+        "interval_hit_rate": 1.0,
+        "interval_overconfidence": -0.1
+      }
+    },
+    {
+      "name": "empty_inputs",
+      "input": {
+        "conf": [],
+        "correct": []
+      },
+      "expected": {
+        "overconfidence": null,
+        "brier": null,
+        "auroc": null
+      }
+    }
+  ]
+}

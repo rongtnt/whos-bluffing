@@ -1,0 +1,28 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "title": "HowSure item bank",
+  "type": "object",
+  "required": ["version", "items"],
+  "properties": {
+    "version": {"type": "integer"},
+    "items": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "required": ["id", "type", "domain", "en", "zh", "answer", "source", "difficulty_hint"],
+        "properties": {
+          "id": {"type": "string", "pattern": "^[a-z][0-9]{3}$"},
+          "type": {"enum": ["2afc", "interval", "attention"]},
+          "domain": {"enum": ["physics", "biology", "geography", "history", "math", "everyday"]},
+          "en": {"type": "object", "required": ["prompt"], "properties": {"prompt": {"type": "string"}, "options": {"type": "array", "items": {"type": "string"}, "minItems": 2, "maxItems": 2}, "unit": {"type": "string"}}},
+          "zh": {"type": "object", "required": ["prompt"], "properties": {"prompt": {"type": "string"}, "options": {"type": "array", "items": {"type": "string"}, "minItems": 2, "maxItems": 2}, "unit": {"type": "string"}}},
+          "answer": {"description": "2afc/attention: index 0 or 1 of the correct option; interval: the true number", "type": "number"},
+          "accept": {"description": "interval only: [low, high] sanity bounds for user input", "type": "array", "items": {"type": "number"}, "minItems": 2, "maxItems": 2},
+          "source": {"type": "string"},
+          "difficulty_hint": {"enum": ["easy", "medium", "hard"]},
+          "notes": {"type": "string"}
+        }
+      }
+    }
+  }
+}

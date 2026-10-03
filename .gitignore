@@ -1,0 +1,11 @@
+node_modules/
+.wrangler/
+dist/
+.venv/
+__pycache__/
+*.pyc
+.DS_Store
+web/public/items.json
+web/functions/_items.json
+anki/src/howsure/user_files/
+.dev.vars
