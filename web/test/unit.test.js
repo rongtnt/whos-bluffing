@@ -9,6 +9,7 @@ import { validateSubmit, DEMOGRAPHICS } from '../functions/_util.js';
 import { wrap } from '../public/share.js';
 import { html } from '../public/ui.js';
 import { classAggregate, toCsv } from '../functions/api/class/d/[secret].js';
+import { overconfBin, intHitBin, histPercentile, percentiles, aggregateWrites, MIN_PERCENTILE_N } from '../functions/_aggregates.js';
 
 const read = (p) => JSON.parse(readFileSync(new URL(p, import.meta.url), 'utf8'));
 const bank = read('../../items/items.json');
@@ -185,4 +186,58 @@ test('class dashboard: only the count below 5 students, aggregates from 5, never
   assert.equal(toCsv({ n: 3 }), 'metric,bucket,n,value\nstudents,,3,\n');
   assert.equal(await classAggregate(fakeEnv(five, false), SECRET), null);
   assert.equal(await classAggregate(fakeEnv(five), 'short'), null);
+});
+
+test('aggregate bins: 0.05-wide overconfidence clamped to ±0.5, exact hit-rate bins', () => {
+  assert.equal(overconfBin(0.083333), 2); // 1.67 -> 2
+  assert.equal(overconfBin(0.025), 1); // halves round up
+  assert.equal(overconfBin(-0.025), 0); // -0.5 -> 0, never -0
+  assert.equal(overconfBin(-0.5), -10);
+  assert.equal(overconfBin(0.9), 10); // clamped
+  assert.equal(intHitBin(0), 0);
+  assert.equal(intHitBin(0.833333), 5);
+  assert.equal(intHitBin(1), 6);
+});
+
+test('histogram percentile: mid-rank = lower bins + half of your own bin', () => {
+  const rows = [{ bin: -2, n: 10 }, { bin: 0, n: 20 }, { bin: 3, n: 10 }];
+  assert.equal(histPercentile(rows, 0), 50); // (10 + 20/2) / 40
+  assert.equal(histPercentile(rows, -2), 13); // (0 + 10/2) / 40 = 12.5%
+  assert.equal(histPercentile(rows, 1), 75); // own bin empty: 30 / 40
+  assert.equal(histPercentile(rows, 10), 100);
+  assert.equal(histPercentile(rows, -10), 0);
+  assert.equal(histPercentile([{ bin: 1, n: 7 }], 1), 50); // everyone tied
+  assert.equal(histPercentile([], 0), null);
+});
+
+test('percentiles: null below 30 same-language sessions, histogram mid-rank from 30', () => {
+  const tied = (n) => [{ metric: 'overconf', bin: 2, n }, { metric: 'int_hit', bin: 3, n }];
+  const scores = { overconf: 0.083333, int_hit: 0.5 };
+  assert.equal(percentiles(tied(MIN_PERCENTILE_N - 1), scores), null);
+  assert.deepEqual(percentiles(tied(MIN_PERCENTILE_N), scores), { overconf: 50, int_hit: 50 });
+  const spread = [
+    { metric: 'overconf', bin: 0, n: 20 }, { metric: 'overconf', bin: 4, n: 20 },
+    { metric: 'int_hit', bin: 2, n: 30 }, { metric: 'int_hit', bin: 6, n: 10 },
+  ];
+  // overconf 0.1 -> bin 2: 20 below of 40; int_hit 1 -> bin 6: (30 + 10/2) / 40 = 87.5%
+  assert.deepEqual(percentiles(spread, { overconf: 0.1, int_hit: 1 }), { overconf: 50, int_hit: 88 });
+  assert.equal(percentiles([], scores), null);
+});
+
+test('aggregate writes: four upserts for a passed session, none after a failed attention check', () => {
+  const db = { prepare: (sql) => ({ bind: (...params) => ({ sql, params }) }) };
+  const s = {
+    passed_attention: true, n_2afc: 12, n_interval: 6, scores: { overconf: 0.25, int_hit: 0.5 },
+    answers: [
+      { type: '2afc', conf: 80, correct: 1 }, { type: '2afc', conf: 80, correct: 0 }, { type: '2afc', conf: 100, correct: 1 },
+      { type: 'attention', conf: 100, correct: 1 }, { type: 'interval', hit: 1 },
+    ],
+  };
+  const w = aggregateWrites(db, 'zh', 'CN', s);
+  assert.deepEqual(w.map((x) => x.sql.match(/INTO (\w+)/)[1]), ['agg_totals', 'agg_hist', 'agg_bins', 'agg_country']);
+  assert.deepEqual(w[0].params, ['zh', 18, 0.25, 0.5]);
+  assert.deepEqual(w[1].params, ['zh', 5, 'zh', 3]); // overconf bin 5, int_hit bin 3
+  assert.deepEqual(w[2].params, ['zh', 80, 2, 1, 'zh', 100, 1, 1]); // attention answers never enter the curve
+  assert.deepEqual(w[3].params, ['CN']);
+  assert.deepEqual(aggregateWrites(db, 'zh', 'CN', { ...s, passed_attention: false }), []);
 });

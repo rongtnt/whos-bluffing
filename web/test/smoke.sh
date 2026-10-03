@@ -54,10 +54,15 @@ submission() {
     const [lang, variant = "ok", classCode = ""] = process.argv.slice(1);
     const items = JSON.parse(require("fs").readFileSync("public/items.json", "utf8")).items;
     const of = (t, n) => items.filter((i) => i.type === t).slice(0, n);
+    const LEVELS = [50, 60, 70, 80, 90, 100];
+    // "mix:<m>" varies accuracy, confidence and range hits deterministically; the default is one fixed pattern.
+    const m = variant.startsWith("mix:") ? Number(variant.slice(4)) : 0;
+    const wrong = (j) => (m ? j % ((m % 4) + 2) === 0 : j % 3 === 0);
+    const hit = (j) => (m ? (j + m) % ((m % 3) + 2) !== 0 : j % 2 === 1);
     const answers = [
-      ...of("2afc", 12).map((i, k) => ({ id: i.id, choice: k % 3 ? i.answer : 1 - i.answer, conf: [50, 60, 70, 80, 90, 100][k % 6], rt_ms: 2500 })),
-      ...of("interval", 6).map((i, k) => ({ id: i.id, low: i.answer * (k % 2 ? 0.5 : 2), high: i.answer * 3, rt_ms: 4000 })),
-      ...of("attention", 2).map((i) => ({ id: i.id, choice: i.answer, conf: 100, rt_ms: 1800 })),
+      ...of("2afc", 12).map((i, j) => ({ id: i.id, choice: wrong(j) ? 1 - i.answer : i.answer, conf: LEVELS[m ? (j * m) % 6 : j % 6], rt_ms: 2500 })),
+      ...of("interval", 6).map((i, j) => ({ id: i.id, low: i.answer * (hit(j) ? 0.5 : 2), high: i.answer * 3, rt_ms: 4000 })),
+      ...of("attention", 2).map((i) => ({ id: i.id, choice: variant === "failatt" ? 1 - i.answer : i.answer, conf: 100, rt_ms: 1800 })),
     ];
     if (variant === "badconf") answers[0].conf = 55;
     if (variant === "badrange") Object.assign(answers[12], { low: 10, high: 1 });
@@ -158,5 +163,76 @@ req POST /api/submit "$(submission en)"
 expect "percentile appears from n >= 30" 200 'r.percentile && r.percentile.overconf === 50 && r.percentile.int_hit === 50'
 req POST /api/submit "$(submission zh)"
 expect "zh session gets no percentile yet (n < 30 in zh)" 200 'r.percentile === null'
+
+echo "== aggregates match a direct computation over the sessions table"
+for m in $(seq 1 12); do
+  req POST /api/submit "$(submission en "mix:$m")"; [ "$STATUS" = 200 ] || fail "varied en submit $m" "$BODY"
+done
+for m in 1 2 3; do
+  req POST /api/submit "$(submission zh "mix:$m")"; [ "$STATUS" = 200 ] || fail "varied zh submit $m" "$BODY"
+done
+for _ in 1 2; do
+  req POST /api/submit "$(submission en failatt)"; [ "$STATUS" = 200 ] || fail "attention-failing submit" "$BODY"
+done
+req POST /api/submit "$(submission en mix:5)"
+expect "probe session gets a percentile" 200 'r.percentile !== null'
+printf '%s' "$BODY" > "$STATE/probe.json"
+# /api/stats is cached for 60 s per URL; asking through another host name returns a fresh read of the aggregates.
+curl -s "http://localhost:$PORT/api/stats" > "$STATE/fresh.json"
+"${WRANGLER[@]}" d1 execute howsure --local --persist-to "$STATE" --json --command \
+  "SELECT id, lang, country, n_2afc, n_interval, overconf, int_hit, passed_attention, answers FROM sessions; EXPLAIN QUERY PLAN SELECT overconf, int_hit, answers FROM sessions WHERE class_code = 'ABC234'" \
+  > "$STATE/direct.json" 2>/dev/null || fail "d1 execute (direct read of the sessions table)"
+DIRECT=$(node -e '
+  const fs = require("fs");
+  const read = (f) => JSON.parse(fs.readFileSync(`${process.argv[1]}/${f}`, "utf8"));
+  const probe = read("probe.json");
+  const fresh = read("fresh.json");
+  const rows = read("direct.json")[0].results;
+  const r6 = (x) => Math.round(x * 1e6) / 1e6;
+  const mean = (xs) => xs.reduce((a, b) => a + b, 0) / xs.length;
+  const passed = rows.filter((r) => r.passed_attention === 1);
+  const expected = {
+    n_sessions: passed.length,
+    n_answers: passed.reduce((s, r) => s + r.n_2afc + r.n_interval, 0),
+    n_countries: new Set(passed.map((r) => r.country).filter((c) => !["ZZ", "XX", "T1"].includes(c))).size,
+    by_lang: {},
+  };
+  for (const lang of ["en", "zh"]) {
+    const L = passed.filter((r) => r.lang === lang);
+    const two = L.flatMap((r) => JSON.parse(r.answers)).filter((a) => a.type === "2afc");
+    expected.by_lang[lang] = {
+      n: L.length,
+      overconf_mean: L.length ? r6(mean(L.map((r) => r.overconf))) : null,
+      int_hit_mean: L.length ? r6(mean(L.map((r) => r.int_hit))) : null,
+      bins: [50, 60, 70, 80, 90, 100].map((c) => {
+        const g = two.filter((a) => a.conf === c);
+        return { conf: c / 100, n: g.length, acc: g.length ? r6(mean(g.map((a) => a.correct))) : null };
+      }),
+    };
+  }
+  const diffs = [];
+  const cmp = (got, want, path) => {
+    if (typeof want === "number" && typeof got === "number") { if (Math.abs(got - want) > 2e-6) diffs.push(`${path}: ${got} vs ${want}`); return; }
+    if (want && typeof want === "object") { for (const k of Object.keys(want)) cmp(got?.[k], want[k], `${path}.${k}`); return; }
+    if (got !== want) diffs.push(`${path}: ${got} vs ${want}`);
+  };
+  cmp(fresh, expected, "stats");
+  // Percentile: mid-rank on the same bins, over the other passed English sessions.
+  const ocBin = (x) => Math.max(-10, Math.min(10, Math.round(x * 20))) + 0;
+  const ihBin = (x) => Math.round(x * 6);
+  const others = passed.filter((r) => r.lang === "en" && r.id !== probe.session_id);
+  const midRank = (vals, mine) => Math.round((100 * (vals.filter((v) => v < mine).length + vals.filter((v) => v === mine).length / 2)) / vals.length);
+  cmp(probe.percentile, {
+    overconf: midRank(others.map((r) => ocBin(r.overconf)), ocBin(probe.scores.overconf)),
+    int_hit: midRank(others.map((r) => ihBin(r.int_hit)), ihBin(probe.scores.int_hit)),
+  }, "percentile");
+  if (rows.length - passed.length < 2) diffs.push("attention-failing sessions should be stored");
+  if (diffs.length) { console.log(diffs.join("; ")); process.exit(1); }
+  console.log(`${passed.length} passed, ${rows.length - passed.length} failed and excluded, probe percentile ${probe.percentile.overconf}/${probe.percentile.int_hit}`);
+' "$STATE") || fail "aggregates vs direct computation" "$DIRECT"
+pass "stats and percentile from the aggregates match the sessions table ($DIRECT)"
+node -e 'const r = JSON.parse(require("fs").readFileSync(process.argv[1], "utf8"))[1].results; process.exit(r.some((x) => /USING INDEX idx_sessions_class/.test(x.detail)) ? 0 : 1)' "$STATE/direct.json" \
+  || fail "class dashboard query should use idx_sessions_class"
+pass "class dashboard query uses idx_sessions_class (reads only that class)"
 
 echo "smoke: $PASSED checks passed, 0 failed"

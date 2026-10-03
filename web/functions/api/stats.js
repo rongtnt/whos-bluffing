@@ -2,36 +2,36 @@ import { LEVELS, round6 } from '../_metrics.js';
 import { json, safe } from '../_util.js';
 
 const CACHE_HEADERS = { 'cache-control': 'public, max-age=60' };
-const NOT_COUNTRIES = "('ZZ', 'XX', 'T1')"; // unknown or Tor, not countries
 
-const TOTALS_SQL = `SELECT COUNT(*) AS n_sessions, COALESCE(SUM(n_2afc + n_interval), 0) AS n_answers,
-  COUNT(DISTINCT CASE WHEN country NOT IN ${NOT_COUNTRIES} THEN country END) AS n_countries
-  FROM sessions WHERE passed_attention = 1`;
-const BY_LANG_SQL = `SELECT lang, COUNT(*) AS n, AVG(overconf) AS overconf_mean, AVG(int_hit) AS int_hit_mean
-  FROM sessions WHERE passed_attention = 1 GROUP BY lang`;
-const BINS_SQL = `SELECT s.lang AS lang, json_extract(a.value, '$.conf') AS conf, COUNT(*) AS n,
-  AVG(json_extract(a.value, '$.correct')) AS acc
-  FROM sessions s, json_each(s.answers) a
-  WHERE s.passed_attention = 1 AND json_extract(a.value, '$.type') = '2afc'
-  GROUP BY s.lang, conf`;
+// Reads only the aggregate tables (migrations/0002): at most 2 + 12 + one row per country.
+const TOTALS_SQL = 'SELECT lang, n_sessions, n_answers, sum_overconf, sum_int_hit FROM agg_totals';
+const BINS_SQL = 'SELECT lang, conf, n, correct FROM agg_bins';
+const COUNTRIES_SQL = "SELECT COUNT(*) AS n FROM agg_country WHERE country NOT IN ('ZZ', 'XX', 'T1')"; // unknown/Tor are not countries
 
 async function computeStats(db) {
-  const [totals, byLang, binRows] = await db.batch([db.prepare(TOTALS_SQL), db.prepare(BY_LANG_SQL), db.prepare(BINS_SQL)]);
+  const [totals, bins, countries] = await db.batch([db.prepare(TOTALS_SQL), db.prepare(BINS_SQL), db.prepare(COUNTRIES_SQL)]);
   const by_lang = {};
   for (const lang of ['en', 'zh']) {
-    const row = byLang.results.find((r) => r.lang === lang);
+    const t = totals.results.find((r) => r.lang === lang);
+    const n = t?.n_sessions ?? 0;
     by_lang[lang] = {
-      n: row?.n ?? 0,
-      overconf_mean: round6(row?.overconf_mean ?? null),
-      int_hit_mean: round6(row?.int_hit_mean ?? null),
+      n,
+      overconf_mean: n ? round6(t.sum_overconf / n) : null,
+      int_hit_mean: n ? round6(t.sum_int_hit / n) : null,
       bins: LEVELS.map((conf) => {
-        const b = binRows.results.find((r) => r.lang === lang && Math.abs(r.conf / 100 - conf) < 1e-9);
-        return { conf, n: b?.n ?? 0, acc: b ? round6(b.acc) : null };
+        const b = bins.results.find((r) => r.lang === lang && r.conf === Math.round(conf * 100));
+        return { conf, n: b?.n ?? 0, acc: b ? round6(b.correct / b.n) : null };
       }),
     };
   }
-  const t = totals.results[0];
-  return { n_sessions: t.n_sessions, n_answers: t.n_answers, n_countries: t.n_countries, by_lang, updated_at: new Date().toISOString() };
+  const sum = (key) => totals.results.reduce((s, r) => s + r[key], 0);
+  return {
+    n_sessions: sum('n_sessions'),
+    n_answers: sum('n_answers'),
+    n_countries: countries.results[0].n,
+    by_lang,
+    updated_at: new Date().toISOString(),
+  };
 }
 
 // Site-wide stats (passed sessions only), cached 60 s per data centre. Submit reuses it for the global counters.

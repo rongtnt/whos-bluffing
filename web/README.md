@@ -10,7 +10,7 @@ npm run migrate:local        # creates the local D1 tables
 npm run dev                  # copies items, then serves http://127.0.0.1:8788
 ```
 
-Tests: `npm test` (metrics against `analysis/test_vectors.json` + unit tests) and `bash test/smoke.sh` (fresh local D1, real `wrangler pages dev`, curls every endpoint).
+Tests: `npm test` (metrics against `analysis/test_vectors.json` + unit tests) and `bash test/smoke.sh` (fresh local D1, real `wrangler pages dev`, curls every endpoint, checks the running aggregates against a direct scan of the sessions table).
 
 ## Deploy (you run these; needs a free Cloudflare account)
 
@@ -23,6 +23,10 @@ npm run sync-items && npx wrangler pages deploy --project-name howsure
 ```
 
 `pages deploy` uploads `public/` as it is on disk, so always run `npm run sync-items` first (the item copies are git-ignored). The first deploy creates the Pages project; the D1 binding comes from `wrangler.toml`.
+
+## Quotas (D1 free tier: 5M rows read, 100K rows written per day)
+
+Every request now reads a bounded number of rows; nothing scans all sessions. A submit reads at most 28 histogram rows and runs one insert plus 4 upserts in a single transaction (`migrations/0002_aggregates.sql`): about 8–13 rows written per finished test (the session row and its 2 index entries, plus up to 10 aggregate rows), so the free tier's 100K writes a day cover roughly 7,500 finished tests a day; reads stop being the limit. `/api/stats` reads only the aggregate tables (a few hundred rows at most) and is cached for 60 s. A classroom dashboard scans only its own class's sessions through the `class_code` index, every 10 s while it is open.
 
 ## Editing questions
 
