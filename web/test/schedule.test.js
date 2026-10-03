@@ -120,7 +120,7 @@ test('pool and schedule validators catch broken entries', () => {
   const bad = (patch) => validatePool({ items: [{ ...good, ...patch }] }).join();
   assert.match(bad({ id: 'w1' }), /bad id/);
   assert.match(bad({ accept: [7000, 8000] }), /accept/);
-  assert.match(bad({ source: 'https://example.com' }), /source/);
+  assert.match(bad({ source: 'wikidata Q3392 (not a URL)' }), /source/);
   assert.match(bad({ en: { prompt: 'x' } }), /unit/);
   assert.match(validatePool({ items: [good, good] }).join(), /duplicate/);
   const ids = new Set(['w0001', 'w0002', 'w0003', 'w0004', 'w0005']);

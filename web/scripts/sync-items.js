@@ -69,7 +69,7 @@ export function validatePool(pool) {
     const [lo, hi] = Array.isArray(it.accept) ? it.accept : [];
     if (!Number.isFinite(it.answer)) e('answer must be a number');
     else if (!(lo <= it.answer && it.answer <= hi)) e('accept must be [low, high] around the answer');
-    if (!/^https:\/\/www\.wikidata\.org\/wiki\/Q\d+#P\d+$/.test(it.source ?? '')) e('source must be a Wikidata statement link');
+    if (!/^https:\/\/[^ ]+$/.test(it.source ?? '')) e('source must be an https URL (Wikidata statement link or an authoritative reference)');
   }
   return errs;
 }
