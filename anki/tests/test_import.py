@@ -5,36 +5,12 @@ from pathlib import Path
 from types import SimpleNamespace
 from unittest import mock
 
-import aqt
 import pytest
 from anki.buildinfo import version as anki_version
 from anki.collection import Collection
 from anki.scheduler.v3 import CardAnswer
-from aqt import gui_hooks
-from aqt.reviewer import Reviewer
 
-SRC = Path(__file__).resolve().parents[1] / "src" / "howsure"
-CONFIG = json.loads((SRC / "config.json").read_text(encoding="utf-8"))
-HOOKS = ("webview_will_set_content", "state_shortcuts_will_change", "reviewer_did_show_question",
-         "reviewer_did_show_answer", "webview_did_receive_js_message", "reviewer_did_answer_card")
-
-
-@pytest.fixture(scope="module")
-def pkg():
-    stub = mock.MagicMock()
-    stub.addonManager.getConfig.return_value = CONFIG
-    stub.addonManager.addonFromModule.return_value = "howsure"
-    stub.reviewer = mock.MagicMock(spec=Reviewer)
-    stub.reviewer.web = mock.MagicMock()
-    before = {h: getattr(gui_hooks, h).count() for h in HOOKS}
-    with mock.patch.object(aqt, "mw", stub):
-        import howsure
-        import howsure.hooks  # noqa: F401  (the brief's smoke target)
-    for h in HOOKS:
-        assert getattr(gui_hooks, h).count() == before[h] + 1, h
-    stub.form.menuTools.addAction.assert_called_once_with("HowSure: my calibration")
-    stub.addonManager.setWebExports.assert_called_once()
-    return howsure
+from conftest import CONFIG, SRC  # the `pkg` fixture (package imported with a stubbed aqt.mw) lives in conftest.py
 
 
 def test_import_registers_hooks_and_menu(pkg):

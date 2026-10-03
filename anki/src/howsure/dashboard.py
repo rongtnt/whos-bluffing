@@ -10,7 +10,7 @@ from aqt.qt import QDialog, QHBoxLayout, QPushButton, QVBoxLayout
 from aqt.utils import getSaveFile, openFolder, tooltip
 from aqt.webview import AnkiWebView
 
-from . import hooks, i18n, metrics, store
+from . import hooks, i18n, metrics, sharing, store
 
 W, H, PAD = 460, 220, 40  # chart size and inner margin, px
 TREND_DAYS = 30
@@ -161,6 +161,7 @@ def show() -> None:
     layout = QVBoxLayout(dialog)
     layout.addWidget(web)
     layout.addLayout(buttons)
+    layout.addWidget(sharing.status_row(lang))
     dialog.resize(600, 820)
     dialog.exec()
     web.cleanup()

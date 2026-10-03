@@ -2,5 +2,9 @@
   "language": "auto",
   "reveal_on_rate": true,
   "show_buttons": true,
-  "keys": ["1", "2", "3", "4", "5"]
+  "keys": ["1", "2", "3", "4", "5"],
+  "share_data": false,
+  "api_base": "https://howsure.me",
+  "consent_version": "",
+  "consent_at": ""
 }

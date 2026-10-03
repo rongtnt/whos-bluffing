@@ -21,7 +21,7 @@ from aqt.reviewer import Reviewer
 
 from . import i18n, store
 
-ADDON_VERSION = "0.1.0"
+ADDON_VERSION = "0.2.0"
 DB_PATH = os.path.join(os.path.dirname(__file__), "user_files", "howsure.sqlite")
 UNRATED = "unrated_answers"
 DAY_MS = 86_400_000

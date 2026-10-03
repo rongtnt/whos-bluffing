@@ -1,5 +1,27 @@
 # Builder notes
 
+## Anki v0.2 endpoint (2026-10-03) — opt-in sharing from the add-on
+
+Brief: `briefs/BRIEF_anki_v02.md`. New: `migrations/0004_anki.sql`, `functions/_anki.js`, `functions/api/anki/{submit,delete,stats}.js`, `test/anki.test.js`; additions to `test/smoke.sh`, `README.md`, this file.
+
+### Deviations from the brief
+1. **Four existing files touched, because the brief's `/stats` line cannot be added with new files only:** `functions/api/kpi/run.js` (stores and returns `anki_contributors_30d` after `runKpi`), `functions/api/kpi/index.js` (serves it next to the KPI row), `public/stats.js` (one line under the player counts) and `public/i18n/en.json` (its string, key `stats.anki`). `_kpi.js` is untouched, so `computeKpi`/`latestKpi` keep the shape `test/daily.test.js` compares exactly; the number is added by `storeAnkiKpi` and `latestKpiWithAnki` in `_anki.js`, into a new `kpi.anki_contributors_30d` column (`NOT NULL DEFAULT 0`, so `runKpi`'s insert still works).
+2. **`anki_agg` counts each live install, with all its rows, on the UTC day of its latest upload.** A submit moves the install from its previous day to today; a delete takes it off its day. Then `installs_30d` = sum of `installs` over the 30 days ending today and `rows_total` = sum of `rows`, both exact from `anki_agg` alone (per-upload-day counts could not give distinct installs over 30 days), and a delete decrements exactly using only the install's row. The same window gives `anki_contributors_30d` for the KPI's `as_of`. All of it is SQL inside the one batch, so concurrent submits cannot drift the counts.
+3. **Rows travel as one JSON parameter.** D1 allows 100 bound parameters per statement, so 2,000 rows × 18 columns cannot be bound one by one: the validated rows are re-serialized (known columns only) and inserted with `json_each`/`json_extract`. The request body is read by `readAnkiJson` (1.5 MB cap, checked from `Content-Length` before reading and again after; `_util.readJson` stops at 16 KB). A 2,000-row request is about 730 KB (smoke).
+4. **`accepted` is computed from the install's stored row count read before and after, inside the same batch** (the count of request rows not yet stored is added in SQL with one primary-key lookup per row), not from write metadata, which `test/d1.js` does not provide. `duplicates` = rows sent − accepted.
+5. **Validation beyond the brief:** every row key must be an `anki_rows` column (unknown keys → 400, so no free text can be stored); `card_hash`/`deck_hash`/`notetype_hash` must be 64 lowercase hex characters; `anki_version`/`addon_version`/`consent_version` are 1-32 characters of `[A-Za-z0-9._+-]`; `row_id` is a positive integer, unique within the request; `ts` is ISO 8601 with a time zone, or null; 1-2,000 rows. Only `row_id`, `jol` and `ease` are required. `install_id` is 32-64 characters of `[A-Za-z0-9_-]` (the add-on sends 64-char sha256 hex).
+6. **Delete keeps a tombstone:** `anki_installs` keeps only the id and `deleted_at` (first/last seen, row count and consent version are cleared) so later uploads get 410. Deleting an unknown id creates the tombstone too, and a second delete returns 0 without decrementing again. Every write in a submit is guarded by `deleted_at IS NULL`, so a refused submit writes nothing (smoke checks the tables).
+7. **`anki_rows` is `WITHOUT ROWID`** (one write per row instead of two: table plus primary-key index) and `jol`, `ease`, `row_id`, `install_id` and `anki_installs.rows` are `NOT NULL`. Columns otherwise as in the brief.
+8. **What the add-on sends:** PRIVACY.md's list, which has no review time, note type, review count or lapse count, so v0.2 leaves `ts`, `notetype_hash`, `reps` and `lapses` NULL (the server accepts them if a later consent text adds them). Details in `anki/NOTES.md`.
+
+### Known limits (Anki endpoint)
+- **The installation id works as a deletion key.** Anyone who knows it can delete that install's data, so the public research release must not contain raw `install_id`s (replace them with a fresh random id per install).
+- A KPI run for an earlier `as_of` misses installs that uploaded again after that day (each install sits on its latest upload day). The 00:10 UTC cron run for yesterday misses only installs that upload in those ten minutes.
+- `/api/anki/stats` reads one `anki_agg` row per day since launch (cached 60 s).
+- A delete of a very large install writes one row per rating; on the free tier, about 100,000 ratings would use a whole day's write quota and the call would fail with a 500 until it resets.
+- **No rate limiting in code, and a submit can write 2,000 rows** (about 200 times a daily-game request): about 50 requests with made-up install ids would use the free tier's 100,000 rows written per day, after which every D1 write (daily game, assessments) fails until 00:00 UTC. Before announcing sharing: a Cloudflare WAF rate-limiting rule on `/api/anki/*` and Workers Paid. The add-on itself sends 500 rows per request; lowering `MAX_ROWS` to 500 would cut the worst case by four, but the brief sets 2,000.
+- Verified on local workerd only (`npm test`, `smoke.sh`, and the add-on's real `upload.py` against `wrangler pages dev`); nothing deployed.
+
 ## v4 (2026-10-03) — daily game, English only, MAU plumbing
 
 ### Deviations from BRIEF_web_v4.md and docs/api-daily.md

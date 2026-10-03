@@ -8,17 +8,19 @@ English only. A free daily game (five 90%-range questions, the same for everyone
 |---|---|
 | `/` | Daily game: 5 questions, feedback after each, result with today's histogram, streak, 30-day hit rate, share text + card |
 | `/test` | Full assessment (`/test?c=CODE` joins a class) |
-| `/stats` | MAU / DAU / communities (from the daily KPI job, with the PREREG definitions), today's daily histogram, full-assessment curve |
+| `/stats` | MAU / DAU / communities (from the daily KPI job, with the PREREG definitions), Anki contributors as a separate line, today's daily histogram, full-assessment curve |
 | `/class`, `/class/d/<secret>` | Classroom mode: create a code; the teacher's live dashboard (aggregates only, from 5 students) |
 | `/tests/overconfidence-test`, `/tests/estimation-test`, `/tests/calibration-test` | Static explainer pages (`public/tests/*.html`), plus `sitemap.xml` and `robots.txt` |
 
 API (JSON): the daily game follows `docs/api-daily.md` exactly — `GET /api/daily`, `POST /api/daily/answer`, `POST /api/daily/complete`, `GET /api/daily/stats` (cached 60 s), `POST /api/flag`, `GET /api/kpi` — plus `POST /api/kpi/run` (needs the `x-kpi-key` header), `POST /api/submit`, `GET /api/stats`, `POST /api/class`, `GET /api/class/:code`, `GET /api/class/d/:secret[.csv]`.
 
+Anki add-on v0.2 (opt-in sharing; `migrations/0004_anki.sql`, `functions/_anki.js`): `POST /api/anki/submit` `{install_id, addon_version, consent_version, rows: [≤ 2,000]}` → `{accepted, duplicates, total_rows_for_install}` (idempotent on `install_id` + `row_id`; 410 once the install deleted its data), `POST /api/anki/delete` `{install_id}` → `{deleted_rows}`, `GET /api/anki/stats` → `{installs_30d, rows_total}` (cached 60 s). `GET /api/kpi` and the KPI run also return `anki_contributors_30d`, which is not part of MAU.
+
 ## Run locally (Node 22, Python 3.9+)
 
 ```bash
 cd web && npm install        # wrangler is the only (dev) dependency
-npm run migrate:local        # creates the local D1 tables (0001-0003)
+npm run migrate:local        # creates the local D1 tables (0001-0004)
 npm run dev                  # syncs items, pool and schedule, then serves http://127.0.0.1:8788
 ```
 
@@ -81,7 +83,7 @@ Keep the schedule filled: `npm run schedule` appends days up to 120 ahead and ne
 
 ## Quotas (D1 free tier: 5M rows read, 100K rows written per day)
 
-No request reads an unbounded number of rows: the daily game reads at most a day's 5 items, one player's play and the day's `daily_agg` rows (one per surface); `/api/daily/stats` is cached 60 s; only the KPI job scans tables, once a day. Writes are the limit: a completed daily play writes roughly 25 rows (5 answers and 5 item counters, the play, the player and the day's aggregate, each with its primary-key index), so the free tier covers about 4,000 daily plays a day, or about 7,500 full assessments (8-13 rows each). Upgrade to Workers Paid before a launch post that could exceed that.
+No request reads an unbounded number of rows: the daily game reads at most a day's 5 items, one player's play and the day's `daily_agg` rows (one per surface); `/api/daily/stats` is cached 60 s; only the KPI job scans tables, once a day. Writes are the limit: a completed daily play writes roughly 25 rows (5 answers and 5 item counters, the play, the player and the day's aggregate, each with its primary-key index), so the free tier covers about 4,000 daily plays a day, or about 7,500 full assessments (8-13 rows each). Upgrade to Workers Paid before a launch post that could exceed that. Anki uploads read about two rows and write about one row per rating (`anki_rows` is `WITHOUT ROWID`, so a 500-rating request writes about 500 rows), and a delete writes one row per deleted rating, so the free tier also caps Anki sharing at roughly 100,000 ratings a day.
 
 ## Manual checklist (after each deploy)
 

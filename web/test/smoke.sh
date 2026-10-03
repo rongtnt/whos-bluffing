@@ -376,4 +376,53 @@ CHECK=$(node -e '
 ' "$STATE/daily_db.json") || fail "daily tables" "$CHECK"
 pass "daily tables ($CHECK)"
 
+echo "== anki add-on sharing (v0.2): submit twice, stats, KPI, delete, 410"
+ANKI_ID=$(printf 'smoke-anki-install' | shasum -a 256 | cut -c1-64) # the add-on sends its salt hashed again: 64-char hex
+# anki_body INSTALL_ID [ROWS] [cardtext] -> a submit body with ROWS rows (row_id 1..ROWS) of whitelisted fields
+anki_body() {
+  node -e '
+    const [id, n = "3", extra = ""] = process.argv.slice(1);
+    const hex = (c) => c.repeat(64);
+    const rows = Array.from({ length: Number(n) }, (_, i) => ({
+      row_id: i + 1, card_hash: hex("1"), deck_hash: hex("2"), jol: (i % 5) + 1, ease: (i % 4) + 1, q_rt_ms: 1500,
+      a_rt_ms: 800, ivl_days: 12, days_since_last_review: 3.5, stability: 10.5, difficulty: 5.1, retrievability: 0.9,
+      anki_version: "26.09.3", addon_version: "0.2.0" }));
+    if (extra === "cardtext") rows[0].front = "What is the capital of France?";
+    process.stdout.write(JSON.stringify({ install_id: id, addon_version: "0.2.0", consent_version: "1", rows }));
+  ' "$@"
+}
+req POST /api/anki/submit "$(anki_body "$ANKI_ID")"
+expect "anki submit 3 rows -> 3 accepted" 200 'r.accepted === 3 && r.duplicates === 0 && r.total_rows_for_install === 3'
+req POST /api/anki/submit "$(anki_body "$ANKI_ID")"
+expect "the same 3 rows again -> all duplicates" 200 'r.accepted === 0 && r.duplicates === 3 && r.total_rows_for_install === 3'
+req POST /api/anki/submit "$(anki_body "$ANKI_ID" 3 cardtext)"
+expect "a row with an extra field (card text) -> 400" 400 'r.error === "row 0: unknown field front"'
+req GET /api/anki/stats
+expect "GET /api/anki/stats -> 1 install, 3 rows" 200 'r.installs_30d === 1 && r.rows_total === 3'
+req POST /api/kpi/run '' "x-kpi-key: $KPI_KEY"
+expect "KPI run -> anki_contributors_30d 1, MAU still 3 (Anki is not part of MAU)" 200 'r.anki_contributors_30d === 1 && r.mau === 3'
+req GET /api/kpi
+expect "GET /api/kpi -> anki_contributors_30d as its own number" 200 'r.anki_contributors_30d === 1 && r.mau === 3 && r.mau_by_surface.web === 2'
+anki_body "$(printf 'smoke-anki-big' | shasum -a 256 | cut -c1-64)" 2000 > "$STATE/anki_big.json"
+STATUS=$(curl -s -o "$STATE/anki_big_out.json" -w '%{http_code}' -H 'content-type: application/json' --data-binary "@$STATE/anki_big.json" "$BASE/api/anki/submit"); BODY=$(cat "$STATE/anki_big_out.json")
+expect "a full 2,000-row request ($(wc -c < "$STATE/anki_big.json" | tr -d ' ') bytes) -> 2000 accepted" 200 'r.accepted === 2000 && r.total_rows_for_install === 2000'
+req POST /api/anki/delete "{\"install_id\":\"$ANKI_ID\"}"
+expect "delete -> 3 rows deleted" 200 'r.deleted_rows === 3'
+req POST /api/anki/delete "{\"install_id\":\"$ANKI_ID\"}"
+expect "delete again -> 0 (idempotent)" 200 'r.deleted_rows === 0'
+# /api/anki/stats is cached for 60 s per URL; asking through another host name reads the aggregates again.
+STATUS=$(curl -s -o "$STATE/anki_stats.json" -w '%{http_code}' "http://localhost:$PORT/api/anki/stats"); BODY=$(cat "$STATE/anki_stats.json")
+expect "stats after the delete -> only the 2,000-row install is left" 200 'r.installs_30d === 1 && r.rows_total === 2000'
+req POST /api/anki/submit "$(anki_body "$ANKI_ID")"
+expect "submit after delete -> 410" 410 'r.error === "data deleted for this installation"'
+"${WRANGLER[@]}" d1 execute howsure --local --persist-to "$STATE" --json --command \
+  "SELECT (SELECT COUNT(*) FROM anki_rows WHERE install_id = '$ANKI_ID') AS rows_left, (SELECT SUM(installs) FROM anki_agg) AS installs, (SELECT SUM(rows) FROM anki_agg) AS agg_rows, (SELECT rows FROM anki_installs WHERE install_id = '$ANKI_ID') AS install_rows, (SELECT deleted_at IS NOT NULL AND first_seen IS NULL AND consent_version IS NULL FROM anki_installs WHERE install_id = '$ANKI_ID') AS tombstone_only, (SELECT COUNT(*) FROM anki_rows) AS all_rows" \
+  > "$STATE/anki_db.json" 2>/dev/null || fail "d1 execute (anki tables)"
+CHECK=$(node -e '
+  const c = JSON.parse(require("fs").readFileSync(process.argv[1], "utf8"))[0].results[0];
+  const ok = c.rows_left === 0 && c.installs === 1 && c.agg_rows === 2000 && c.install_rows === 0 && c.tombstone_only === 1 && c.all_rows === 2000;
+  console.log(JSON.stringify(c)); process.exit(ok ? 0 : 1);
+' "$STATE/anki_db.json") || fail "anki tables after delete + 410" "$CHECK"
+pass "after delete and the refused upload: no rows for the install, aggregates exact, tombstone holds only the id ($CHECK)"
+
 echo "smoke: $PASSED checks passed, 0 failed"

@@ -174,6 +174,7 @@
     "communities": "communities",
     "kpi_detail": "As of {date} (UTC), updated once a day. Monthly players by surface: web {web}, Slack {slack}, classroom {classroom}. Communities: {workspaces} Slack workspaces and {classrooms} classrooms.",
     "kpi_empty": "Player counts appear once the daily update has run.",
+    "anki": "Anki add-on installations that shared ratings in the last 30 days: {n} (counted separately, not part of MAU).",
     "mau_definition": "MAU: anonymous ids with ≥ 1 completed play (full assessment or daily game) in the trailing 30 days, summed across web and Slack without cross-surface deduplication (a person who plays on both counts twice). DAU likewise for one UTC day.",
     "communities_definition": "Communities: Slack workspaces with ≥ 1 completed play in the trailing 30 days plus classrooms with ≥ 5 finished assessments.",
     "daily_title": "Today’s daily game",

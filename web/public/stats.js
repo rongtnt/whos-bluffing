@@ -10,7 +10,8 @@ function kpiSection(t, k) {
   <div><b>${num(k.dau)}</b><span>${t('stats.dau')}</span></div>
   <div><b>${num(k.communities.workspaces + k.communities.classrooms)}</b><span>${t('stats.communities')}</span></div>
 </div>
-<p class="muted small">${t('stats.kpi_detail', { date: k.as_of, web: num(k.mau_by_surface.web), slack: num(k.mau_by_surface.slack), classroom: num(k.mau_by_surface.classroom), workspaces: num(k.communities.workspaces), classrooms: num(k.communities.classrooms) })}</p>`
+<p class="muted small">${t('stats.kpi_detail', { date: k.as_of, web: num(k.mau_by_surface.web), slack: num(k.mau_by_surface.slack), classroom: num(k.mau_by_surface.classroom), workspaces: num(k.communities.workspaces), classrooms: num(k.communities.classrooms) })}</p>
+<p class="muted small">${t('stats.anki', { n: num(k.anki_contributors_30d ?? 0) })}</p>`
     : html`<p>${t('stats.kpi_empty')}</p>`;
   return html`<h2>${t('stats.kpi_title')}</h2>${counts}
 <p class="muted small">${t('stats.mau_definition')}</p>

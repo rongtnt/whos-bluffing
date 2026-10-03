@@ -1,5 +1,14 @@
 # Changelog
 
+## 0.2.0 — 2026-10-03
+
+Opt-in anonymous data sharing. Off by default; nothing is sent before you accept.
+
+- Tools → "HowSure: share anonymous data…": consent page (Accept / Not now) listing what is sent, word for word from PRIVACY.md.
+- Uploads in the background (right after you accept, when a profile opens, every 6 hours), 500 ratings per request, resuming where the last successful request ended. Only the fields PRIVACY.md lists; never card text, names, emails or card ids.
+- Dashboard: status line ("Sharing on · 1,240 ratings uploaded · last 2 h ago"), Stop sharing, Delete my data (removes everything stored under your installation id on the server and reports the count).
+- New settings: `share_data`, `api_base`, `consent_version`, `consent_at`.
+
 ## 0.1.0 — 2026-10-03
 
 First version. Local only.

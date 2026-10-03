@@ -10,6 +10,8 @@
 
 **Item bank.** 40 two-alternative, 20 interval, 2 attention items per language, parallel translations, sources in `items/items.json`; DIF-flagged items listed in the analysis report.
 
+**Identifiers.** Before release, every anonymous id (web anon_id, Slack member hash, Anki install id) is replaced by a fresh random key, so released ids cannot be used against the live API.
+
 **Not suitable for.** Ranking countries or cultures; clinical or educational assessment of individuals; any re-identification attempt (none is possible by design, and none is permitted by the licence terms of use).
 
 **Maintainer.** Ethan (GitHub: rongtnt). Issues via the repository.

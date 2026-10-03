@@ -77,8 +77,16 @@ def bump(conn: sqlite3.Connection, key: str) -> None:
 
 
 def counter(conn: sqlite3.Connection, key: str) -> int:
+    return int(get_meta(conn, key) or 0)
+
+
+def get_meta(conn: sqlite3.Connection, key: str) -> str | None:
     row = conn.execute("SELECT value FROM meta WHERE key = ?", (key,)).fetchone()
-    return int(row[0]) if row else 0
+    return row[0] if row else None
+
+
+def set_meta(conn: sqlite3.Connection, key: str, value: object) -> None:
+    conn.execute("INSERT INTO meta VALUES (?, ?) ON CONFLICT(key) DO UPDATE SET value = excluded.value", (key, str(value)))
 
 
 def rows(conn: sqlite3.Connection) -> list[dict]:
