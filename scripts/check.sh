@@ -20,7 +20,7 @@ say "anki: build"
 ( cd "$root/anki" && bash scripts/build.sh && unzip -l dist/howsure.ankiaddon | grep -q " manifest.json$" && echo "manifest at top level" ) || fail=1
 
 say "anki: network code only in upload.py (opt-in sharing)"
-hits=$(grep -rliE "\b(http|urllib|requests|socket)\b" "$root/anki/src" 2>/dev/null | sed "s#$root/##" | sort | tr '\n' ' ')
+hits=$(grep -rlIE --exclude-dir=__pycache__ "\b(http|urllib|requests|socket)\b" "$root/anki/src" 2>/dev/null | sed "s#$root/##" | sort | tr '\n' ' ')
 if [ "$hits" = "anki/src/howsure/upload.py " ] || [ -z "$hits" ]; then echo "ok: ${hits:-none}"; else echo "unexpected network reference in: $hits"; fail=1; fi
 
 
