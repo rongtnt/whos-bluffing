@@ -1,322 +1,1391 @@
 {
   "version": 1,
   "items": [
-    {"id": "t001", "type": "2afc", "domain": "geography", "difficulty_hint": "easy",
-     "en": {"prompt": "Which river is longer?", "options": ["The Nile", "The Congo"]},
-     "zh": {"prompt": "哪条河更长？", "options": ["尼罗河", "刚果河"]},
-     "answer": 0, "notes": "Nile ≈ 6,650 km; Congo ≈ 4,700 km (Africa)",
-     "source": "https://www.britannica.com/place/Nile-River ; https://www.britannica.com/place/Congo-River"},
-    {"id": "t002", "type": "2afc", "domain": "geography", "difficulty_hint": "easy",
-     "en": {"prompt": "Which mountain is higher?", "options": ["K2", "Mount Everest"]},
-     "zh": {"prompt": "哪座山更高？", "options": ["乔戈里峰（K2）", "珠穆朗玛峰"]},
-     "answer": 1, "notes": "Everest 8,849 m; K2 8,611 m (Asia)",
-     "source": "https://www.britannica.com/place/Mount-Everest ; https://www.britannica.com/place/K2"},
-    {"id": "t003", "type": "2afc", "domain": "geography", "difficulty_hint": "hard",
-     "en": {"prompt": "Which city is farther north?", "options": ["Beijing", "Paris"]},
-     "zh": {"prompt": "哪座城市更靠北？", "options": ["北京", "巴黎"]},
-     "answer": 1, "notes": "Paris ≈ 48.9° N; Beijing ≈ 39.9° N (Europe / Asia)",
-     "source": "https://www.britannica.com/place/Paris ; https://www.britannica.com/place/Beijing"},
-    {"id": "t004", "type": "2afc", "domain": "geography", "difficulty_hint": "medium",
-     "en": {"prompt": "Which country has the larger total area?", "options": ["Canada", "The United States"]},
-     "zh": {"prompt": "哪个国家的总面积更大？", "options": ["加拿大", "美国"]},
-     "answer": 0, "notes": "Canada ≈ 9.98 million km²; United States ≈ 9.83 million km² (North America)",
-     "source": "https://www.britannica.com/place/Canada ; https://www.britannica.com/place/United-States"},
-    {"id": "t005", "type": "2afc", "domain": "geography", "difficulty_hint": "hard",
-     "en": {"prompt": "Which city is farther south?", "options": ["Sydney", "Buenos Aires"]},
-     "zh": {"prompt": "哪座城市更靠南？", "options": ["悉尼", "布宜诺斯艾利斯"]},
-     "answer": 1, "notes": "Buenos Aires ≈ 34.6° S; Sydney ≈ 33.9° S (South America / Oceania)",
-     "source": "https://www.britannica.com/place/Sydney ; https://www.britannica.com/place/Buenos-Aires"},
-    {"id": "t006", "type": "2afc", "domain": "geography", "difficulty_hint": "easy",
-     "en": {"prompt": "Which ocean is larger?", "options": ["The Indian Ocean", "The Atlantic Ocean"]},
-     "zh": {"prompt": "哪个大洋的面积更大？", "options": ["印度洋", "大西洋"]},
-     "answer": 1, "notes": "Atlantic ≈ 85 million km²; Indian ≈ 71 million km² (larger under any common definition)",
-     "source": "https://www.ngdc.noaa.gov/mgg/global/etopo1_ocean_volumes.html"},
-    {"id": "t007", "type": "2afc", "domain": "geography", "difficulty_hint": "hard",
-     "en": {"prompt": "Which lake is deeper?", "options": ["Lake Baikal", "Lake Tanganyika"]},
-     "zh": {"prompt": "哪个湖更深？", "options": ["贝加尔湖", "坦噶尼喀湖"]},
-     "answer": 0, "notes": "Baikal max depth ≈ 1,642 m; Tanganyika ≈ 1,470 m (Asia / Africa)",
-     "source": "https://www.britannica.com/place/Lake-Baikal ; https://www.britannica.com/place/Lake-Tanganyika"},
-
-    {"id": "t008", "type": "2afc", "domain": "history", "difficulty_hint": "hard",
-     "en": {"prompt": "Which happened first?", "options": ["Polynesian voyagers settled New Zealand", "Columbus reached the Americas"]},
-     "zh": {"prompt": "哪件事发生得更早？", "options": ["波利尼西亚人航海定居新西兰", "哥伦布抵达美洲"]},
-     "answer": 0, "notes": "New Zealand settled c. 1250–1300; Columbus 1492 (Oceania / Americas)",
-     "source": "https://teara.govt.nz/en/history/page-1 ; https://www.britannica.com/biography/Christopher-Columbus"},
-    {"id": "t009", "type": "2afc", "domain": "history", "difficulty_hint": "medium",
-     "en": {"prompt": "Which canal opened first?", "options": ["The Panama Canal", "The Suez Canal"]},
-     "zh": {"prompt": "哪条运河先通航？", "options": ["巴拿马运河", "苏伊士运河"]},
-     "answer": 1, "notes": "Suez 1869; Panama 1914 (Africa / Americas)",
-     "source": "https://www.britannica.com/topic/Suez-Canal ; https://www.britannica.com/topic/Panama-Canal"},
-    {"id": "t010", "type": "2afc", "domain": "history", "difficulty_hint": "medium",
-     "en": {"prompt": "Which happened first?", "options": ["The United Nations was founded", "India became independent"]},
-     "zh": {"prompt": "哪件事发生得更早？", "options": ["联合国成立", "印度独立"]},
-     "answer": 0, "notes": "UN 24 Oct 1945; India 15 Aug 1947 (global / South Asia)",
-     "source": "https://www.un.org/en/about-us/history-of-the-un ; https://www.britannica.com/place/India"},
-    {"id": "t011", "type": "2afc", "domain": "history", "difficulty_hint": "easy",
-     "en": {"prompt": "Which happened first?", "options": ["The fall of the Berlin Wall", "The first crewed Moon landing"]},
-     "zh": {"prompt": "哪件事发生得更早？", "options": ["柏林墙倒塌", "人类首次登月"]},
-     "answer": 1, "notes": "Moon landing 20 Jul 1969; Berlin Wall 9 Nov 1989",
-     "source": "https://www.nasa.gov/mission/apollo-11/ ; https://www.britannica.com/topic/Berlin-Wall"},
-    {"id": "t012", "type": "2afc", "domain": "history", "difficulty_hint": "hard",
-     "en": {"prompt": "Which happened first?", "options": ["Mansa Musa of Mali made his pilgrimage to Mecca", "The Black Death reached Europe"]},
-     "zh": {"prompt": "哪件事发生得更早？", "options": ["马里国王曼萨·穆萨去麦加朝圣", "黑死病传到欧洲"]},
-     "answer": 0, "notes": "Mansa Musa's pilgrimage 1324–25; Black Death reached Europe 1347 (Africa / Europe)",
-     "source": "https://www.britannica.com/biography/Musa-I-of-Mali ; https://www.britannica.com/event/Black-Death"},
-    {"id": "t013", "type": "2afc", "domain": "history", "difficulty_hint": "medium",
-     "en": {"prompt": "Which was completed first?", "options": ["The Taj Mahal in India", "The Forbidden City in Beijing"]},
-     "zh": {"prompt": "哪座建筑更早建成？", "options": ["印度的泰姬陵", "北京的紫禁城"]},
-     "answer": 1, "notes": "Forbidden City completed 1420; Taj Mahal c. 1648–53 (East Asia / South Asia)",
-     "source": "https://whc.unesco.org/en/list/439 ; https://whc.unesco.org/en/list/252"},
-    {"id": "t014", "type": "2afc", "domain": "history", "difficulty_hint": "easy",
-     "en": {"prompt": "Which empire began first?", "options": ["The Roman Empire", "The Inca Empire"]},
-     "zh": {"prompt": "哪个帝国建立得更早？", "options": ["罗马帝国", "印加帝国"]},
-     "answer": 0, "notes": "Roman Empire 27 BC; Inca Empire 15th century (Europe / South America)",
-     "source": "https://www.britannica.com/place/Roman-Empire ; https://www.britannica.com/topic/Inca"},
-
-    {"id": "t015", "type": "2afc", "domain": "physics", "difficulty_hint": "easy",
-     "en": {"prompt": "Which travels faster through air?", "options": ["Sound", "Light"]},
-     "zh": {"prompt": "在空气中，哪个传播得更快？", "options": ["声音", "光"]},
-     "answer": 1, "notes": "Light ≈ 300,000 km/s; sound ≈ 343 m/s",
-     "source": "https://physics.nist.gov/cgi-bin/cuu/Value?c ; CRC Handbook of Chemistry and Physics (speed of sound in air)"},
-    {"id": "t016", "type": "2afc", "domain": "physics", "difficulty_hint": "medium",
-     "en": {"prompt": "Which metal is denser?", "options": ["Gold", "Lead"]},
-     "zh": {"prompt": "哪种金属的密度更大？", "options": ["金", "铅"]},
-     "answer": 0, "notes": "Gold 19.3 g/cm³; lead 11.3 g/cm³",
-     "source": "https://pubchem.ncbi.nlm.nih.gov/element/Gold ; https://pubchem.ncbi.nlm.nih.gov/element/Lead"},
-    {"id": "t017", "type": "2afc", "domain": "physics", "difficulty_hint": "medium",
-     "en": {"prompt": "Where does sound travel faster?", "options": ["In water", "In air"]},
-     "zh": {"prompt": "声音在哪里传播得更快？", "options": ["水中", "空气中"]},
-     "answer": 0, "notes": "Water ≈ 1,480 m/s; air ≈ 343 m/s",
-     "source": "https://www.britannica.com/science/sound-physics ; CRC Handbook of Chemistry and Physics"},
-    {"id": "t018", "type": "2afc", "domain": "physics", "difficulty_hint": "hard",
-     "en": {"prompt": "Which planet has the hotter surface?", "options": ["Mercury", "Venus"]},
-     "zh": {"prompt": "哪颗行星的表面温度更高？", "options": ["水星", "金星"]},
-     "answer": 1, "notes": "Venus ≈ 465 °C everywhere; Mercury peaks ≈ 430 °C",
-     "source": "https://science.nasa.gov/venus/ ; https://science.nasa.gov/mercury/"},
-    {"id": "t019", "type": "2afc", "domain": "physics", "difficulty_hint": "hard",
-     "en": {"prompt": "Which planet has the larger diameter?", "options": ["Neptune", "Uranus"]},
-     "zh": {"prompt": "哪颗行星的直径更大？", "options": ["海王星", "天王星"]},
-     "answer": 1, "notes": "Uranus 51,118 km; Neptune 49,528 km (Neptune is heavier, Uranus is wider)",
-     "source": "https://nssdc.gsfc.nasa.gov/planetary/factsheet/"},
-    {"id": "t020", "type": "2afc", "domain": "physics", "difficulty_hint": "easy",
-     "en": {"prompt": "Which particle has more mass?", "options": ["A proton", "An electron"]},
-     "zh": {"prompt": "哪种粒子的质量更大？", "options": ["质子", "电子"]},
-     "answer": 0, "notes": "Proton ≈ 1,836 times the electron's mass",
-     "source": "https://physics.nist.gov/cuu/Constants/ (CODATA)"},
-    {"id": "t021", "type": "2afc", "domain": "physics", "difficulty_hint": "medium",
-     "en": {"prompt": "Which colour of light has the longer wavelength?", "options": ["Blue", "Red"]},
-     "zh": {"prompt": "哪种颜色的光波长更长？", "options": ["蓝光", "红光"]},
-     "answer": 1, "notes": "Red ≈ 620–750 nm; blue ≈ 450–495 nm",
-     "source": "https://science.nasa.gov/ems/09_visiblelight/"},
-
-    {"id": "t022", "type": "2afc", "domain": "biology", "difficulty_hint": "medium",
-     "en": {"prompt": "Who has more bones?", "options": ["A newborn baby", "An adult"]},
-     "zh": {"prompt": "谁的骨头块数更多？", "options": ["新生儿", "成年人"]},
-     "answer": 0, "notes": "Newborn ≈ 270–300 bones, many fuse; adult 206",
-     "source": "https://www.britannica.com/science/human-skeleton ; Gray's Anatomy (standard reference)"},
-    {"id": "t023", "type": "2afc", "domain": "biology", "difficulty_hint": "easy",
-     "en": {"prompt": "Which is the largest organ of the human body?", "options": ["The liver", "The skin"]},
-     "zh": {"prompt": "人体最大的器官是哪个？", "options": ["肝脏", "皮肤"]},
-     "answer": 1, "notes": "Skin is the largest organ; the liver is the largest internal organ",
-     "source": "https://www.britannica.com/science/skin"},
-    {"id": "t024", "type": "2afc", "domain": "biology", "difficulty_hint": "hard",
-     "en": {"prompt": "Which has more chromosomes in each body cell?", "options": ["A human", "A chimpanzee"]},
-     "zh": {"prompt": "谁的体细胞里染色体更多？", "options": ["人", "黑猩猩"]},
-     "answer": 1, "notes": "Chimpanzee 48; human 46 (human chromosome 2 is a fusion of two ape chromosomes)",
-     "source": "https://www.genome.gov/about-genomics/fact-sheets/Chromosomes-Fact-Sheet ; Yunis & Prakash (1982) Science 215:1525"},
-    {"id": "t025", "type": "2afc", "domain": "biology", "difficulty_hint": "easy",
-     "en": {"prompt": "Whose pregnancy lasts longer?", "options": ["An elephant's", "A human's"]},
-     "zh": {"prompt": "谁的孕期更长？", "options": ["大象", "人"]},
-     "answer": 0, "notes": "Elephant ≈ 22 months; human ≈ 9 months",
-     "source": "https://www.britannica.com/animal/elephant-mammal"},
-    {"id": "t026", "type": "2afc", "domain": "biology", "difficulty_hint": "medium",
-     "en": {"prompt": "Which animal is more closely related to whales?", "options": ["The hippopotamus", "The shark"]},
-     "zh": {"prompt": "哪种动物和鲸的亲缘关系更近？", "options": ["河马", "鲨鱼"]},
-     "answer": 0, "notes": "Hippos are the closest living relatives of whales; sharks are fish",
-     "source": "https://www.britannica.com/animal/hippopotamus ; Thewissen et al. (2007) Nature 450:1190"},
-    {"id": "t027", "type": "2afc", "domain": "biology", "difficulty_hint": "medium",
-     "en": {"prompt": "Which is longer in an adult human?", "options": ["The large intestine", "The small intestine"]},
-     "zh": {"prompt": "成年人体内，哪段肠更长？", "options": ["大肠", "小肠"]},
-     "answer": 1, "notes": "Small intestine ≈ 6 m; large intestine ≈ 1.5 m",
-     "source": "https://www.britannica.com/science/small-intestine ; https://www.britannica.com/science/large-intestine"},
-    {"id": "t028", "type": "2afc", "domain": "biology", "difficulty_hint": "hard",
-     "en": {"prompt": "In an emergency, red blood cells of which type can be given to almost anyone?", "options": ["AB positive", "O negative"]},
-     "zh": {"prompt": "紧急情况下，哪种血型的红细胞几乎可以输给任何人？", "options": ["AB 型 Rh 阳性", "O 型 Rh 阴性"]},
-     "answer": 1, "notes": "O negative = universal red-cell donor; AB positive = universal recipient",
-     "source": "https://www.redcrossblood.org/donate-blood/blood-types.html"},
-
-    {"id": "t029", "type": "2afc", "domain": "math", "difficulty_hint": "medium",
-     "en": {"prompt": "Which is larger?", "options": ["2¹⁰", "10³"]},
-     "zh": {"prompt": "哪个更大？", "options": ["2¹⁰", "10³"]},
-     "answer": 0, "notes": "2¹⁰ = 1,024; 10³ = 1,000",
-     "source": "arithmetic"},
-    {"id": "t030", "type": "2afc", "domain": "math", "difficulty_hint": "medium",
-     "en": {"prompt": "Which is a prime number?", "options": ["91", "97"]},
-     "zh": {"prompt": "哪个是质数？", "options": ["91", "97"]},
-     "answer": 1, "notes": "91 = 7 × 13; 97 is prime",
-     "source": "arithmetic ; https://oeis.org/A000040"},
-    {"id": "t031", "type": "2afc", "domain": "math", "difficulty_hint": "hard",
-     "en": {"prompt": "Which is larger?", "options": ["π", "√10"]},
-     "zh": {"prompt": "哪个更大？", "options": ["π", "√10"]},
-     "answer": 1, "notes": "π ≈ 3.1416; √10 ≈ 3.1623",
-     "source": "arithmetic"},
-    {"id": "t032", "type": "2afc", "domain": "math", "difficulty_hint": "hard",
-     "en": {"prompt": "In a room of 23 people, what is the chance that at least two share a birthday?", "options": ["More than 50%", "Less than 50%"]},
-     "zh": {"prompt": "一个房间里有 23 个人，至少有两人生日相同的概率是多少？", "options": ["高于 50%", "低于 50%"]},
-     "answer": 0, "notes": "≈ 50.7% (365 equally likely birthdays, ignoring 29 Feb)",
-     "source": "Feller, An Introduction to Probability Theory and Its Applications, vol. 1 (birthday problem): 1 − 365!/(342!·365²³) ≈ 0.507"},
-    {"id": "t033", "type": "2afc", "domain": "math", "difficulty_hint": "easy",
-     "en": {"prompt": "Which is larger?", "options": ["3⁴", "4³"]},
-     "zh": {"prompt": "哪个更大？", "options": ["3⁴", "4³"]},
-     "answer": 0, "notes": "3⁴ = 81; 4³ = 64",
-     "source": "arithmetic"},
-    {"id": "t034", "type": "2afc", "domain": "math", "difficulty_hint": "easy",
-     "en": {"prompt": "You flip a fair coin 3 times. Which is more likely?", "options": ["Exactly 3 heads", "Exactly 2 heads"]},
-     "zh": {"prompt": "把一枚均匀的硬币抛 3 次，哪种结果更可能出现？", "options": ["正好 3 次正面朝上", "正好 2 次正面朝上"]},
-     "answer": 1, "notes": "P(2 heads) = 3/8; P(3 heads) = 1/8",
-     "source": "binomial probability (arithmetic)"},
-
-    {"id": "t035", "type": "2afc", "domain": "everyday", "difficulty_hint": "medium",
-     "en": {"prompt": "Gram for gram, which has more calories?", "options": ["Fat", "Sugar"]},
-     "zh": {"prompt": "按每克计算，哪个热量更高？", "options": ["脂肪", "糖"]},
-     "answer": 0, "notes": "Fat ≈ 9 kcal/g; sugar (carbohydrate) ≈ 4 kcal/g",
-     "source": "https://www.fao.org/3/y5022e/y5022e04.htm (FAO 2003, Atwater factors)"},
-    {"id": "t036", "type": "2afc", "domain": "everyday", "difficulty_hint": "easy",
-     "en": {"prompt": "Cup for cup, which usually has more caffeine?", "options": ["Green tea", "Brewed coffee"]},
-     "zh": {"prompt": "同样一杯，哪个通常含咖啡因更多？", "options": ["绿茶", "现煮咖啡"]},
-     "answer": 1, "notes": "Brewed coffee ≈ 95 mg per 240 mL; green tea ≈ 30 mg",
-     "source": "https://www.mayoclinic.org/healthy-lifestyle/nutrition-and-healthy-eating/in-depth/caffeine/art-20049372"},
-    {"id": "t037", "type": "2afc", "domain": "everyday", "difficulty_hint": "medium",
-     "en": {"prompt": "On a standard six-sided die, what do opposite faces add up to?", "options": ["7", "6"]},
-     "zh": {"prompt": "标准六面骰子上，相对两面的点数加起来是多少？", "options": ["7", "6"]},
-     "answer": 0, "notes": "1–6, 2–5, 3–4: always 7",
-     "source": "https://www.britannica.com/topic/dice"},
-    {"id": "t038", "type": "2afc", "domain": "everyday", "difficulty_hint": "easy",
-     "en": {"prompt": "Which weighs more?", "options": ["1 litre of olive oil", "1 litre of water"]},
-     "zh": {"prompt": "哪个更重？", "options": ["1 升橄榄油", "1 升水"]},
-     "answer": 1, "notes": "Olive oil ≈ 0.91 kg/L; water ≈ 1.00 kg/L (oil floats)",
-     "source": "CRC Handbook of Chemistry and Physics (densities)"},
-    {"id": "t039", "type": "2afc", "domain": "everyday", "difficulty_hint": "hard",
-     "en": {"prompt": "Per 100 grams, which has more vitamin C?", "options": ["A red bell pepper", "An orange"]},
-     "zh": {"prompt": "每 100 克里，哪个维生素 C 含量更高？", "options": ["红甜椒", "橙子"]},
-     "answer": 0, "notes": "Red bell pepper ≈ 128 mg; orange ≈ 53 mg (raw)",
-     "source": "https://fdc.nal.usda.gov/ (FoodData Central, SR Legacy: peppers, sweet, red, raw; oranges, raw)"},
-    {"id": "t040", "type": "2afc", "domain": "everyday", "difficulty_hint": "hard",
-     "en": {"prompt": "Per 100 grams, which has more calories?", "options": ["A banana", "An avocado"]},
-     "zh": {"prompt": "每 100 克里，哪个热量更高？", "options": ["香蕉", "牛油果"]},
-     "answer": 1, "notes": "Avocado ≈ 160 kcal; banana ≈ 89 kcal (raw)",
-     "source": "https://fdc.nal.usda.gov/ (FoodData Central, SR Legacy: avocados, raw; bananas, raw)"},
-
-    {"id": "r001", "type": "interval", "domain": "geography", "difficulty_hint": "medium",
-     "en": {"prompt": "How high is Mount Kilimanjaro above sea level?", "unit": "m"},
-     "zh": {"prompt": "乞力马扎罗山的海拔是多少？", "unit": "米"},
-     "answer": 5895, "accept": [10, 20000], "notes": "5,895 m (some surveys 5,892 m) (Africa)",
-     "source": "https://whc.unesco.org/en/list/403 ; https://www.britannica.com/place/Kilimanjaro"},
-    {"id": "r002", "type": "interval", "domain": "geography", "difficulty_hint": "hard",
-     "en": {"prompt": "How tall is Angel Falls in Venezuela, from top to bottom?", "unit": "m"},
-     "zh": {"prompt": "委内瑞拉的安赫尔瀑布从顶到底有多高？", "unit": "米"},
-     "answer": 979, "accept": [1, 10000], "notes": "979 m total; longest single drop 807 m (South America)",
-     "source": "https://www.britannica.com/place/Angel-Falls"},
-    {"id": "r003", "type": "interval", "domain": "geography", "difficulty_hint": "hard",
-     "en": {"prompt": "How long is the Danube River?", "unit": "km"},
-     "zh": {"prompt": "多瑙河全长多少？", "unit": "公里"},
-     "answer": 2850, "accept": [10, 100000], "notes": "≈ 2,850 km (Europe)",
-     "source": "https://www.britannica.com/place/Danube-River"},
-    {"id": "r004", "type": "interval", "domain": "geography", "difficulty_hint": "medium",
-     "en": {"prompt": "How long is Australia's Great Barrier Reef, end to end?", "unit": "km"},
-     "zh": {"prompt": "澳大利亚的大堡礁从一端到另一端有多长？", "unit": "公里"},
-     "answer": 2300, "accept": [1, 100000], "notes": "≈ 2,300 km (Oceania)",
-     "source": "https://www.gbrmpa.gov.au/ (Great Barrier Reef Marine Park Authority) ; https://whc.unesco.org/en/list/154"},
-    {"id": "r005", "type": "interval", "domain": "history", "difficulty_hint": "medium",
-     "en": {"prompt": "In what year did the Ottoman Empire capture Constantinople (today's Istanbul)?", "unit": "AD"},
-     "zh": {"prompt": "奥斯曼帝国在哪一年攻占了君士坦丁堡（今伊斯坦布尔）？", "unit": "年"},
-     "answer": 1453, "accept": [1, 2026], "notes": "29 May 1453 (Europe / West Asia)",
-     "source": "https://www.britannica.com/event/Fall-of-Constantinople-1453"},
-    {"id": "r006", "type": "interval", "domain": "history", "difficulty_hint": "hard",
-     "en": {"prompt": "In what year was Genghis Khan proclaimed ruler of all the Mongols?", "unit": "AD"},
-     "zh": {"prompt": "成吉思汗在哪一年被推举为全蒙古的大汗？", "unit": "年"},
-     "answer": 1206, "accept": [1, 2026], "notes": "1206 (East / Central Asia)",
-     "source": "https://www.britannica.com/biography/Genghis-Khan"},
-    {"id": "r007", "type": "interval", "domain": "history", "difficulty_hint": "hard",
-     "en": {"prompt": "In what year did Spanish forces capture Tenochtitlan, the Aztec capital?", "unit": "AD"},
-     "zh": {"prompt": "西班牙军队在哪一年攻占了阿兹特克帝国的首都特诺奇蒂特兰？", "unit": "年"},
-     "answer": 1521, "accept": [1, 2026], "notes": "13 Aug 1521 (Americas)",
-     "source": "https://www.britannica.com/place/Tenochtitlan"},
-    {"id": "r008", "type": "interval", "domain": "history", "difficulty_hint": "easy",
-     "en": {"prompt": "In what year did Nelson Mandela become president of South Africa?", "unit": "AD"},
-     "zh": {"prompt": "纳尔逊·曼德拉在哪一年成为南非总统？", "unit": "年"},
-     "answer": 1994, "accept": [1, 2026], "notes": "May 1994 (Africa)",
-     "source": "https://www.britannica.com/biography/Nelson-Mandela"},
-    {"id": "r009", "type": "interval", "domain": "physics", "difficulty_hint": "easy",
-     "en": {"prompt": "How fast does sound travel through air at 20 °C?", "unit": "m/s"},
-     "zh": {"prompt": "气温 20 °C 时，声音在空气中的传播速度是多少？", "unit": "米/秒"},
-     "answer": 343, "accept": [1, 100000], "notes": "≈ 343 m/s in dry air",
-     "source": "CRC Handbook of Chemistry and Physics (speed of sound in dry air at 20 °C)"},
-    {"id": "r010", "type": "interval", "domain": "physics", "difficulty_hint": "medium",
-     "en": {"prompt": "What is the average distance from Earth to the Moon?", "unit": "km"},
-     "zh": {"prompt": "地球到月球的平均距离是多少？", "unit": "公里"},
-     "answer": 384400, "accept": [100, 100000000], "notes": "≈ 384,400 km",
-     "source": "https://nssdc.gsfc.nasa.gov/planetary/factsheet/moonfact.html"},
-    {"id": "r011", "type": "interval", "domain": "physics", "difficulty_hint": "easy",
-     "en": {"prompt": "How long does sunlight take to reach Earth?", "unit": "seconds"},
-     "zh": {"prompt": "太阳光到达地球需要多长时间？", "unit": "秒"},
-     "answer": 499, "accept": [1, 1000000], "notes": "≈ 499 s (8 min 19 s) = 1 au ÷ c",
-     "source": "IAU 2012 Resolution B2 (1 au = 149,597,870,700 m) ÷ c = 299,792,458 m/s"},
-    {"id": "r012", "type": "interval", "domain": "biology", "difficulty_hint": "easy",
-     "en": {"prompt": "How many bones are in an adult human body?", "unit": "bones"},
-     "zh": {"prompt": "成年人全身共有多少块骨头？", "unit": "块"},
-     "answer": 206, "accept": [1, 10000], "notes": "206",
-     "source": "https://www.britannica.com/science/human-skeleton"},
-    {"id": "r013", "type": "interval", "domain": "biology", "difficulty_hint": "hard",
-     "en": {"prompt": "On average, how long does a human red blood cell live?", "unit": "days"},
-     "zh": {"prompt": "人的红细胞平均能存活多少天？", "unit": "天"},
-     "answer": 120, "accept": [0, 100000], "notes": "≈ 120 days",
-     "source": "https://www.britannica.com/science/red-blood-cell"},
-    {"id": "r014", "type": "interval", "domain": "biology", "difficulty_hint": "medium",
-     "en": {"prompt": "How many pairs of ribs does a typical adult human have?", "unit": "pairs"},
-     "zh": {"prompt": "成年人通常有多少对肋骨？", "unit": "对"},
-     "answer": 12, "accept": [1, 100], "notes": "12 pairs (24 ribs)",
-     "source": "Gray's Anatomy (standard reference): 12 pairs of ribs"},
-    {"id": "r015", "type": "interval", "domain": "math", "difficulty_hint": "medium",
-     "en": {"prompt": "How many prime numbers are there below 100?", "unit": "primes"},
-     "zh": {"prompt": "小于 100 的质数有多少个？", "unit": "个"},
-     "answer": 25, "accept": [0, 100], "notes": "25 (2, 3, 5, …, 97)",
-     "source": "https://oeis.org/A000720 (π(100) = 25)"},
-    {"id": "r016", "type": "interval", "domain": "math", "difficulty_hint": "medium",
-     "en": {"prompt": "In how many different orders can you line up 5 different books on a shelf?", "unit": "orders"},
-     "zh": {"prompt": "把 5 本不同的书在书架上排成一排，一共有多少种排法？", "unit": "种"},
-     "answer": 120, "accept": [1, 1000000], "notes": "5! = 120",
-     "source": "arithmetic (5! = 120)"},
-    {"id": "r017", "type": "interval", "domain": "math", "difficulty_hint": "easy",
-     "en": {"prompt": "How many edges does a cube have?", "unit": "edges"},
-     "zh": {"prompt": "一个正方体有多少条棱？", "unit": "条"},
-     "answer": 12, "accept": [1, 100], "notes": "12",
-     "source": "geometry (a cube has 8 vertices, 12 edges, 6 faces)"},
-    {"id": "r018", "type": "interval", "domain": "everyday", "difficulty_hint": "easy",
-     "en": {"prompt": "How long is a marathon?", "unit": "km"},
-     "zh": {"prompt": "马拉松全程有多长？", "unit": "公里"},
-     "answer": 42.195, "accept": [1, 1000], "notes": "42.195 km",
-     "source": "World Athletics Competition Rules (marathon = 42.195 km)"},
-    {"id": "r019", "type": "interval", "domain": "everyday", "difficulty_hint": "easy",
-     "en": {"prompt": "How many keys does a standard modern piano have?", "unit": "keys"},
-     "zh": {"prompt": "一架标准的现代钢琴有多少个琴键？", "unit": "个"},
-     "answer": 88, "accept": [1, 1000], "notes": "88 (52 white, 36 black)",
-     "source": "https://www.britannica.com/art/piano"},
-    {"id": "r020", "type": "interval", "domain": "everyday", "difficulty_hint": "hard",
-     "en": {"prompt": "How high above the floor is the rim of a standard basketball hoop?", "unit": "cm"},
-     "zh": {"prompt": "标准篮球架的篮圈离地面有多高？", "unit": "厘米"},
-     "answer": 305, "accept": [10, 2000], "notes": "3.05 m (10 ft)",
-     "source": "FIBA Official Basketball Rules (ring 3.05 m above the floor)"},
-
-    {"id": "c001", "type": "attention", "domain": "math", "difficulty_hint": "easy",
-     "en": {"prompt": "Which number is larger?", "options": ["100", "10"]},
-     "zh": {"prompt": "哪个数更大？", "options": ["100", "10"]},
-     "answer": 0, "notes": "attention check",
-     "source": "attention check (self-evident)"},
-    {"id": "c002", "type": "attention", "domain": "everyday", "difficulty_hint": "easy",
-     "en": {"prompt": "Which of these is an animal?", "options": ["A table", "A dog"]},
-     "zh": {"prompt": "下面哪个是动物？", "options": ["桌子", "狗"]},
-     "answer": 1, "notes": "attention check",
-     "source": "attention check (self-evident)"}
+    {
+      "id": "t001",
+      "type": "2afc",
+      "domain": "geography",
+      "difficulty_hint": "easy",
+      "en": {
+        "prompt": "Which river is longer?",
+        "options": [
+          "The Nile",
+          "The Congo"
+        ]
+      },
+      "zh": {
+        "prompt": "哪条河更长？",
+        "options": [
+          "尼罗河",
+          "刚果河"
+        ]
+      },
+      "answer": 0,
+      "notes": "Nile ≈ 6,650 km; Congo ≈ 4,700 km (Africa)",
+      "source": "https://www.britannica.com/place/Nile-River ; https://www.britannica.com/place/Congo-River"
+    },
+    {
+      "id": "t002",
+      "type": "2afc",
+      "domain": "geography",
+      "difficulty_hint": "easy",
+      "en": {
+        "prompt": "Which mountain is higher?",
+        "options": [
+          "K2",
+          "Mount Everest"
+        ]
+      },
+      "zh": {
+        "prompt": "哪座山更高？",
+        "options": [
+          "乔戈里峰（K2）",
+          "珠穆朗玛峰"
+        ]
+      },
+      "answer": 1,
+      "notes": "Everest 8,849 m; K2 8,611 m (Asia)",
+      "source": "https://www.britannica.com/place/Mount-Everest ; https://www.britannica.com/place/K2"
+    },
+    {
+      "id": "t003",
+      "type": "2afc",
+      "domain": "geography",
+      "difficulty_hint": "hard",
+      "en": {
+        "prompt": "Which city is farther north?",
+        "options": [
+          "Beijing",
+          "Paris"
+        ]
+      },
+      "zh": {
+        "prompt": "哪座城市更靠北？",
+        "options": [
+          "北京",
+          "巴黎"
+        ]
+      },
+      "answer": 1,
+      "notes": "Paris ≈ 48.9° N; Beijing ≈ 39.9° N (Europe / Asia)",
+      "source": "https://www.britannica.com/place/Paris ; https://www.britannica.com/place/Beijing"
+    },
+    {
+      "id": "t004",
+      "type": "2afc",
+      "domain": "geography",
+      "difficulty_hint": "medium",
+      "en": {
+        "prompt": "Which country has the larger total area?",
+        "options": [
+          "Canada",
+          "The United States"
+        ]
+      },
+      "zh": {
+        "prompt": "哪个国家的总面积更大？",
+        "options": [
+          "加拿大",
+          "美国"
+        ]
+      },
+      "answer": 0,
+      "notes": "Canada ≈ 9.98 million km²; United States ≈ 9.83 million km² (North America)",
+      "source": "https://www.britannica.com/place/Canada ; https://www.britannica.com/place/United-States"
+    },
+    {
+      "id": "t005",
+      "type": "2afc",
+      "domain": "geography",
+      "difficulty_hint": "hard",
+      "en": {
+        "prompt": "Which city is farther south?",
+        "options": [
+          "Sydney",
+          "Buenos Aires"
+        ]
+      },
+      "zh": {
+        "prompt": "哪座城市更靠南？",
+        "options": [
+          "悉尼",
+          "布宜诺斯艾利斯"
+        ]
+      },
+      "answer": 1,
+      "notes": "Buenos Aires ≈ 34.6° S; Sydney ≈ 33.9° S (South America / Oceania)",
+      "source": "https://www.britannica.com/place/Sydney ; https://www.britannica.com/place/Buenos-Aires"
+    },
+    {
+      "id": "t006",
+      "type": "2afc",
+      "domain": "geography",
+      "difficulty_hint": "easy",
+      "en": {
+        "prompt": "Which ocean is larger?",
+        "options": [
+          "The Indian Ocean",
+          "The Atlantic Ocean"
+        ]
+      },
+      "zh": {
+        "prompt": "哪个大洋的面积更大？",
+        "options": [
+          "印度洋",
+          "大西洋"
+        ]
+      },
+      "answer": 1,
+      "notes": "Atlantic ≈ 85 million km²; Indian ≈ 71 million km² (larger under any common definition)",
+      "source": "https://www.britannica.com/place/Atlantic-Ocean ; https://www.britannica.com/place/Indian-Ocean (areas 85.1 vs 70.6 million km²)"
+    },
+    {
+      "id": "t007",
+      "type": "2afc",
+      "domain": "geography",
+      "difficulty_hint": "hard",
+      "en": {
+        "prompt": "Which lake is deeper?",
+        "options": [
+          "Lake Baikal",
+          "Lake Tanganyika"
+        ]
+      },
+      "zh": {
+        "prompt": "哪个湖更深？",
+        "options": [
+          "贝加尔湖",
+          "坦噶尼喀湖"
+        ]
+      },
+      "answer": 0,
+      "notes": "Baikal max depth ≈ 1,642 m; Tanganyika ≈ 1,470 m (Asia / Africa)",
+      "source": "https://www.britannica.com/place/Lake-Baikal ; https://www.britannica.com/place/Lake-Tanganyika"
+    },
+    {
+      "id": "t008",
+      "type": "2afc",
+      "domain": "history",
+      "difficulty_hint": "hard",
+      "en": {
+        "prompt": "Which happened first?",
+        "options": [
+          "Polynesian voyagers settled New Zealand",
+          "Columbus reached the Americas"
+        ]
+      },
+      "zh": {
+        "prompt": "哪件事发生得更早？",
+        "options": [
+          "波利尼西亚人航海定居新西兰",
+          "哥伦布抵达美洲"
+        ]
+      },
+      "answer": 0,
+      "notes": "New Zealand settled c. 1250–1300; Columbus 1492 (Oceania / Americas)",
+      "source": "https://teara.govt.nz/en/history/page-1 ; https://www.britannica.com/biography/Christopher-Columbus"
+    },
+    {
+      "id": "t009",
+      "type": "2afc",
+      "domain": "history",
+      "difficulty_hint": "medium",
+      "en": {
+        "prompt": "Which canal opened first?",
+        "options": [
+          "The Panama Canal",
+          "The Suez Canal"
+        ]
+      },
+      "zh": {
+        "prompt": "哪条运河先通航？",
+        "options": [
+          "巴拿马运河",
+          "苏伊士运河"
+        ]
+      },
+      "answer": 1,
+      "notes": "Suez 1869; Panama 1914 (Africa / Americas)",
+      "source": "https://www.britannica.com/topic/Suez-Canal ; https://www.britannica.com/topic/Panama-Canal"
+    },
+    {
+      "id": "t010",
+      "type": "2afc",
+      "domain": "history",
+      "difficulty_hint": "medium",
+      "en": {
+        "prompt": "Which happened first?",
+        "options": [
+          "The United Nations was founded",
+          "India became independent"
+        ]
+      },
+      "zh": {
+        "prompt": "哪件事发生得更早？",
+        "options": [
+          "联合国成立",
+          "印度独立"
+        ]
+      },
+      "answer": 0,
+      "notes": "UN 24 Oct 1945; India 15 Aug 1947 (global / South Asia)",
+      "source": "https://www.un.org/en/about-us/history-of-the-un ; https://www.britannica.com/place/India"
+    },
+    {
+      "id": "t011",
+      "type": "2afc",
+      "domain": "history",
+      "difficulty_hint": "easy",
+      "en": {
+        "prompt": "Which happened first?",
+        "options": [
+          "The fall of the Berlin Wall",
+          "The first crewed Moon landing"
+        ]
+      },
+      "zh": {
+        "prompt": "哪件事发生得更早？",
+        "options": [
+          "柏林墙倒塌",
+          "人类首次登月"
+        ]
+      },
+      "answer": 1,
+      "notes": "Moon landing 20 Jul 1969; Berlin Wall 9 Nov 1989",
+      "source": "https://www.nasa.gov/mission/apollo-11/ ; https://www.britannica.com/topic/Berlin-Wall"
+    },
+    {
+      "id": "t012",
+      "type": "2afc",
+      "domain": "history",
+      "difficulty_hint": "hard",
+      "en": {
+        "prompt": "Which happened first?",
+        "options": [
+          "Mansa Musa of Mali made his pilgrimage to Mecca",
+          "The Black Death reached Europe"
+        ]
+      },
+      "zh": {
+        "prompt": "哪件事发生得更早？",
+        "options": [
+          "马里国王曼萨·穆萨去麦加朝圣",
+          "黑死病传到欧洲"
+        ]
+      },
+      "answer": 0,
+      "notes": "Mansa Musa's pilgrimage 1324–25; Black Death reached Europe 1347 (Africa / Europe)",
+      "source": "https://www.britannica.com/biography/Musa-I-of-Mali ; https://www.britannica.com/event/Black-Death"
+    },
+    {
+      "id": "t013",
+      "type": "2afc",
+      "domain": "history",
+      "difficulty_hint": "medium",
+      "en": {
+        "prompt": "Which was completed first?",
+        "options": [
+          "The Taj Mahal in India",
+          "The Forbidden City in Beijing"
+        ]
+      },
+      "zh": {
+        "prompt": "哪座建筑更早建成？",
+        "options": [
+          "印度的泰姬陵",
+          "北京的紫禁城"
+        ]
+      },
+      "answer": 1,
+      "notes": "Forbidden City completed 1420; Taj Mahal c. 1648–53 (East Asia / South Asia)",
+      "source": "https://whc.unesco.org/en/list/439 ; https://whc.unesco.org/en/list/252"
+    },
+    {
+      "id": "t014",
+      "type": "2afc",
+      "domain": "history",
+      "difficulty_hint": "easy",
+      "en": {
+        "prompt": "Which empire began first?",
+        "options": [
+          "The Roman Empire",
+          "The Inca Empire"
+        ]
+      },
+      "zh": {
+        "prompt": "哪个帝国建立得更早？",
+        "options": [
+          "罗马帝国",
+          "印加帝国"
+        ]
+      },
+      "answer": 0,
+      "notes": "Roman Empire 27 BC; Inca Empire 15th century (Europe / South America)",
+      "source": "https://www.britannica.com/place/Roman-Empire ; https://www.britannica.com/topic/Inca"
+    },
+    {
+      "id": "t015",
+      "type": "2afc",
+      "domain": "physics",
+      "difficulty_hint": "easy",
+      "en": {
+        "prompt": "Which travels faster through air?",
+        "options": [
+          "Sound",
+          "Light"
+        ]
+      },
+      "zh": {
+        "prompt": "在空气中，哪个传播得更快？",
+        "options": [
+          "声音",
+          "光"
+        ]
+      },
+      "answer": 1,
+      "notes": "Light ≈ 300,000 km/s; sound ≈ 343 m/s",
+      "source": "https://physics.nist.gov/cgi-bin/cuu/Value?c ; CRC Handbook of Chemistry and Physics (speed of sound in air)"
+    },
+    {
+      "id": "t016",
+      "type": "2afc",
+      "domain": "physics",
+      "difficulty_hint": "medium",
+      "en": {
+        "prompt": "Which metal is denser?",
+        "options": [
+          "Gold",
+          "Lead"
+        ]
+      },
+      "zh": {
+        "prompt": "哪种金属的密度更大？",
+        "options": [
+          "金",
+          "铅"
+        ]
+      },
+      "answer": 0,
+      "notes": "Gold 19.3 g/cm³; lead 11.3 g/cm³",
+      "source": "https://pubchem.ncbi.nlm.nih.gov/element/Gold ; https://pubchem.ncbi.nlm.nih.gov/element/Lead"
+    },
+    {
+      "id": "t017",
+      "type": "2afc",
+      "domain": "physics",
+      "difficulty_hint": "medium",
+      "en": {
+        "prompt": "Where does sound travel faster?",
+        "options": [
+          "In water",
+          "In air"
+        ]
+      },
+      "zh": {
+        "prompt": "声音在哪里传播得更快？",
+        "options": [
+          "水中",
+          "空气中"
+        ]
+      },
+      "answer": 0,
+      "notes": "Water ≈ 1,480 m/s; air ≈ 343 m/s",
+      "source": "https://www.britannica.com/science/sound-physics ; CRC Handbook of Chemistry and Physics"
+    },
+    {
+      "id": "t018",
+      "type": "2afc",
+      "domain": "physics",
+      "difficulty_hint": "hard",
+      "en": {
+        "prompt": "Which planet has the hotter surface?",
+        "options": [
+          "Mercury",
+          "Venus"
+        ]
+      },
+      "zh": {
+        "prompt": "哪颗行星的表面温度更高？",
+        "options": [
+          "水星",
+          "金星"
+        ]
+      },
+      "answer": 1,
+      "notes": "Venus ≈ 465 °C everywhere; Mercury peaks ≈ 430 °C",
+      "source": "https://science.nasa.gov/venus/facts/ ; https://science.nasa.gov/mercury/facts/ (Venus ~465 °C surface; Mercury up to ~430 °C)"
+    },
+    {
+      "id": "t019",
+      "type": "2afc",
+      "domain": "physics",
+      "difficulty_hint": "hard",
+      "en": {
+        "prompt": "Which planet has the larger diameter?",
+        "options": [
+          "Neptune",
+          "Uranus"
+        ]
+      },
+      "zh": {
+        "prompt": "哪颗行星的直径更大？",
+        "options": [
+          "海王星",
+          "天王星"
+        ]
+      },
+      "answer": 1,
+      "notes": "Uranus 51,118 km; Neptune 49,528 km (Neptune is heavier, Uranus is wider)",
+      "source": "https://nssdc.gsfc.nasa.gov/planetary/factsheet/"
+    },
+    {
+      "id": "t020",
+      "type": "2afc",
+      "domain": "physics",
+      "difficulty_hint": "easy",
+      "en": {
+        "prompt": "Which particle has more mass?",
+        "options": [
+          "A proton",
+          "An electron"
+        ]
+      },
+      "zh": {
+        "prompt": "哪种粒子的质量更大？",
+        "options": [
+          "质子",
+          "电子"
+        ]
+      },
+      "answer": 0,
+      "notes": "Proton ≈ 1,836 times the electron's mass",
+      "source": "https://physics.nist.gov/cuu/Constants/ (CODATA)"
+    },
+    {
+      "id": "t021",
+      "type": "2afc",
+      "domain": "physics",
+      "difficulty_hint": "medium",
+      "en": {
+        "prompt": "Which colour of light has the longer wavelength?",
+        "options": [
+          "Blue",
+          "Red"
+        ]
+      },
+      "zh": {
+        "prompt": "哪种颜色的光波长更长？",
+        "options": [
+          "蓝光",
+          "红光"
+        ]
+      },
+      "answer": 1,
+      "notes": "Red ≈ 620–750 nm; blue ≈ 450–495 nm",
+      "source": "https://science.nasa.gov/ems/09_visiblelight/"
+    },
+    {
+      "id": "t022",
+      "type": "2afc",
+      "domain": "biology",
+      "difficulty_hint": "medium",
+      "en": {
+        "prompt": "Who has more bones?",
+        "options": [
+          "A newborn baby",
+          "An adult"
+        ]
+      },
+      "zh": {
+        "prompt": "谁的骨头块数更多？",
+        "options": [
+          "新生儿",
+          "成年人"
+        ]
+      },
+      "answer": 0,
+      "notes": "Newborn ≈ 270–300 bones, many fuse; adult 206",
+      "source": "https://www.britannica.com/science/human-skeleton ; Gray's Anatomy (standard reference)"
+    },
+    {
+      "id": "t023",
+      "type": "2afc",
+      "domain": "biology",
+      "difficulty_hint": "easy",
+      "en": {
+        "prompt": "Which is the largest organ of the human body?",
+        "options": [
+          "The liver",
+          "The skin"
+        ]
+      },
+      "zh": {
+        "prompt": "人体最大的器官是哪个？",
+        "options": [
+          "肝脏",
+          "皮肤"
+        ]
+      },
+      "answer": 1,
+      "notes": "Skin is the largest organ; the liver is the largest internal organ",
+      "source": "https://www.britannica.com/science/skin"
+    },
+    {
+      "id": "t024",
+      "type": "2afc",
+      "domain": "biology",
+      "difficulty_hint": "hard",
+      "en": {
+        "prompt": "Which has more chromosomes in each body cell?",
+        "options": [
+          "A human",
+          "A chimpanzee"
+        ]
+      },
+      "zh": {
+        "prompt": "谁的体细胞里染色体更多？",
+        "options": [
+          "人",
+          "黑猩猩"
+        ]
+      },
+      "answer": 1,
+      "notes": "Chimpanzee 48; human 46 (human chromosome 2 is a fusion of two ape chromosomes)",
+      "source": "https://www.britannica.com/animal/chimpanzee (48 chromosomes) ; https://www.genome.gov/about-genomics/fact-sheets/Chromosomes-Fact-Sheet (human 46)"
+    },
+    {
+      "id": "t025",
+      "type": "2afc",
+      "domain": "biology",
+      "difficulty_hint": "easy",
+      "en": {
+        "prompt": "Whose pregnancy lasts longer?",
+        "options": [
+          "An elephant's",
+          "A human's"
+        ]
+      },
+      "zh": {
+        "prompt": "谁的孕期更长？",
+        "options": [
+          "大象",
+          "人"
+        ]
+      },
+      "answer": 0,
+      "notes": "Elephant ≈ 22 months; human ≈ 9 months",
+      "source": "https://www.britannica.com/animal/elephant-mammal"
+    },
+    {
+      "id": "t026",
+      "type": "2afc",
+      "domain": "biology",
+      "difficulty_hint": "medium",
+      "en": {
+        "prompt": "Which animal is more closely related to whales?",
+        "options": [
+          "The hippopotamus",
+          "The shark"
+        ]
+      },
+      "zh": {
+        "prompt": "哪种动物和鲸的亲缘关系更近？",
+        "options": [
+          "河马",
+          "鲨鱼"
+        ]
+      },
+      "answer": 0,
+      "notes": "Hippos are the closest living relatives of whales; sharks are fish",
+      "source": "https://www.britannica.com/animal/cetacean/Evolution (hippopotamus = closest living relative of whales)"
+    },
+    {
+      "id": "t027",
+      "type": "2afc",
+      "domain": "biology",
+      "difficulty_hint": "medium",
+      "en": {
+        "prompt": "Which is longer in an adult human?",
+        "options": [
+          "The large intestine",
+          "The small intestine"
+        ]
+      },
+      "zh": {
+        "prompt": "成年人体内，哪段肠更长？",
+        "options": [
+          "大肠",
+          "小肠"
+        ]
+      },
+      "answer": 1,
+      "notes": "Small intestine ≈ 6 m; large intestine ≈ 1.5 m",
+      "source": "https://www.britannica.com/science/small-intestine ; https://www.britannica.com/science/large-intestine"
+    },
+    {
+      "id": "t028",
+      "type": "2afc",
+      "domain": "biology",
+      "difficulty_hint": "hard",
+      "en": {
+        "prompt": "In an emergency, red blood cells of which type can be given to almost anyone?",
+        "options": [
+          "AB positive",
+          "O negative"
+        ]
+      },
+      "zh": {
+        "prompt": "紧急情况下，哪种血型的红细胞几乎可以输给任何人？",
+        "options": [
+          "AB 型 Rh 阳性",
+          "O 型 Rh 阴性"
+        ]
+      },
+      "answer": 1,
+      "notes": "O negative = universal red-cell donor; AB positive = universal recipient",
+      "source": "https://www.redcrossblood.org/donate-blood/blood-types.html"
+    },
+    {
+      "id": "t029",
+      "type": "2afc",
+      "domain": "math",
+      "difficulty_hint": "medium",
+      "en": {
+        "prompt": "Which is larger?",
+        "options": [
+          "2¹⁰",
+          "10³"
+        ]
+      },
+      "zh": {
+        "prompt": "哪个更大？",
+        "options": [
+          "2¹⁰",
+          "10³"
+        ]
+      },
+      "answer": 0,
+      "notes": "2¹⁰ = 1,024; 10³ = 1,000",
+      "source": "arithmetic"
+    },
+    {
+      "id": "t030",
+      "type": "2afc",
+      "domain": "math",
+      "difficulty_hint": "medium",
+      "en": {
+        "prompt": "Which is a prime number?",
+        "options": [
+          "91",
+          "97"
+        ]
+      },
+      "zh": {
+        "prompt": "哪个是质数？",
+        "options": [
+          "91",
+          "97"
+        ]
+      },
+      "answer": 1,
+      "notes": "91 = 7 × 13; 97 is prime",
+      "source": "arithmetic ; https://oeis.org/A000040"
+    },
+    {
+      "id": "t031",
+      "type": "2afc",
+      "domain": "math",
+      "difficulty_hint": "hard",
+      "en": {
+        "prompt": "Which is larger?",
+        "options": [
+          "π",
+          "√10"
+        ]
+      },
+      "zh": {
+        "prompt": "哪个更大？",
+        "options": [
+          "π",
+          "√10"
+        ]
+      },
+      "answer": 1,
+      "notes": "π ≈ 3.1416; √10 ≈ 3.1623",
+      "source": "arithmetic"
+    },
+    {
+      "id": "t032",
+      "type": "2afc",
+      "domain": "math",
+      "difficulty_hint": "hard",
+      "en": {
+        "prompt": "In a room of 23 people, what is the chance that at least two share a birthday?",
+        "options": [
+          "More than 50%",
+          "Less than 50%"
+        ]
+      },
+      "zh": {
+        "prompt": "一个房间里有 23 个人，至少有两人生日相同的概率是多少？",
+        "options": [
+          "高于 50%",
+          "低于 50%"
+        ]
+      },
+      "answer": 0,
+      "notes": "≈ 50.7% (365 equally likely birthdays, ignoring 29 Feb)",
+      "source": "Feller, An Introduction to Probability Theory and Its Applications, vol. 1 (birthday problem): 1 − 365!/(342!·365²³) ≈ 0.507"
+    },
+    {
+      "id": "t033",
+      "type": "2afc",
+      "domain": "math",
+      "difficulty_hint": "easy",
+      "en": {
+        "prompt": "Which is larger?",
+        "options": [
+          "3⁴",
+          "4³"
+        ]
+      },
+      "zh": {
+        "prompt": "哪个更大？",
+        "options": [
+          "3⁴",
+          "4³"
+        ]
+      },
+      "answer": 0,
+      "notes": "3⁴ = 81; 4³ = 64",
+      "source": "arithmetic"
+    },
+    {
+      "id": "t034",
+      "type": "2afc",
+      "domain": "math",
+      "difficulty_hint": "easy",
+      "en": {
+        "prompt": "You flip a fair coin 3 times. Which is more likely?",
+        "options": [
+          "Exactly 3 heads",
+          "Exactly 2 heads"
+        ]
+      },
+      "zh": {
+        "prompt": "把一枚均匀的硬币抛 3 次，哪种结果更可能出现？",
+        "options": [
+          "正好 3 次正面朝上",
+          "正好 2 次正面朝上"
+        ]
+      },
+      "answer": 1,
+      "notes": "P(2 heads) = 3/8; P(3 heads) = 1/8",
+      "source": "binomial probability (arithmetic)"
+    },
+    {
+      "id": "t035",
+      "type": "2afc",
+      "domain": "everyday",
+      "difficulty_hint": "medium",
+      "en": {
+        "prompt": "Gram for gram, which has more calories?",
+        "options": [
+          "Fat",
+          "Sugar"
+        ]
+      },
+      "zh": {
+        "prompt": "按每克计算，哪个热量更高？",
+        "options": [
+          "脂肪",
+          "糖"
+        ]
+      },
+      "answer": 0,
+      "notes": "Fat ≈ 9 kcal/g; sugar (carbohydrate) ≈ 4 kcal/g",
+      "source": "https://www.fao.org/3/y5022e/y5022e04.htm (FAO 2003, Atwater factors)"
+    },
+    {
+      "id": "t036",
+      "type": "2afc",
+      "domain": "everyday",
+      "difficulty_hint": "easy",
+      "en": {
+        "prompt": "Cup for cup, which usually has more caffeine?",
+        "options": [
+          "Green tea",
+          "Brewed coffee"
+        ]
+      },
+      "zh": {
+        "prompt": "同样一杯，哪个通常含咖啡因更多？",
+        "options": [
+          "绿茶",
+          "现煮咖啡"
+        ]
+      },
+      "answer": 1,
+      "notes": "Brewed coffee ≈ 95 mg per 240 mL; green tea ≈ 30 mg",
+      "source": "https://www.mayoclinic.org/healthy-lifestyle/nutrition-and-healthy-eating/in-depth/caffeine/art-20049372"
+    },
+    {
+      "id": "t037",
+      "type": "2afc",
+      "domain": "everyday",
+      "difficulty_hint": "medium",
+      "en": {
+        "prompt": "On a standard six-sided die, what do opposite faces add up to?",
+        "options": [
+          "7",
+          "6"
+        ]
+      },
+      "zh": {
+        "prompt": "标准六面骰子上，相对两面的点数加起来是多少？",
+        "options": [
+          "7",
+          "6"
+        ]
+      },
+      "answer": 0,
+      "notes": "1–6, 2–5, 3–4: always 7",
+      "source": "https://www.britannica.com/topic/dice"
+    },
+    {
+      "id": "t038",
+      "type": "2afc",
+      "domain": "everyday",
+      "difficulty_hint": "easy",
+      "en": {
+        "prompt": "Which weighs more?",
+        "options": [
+          "1 litre of olive oil",
+          "1 litre of water"
+        ]
+      },
+      "zh": {
+        "prompt": "哪个更重？",
+        "options": [
+          "1 升橄榄油",
+          "1 升水"
+        ]
+      },
+      "answer": 1,
+      "notes": "Olive oil ≈ 0.91 kg/L; water ≈ 1.00 kg/L (oil floats)",
+      "source": "CRC Handbook of Chemistry and Physics (densities)"
+    },
+    {
+      "id": "t039",
+      "type": "2afc",
+      "domain": "everyday",
+      "difficulty_hint": "hard",
+      "en": {
+        "prompt": "Per 100 grams, which has more vitamin C?",
+        "options": [
+          "A red bell pepper",
+          "An orange"
+        ]
+      },
+      "zh": {
+        "prompt": "每 100 克里，哪个维生素 C 含量更高？",
+        "options": [
+          "红甜椒",
+          "橙子"
+        ]
+      },
+      "answer": 0,
+      "notes": "Red bell pepper ≈ 128 mg; orange ≈ 53 mg (raw)",
+      "source": "https://fdc.nal.usda.gov/ (FoodData Central, SR Legacy: peppers, sweet, red, raw; oranges, raw)"
+    },
+    {
+      "id": "t040",
+      "type": "2afc",
+      "domain": "everyday",
+      "difficulty_hint": "hard",
+      "en": {
+        "prompt": "Per 100 grams, which has more calories?",
+        "options": [
+          "A banana",
+          "An avocado"
+        ]
+      },
+      "zh": {
+        "prompt": "每 100 克里，哪个热量更高？",
+        "options": [
+          "香蕉",
+          "牛油果"
+        ]
+      },
+      "answer": 1,
+      "notes": "Avocado ≈ 160 kcal; banana ≈ 89 kcal (raw)",
+      "source": "https://fdc.nal.usda.gov/ (FoodData Central, SR Legacy: avocados, raw; bananas, raw)"
+    },
+    {
+      "id": "r001",
+      "type": "interval",
+      "domain": "geography",
+      "difficulty_hint": "medium",
+      "en": {
+        "prompt": "How high is Mount Kilimanjaro above sea level?",
+        "unit": "m"
+      },
+      "zh": {
+        "prompt": "乞力马扎罗山的海拔是多少？",
+        "unit": "米"
+      },
+      "answer": 5895,
+      "accept": [
+        10,
+        20000
+      ],
+      "notes": "5,895 m (some surveys 5,892 m) (Africa)",
+      "source": "https://whc.unesco.org/en/list/403 ; https://www.britannica.com/place/Kilimanjaro"
+    },
+    {
+      "id": "r002",
+      "type": "interval",
+      "domain": "geography",
+      "difficulty_hint": "hard",
+      "en": {
+        "prompt": "How tall is Angel Falls in Venezuela, from top to bottom?",
+        "unit": "m"
+      },
+      "zh": {
+        "prompt": "委内瑞拉的安赫尔瀑布从顶到底有多高？",
+        "unit": "米"
+      },
+      "answer": 979,
+      "accept": [
+        1,
+        10000
+      ],
+      "notes": "979 m total; longest single drop 807 m (South America)",
+      "source": "https://www.britannica.com/place/Angel-Falls"
+    },
+    {
+      "id": "r003",
+      "type": "interval",
+      "domain": "geography",
+      "difficulty_hint": "hard",
+      "en": {
+        "prompt": "How long is the Danube River?",
+        "unit": "km"
+      },
+      "zh": {
+        "prompt": "多瑙河全长多少？",
+        "unit": "公里"
+      },
+      "answer": 2850,
+      "accept": [
+        10,
+        100000
+      ],
+      "notes": "≈ 2,850 km (Europe)",
+      "source": "https://www.britannica.com/place/Danube-River"
+    },
+    {
+      "id": "r004",
+      "type": "interval",
+      "domain": "geography",
+      "difficulty_hint": "medium",
+      "en": {
+        "prompt": "How long is Australia's Great Barrier Reef, end to end?",
+        "unit": "km"
+      },
+      "zh": {
+        "prompt": "澳大利亚的大堡礁从一端到另一端有多长？",
+        "unit": "公里"
+      },
+      "answer": 2300,
+      "accept": [
+        1,
+        100000
+      ],
+      "notes": "≈ 2,300 km (Oceania)",
+      "source": "https://www.gbrmpa.gov.au/ (Great Barrier Reef Marine Park Authority: about 2,300 km)"
+    },
+    {
+      "id": "r005",
+      "type": "interval",
+      "domain": "history",
+      "difficulty_hint": "medium",
+      "en": {
+        "prompt": "In what year did the Ottoman Empire capture Constantinople (today's Istanbul)?",
+        "unit": "AD"
+      },
+      "zh": {
+        "prompt": "奥斯曼帝国在哪一年攻占了君士坦丁堡（今伊斯坦布尔）？",
+        "unit": "年"
+      },
+      "answer": 1453,
+      "accept": [
+        1,
+        2026
+      ],
+      "notes": "29 May 1453 (Europe / West Asia)",
+      "source": "https://www.britannica.com/event/Fall-of-Constantinople-1453"
+    },
+    {
+      "id": "r006",
+      "type": "interval",
+      "domain": "history",
+      "difficulty_hint": "hard",
+      "en": {
+        "prompt": "In what year was Genghis Khan proclaimed ruler of all the Mongols?",
+        "unit": "AD"
+      },
+      "zh": {
+        "prompt": "成吉思汗在哪一年被推举为全蒙古的大汗？",
+        "unit": "年"
+      },
+      "answer": 1206,
+      "accept": [
+        1,
+        2026
+      ],
+      "notes": "1206 (East / Central Asia)",
+      "source": "https://www.britannica.com/biography/Genghis-Khan"
+    },
+    {
+      "id": "r007",
+      "type": "interval",
+      "domain": "history",
+      "difficulty_hint": "hard",
+      "en": {
+        "prompt": "In what year did Spanish forces capture Tenochtitlan, the Aztec capital?",
+        "unit": "AD"
+      },
+      "zh": {
+        "prompt": "西班牙军队在哪一年攻占了阿兹特克帝国的首都特诺奇蒂特兰？",
+        "unit": "年"
+      },
+      "answer": 1521,
+      "accept": [
+        1,
+        2026
+      ],
+      "notes": "13 Aug 1521 (Americas)",
+      "source": "https://www.britannica.com/place/Tenochtitlan"
+    },
+    {
+      "id": "r008",
+      "type": "interval",
+      "domain": "history",
+      "difficulty_hint": "easy",
+      "en": {
+        "prompt": "In what year did Nelson Mandela become president of South Africa?",
+        "unit": "AD"
+      },
+      "zh": {
+        "prompt": "纳尔逊·曼德拉在哪一年成为南非总统？",
+        "unit": "年"
+      },
+      "answer": 1994,
+      "accept": [
+        1,
+        2026
+      ],
+      "notes": "May 1994 (Africa)",
+      "source": "https://www.britannica.com/biography/Nelson-Mandela"
+    },
+    {
+      "id": "r009",
+      "type": "interval",
+      "domain": "physics",
+      "difficulty_hint": "easy",
+      "en": {
+        "prompt": "How fast does sound travel through air at 20 °C?",
+        "unit": "m/s"
+      },
+      "zh": {
+        "prompt": "气温 20 °C 时，声音在空气中的传播速度是多少？",
+        "unit": "米/秒"
+      },
+      "answer": 343,
+      "accept": [
+        1,
+        100000
+      ],
+      "notes": "≈ 343 m/s in dry air",
+      "source": "CRC Handbook of Chemistry and Physics (speed of sound in dry air at 20 °C)"
+    },
+    {
+      "id": "r010",
+      "type": "interval",
+      "domain": "physics",
+      "difficulty_hint": "medium",
+      "en": {
+        "prompt": "What is the average distance from Earth to the Moon?",
+        "unit": "km"
+      },
+      "zh": {
+        "prompt": "地球到月球的平均距离是多少？",
+        "unit": "公里"
+      },
+      "answer": 384400,
+      "accept": [
+        100,
+        100000000
+      ],
+      "notes": "≈ 384,400 km",
+      "source": "https://nssdc.gsfc.nasa.gov/planetary/factsheet/moonfact.html"
+    },
+    {
+      "id": "r011",
+      "type": "interval",
+      "domain": "physics",
+      "difficulty_hint": "easy",
+      "en": {
+        "prompt": "How long does sunlight take to reach Earth?",
+        "unit": "seconds"
+      },
+      "zh": {
+        "prompt": "太阳光到达地球需要多长时间？",
+        "unit": "秒"
+      },
+      "answer": 499,
+      "accept": [
+        1,
+        1000000
+      ],
+      "notes": "≈ 499 s (8 min 19 s) = 1 au ÷ c",
+      "source": "IAU 2012 Resolution B2 (1 au = 149,597,870,700 m) ÷ c = 299,792,458 m/s"
+    },
+    {
+      "id": "r012",
+      "type": "interval",
+      "domain": "biology",
+      "difficulty_hint": "easy",
+      "en": {
+        "prompt": "How many bones are in an adult human body?",
+        "unit": "bones"
+      },
+      "zh": {
+        "prompt": "成年人全身共有多少块骨头？",
+        "unit": "块"
+      },
+      "answer": 206,
+      "accept": [
+        1,
+        10000
+      ],
+      "notes": "206",
+      "source": "https://www.britannica.com/science/human-skeleton"
+    },
+    {
+      "id": "r013",
+      "type": "interval",
+      "domain": "biology",
+      "difficulty_hint": "hard",
+      "en": {
+        "prompt": "On average, how long does a human red blood cell live?",
+        "unit": "days"
+      },
+      "zh": {
+        "prompt": "人的红细胞平均能存活多少天？",
+        "unit": "天"
+      },
+      "answer": 120,
+      "accept": [
+        0,
+        100000
+      ],
+      "notes": "≈ 120 days",
+      "source": "https://www.britannica.com/science/red-blood-cell"
+    },
+    {
+      "id": "r014",
+      "type": "interval",
+      "domain": "biology",
+      "difficulty_hint": "medium",
+      "en": {
+        "prompt": "How many pairs of ribs does a typical adult human have?",
+        "unit": "pairs"
+      },
+      "zh": {
+        "prompt": "成年人通常有多少对肋骨？",
+        "unit": "对"
+      },
+      "answer": 12,
+      "accept": [
+        1,
+        100
+      ],
+      "notes": "12 pairs (24 ribs)",
+      "source": "Gray's Anatomy (standard reference): 12 pairs of ribs"
+    },
+    {
+      "id": "r015",
+      "type": "interval",
+      "domain": "math",
+      "difficulty_hint": "medium",
+      "en": {
+        "prompt": "How many prime numbers are there below 100?",
+        "unit": "primes"
+      },
+      "zh": {
+        "prompt": "小于 100 的质数有多少个？",
+        "unit": "个"
+      },
+      "answer": 25,
+      "accept": [
+        0,
+        100
+      ],
+      "notes": "25 (2, 3, 5, …, 97)",
+      "source": "https://oeis.org/A000720 (π(100) = 25)"
+    },
+    {
+      "id": "r016",
+      "type": "interval",
+      "domain": "math",
+      "difficulty_hint": "medium",
+      "en": {
+        "prompt": "In how many different orders can you line up 5 different books on a shelf?",
+        "unit": "orders"
+      },
+      "zh": {
+        "prompt": "把 5 本不同的书在书架上排成一排，一共有多少种排法？",
+        "unit": "种"
+      },
+      "answer": 120,
+      "accept": [
+        1,
+        1000000
+      ],
+      "notes": "5! = 120",
+      "source": "arithmetic (5! = 120)"
+    },
+    {
+      "id": "r017",
+      "type": "interval",
+      "domain": "math",
+      "difficulty_hint": "easy",
+      "en": {
+        "prompt": "How many edges does a cube have?",
+        "unit": "edges"
+      },
+      "zh": {
+        "prompt": "一个正方体有多少条棱？",
+        "unit": "条"
+      },
+      "answer": 12,
+      "accept": [
+        1,
+        100
+      ],
+      "notes": "12",
+      "source": "geometry (a cube has 8 vertices, 12 edges, 6 faces)"
+    },
+    {
+      "id": "r018",
+      "type": "interval",
+      "domain": "everyday",
+      "difficulty_hint": "easy",
+      "en": {
+        "prompt": "How long is a marathon?",
+        "unit": "km"
+      },
+      "zh": {
+        "prompt": "马拉松全程有多长？",
+        "unit": "公里"
+      },
+      "answer": 42.195,
+      "accept": [
+        1,
+        1000
+      ],
+      "notes": "42.195 km",
+      "source": "World Athletics Competition Rules (marathon = 42.195 km)"
+    },
+    {
+      "id": "r019",
+      "type": "interval",
+      "domain": "everyday",
+      "difficulty_hint": "easy",
+      "en": {
+        "prompt": "How many keys does a standard modern piano have?",
+        "unit": "keys"
+      },
+      "zh": {
+        "prompt": "一架标准的现代钢琴有多少个琴键？",
+        "unit": "个"
+      },
+      "answer": 88,
+      "accept": [
+        1,
+        1000
+      ],
+      "notes": "88 (52 white, 36 black)",
+      "source": "https://www.britannica.com/art/piano"
+    },
+    {
+      "id": "r020",
+      "type": "interval",
+      "domain": "everyday",
+      "difficulty_hint": "hard",
+      "en": {
+        "prompt": "How high above the floor is the rim of a standard basketball hoop?",
+        "unit": "cm"
+      },
+      "zh": {
+        "prompt": "标准篮球架的篮圈离地面有多高？",
+        "unit": "厘米"
+      },
+      "answer": 305,
+      "accept": [
+        10,
+        2000
+      ],
+      "notes": "3.05 m (10 ft)",
+      "source": "FIBA Official Basketball Rules (ring 3.05 m above the floor)"
+    },
+    {
+      "id": "c001",
+      "type": "attention",
+      "domain": "math",
+      "difficulty_hint": "easy",
+      "en": {
+        "prompt": "Which number is larger?",
+        "options": [
+          "100",
+          "10"
+        ]
+      },
+      "zh": {
+        "prompt": "哪个数更大？",
+        "options": [
+          "100",
+          "10"
+        ]
+      },
+      "answer": 0,
+      "notes": "attention check",
+      "source": "attention check (self-evident)"
+    },
+    {
+      "id": "c002",
+      "type": "attention",
+      "domain": "everyday",
+      "difficulty_hint": "easy",
+      "en": {
+        "prompt": "Which of these is an animal?",
+        "options": [
+          "A table",
+          "A dog"
+        ]
+      },
+      "zh": {
+        "prompt": "下面哪个是动物？",
+        "options": [
+          "桌子",
+          "狗"
+        ]
+      },
+      "answer": 1,
+      "notes": "attention check",
+      "source": "attention check (self-evident)"
+    }
   ]
 }

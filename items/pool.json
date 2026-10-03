@@ -1422,9 +1422,9 @@
         0.1,
         20000000
       ],
-      "source": "https://www.sla.gov.sg/",
+      "source": "https://data.gov.sg/datasets?query=land+area",
       "difficulty_hint": "unknown",
-      "volatile": false,
+      "volatile": true,
       "generated_at": "2026-10-03",
       "notes": "fact-checked 2026-10-03 | land area 744.3 km² per Singapore Land Authority (Dec 2025); 719 km² was the 2015 figure"
     },
@@ -8450,16 +8450,16 @@
         "prompt": "How long is the River Thames?",
         "unit": "km"
       },
-      "answer": 334,
+      "answer": 346,
       "accept": [
         1,
         8000
       ],
-      "source": "https://www.wikidata.org/wiki/Q19686#P2043",
+      "source": "https://en.wikipedia.org/wiki/River_Thames",
       "difficulty_hint": "unknown",
       "volatile": false,
       "generated_at": "2026-10-03",
-      "notes": "references disagree; value follows Britannica"
+      "notes": "references disagree (Britannica 330; Wikipedia/Environment Agency 346; Wikidata 334 from ruwiki); value follows the 346 km total length"
     },
     {
       "id": "w0446",
@@ -12023,16 +12023,16 @@
         "prompt": "What is the surface area of Lake Victoria?",
         "unit": "km²"
       },
-      "answer": 68100,
+      "answer": 68800,
       "accept": [
         0.1,
         400000
       ],
-      "source": "https://www.wikidata.org/wiki/Q5505#P2046",
+      "source": "https://wldb.ilec.or.jp/Lake/AFR-05",
       "difficulty_hint": "unknown",
       "volatile": false,
       "generated_at": "2026-10-03",
-      "notes": "references disagree; value follows Britannica"
+      "notes": "references disagree (Britannica 69,484; ILEC 68,800; Wikidata 68,100); value follows ILEC"
     },
     {
       "id": "w0634",
@@ -16077,7 +16077,7 @@
         1,
         1000
       ],
-      "source": "https://www.esbnyc.com/about/facts",
+      "source": "https://www.esbnyc.com/about/facts-figures",
       "difficulty_hint": "unknown",
       "volatile": false,
       "generated_at": "2026-10-03",
