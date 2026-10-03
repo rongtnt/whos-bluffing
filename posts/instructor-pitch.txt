@@ -1,0 +1,5 @@
+EN (forwardable):
+A free tool for the classic overconfidence demo: students take a 5-minute test on their phones (two-choice questions with confidence ratings + 90% ranges), and the class's calibration curve appears live on your screen. Create a class code at {URL}/class — no accounts, aggregates only, nothing shown until 5 students finish. English and Chinese. Open source and non-commercial.
+
+中文（可转发）：
+一个给课堂用的免费工具，做经典的"过度自信"演示：学生用手机做 5 分钟测试（二选一打信心分 + 给 90% 区间），全班的 calibration 曲线实时出现在你的屏幕上。到 {URL}/class 建一个课堂码即可，不用注册，只显示全班汇总，不满 5 人不显示。中英文都有，开源，非商业。

@@ -1,0 +1,3 @@
+Title: Free classroom tool for the overconfidence demo (intro psych / stats / econ / decision making)
+
+If you run the "give me a 90% confidence interval" demonstration in lecture, this does it with no clickers and no accounts. You create a class code at {URL}/class, students open the link on their phones, and the class's calibration curve builds live on your screen as they finish. 5 minutes per student. You only ever see aggregates, and nothing displays until 5 students have finished. English and Chinese. Free, open source, no ads, no data sold. Built by an undergraduate as part of an open study of overconfidence; the anonymous pooled data will be released publicly. Feedback on what would make it more useful in class is welcome.
