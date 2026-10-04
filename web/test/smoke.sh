@@ -97,16 +97,36 @@ curl -fs -o /dev/null "$BASE/" || fail "wrangler pages dev did not start within 
 pass "wrangler pages dev is up on $BASE"
 
 echo "== static pages"
-for p in / /test /stats /class /class/d/AAAAAAAAAAAAAAAAAAAAAAAA /items.json /vendor/qrcode.js; do
+for p in / /test /stats /class /class/d/AAAAAAAAAAAAAAAAAAAAAAAA /items.json /vendor/qrcode.js /site.js /home.js /styles.css; do
   req GET "$p"; [ "$STATUS" = 200 ] || fail "GET $p (status $STATUS)"; pass "GET $p -> 200"
 done
-# Unknown paths also answer 200 (the app's index.html), so these check content, not just the status.
+# content PATH TEXT LABEL: 200 and the page's own text (a page can only be told apart from another by its content).
 content() { req GET "$1"; [ "$STATUS" = 200 ] && [[ "$BODY" == *"$2"* ]] || fail "GET $1 should contain '$2' (status $STATUS)" "$BODY"; pass "GET $1 -> $3"; }
+content / 'id="play"' 'home with the Play button'
+content /test '<title>Full assessment' 'full assessment shell'
+content /stats '<title>Live stats' 'stats shell'
+content /class '<title>Create a class code' 'class shell'
+content /class/d/AAAAAAAAAAAAAAAAAAAAAAAA '<script type="module" src="/app.js">' 'class dashboard (rewritten to the class shell, URL kept)'
+content /slack '<h1 id="slack-title">HowSure for Slack</h1>' 'Slack page'
+content /teachers '<a class="button primary" href="/class">' 'teachers page'
+content /research '<h2 id="numbers">Numbers we publish</h2>' 'research page (definitions checked against PREREG in test/site.test.js)'
+content /support 'What to include in a bug report' 'support page'
+content /privacy '<h1 id="privacy">Privacy</h1>' 'privacy page (generated from PRIVACY.md)'
+content /terms '<h1 id="terms-of-use">Terms of use</h1>' 'terms page (generated from TERMS.md)'
+content /docs/api '<code>GET /api/daily?date=YYYY-MM-DD</code>' 'API docs (generated from docs/api-daily.md)'
 content /tests/overconfidence-test '<title>Overconfidence test' 'SEO page'
 content /tests/estimation-test '<title>Estimation test' 'SEO page'
 content /tests/calibration-test '<title>Calibration test' 'SEO page'
 content /sitemap.xml '<loc>https://howsure.me/tests/calibration-test</loc>' 'sitemap'
+content /sitemap.xml '<loc>https://howsure.me/slack</loc>' 'sitemap lists the new pages'
 content /robots.txt 'Sitemap: https://howsure.me/sitemap.xml' 'robots.txt'
+req GET /no-such-page
+[ "$STATUS" = 404 ] && [[ "$BODY" == *'<h1>Page not found</h1>'* ]] || fail "unknown path -> branded 404 (status $STATUS)" "$BODY"
+pass "GET /no-such-page -> 404 with the branded 404.html"
+for f in og.png:image/png favicon-32.png:image/png apple-touch-icon.png:image/png favicon.svg:image/svg+xml; do
+  META=$(curl -s -o /dev/null -w '%{http_code} %{content_type}' "$BASE/${f%%:*}")
+  [[ "$META" == "200 ${f#*:}"* ]] || fail "GET /${f%%:*} -> 200 ${f#*:}" "$META"; pass "GET /${f%%:*} -> 200 ${f#*:}"
+done
 req GET /pool.json
 expect "GET /pool.json -> prompts only (no answers, sources or ranges)" 200 \
   'r.items.length >= 1500 && r.items.every((i) => Object.keys(i).sort().join() === "category,id,prompt,unit")'

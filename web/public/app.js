@@ -1,12 +1,13 @@
-// Entry point: loads strings and items, routes by path. / = daily game, /test = full assessment.
+// Entry point for the app pages: loads strings and items, routes by path. / = daily game (index.html), /test = full
+// assessment, /stats, /class and /class/d/<secret> (their own HTML shells; _redirects maps the dashboard to class.html).
 import { html, api } from './ui.js';
 import { startTest } from './test.js';
 import { renderDaily } from './daily.js';
 import { renderStats } from './stats.js';
 import { renderClassCreate, renderDashboard } from './class.js';
+import { renderProof } from './home.js';
 
 const app = document.getElementById('app');
-const foot = document.getElementById('foot');
 
 let strings = {};
 let items = [];
@@ -16,13 +17,23 @@ function t(key, vars = {}) {
   return typeof s === 'string' ? s.replace(/\{(\w+)\}/g, (m, k) => (k in vars ? vars[k] : m)) : key;
 }
 
-const NAV = [['/', 'nav.daily'], ['/test', 'nav.test'], ['/stats', 'nav.stats'], ['/class', 'nav.teach']];
-
-// Footer links (all but the current page) are hidden while questions are on screen.
+// While questions are on screen, the hero, the sections below the game and the footer are hidden (styles.css).
 function chrome(visible) {
-  foot.hidden = !visible;
-  const here = location.pathname.replace(/\/$/, '') || '/';
-  foot.innerHTML = html`${NAV.filter(([path]) => path !== here).map(([path, key], i) => html`${i ? ' · ' : ''}<a href="${path}">${t(key)}</a>`)}`;
+  document.body.classList.toggle('playing', !visible);
+}
+
+// The "Play today's game" buttons ([data-play]; the hero's is #play) run whatever the daily game says they do now:
+// start, resume, or scroll to today's result. A tap before the game has loaded runs as soon as it has.
+let playAction = null;
+let playPending = false;
+for (const b of document.querySelectorAll('[data-play]')) {
+  b.addEventListener('click', () => { if (playAction) playAction(); else playPending = true; });
+}
+function setPlay(label, action) {
+  const text = document.querySelector('#play span');
+  if (text && label) text.textContent = label;
+  playAction = action;
+  if (playPending) { playPending = false; action(); }
 }
 
 const ctx = {
@@ -31,6 +42,7 @@ const ctx = {
   get strings() { return strings; },
   get items() { return items; },
   chrome,
+  setPlay,
 };
 
 // /test: the 5-minute full assessment (?c=CODE pre-fills a class code).
@@ -65,28 +77,30 @@ function renderTestLanding() {
 }
 
 function route() {
-  chrome(true);
   const p = location.pathname;
   const dash = p.match(/^\/class\/d\/([A-Za-z0-9_-]{24})\/?$/);
+  if (p === '/') return Promise.all([renderDaily(ctx), renderProof(document.getElementById('proof'))]);
   if (/^\/test\/?$/.test(p)) return renderTestLanding();
   if (/^\/stats\/?$/.test(p)) return renderStats(ctx);
   if (/^\/class\/?$/.test(p)) return renderClassCreate(ctx);
   if (dash) return renderDashboard(ctx, dash[1]);
-  return renderDaily(ctx);
+  app.innerHTML = html`<p>${t('dash.not_found')}</p><p><a href="/">${t('nav.daily')}</a></p>`;
+  return null;
 }
 
 async function boot() {
   const load = (path) => fetch(path).then((r) => (r.ok ? r.json() : Promise.reject(new Error(path))));
+  const ready = () => document.documentElement.classList.add('ready'); // styles.css shows what is below the game
   try {
     const [en, bank] = await Promise.all([load('/i18n/en.json'), load('/items.json')]);
     strings = en;
     items = bank.items;
   } catch {
     app.innerHTML = html`<p class="msg">Couldn't load HowSure. Check your connection and reload.</p>`;
+    ready();
     return;
   }
-  document.title = t('meta.title');
-  route();
+  try { await route(); } finally { ready(); }
 }
 
 boot();

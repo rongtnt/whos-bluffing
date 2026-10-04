@@ -6,8 +6,8 @@ const SIZES = {
   square: { w: 1080, h: 1080, pad: 80, qr: 260, brand: 46, h1: 84, h2: 52, foot: 36 },
   wide: { w: 1200, h: 630, pad: 60, qr: 220, brand: 36, h1: 50, h2: 34, foot: 28 },
 };
-const FONT = 'system-ui, -apple-system, "Segoe UI", Roboto, sans-serif, "Apple Color Emoji", "Segoe UI Emoji", "Noto Color Emoji"';
-const COLORS = { bg: '#fbfaf7', fg: '#1d1d1f', muted: '#5f6368', accent: '#1f5eff' };
+const FONT = 'ui-sans-serif, -apple-system, "Segoe UI", Roboto, Helvetica, Arial, sans-serif, "Apple Color Emoji", "Segoe UI Emoji", "Noto Color Emoji"';
+const COLORS = { bg: '#FBFAF7', fg: '#111827', muted: '#5B6472', accent: '#2F5BFF' }; // light tokens (styles.css)
 
 // Greedy word wrap. measure(str) returns the width of str.
 export function wrap(text, maxWidth, measure) {

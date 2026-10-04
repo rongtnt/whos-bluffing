@@ -2,9 +2,11 @@
 //   items/items.json    -> web/public/items.json, web/functions/_items.json   (full assessment, English only)
 //   items/pool.json     -> web/public/pool.json (prompts only: no answers, no sources) and web/functions/_pool.json
 //   daily/schedule.json -> web/functions/_schedule.json                         (daily game)
+//   PRIVACY.md, TERMS.md, docs/api-daily.md -> web/public/privacy.html, terms.html, docs/api.html (sync-docs.js)
 import { readFileSync, writeFileSync, existsSync } from 'node:fs';
 import { fileURLToPath } from 'node:url';
 import { isDate } from '../functions/_daily.js';
+import { syncDocs } from './sync-docs.js';
 
 const ROOT = new URL('../../', import.meta.url);
 const TYPES = ['2afc', 'interval', 'attention'];
@@ -122,6 +124,7 @@ function main() {
   const days = Object.keys(schedule).sort();
   console.log(`synced items v${bank.version}: ${n('2afc')} two-alternative, ${n('interval')} interval, ${n('attention')} attention; `
     + `pool ${pool.items.length} items; schedule ${days.length} days${days.length ? ` (${days[0]} to ${days.at(-1)})` : ''}`);
+  console.log(`synced docs: ${syncDocs().join(', ')}`);
 }
 
 if (process.argv[1] === fileURLToPath(import.meta.url)) main();

@@ -2,8 +2,16 @@
 <urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
   <url><loc>https://howsure.me/</loc></url>
   <url><loc>https://howsure.me/test</loc></url>
+  <url><loc>https://howsure.me/slack</loc></url>
+  <url><loc>https://howsure.me/teachers</loc></url>
+  <url><loc>https://howsure.me/research</loc></url>
+  <url><loc>https://howsure.me/stats</loc></url>
+  <url><loc>https://howsure.me/class</loc></url>
+  <url><loc>https://howsure.me/support</loc></url>
+  <url><loc>https://howsure.me/docs/api</loc></url>
+  <url><loc>https://howsure.me/privacy</loc></url>
+  <url><loc>https://howsure.me/terms</loc></url>
   <url><loc>https://howsure.me/tests/overconfidence-test</loc></url>
   <url><loc>https://howsure.me/tests/estimation-test</loc></url>
   <url><loc>https://howsure.me/tests/calibration-test</loc></url>
-  <url><loc>https://howsure.me/stats</loc></url>
 </urlset>

@@ -2,15 +2,33 @@
 
 English only. A free daily game (five 90%-range questions, the same for everyone each UTC day) and a 5-minute full assessment (12 two-choice questions with a confidence rating, 6 numeric 90% ranges, 2 attention checks). Static frontend (vanilla ES modules, no bundler) on Cloudflare Pages, API in Pages Functions, data in D1. No accounts, no cookies, no third-party scripts or fonts, no IP or user-agent storage.
 
-## Routes
+## Page map
 
-| Path | What |
-|---|---|
-| `/` | Daily game: 5 questions, feedback after each, result with today's histogram, streak, 30-day hit rate, share text + card |
-| `/test` | Full assessment (`/test?c=CODE` joins a class) |
-| `/stats` | MAU / DAU / communities (from the daily KPI job, with the PREREG definitions), Anki contributors as a separate line, today's daily histogram, full-assessment curve |
-| `/class`, `/class/d/<secret>` | Classroom mode: create a code; the teacher's live dashboard (aggregates only, from 5 students) |
-| `/tests/overconfidence-test`, `/tests/estimation-test`, `/tests/calibration-test` | Static explainer pages (`public/tests/*.html`), plus `sitemap.xml` and `robots.txt` |
+Every page is a static HTML file in `public/` with the same head (title, description, canonical, Open Graph and Twitter tags pointing at `/og.png`, icons, theme colours), header and footer; `test/site.test.js` fails if a page drifts from `scripts/page.html` or is missing from `sitemap.xml`. Pages share `styles.css` (design tokens, light and dark) and `site.js` (theme toggle stored in localStorage, mobile menu, Slack link, command search). The app pages also load `app.js`.
+
+| Path | File | What |
+|---|---|---|
+| `/` | `index.html` | Hero with "Play today's game" (starts the daily game in place) and "Add to Slack"; social-proof numbers from 100 monthly players, else one line; then the game or today's result, How it works, Three ways to play, Open research, FAQ |
+| `/test` | `test.html` | Full assessment (`/test?c=CODE` joins a class) |
+| `/stats` | `stats.html` | MAU / DAU / communities (from the daily KPI job, with the PREREG definitions), Anki contributors as a separate line, today's daily histogram, full-assessment curve |
+| `/class`, `/class/d/<secret>` | `class.html` | Classroom mode: create a code; the teacher's live dashboard (aggregates only, from 5 students). `_redirects` serves the dashboard URLs from `class.html` |
+| `/slack` | `slack.html` | Slack app: Add to Slack, illustration of the post and the form, searchable commands, what we store, troubleshooting, FAQ |
+| `/teachers` | `teachers.html` | Classroom mode pitch, 3 steps, privacy points, link to `/class` |
+| `/research` | `research.html` | The question, H1–H3 in plain words, the MAU and community definitions quoted from PREREG, open data, pre-registration, how to cite |
+| `/support` | `support.html` | GitHub issues, FAQ links, what to put in a bug report |
+| `/privacy`, `/terms`, `/docs/api` | generated | Rendered from `PRIVACY.md`, `TERMS.md` and `docs/api-daily.md` by `scripts/sync-docs.js` (git-ignored, see below) |
+| `/tests/overconfidence-test`, `/tests/estimation-test`, `/tests/calibration-test` | `tests/*.html` | Static explainer pages |
+| anything else | `404.html` | Branded "Page not found" with status 404 (with a `404.html`, Pages no longer falls back to `index.html`) |
+
+**Add to Slack:** every Add to Slack button on `/slack` takes its address from the constant `SLACK_INSTALL_URL` at the top of `public/site.js`. It defaults to `https://YOUR-WORKER-HOST/slack/oauth/start`; set it to the Slack Worker's install URL (`slack/README.md`, step 8) before launch. The home page's "Add to Slack" goes to `/slack`.
+
+**Docs pages:** `npm run sync-items` (also run by `npm run dev`, `npm test` and `test/smoke.sh`) runs `scripts/sync-docs.js`, which converts `PRIVACY.md`, `TERMS.md` and `docs/api-daily.md` (repo root) into `public/privacy.html`, `public/terms.html` and `public/docs/api.html` inside the page template `scripts/page.html`. Edit the Markdown, never the generated HTML; run `npm run sync-items` before a deploy.
+
+**Images and screenshots** (`design/`, needs Google Chrome; `CHROME=/path/to/chromium` picks another build):
+- `node design/render.js assets` renders `public/og.png` (1200×630, from `design/og.html`), `public/favicon-32.png` and `public/apple-touch-icon.png` (180, from `design/icon.html`, which shows `public/favicon.svg`). Run it after changing the templates, the logo or the tokens, and commit the PNGs.
+- `node design/render.js screens` writes `design/screens/<page>-<width>-<theme>.png` for `/`, `/slack`, `/research` and the results screen at 375, 768 and 1280 px, light and dark, against a running `npm run dev` (it plays today's game through the API for four local players first).
+- `node design/render.js checks` reports layout shift and horizontal overflow at 375 and 1280 px on every page, a Tab walk over `/` and `/slack` (every control reached, each with a focus ring) and the theme toggle's label and persistence.
+- `node design/contrast.js` checks every text/background pair of the tokens in `styles.css`, light and dark.
 
 API (JSON): the daily game follows `docs/api-daily.md` exactly — `GET /api/daily`, `POST /api/daily/answer`, `POST /api/daily/complete`, `GET /api/daily/stats` (cached 60 s), `POST /api/flag`, `GET /api/kpi` — plus `POST /api/kpi/run` (needs the `x-kpi-key` header), `POST /api/submit`, `GET /api/stats`, `POST /api/class`, `GET /api/class/:code`, `GET /api/class/d/:secret[.csv]`.
 
@@ -24,7 +42,7 @@ npm run migrate:local        # creates the local D1 tables (0001-0004)
 npm run dev                  # syncs items, pool and schedule, then serves http://127.0.0.1:8788
 ```
 
-Tests: `npm test` (metric vectors, unit tests on a real SQLite database through `node:sqlite`, and the Python item-pipeline tests on a saved SPARQL fixture; no network) and `bash test/smoke.sh` (fresh local D1, real `wrangler pages dev`, curls every endpoint, plays a full day for three players, flags an item until it retires, runs the KPI job).
+Tests: `npm test` (metric vectors, unit tests on a real SQLite database through `node:sqlite`, the static-site checks in `test/site.test.js`, and the Python item-pipeline tests on a saved SPARQL fixture; no network) and `bash test/smoke.sh` (fresh local D1, real `wrangler pages dev`, curls every page and endpoint, plays a full day for three players, flags an item until it retires, runs the KPI job).
 
 ## Deploy (you run these; needs a free Cloudflare account)
 
@@ -87,9 +105,9 @@ No request reads an unbounded number of rows: the daily game reads at most a day
 
 ## Manual checklist (after each deploy)
 
-1. Phone, 375 px wide: `/`, `/test`, `/stats`, `/class`, one `/tests/...` page; no sideways scrolling anywhere.
-2. `/`: play the five questions; each "Lock in" shows the answer, its source link, your range and one-line note.
-3. Reload halfway through: the game resumes ("Continue (3 of 5 answered)"); after the end, `/` shows your result.
+1. Phone, 375 px wide: `/`, `/slack`, `/teachers`, `/research`, `/test`, `/stats`, `/class`, one `/tests/...` page; no sideways scrolling anywhere; the menu button opens the links; the theme toggle switches and stays switched on the next page.
+2. `/`: "Play today's game" starts the five questions; each "Lock in" shows the answer, its source link, your range and one-line note.
+3. Reload halfway through: the hero button reads "Continue (3 of 5 answered)" and resumes; after the end, `/` shows your result below the hero (the button reads "See your result").
 4. Result: grid, today's average and histogram, streak, 30-day hit rate; "Copy result" pastes `HowSure #N 🟩🟥… k/5 at 90%`, the average and the link.
 5. "Something wrong with this question?" sends a report (thanks message).
 6. `/test`: 20 items; a range with low above high is warned once, then swapped; results, chart and share card.

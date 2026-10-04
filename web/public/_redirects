@@ -1,0 +1,3 @@
+# Cloudflare Pages: with a 404.html present there is no single-page fallback any more, so the class dashboard
+# /class/d/<secret> is served by class.html (app.js routes on the path; the URL is kept).
+/class/d/* /class 200

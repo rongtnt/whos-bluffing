@@ -3,14 +3,14 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
-<title>Calibration test: does your confidence match your accuracy? | HowSure</title>
-<meta name="description" content="A free calibration test: say how sure you are on each answer, then see a chart of your confidence against how often you were right.">
-<link rel="canonical" href="https://howsure.me/tests/calibration-test">
+<title>Live stats | HowSure</title>
+<meta name="description" content="Monthly players, communities, today’s daily game and the full assessment’s calibration curve, with the definition behind every number.">
+<link rel="canonical" href="https://howsure.me/stats">
 <meta property="og:type" content="website">
 <meta property="og:site_name" content="HowSure">
-<meta property="og:title" content="Calibration test: does your confidence match your accuracy? | HowSure">
-<meta property="og:description" content="A free calibration test: say how sure you are on each answer, then see a chart of your confidence against how often you were right.">
-<meta property="og:url" content="https://howsure.me/tests/calibration-test">
+<meta property="og:title" content="Live stats | HowSure">
+<meta property="og:description" content="Monthly players, communities, today’s daily game and the full assessment’s calibration curve, with the definition behind every number.">
+<meta property="og:url" content="https://howsure.me/stats">
 <meta property="og:image" content="https://howsure.me/og.png">
 <meta property="og:image:width" content="1200">
 <meta property="og:image:height" content="630">
@@ -24,6 +24,7 @@
 <meta name="theme-color" content="#0E1116" media="(prefers-color-scheme: dark)">
 <link rel="stylesheet" href="/styles.css">
 <script src="/site.js"></script>
+<script type="module" src="/app.js"></script>
 </head>
 <body>
 <a class="skip" href="#main">Skip to content</a>
@@ -42,28 +43,8 @@
   </div>
 </header>
 <main id="main">
-<article class="wrap prose">
-<h1>Calibration test</h1>
-<p class="lead">You are well calibrated when your confidence matches your accuracy: of all the things you are 70% sure about, about 70% turn out to be true. This free test measures how close you are.</p>
-<p><a class="button primary block" href="/test">Take the 5-minute calibration test</a></p>
-
-<h2>What calibration means</h2>
-<p>Calibration is not the same as knowledge. Someone who knows little can be well calibrated by saying "50%, I'm not sure" whenever they are guessing. Someone who knows a lot can be badly calibrated by saying "100%" about things they are only fairly sure of. Calibration is about the honesty of your confidence, not the size of your memory.</p>
-
-<h2>How the test works</h2>
-<p>You answer two-choice general knowledge questions and rate each answer from 50% to 100%. The test then groups your answers by confidence level and checks how many in each group were right. If your 90% answers were right only 60% of the time, that gap is overconfidence. If your 60% answers were right 80% of the time, that is underconfidence.</p>
-<p>The test also asks for a few numbers as ranges you are 90% sure about, which is another way to see the same thing.</p>
-
-<h2>Reading your calibration chart</h2>
-<p>Your results include a chart with confidence along the bottom and accuracy up the side. The dashed diagonal line is perfect calibration. Points below the line mean you were more sure than right. Points above it mean you were right more often than you expected. Most people land below the line at high confidence, and the chart makes it easy to see exactly where.</p>
-
-<h2>Can calibration be trained?</h2>
-<p>Yes, and the method is simple: make many quick judgments, write down how sure you are, and get the answer soon after. Over time you learn what your own 70% or 90% feels like. Forecasters and weather services have long trained this way.</p>
-<p>The <a href="/">daily game</a> is built for exactly this kind of practice: five questions a day with instant feedback, and your hit rate over the last 30 days so you can see whether it moves.</p>
-
-<p><a href="/test">Start the calibration test</a> · <a href="/">Play today's five questions</a></p>
-<p class="muted small">Free, with no account and no tracking. Answers are anonymous and go into a public research dataset.</p>
-</article>
+<div id="app"><p class="muted">Loading…</p></div>
+<noscript><p class="wrap">This page needs JavaScript.</p></noscript>
 </main>
 <footer class="site-foot">
   <div class="foot-grid">

@@ -1,0 +1,31 @@
+<!doctype html>
+<!-- Template for public/og.png (1200x630). Rendered once by `node design/render.js assets`; the PNG is committed. -->
+<html lang="en" data-theme="light">
+<head>
+<meta charset="utf-8">
+<link rel="stylesheet" href="../public/styles.css">
+<style>
+  html, body { width: 1200px; height: 630px; margin: 0; overflow: hidden; }
+  body { display: flex; flex-direction: column; justify-content: space-between; padding: 72px 80px 64px; background: var(--bg); }
+  .top { display: flex; align-items: center; gap: 18px; font-size: 44px; font-weight: 800; letter-spacing: -0.02em; }
+  .top .mark { width: 118px; height: 19px; }
+  h1 { margin: 0; font-size: 104px; line-height: 1.02; letter-spacing: -0.035em; }
+  .og-row { display: flex; align-items: flex-end; justify-content: space-between; }
+  .squares { gap: 16px; margin: 0; }
+  .squares span { width: 84px; height: 84px; border-radius: 18px; animation: none; }
+  .url { font-family: var(--font); font-size: 40px; font-weight: 800; color: var(--accent); }
+  .sub { margin: 18px 0 0; font-size: 32px; color: var(--muted); }
+</style>
+</head>
+<body>
+  <div class="top"><svg class="mark" viewBox="0 0 76 12" aria-hidden="true"><rect width="12" height="12" rx="3"/><rect x="16" width="12" height="12" rx="3"/><rect x="32" width="12" height="12" rx="3" class="m"/><rect x="48" width="12" height="12" rx="3"/><rect x="64" width="12" height="12" rx="3"/></svg>HowSure</div>
+  <div>
+    <h1>How sure are you?</h1>
+    <p class="sub">Five numbers a day. Give a range you're 90% sure about.</p>
+  </div>
+  <div class="og-row">
+    <div class="squares"><span></span><span></span><span class="miss"></span><span></span><span></span></div>
+    <span class="url">howsure.me</span>
+  </div>
+</body>
+</html>

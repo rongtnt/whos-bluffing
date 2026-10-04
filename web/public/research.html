@@ -3,14 +3,14 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
-<title>Calibration test: does your confidence match your accuracy? | HowSure</title>
-<meta name="description" content="A free calibration test: say how sure you are on each answer, then see a chart of your confidence against how often you were right.">
-<link rel="canonical" href="https://howsure.me/tests/calibration-test">
+<title>Open research | HowSure</title>
+<meta name="description" content="The question HowSure studies, the pre-registered hypotheses, the numbers we publish and how the anonymous data will be released.">
+<link rel="canonical" href="https://howsure.me/research">
 <meta property="og:type" content="website">
 <meta property="og:site_name" content="HowSure">
-<meta property="og:title" content="Calibration test: does your confidence match your accuracy? | HowSure">
-<meta property="og:description" content="A free calibration test: say how sure you are on each answer, then see a chart of your confidence against how often you were right.">
-<meta property="og:url" content="https://howsure.me/tests/calibration-test">
+<meta property="og:title" content="Open research | HowSure">
+<meta property="og:description" content="The question HowSure studies, the pre-registered hypotheses, the numbers we publish and how the anonymous data will be released.">
+<meta property="og:url" content="https://howsure.me/research">
 <meta property="og:image" content="https://howsure.me/og.png">
 <meta property="og:image:width" content="1200">
 <meta property="og:image:height" content="630">
@@ -43,26 +43,37 @@
 </header>
 <main id="main">
 <article class="wrap prose">
-<h1>Calibration test</h1>
-<p class="lead">You are well calibrated when your confidence matches your accuracy: of all the things you are 70% sure about, about 70% turn out to be true. This free test measures how close you are.</p>
-<p><a class="button primary block" href="/test">Take the 5-minute calibration test</a></p>
+  <p class="eyebrow">Open research</p>
+  <h1>Do people know how much they know?</h1>
+  <p class="lead">HowSure is a game and an open study. Every completed game is an anonymous data point about calibration: whether people’s 90% really means 90%, and whether a little feedback every day changes it.</p>
 
-<h2>What calibration means</h2>
-<p>Calibration is not the same as knowledge. Someone who knows little can be well calibrated by saying "50%, I'm not sure" whenever they are guessing. Someone who knows a lot can be badly calibrated by saying "100%" about things they are only fairly sure of. Calibration is about the honesty of your confidence, not the size of your memory.</p>
+  <h2 id="question">The question</h2>
+  <p>Decades of research say that people are overconfident: they feel surer than their answers turn out to be. HowSure measures this at scale, every day, with questions whose answers have a public source, and adds a second question: does playing regularly, with feedback after every answer, make people better calibrated?</p>
 
-<h2>How the test works</h2>
-<p>You answer two-choice general knowledge questions and rate each answer from 50% to 100%. The test then groups your answers by confidence level and checks how many in each group were right. If your 90% answers were right only 60% of the time, that gap is overconfidence. If your 60% answers were right 80% of the time, that is underconfidence.</p>
-<p>The test also asks for a few numbers as ranges you are 90% sure about, which is another way to see the same thing.</p>
+  <h2 id="hypotheses">Hypotheses</h2>
+  <p>Written down before launch and tested as written.</p>
+  <ul>
+    <li><strong>H1 · People are overconfident.</strong> Across players, average confidence is higher than the share of answers that are right; and the harder a question (the fewer people get it right), the more overconfident people are about it.</li>
+    <li><strong>H2 · Format and difficulty.</strong> In the 5-minute full assessment, overconfidence is larger for 90% ranges than for two-choice questions; in rounds, overconfidence is reported for each level of difficulty.</li>
+    <li><strong>H3 · Practice helps.</strong> Among players with at least 10 completed rounds, overconfidence falls and points rise over their first 20 rounds. The first rounds of players who keep playing are compared with those of players who stop early; if they differ, the effect is reported as applying to people who keep playing. A null result is reported as a null.</li>
+  </ul>
 
-<h2>Reading your calibration chart</h2>
-<p>Your results include a chart with confidence along the bottom and accuracy up the side. The dashed diagonal line is perfect calibration. Points below the line mean you were more sure than right. Points above it mean you were right more often than you expected. Most people land below the line at high confidence, and the chart makes it easy to see exactly where.</p>
+  <h2 id="numbers">Numbers we publish</h2>
+  <p>The public counts are computed once a day by a scheduled job and use these definitions, word for word from the pre-registration:</p>
+  <blockquote><p>MAU: anonymous ids with ≥ 1 play — a completed round of 10 (ranked or quick), a completed full assessment, or an in-channel Slack answer — in the trailing 30 days, summed across web and Slack without cross-surface deduplication (a person who plays on both counts twice; stated wherever MAU is reported). DAU likewise for one UTC day.</p></blockquote>
+  <blockquote><p>Communities: Slack workspaces, Discord servers and rooms with ≥ 1 play in the trailing 30 days, plus classrooms with ≥ 5 finished assessments; reported per platform and summed.</p></blockquote>
+  <p>The current numbers are on the <a href="/stats">live stats page</a>.</p>
 
-<h2>Can calibration be trained?</h2>
-<p>Yes, and the method is simple: make many quick judgments, write down how sure you are, and get the answer soon after. Over time you learn what your own 70% or 90% feels like. Forecasters and weather services have long trained this way.</p>
-<p>The <a href="/">daily game</a> is built for exactly this kind of practice: five questions a day with instant feedback, and your hit rate over the last 30 days so you can see whether it moves.</p>
+  <h2 id="data">Open data</h2>
+  <p>Anonymous row-level data, with every exclusion flag kept rather than deleted, will be released on OSF, Hugging Face and Kaggle with a <a href="https://github.com/rongtnt/howsure/blob/main/analysis/DATA_CARD.md">data card</a> describing how it was collected, its sample bias and what it should not be used for. Classroom sessions are pooled without class codes. The code for every analysis is in the <a href="https://github.com/rongtnt/howsure/tree/main/analysis">analysis folder</a>.</p>
 
-<p><a href="/test">Start the calibration test</a> · <a href="/">Play today's five questions</a></p>
-<p class="muted small">Free, with no account and no tracking. Answers are anonymous and go into a public research dataset.</p>
+  <h2 id="prereg">Pre-registration</h2>
+  <p>The full pre-registration (design, measures, hypotheses, exclusions, sample sizes and inference) is <a href="https://github.com/rongtnt/howsure/blob/main/prereg/PREREG.md">prereg/PREREG.md on GitHub</a>. It is fixed before the public launch; any change after that is logged in the <a href="https://github.com/rongtnt/howsure/blob/main/CHANGELOG.md">changelog</a> with a date and a reason.</p>
+
+  <h2 id="cite">How to cite</h2>
+  <p>Until the first dataset has its own identifier, please cite the project and the pre-registration:</p>
+  <pre><code>HowSure (2026). HowSure: a daily calibration game and open dataset.
+https://howsure.me. Pre-registration: https://github.com/rongtnt/howsure/blob/main/prereg/PREREG.md</code></pre>
 </article>
 </main>
 <footer class="site-foot">

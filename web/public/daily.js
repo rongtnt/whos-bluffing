@@ -1,6 +1,7 @@
 // The daily game at /: five range questions (the same for everyone each UTC day), feedback after each answer,
 // then the result with today's histogram, streak, 30-day hit rate and a share card. Scoring is server-side
 // (docs/api-daily.md). Local state: hs_anon (ui.js) and hs_daily = {date: play}, so a reload resumes the game.
+// The page's hero holds the "Play today's game" button; ctx.setPlay(label, action) tells it what to do.
 import { html, api, store, anonId } from './ui.js';
 import { showRange } from './test.js';
 import { renderShare } from './share.js';
@@ -108,7 +109,7 @@ async function finish(ctx, day, play) {
   const { hits, n, streak, share_text } = r.data;
   const done = { ...play, result: { hits, n, streak, share_text } };
   savePlay(day.date, done);
-  return showResult(ctx, day, done, r.data.today);
+  return showResult(ctx, day, done, r.data.today, true);
 }
 
 // Next unanswered question, or the end of the game.
@@ -122,7 +123,8 @@ function step(ctx, day, play) {
     (input) => sendAnswer(ctx, day, play, k, input), ctx.t('daily.lock_in'));
 }
 
-async function showResult(ctx, day, play, todayStats) {
+// The result below the hero. scroll: bring it into view (right after the last answer; not on a later visit).
+async function showResult(ctx, day, play, todayStats, scroll = false) {
   const { app, t } = ctx;
   const { hits, n, streak, share_text } = play.result;
   let stats = todayStats;
@@ -134,8 +136,8 @@ async function showResult(ctx, day, play, todayStats) {
   const avg = stats?.avg_hits == null ? '–' : stats.avg_hits.toFixed(1);
   const me = personalStats(loadPlays(), day.date);
   ctx.chrome(true);
-  window.scrollTo(0, 0);
-  app.innerHTML = html`<h1>${t('daily.title', { number: day.number })}</h1>
+  ctx.setPlay(t('daily.see_result'), () => app.scrollIntoView());
+  app.innerHTML = html`<h2 class="result-title">${t('daily.title', { number: day.number })}</h2>
 <p class="grid" aria-hidden="true">${grid}</p>
 <p class="headline">${t('daily.result_hits', { hits, n })}</p>
 <p class="muted">${t('daily.result_explain')}</p>
@@ -156,25 +158,27 @@ ${stats ? html`<section class="card"><h2>${t('daily.today_title')}</h2>
     cta: t('daily.card_cta'),
     copy: share_text,
   });
+  if (scroll) app.scrollIntoView();
 }
 
+// The intro (title, rules, consent, Play button) is static in index.html; this wires the button to today's state.
 export async function renderDaily(ctx) {
   const { app, t } = ctx;
-  app.innerHTML = html`<p class="muted">…</p>`;
+  const showMessage = () => app.scrollIntoView();
   const r = await api('/api/daily');
   if (r.status === 404) {
     app.innerHTML = html`<p>${t('daily.no_game')}</p><p><a class="button primary block" href="/test">${t('nav.test')}</a></p>`;
+    ctx.setPlay(null, showMessage);
     return;
   }
-  if (!r.ok) return retryScreen(ctx, t('daily.failed'), () => renderDaily(ctx));
+  if (!r.ok) {
+    ctx.setPlay(null, showMessage);
+    return retryScreen(ctx, t('daily.failed'), () => renderDaily(ctx));
+  }
   const day = r.data;
   const play = loadPlays()[day.date] ?? { number: day.number, answers: {} };
   if (play.result) return showResult(ctx, day, play, null);
   const done = day.items.filter((it) => play.answers[it.id]).length;
-  app.innerHTML = html`<h1>${t('daily.title', { number: day.number })}</h1>
-<p class="lead">${t('daily.lead')}</p>
-<p class="consent">${t('daily.consent')}</p>
-<button id="start" class="primary block" type="button">${done ? t('daily.resume', { done, n: day.items.length }) : t('daily.start')}</button>
-<p class="muted small">${t('daily.full_note')} <a href="/test">${t('nav.test')}</a></p>`;
-  app.querySelector('#start').onclick = () => step(ctx, day, play);
+  app.replaceChildren(); // clears a retry message; an empty #app takes no space
+  ctx.setPlay(done ? t('daily.resume', { done, n: day.items.length }) : t('daily.start'), () => step(ctx, day, play));
 }
