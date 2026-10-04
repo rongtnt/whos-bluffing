@@ -1,5 +1,6 @@
 import { test } from 'node:test';
 import assert from 'node:assert/strict';
+import { playEnd } from '../src/game.js';
 import {
   COMPLETE, GUILD, TRUTH, USER, anon, apiCalls, buttonPayload, commandPayload, community, fakeD1, followUps, makeEnv, mockFetch,
   originalEdits, send, signedRequest,
@@ -79,7 +80,7 @@ test('/bluff play: a private 10-question round in one message, from the first qu
   msg = lastEdit(calls);
   assert.equal(msg.content, [
     "**Who's Bluffing? quick round** · **260 points**",
-    'Bluffer: much more sure than right. 50% right at 75% sure.',
+    'Bluffer · Way more sure than right: 15 or more points over. 50% right at 75% sure.',
     'The Nile would like a word.',
     'Streak: 3 days.',
   ].join('\n'));
@@ -92,6 +93,19 @@ test('/bluff play: a private 10-question round in one message, from the first qu
     type: 4,
     data: { allowed_mentions: { parse: [] }, content: `user${USER} scored 260 points in a Who's Bluffing round. Can you beat that? https://api.test/c/r1/tok1234567` },
   });
+});
+
+test("the end screen names the type as players read it, with its meaning; the API's keys stay as they are", () => {
+  const typeLine = (type) => playEnd({ ...COMPLETE, type, roast: null, streak: 1 }, null).content.split('\n')[1];
+  assert.deepEqual(['Bluffer', 'Hot-headed', 'Calibrated', 'Modest', 'Hedger', 'Mystery <b>', 'constructor'].map(typeLine), [
+    'Bluffer · Way more sure than right: 15 or more points over. 50% right at 75% sure.',
+    'Too sure · 5 to 15 points more sure than right. 50% right at 75% sure.',
+    "Spot on · Your confidence matches how often you're right, within 5 points. 50% right at 75% sure.",
+    'Too modest · 5 to 15 points less sure than right. 50% right at 75% sure.',
+    'Playing it safe · 15 or more points less sure than right. 50% right at 75% sure.',
+    'Mystery \\<b\\>. 50% right at 75% sure.', // a type the bot does not know shows as sent, escaped
+    'constructor. 50% right at 75% sure.',
+  ]);
 });
 
 test('taps that land at the same moment count once: one answer, one edit, one finished round', async () => {

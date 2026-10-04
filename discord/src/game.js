@@ -24,12 +24,14 @@ const LETTERS = ['A', 'B'];
 const CONF_ROWS = [[50, 60, 70], [80, 90, 100]];
 const CONF_WORDS = { 50: 'coin flip', 100: 'stake it all' };
 const NEGATIONS = { is: "It isn't.", was: "It wasn't.", came: "It didn't." };
-const TYPE_LINES = {
-  Bluffer: 'much more sure than right',
-  'Hot-headed': 'a bit more sure than right',
-  Calibrated: 'about as sure as right',
-  Modest: 'a bit less sure than right',
-  Hedger: 'much less sure than right',
+// The calibration types as players read them, with their one-line meanings: the same names as web/public/types.js.
+// The API and stored plays keep the original keys.
+const TYPES = {
+  Bluffer: ['Bluffer', 'Way more sure than right: 15 or more points over.'],
+  'Hot-headed': ['Too sure', '5 to 15 points more sure than right.'],
+  Calibrated: ['Spot on', "Your confidence matches how often you're right, within 5 points."],
+  Modest: ['Too modest', '5 to 15 points less sure than right.'],
+  Hedger: ['Playing it safe', '15 or more points less sure than right.'],
 };
 const ROUND = "**Who's Bluffing? quick round**";
 const MIN_CALIBRATED_ANSWERS = 3;
@@ -243,7 +245,8 @@ export function playResult(state, step, choice, conf, res) {
 }
 
 export function playEnd(done, challengeId) {
-  const line = TYPE_LINES[done.type] ? `${done.type}: ${TYPE_LINES[done.type]}.` : `${esc(done.type)}.`;
+  const [name, meaning] = Object.hasOwn(TYPES, done.type) ? TYPES[done.type] : [];
+  const line = name ? `${name} · ${meaning}` : `${esc(done.type)}.`; // an unknown type shows as the API sent it
   const lines = [
     `${ROUND} · **${plural(Math.round(done.score), 'point')}**`,
     `${line} ${Math.round(done.accuracy)}% right at ${Math.round(done.mean_conf)}% sure.`,

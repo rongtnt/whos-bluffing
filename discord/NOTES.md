@@ -240,6 +240,14 @@ Verified: 49 tests (4 new, others updated). Mutation check on a scratch copy: 8 
 no relative timestamp, the wrong timestamp style, help ignoring the server's delay, the option's bounds). Not verified: a
 real Discord client rendering the timestamps (Discord's documented `<t:…:t>` and `<t:…:R>` styles).
 
+## Type names (2026-10-04)
+
+The `/bluff play` end screen names the player's type as the web does (`web/public/types.js`): Bluffer, Too sure, Spot on,
+Too modest, Playing it safe, each followed by its one-line meaning ("Spot on · Your confidence matches how often you're
+right, within 5 points."). The API's keys (`Hot-headed`, `Calibrated`, `Modest`, `Hedger`) and stored values are unchanged;
+a type the bot does not know shows as the API sent it. This is the only place either bot shows a type. The recap's
+"Most calibrated" names the member closest to their own confidence; it is not a type and keeps its wording.
+
 ## Open questions (outside discord/, not changed)
 
 - **PRIVACY.md** covers Discord in its "Slack and Discord" paragraph (line 21), so the earlier open question is closed.
