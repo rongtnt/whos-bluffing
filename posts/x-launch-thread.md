@@ -9,37 +9,39 @@ published" in tweet 7 is true once the repo is public (Monday morning, before th
 Video: attach `web/public/press/demo.mp4` (1080 × 1080, 25 s, no sound) to tweet 1, beside or instead of screen-question.png.
 
 **1/**
-Think you know things? Prove it.
+You're not as smart as you think. Prove me wrong in 60 seconds.
 
 Which is longer: the Nile or the Danube?
 
-Easy. Now the real question: how sure are you? 60%? 90%? 100%?
+Now the part that gets people: how sure are you? 70%? 90%? 100%?
 
-I built a game that scores your confidence, not just your answer. It's called Who's Bluffing? 🧵
+whosbluffing.com scores your confidence, not your answer. 🧵
 
 **2/**
-The catch: say 50% and you score 0, right or wrong. Say 100% and you get +100 if you're right and −300 if you're wrong.
+Say 100% and you're right: +100.
+Say 100% and you're wrong: −300.
+Say 50%: nothing, either way.
 
-Being sure only pays when you're right. Confidence is cheap everywhere else. Not here.
+Being loud is free everywhere else on the internet. Here it costs you.
 
 **3/**
-Most of us are surer than we are right. The game shows you by how much: every round ends with your type (Bluffer, Hot-headed, Calibrated, Modest or Hedger) and a link that dares a friend to beat you on the same ten questions.
+Ten questions. At the end it names you: Bluffer, Hot-headed, Calibrated, Modest or Hedger.
+
+Then it hands you a link for the friend who's never wrong. Same ten questions. Loser buys coffee.
 
 **4/**
-Don't take my word for it. Every answer comes with its source, so you can check.
-
-Spot a wrong one? Flag it. A question flagged by several players is taken out and checked.
+Every answer shows its source. Think it's wrong? Flag it; if enough people agree, the question is pulled and checked. No "trust me". No vibes.
 
 **5/**
-It also lives in Discord. Add the bot and it posts one question a day in your channel. Everyone answers privately. At reveal time the post turns into the answer: how the server split, the top 5 and the bluff of the day.
+Put it in your Discord and it posts one question a day. Everyone answers in private. At the reveal the whole server sees the split, the top 5, and the bluff of the day: "Someone was 100% sure the Danube is longer. It isn't."
 
 **6/**
-Roast mode is off by default, so the bluffer stays anonymous. Turn it on and the reveal names them. Brave servers only.
+Roast mode is off by default. Turn it on and the reveal names the bluffer. Your server's call.
 
-There's a Slack app too, for a team's daily question.
+Slack version too, for the colleague who's always "pretty sure".
 
 **7/**
-Free. No ads, no accounts. Source published on GitHub. The anonymous answers feed a study of overconfidence I registered before launch; the pooled data will be released.
+Free. No ads, no accounts, no tracking. Source published. Anonymous answers feed a pre-registered study of overconfidence; the data will be released.
 
-Your move: whosbluffing.com
-Add to Discord: whosbluffing.com/discord
+Go on. Prove me wrong: whosbluffing.com
+Discord: whosbluffing.com/discord
