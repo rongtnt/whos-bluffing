@@ -1,6 +1,6 @@
 # 只有你能做的事（按先后）
 
-0. **现在就买域名 whosbluffing.com**（只有你能付；别人注册了就没了）：Cloudflare 控制台 → Domain Registration → Register Domains → 搜 whosbluffing.com（约 $10/年；可顺手把 whosbluffing.gg 也拿下）。买好后站点、Slack、Discord 的所有链接都按这个域名配置。
+0. ~~买域名 whosbluffing.com~~ **已买（2026-10-04，Cloudflare Registrar）**。站点、Slack、Discord 的所有链接按这个域名配置。
 0b. **GitHub 仓库改名**（配合全仓库改名，GitHub 会自动重定向旧链接）：
    ```bash
    gh repo rename whos-bluffing -R rongtnt/howsure --yes
