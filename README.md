@@ -1,21 +1,61 @@
-# Who's Bluffing? — Find out who's bluffing.
+<p align="center">
+  <a href="https://whosbluffing.com">
+    <picture>
+      <source media="(prefers-color-scheme: dark)" srcset="web/public/press/logo-dark.png">
+      <img src="web/public/press/logo.png" alt="Who's Bluffing?" width="440">
+    </picture>
+  </a>
+</p>
 
-Free tools that show people how overconfident they are, and an open study built on the anonymous answers (formerly HowSure).
+<p align="center">A one-minute game that finds out who's bluffing.</p>
 
-Three surfaces, one item bank, one question: do people know what they know?
+<p align="center">
+  <a href="https://whosbluffing.com"><img alt="Play" src="https://img.shields.io/badge/play-whosbluffing.com-2F5BFF?style=flat-square"></a>
+  <a href="https://whosbluffing.com/discord"><img alt="Discord app" src="https://img.shields.io/badge/discord-app-5865F2?style=flat-square"></a>
+  <a href="https://whosbluffing.com/slack"><img alt="Slack app" src="https://img.shields.io/badge/slack-app-4A154B?style=flat-square"></a>
+  <a href="https://github.com/rongtnt/whos-bluffing/actions/workflows/ci.yml"><img alt="CI" src="https://github.com/rongtnt/whos-bluffing/actions/workflows/ci.yml/badge.svg"></a>
+  <a href="LICENSE"><img alt="Licence" src="https://img.shields.io/badge/source-published-111827?style=flat-square"></a>
+</p>
 
-| Surface | What it is | Folder |
-|---|---|---|
-| Daily game + full assessment (web) | Five numbers a day: give a range you are 90% sure contains the answer, see the truth and your share grid, keep a streak. The 5-minute full assessment, global comparison, share card and classroom mode for instructors live at `/test`. English only. | `web/` |
-| Slack app | Install once per workspace: the day's game is posted to a channel with a Play button and a team leaderboard. | `slack/` |
-| Anki add-on | In the flashcard app Anki, press 1–5 before each answer to say how sure you are; the add-on shows you where your confidence is wrong. Local by default. | `anki/` |
+<p align="center">
+  <a href="https://whosbluffing.com"><img src="web/public/press/readme-hero.png" alt="A question, a result card and the Discord reveal" width="900"></a>
+</p>
 
-- Questions: `items/items.json` (hand-checked bank for the full assessment) and `items/pool.json` (2,074 numeric items generated from Wikidata with a source link each; `daily/schedule.json` says which five air on which day; `npm run tomorrow` in `web/` prints tomorrow's five for the nightly review).
-- Pre-registered hypotheses: `prereg/PREREG.md`. Privacy: `PRIVACY.md`. Design docs: `docs/`.
-- Metrics are defined once in `analysis/test_vectors.json`; the JavaScript and Python implementations must both pass it.
+Ten comparison questions ("Which is longer: the Nile or the Danube?"). Pick one, then stake how sure you are, from 50% to 100%. The scoring rule pays for honesty: 50% scores nothing, 100% right is +100, 100% wrong is −300. At the end you get your type (Bluffer, Hot-headed, Calibrated, Modest or Hedger), a roast if you earned one, and a link to challenge a friend on the same ten.
 
-Independent, unaffiliated, non-commercial project. Anonymous, opt-in data. No accounts, no tracking, no ads. Source published, not open source: see LICENSE.
+## Play
 
-Prior art, gratefully acknowledged: [AnkiCalibrateAddon](https://github.com/JulHeg/AnkiCalibrateAddon) (JulHeg, MIT) for the idea of rating confidence before an Anki answer; Clearer Thinking / Open Philanthropy's *Calibrate Your Judgment* for calibration training.
+- **Web**: [whosbluffing.com](https://whosbluffing.com). One ranked round a day, the same ten for everyone, then unlimited quick rounds by pack and difficulty.
+- **Discord**: one question a day in a channel, a private round with `/bluff play`. [Add it](https://whosbluffing.com/discord).
+- **Slack**: the same, with `/bluff`. [Add it](https://whosbluffing.com/slack).
+- **Classroom**: a live calibration curve for a class at [/class](https://whosbluffing.com/class). **Full assessment** (5 minutes) at [/test](https://whosbluffing.com/test).
 
-Licence: all rights reserved — the source is published for transparency and research verification only; no use, copying or redistribution without written permission (see LICENSE). Data releases: CC BY-NC 4.0.
+## Why
+
+Most people are surer than they are right. The game shows you by how much, every day, in a minute. It is also a pre-registered study ([prereg/PREREG.md](prereg/PREREG.md)): does daily feedback make people better calibrated? Anonymous answers are released under CC BY-NC 4.0 with a data card. No accounts, no tracking, no ads.
+
+Every question comes from a Wikidata fact with the source shown under both answers; ranked rounds use only referenced or independently checked facts, and anyone can flag a question.
+
+## Repository
+
+| Folder | What |
+|---|---|
+| `web/` | The site and API: Cloudflare Pages Functions, D1, vanilla JS |
+| `discord/`, `slack/` | The Discord and Slack apps: Cloudflare Workers, no dependencies |
+| `anki/` | Anki add-on: rate your confidence before each card |
+| `items/`, `daily/` | The question bank built from Wikidata and the ranked rounds |
+| `analysis/` | Pipeline, metric definitions shared by JS and Python, fact checks |
+| `prereg/` | The frozen pre-registration |
+| `brand/` | Logo kit |
+
+## Run it locally
+
+```bash
+cd web && npm install && npm run dev
+```
+
+`bash scripts/check.sh` runs every test, the smoke suite and the data guards.
+
+## Licence
+
+Source published, all rights reserved ([LICENSE](LICENSE)): read it, run it locally to check the published research, nothing else without written permission. Data releases are CC BY-NC 4.0. Prior art, gratefully acknowledged: [AnkiCalibrateAddon](https://github.com/JulHeg/AnkiCalibrateAddon) and Clearer Thinking's *Calibrate Your Judgment*.
