@@ -1,16 +1,21 @@
-# top.gg listing (submit Thu Oct 8; review takes about a week)
+# top.gg listing (submit Sun Oct 4 during soft setup; review takes about a week)
 
 Paste-ready. Replace `<APP_ID>` (Developer Portal → General Information) and `{COMMUNITY_INVITE}` (block B in
-`docs/GROWTH_PLAYBOOK.md`). Until the GitHub repo is public on Oct 20, leave out the last line of the long description
-and the GitHub field; add both on Oct 20. Same facts as `posts/discord-listing.md`, in plainer words.
+`docs/GROWTH_PLAYBOOK.md`). Before submitting, run one full cycle in your own server (question, answers,
+`/bluff reveal`): reviewers try the commands.
+Claims that must stay true: "source published" (the repo is public from Mon Oct 5 morning); the data "will be
+released", never "is published", until it is out. Never "open source", "first" or "largest"; no mention of AI.
 
 ## Fields
 
 - Prefix: `/`
 - Invite link: `https://discord.com/oauth2/authorize?client_id=<APP_ID>&scope=bot+applications.commands&permissions=83968&integration_type=0`
+  (the Worker's `https://whosbluffing-discord.rongaijun41.workers.dev/install` redirects to the same page)
 - Website: `https://whosbluffing.com/discord`
 - Support server: `{COMMUNITY_INVITE}`
-- GitHub (from Oct 20): `https://github.com/rongtnt/whos-bluffing`
+- GitHub: `https://github.com/ethanrong/whos-bluffing` (use `rongtnt` instead of `ethanrong` if you skipped the
+  username change in `USER_TODO.md` B1)
+- Privacy policy: `https://whosbluffing.com/privacy` · Terms: `https://whosbluffing.com/terms` (if the form asks)
 - Tags (pick the closest ones offered): Trivia · Quiz · Game · Fun · Leaderboard · Education · Social · Chat Revive
 
 ## Short description (99 characters)
@@ -53,18 +58,19 @@ matched their results best, and how many bluffs there were.
 and names are looked up only while a leaderboard is drawn. The anonymous answers feed a public study of
 overconfidence; the pooled data will be released.
 
-Free. No ads. No accounts. Three permissions only: Send Messages, Embed Links, Read Message History.
+Free, independent, no ads, no accounts. Three permissions only: Send Messages, Embed Links, Read Message History.
+Source published on GitHub for transparency. Bugs and ideas: our community server or GitHub issues.
 
-## Add on Oct 20 (repo public), as the last line of the long description
+## Note to reviewers (one line, paste this)
 
-Source published on GitHub for transparency.
+HTTP-only bot: it never connects to the gateway, so it shows no online status or presence, but every command works. Type `/bluff help` in any text channel for an instant reply, then `/bluff play` for a private round.
 
-## Note to reviewers
+## Longer note (only if the field has room)
 
 Who's Bluffing answers over HTTP interactions and does not connect to the gateway, so it shows as offline in member
-lists. All commands work. Start with `/bluff setup channel:#<any text channel>`, then `/bluff question`, or try
-`/bluff play` for a private round. `/bluff setup` and `/bluff reveal` need Manage Server; everything else works for any
-member. Questions: `{COMMUNITY_INVITE}`.
+lists. All commands work. Start with `/bluff help`, then `/bluff setup channel:#<any text channel>` and
+`/bluff question`, or `/bluff play` for a private round. `/bluff setup` and `/bluff reveal` need Manage Server;
+everything else works for any member. Questions: `{COMMUNITY_INVITE}`.
 
 ## Vote and review asks (only after approval)
 

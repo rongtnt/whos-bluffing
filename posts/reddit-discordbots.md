@@ -1,7 +1,8 @@
-# r/discordbots post (Wed Oct 21)
+# r/Discord_Bots post (Mon Oct 5, after the X thread; runbook order)
 
-Read the subreddit's sidebar rules first: automated reading of Reddit was blocked, so its rules on self-promotion,
-flair and posting frequency are unverified. One subreddit per day; reply to every comment for the opening hours.
+The runbook names r/Discord_Bots. Read its sidebar rules first: automated reading of Reddit was blocked, so its rules on
+self-promotion, flair and posting frequency are unverified. If it does not allow promotion, post the same text in
+r/discordbots (a separate subreddit) instead. Reply to every comment for the opening hours.
 Replace `{INVITE}` with `https://whosbluffing.com/discord` (the page has the Add button).
 
 **Title:** I made a free Discord bot that posts one question a day and scores how sure people are
@@ -25,7 +26,7 @@ Other bits:
 - roast mode (off by default) names the day's biggest bluffer
 - a short recap every Monday
 - slash commands only, three permissions (Send Messages, Embed Links, Read Message History), no admin
-- no messages, usernames or user ids stored with answers; free, no ads
+- no messages, usernames or user ids stored with answers; free, no ads, source published on GitHub
 
 Setup is two commands: `/bluff setup channel:#general` and `/bluff question`.
 

@@ -1,8 +1,9 @@
-# X launch thread (post Tue Oct 20, morning US Eastern, with the Show HN)
+# X launch thread (post Mon Oct 5 after 09:00 New York, right after Show HN and the first two subreddits; runbook order)
 
 There is no project X account yet (`X_URL` in `web/public/site.js` is empty), so this is written to post from your
 personal account. Attach `web/public/press/screen-discord.png` to tweet 5 and `web/public/press/screen-question.png`
-to tweet 1. Rewrite in your own words; keep the facts. Every tweet is under 280 characters.
+to tweet 1. Rewrite in your own words; keep the facts. Every tweet is under 280 characters. "Source published" in
+tweet 7 is true once the repo is public (Monday morning, before the posts).
 
 **1/**
 Which is longer: the Nile or the Danube?

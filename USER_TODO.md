@@ -45,7 +45,7 @@
    ```
 
 ## D. Discord 应用（15 分钟，顺序不能乱）
-1. https://discord.com/developers/applications → **New Application** → 名字 `Who's Bluffing?` → 上传图标 `brand/png/icon-512.png`，描述粘 `posts/discord-listing.md` 的短描述。
+1. https://discord.com/developers/applications → **New Application** → 名字 `Who's Bluffing?` → 上传图标 `brand/png/icon-512.png`，描述粘 `posts/discord-app-directory.md` 的 App description。
 2. **General Information**：复制 **Application ID** 和 **Public Key**。
 3. **Bot** 页：**Reset Token** → 复制 Token；打开 **Server Members Intent**。
 4. 终端：先把 `discord/wrangler.toml` 里 `DISCORD_APP_ID = "REPLACE_WITH_APPLICATION_ID"` 换成 Application ID，然后：

@@ -1,10 +1,11 @@
 # Discord App Directory listing
 
-The **App description** goes in on day 1 (Developer Portal → General Information). The rest waits for the gate:
-the App Directory needs a verified app; verification opens at about 75 servers and is required at 100
-(`discord/README.md`). The Developer Portal shows the current checklist under App Verification and
-Discovery → Discovery Status; it can take up to 24 hours to appear after you enable Discovery. Add the GitHub link
-only after the repo is public (Oct 20).
+The **App description** goes in during soft setup on Sun Oct 4 (Developer Portal → General Information; block A in
+`docs/GROWTH_PLAYBOOK.md`). The rest waits for the gate: the App Directory needs a verified app; verification opens
+at about 75 servers and is required at 100 (`discord/README.md`). The Developer Portal shows the current checklist
+under App Verification and Discovery → Discovery Status; it can take up to 24 hours to appear after you enable
+Discovery. Claims that must stay true: "source published" (repo public from Mon Oct 5); the data "will be released",
+never "is published", until it is out.
 
 ## App description (General Information, 301 characters)
 
@@ -45,26 +46,25 @@ best, and how many bluffs there were.
 
 **PRIVACY**
 No messages, usernames or user ids are stored with answers. Each member is a salted hash. The anonymous answers feed a
-public study of overconfidence; the pooled data will be released. Free, no ads, no accounts.
+public study of overconfidence; the pooled data will be released. Free, independent, no ads, no accounts. Source
+published for transparency.
 
 Help and feedback: our community server (link below).
 
-## Add on Oct 20 (repo public), at the end of the PRIVACY paragraph
-
-Source published for transparency.
-
 ## Other fields
 
-- Primary category: Games. Also: Social; Education if offered.
+- Primary category: Games. Secondary (whatever the portal offers): Entertainment, Social, Education.
 - Tags (up to 5): `trivia`, `quiz`, `daily question`, `leaderboard`, `game`
 - Supported languages: English
+- App icon: `brand/png/icon-512.png`
 - Images (check the portal's current size limits; crop if asked): `web/public/press/screen-discord.png` (1280×800),
   `web/public/press/screen-home.png` (1280×800), `web/public/press/screen-question.png` (375×812),
   `web/public/press/screen-result.png` (1280×1725). Better: three real screenshots from your own server (question,
-  picker, reveal), taken on day 2.
+  picker, reveal), taken on Tue Oct 6.
 - Support server: the community server invite (block B in `docs/GROWTH_PLAYBOOK.md`)
 - Links: Website `https://whosbluffing.com/discord` · Terms `https://whosbluffing.com/terms` ·
-  Privacy `https://whosbluffing.com/privacy` · GitHub `https://github.com/rongtnt/whos-bluffing` (from Oct 20)
+  Privacy `https://whosbluffing.com/privacy` · GitHub `https://github.com/ethanrong/whos-bluffing` (`rongtnt` if you
+  skipped the username change in `USER_TODO.md` B1)
 
 ## Server Members Intent: reason to paste at verification
 

@@ -99,7 +99,7 @@ Growth rate between data points (servers added per month, net): 24K (H1 2021) �
 | 5 | **Low-frequency tip line.** 8% of replies (10% from 2024) carry one rotating tip: vote, review, languages, scheduled questions, premium. Hidden for premium servers; "You can disable these tips with premium." | `promoMessage()` history in `src/classes/Functions.ts` [V] | Copy the rate (8-10%), not the paywall: tips under the reveal and the `/bluff play` end screen, never on the question post, free off switch (`/bluff setup tips:off`). |
 | 6 | **Vote ask without a reward.** "Enjoying the bot? Consider upvoting me!" No vote-reward code in the interactions repo's whole history; the gateway only posts the server count. Votes tracked the ask frequency; growth did not. | commits `38ba9c1`, `5288f5d`; top.gg captures [V] | Ask, no reward, from top.gg approval on. top.gg's "Top" list is sorted by monthly votes and is owned by bots with currency rewards (Mudae 3.14M votes) ([list](https://top.gg/list/top)) [V], so do not chase it; aim for "Trending New Bots" in the first weeks [I]. |
 | 7 | **Ask for reviews, answer reviews.** Review ask in the tip rotation; the team replied to reviews ("We've just released an update which should make the bot much more stable!"). 285 reviews, 3.65 average (46 one-star); complaints in the visible reviews: repeated questions, a setting locked behind premium, 18+ confusion, "won't come online". | top.gg page [V] | After approval: review ask in the tip rotation; the owner answers every review within a day. Our "everything is free" answers their top complaints. |
-| 8 | **Always online, even on HTTP.** A tiny gateway process (`GUILDS` intent, zero cache) shows presence "Truth or Dare • /help" and posts the server count to top.gg every 30 min. | [gateway repo](https://github.com/Truth-or-Dare-bot/truth-or-dare-gw) `bot.js` [V] | We show offline. top.gg: "Must be online during review" ([guidelines](https://support.top.gg/hc/en-us/articles/23146912808988-Discord-Bot-Guidelines)) [V]. Decision in the plan (day 5). Server-count posting needs no gateway: the hourly Worker can do it. |
+| 8 | **Always online, even on HTTP.** A tiny gateway process (`GUILDS` intent, zero cache) shows presence "Truth or Dare • /help" and posts the server count to top.gg every 30 min. | [gateway repo](https://github.com/Truth-or-Dare-bot/truth-or-dare-gw) `bot.js` [V] | We show offline. top.gg: "Must be online during review" ([guidelines](https://support.top.gg/hc/en-us/articles/23146912808988-Discord-Bot-Guidelines)) [V]. Decide by Wed Oct 7 (plan day 3). Server-count posting needs no gateway: the hourly Worker can do it. |
 | 9 | **Stable and cheap** beat feature-rich: HTTP interactions made the bot "stable" and cut cost to $3/mo; the 2021 reviews complained "It won't come online". | panel notes; top.gg reviews [V] | We are already HTTP on Cloudflare. Keep the reveal reliable; one broken reveal in a new server = an uninstall [I]. |
 | 10 | **Early on every Discord surface**: slash commands (Sep 2021), buttons (Apr 2022), native premium (Oct 2022), user apps (Mar 2024). | commits [V] | Next surfaces for us: install webhook events (`APPLICATION_AUTHORIZED`, [docs](https://docs.discord.com/developers/events/webhook-events)) to greet new servers; user-install for `/bluff play` later. |
 | 11 | **Keep the main bot all-ages.** 18+ moved to a separate bot to keep discoverability for an audience mostly under 18. | [docs blog](https://docs.truthordarebot.xyz/blog/removal-of-the-r-rating) [V] | Our content is all-ages: an advantage for App Directory review. Keep roast lines all-ages forever. |
@@ -139,15 +139,18 @@ Hunt, Hacker News, Reddit, Medium, Substack and podcasts found no launch or grow
 
 ## (d) 30-day plan for Who's Bluffing (Mon 2026-10-05 → Tue 2026-11-03)
 
-Fixed dates kept from `docs/LAUNCH_RUNBOOK.md` and `USER_TODO.md`: soft launch **Sat Oct 17**, public posts and repo
-public **Tue Oct 20**, r/Professors **Wed Oct 21**, Product Hunt + Slack App Directory **Nov 18** (outside this window).
-The Discord bot goes live this week so the top.gg review (about a week) finishes before Oct 20.
+Dates (moved on 2026-10-04): **soft setup Sun Oct 4** (accounts, listings, community server; `USER_TODO.md` A-G);
+**repo public Mon Oct 5 morning**, then **posts Mon Oct 5 at 09:00 New York** in the runbook order (Show HN →
+r/InternetIsBeautiful + r/samplesize → X thread → r/Discord_Bots → LessWrong / EA Forum → newsletter emails);
+r/Professors **Tue Oct 6**; Product Hunt and the Slack App Directory in November (`docs/LAUNCH_RUNBOOK.md`).
+top.gg review takes about a week, so the listing goes live around Oct 11-12 at the earliest. Launch-day traffic
+reaches the bot through the website's Add to Discord button and the posts, not the bot lists.
 
 **Targets for Nov 3 (planning numbers, not predictions):** 75+ servers (the verification gate), 30+ active servers
 (answered on 3+ days in the last 7), top.gg approved with 10+ reviews, community server 100+ members,
 10+ Slack workspaces. Truth or Dare has no comparable zero-to-100 data: they inherited 157K servers.
 
-**Keep/kill rule (set now, judged on day 21 and day 30):** a channel stays if it brings 3+ servers that answer on 3+
+**Keep/kill rule (set now, judged on day 14 and day 30):** a channel stays if it brings 3+ servers that answer on 3+
 days in their first week. Clicks per source come from `/invite?ref=<source>` (builder task B7). Installs alone
 do not count.
 
@@ -157,62 +160,63 @@ Owner time is the owner's own clicks and posts; "B#" are builder tasks listed be
 
 | Day | Date | Owner (≈30-60 min unless noted) | Builder | Check |
 |---|---|---|---|---|
-| 1 | Mon 10/05 | Launch-morning checklist (e) blocks A + B: register the Discord app, deploy the Worker, add the bot to your own server, create the community server (≈90 min). | Fill `DISCORD_INSTALL_URL` and `COMMUNITY_INVITE_URL` (via the web builder). | One question posted, answered, revealed (`/bluff reveal`). |
-| 2 | Tue 10/06 | Add the bot to 3-5 servers you are in (friends, clubs, class). Message template below. Take 3 real screenshots: question, picker, reveal. | B1 (link buttons on help/invite). | First natural reveal (8 h) in 3+ servers. |
-| 3 | Wed 10/07 | Pin the welcome and rules in the community server; post the first #announcements message. | B2 (welcome on install). | No errors in `wrangler tail`. |
-| 4 | Thu 10/08 | Block C: submit top.gg, discordbotlist.com, discords.com (copy in `posts/`). | B3 tip line, vote link left blank until approval. | Submissions confirmed by email/page. |
-| 5 | Fri 10/09 | Decide the offline risk (see "top risk" below): note only, or a tiny presence process. Outreach batch 1: 10 servers you belong to. | B9 only if you choose a presence process. | Servers ≥ 10. |
-| 6 | Sat 10/10 | Play the daily in the community server; answer every question there within 12 h. | — | Answers per active server per day. |
-| 7 | Sun 10/11 | Week-1 review: servers, active servers, answers per server-day, reveal views. Write 3 lines in the support server about what changed. | — | Servers ≥ 15 [target]. |
-| 8 | Mon 10/12 | Outreach batch 2: 10 trivia, geography, quiz or forecasting servers you can post in (ask their mods first). | B5 "Add to your server" button on reveal + recap. | Click counts by `ref`. |
-| 9 | Tue 10/13 | Slack: install in 2 more workspaces you belong to. | B8 brief for question pages (aired questions only). | Slack workspaces ≥ 3. |
-| 10 | Wed 10/14 | Read the first top.gg reviewer message if any; fix fast (three declines for the same reason = ban). | B6 role ping + thread options. | — |
-| 11 | Thu 10/15 | top.gg decision window opens (review ≈ a week). If approved: grab the vote link and API token (block D). | B4 server-count posting (needs the token). | Listing live? |
-| 12 | Fri 10/16 | Runbook T-1: freeze the pre-registration, play tomorrow's game on your phone. | — | `/api/kpi` `as_of` = today. |
-| 13 | Sat 10/17 | **Soft launch.** If top.gg has approved (otherwise on the day it does): turn on the vote and review lines in the tip rotation and ask the admins of your 5 most active servers for a review (template below). | — | Reviews ≥ 3. |
-| 14 | Sun 10/18 | Buffer. Answer reviews. | — | — |
-| 15 | Mon 10/19 | Final copy pass on `posts/`; check every link; schedule nothing you cannot answer live. | B7 short links `/invite`, `/support`. | — |
-| 16 | Tue 10/20 | **Launch day (runbook):** repo public; Show HN, r/InternetIsBeautiful, r/samplesize, LessWrong + EA Forum, newsletter emails; X thread (`posts/x-launch-thread.md`). Add the "Source published" line and GitHub link to top.gg and discordbotlist. | — | Reply to every comment for 6 h. |
-| 17 | Wed 10/21 | r/Professors + instructor emails (runbook). r/discordbots post (`posts/reddit-discordbots.md`) after reading its rules. | — | Servers from Reddit `ref`. |
-| 18 | Thu 10/22 | Fix the top 3 reported problems; post a short "what we fixed" in #announcements. | Fixes. | Uninstalls this week. |
-| 19 | Fri 10/23 | Milestone post if you passed 25 or 50 servers (template below), in the community server and on X. | — | — |
-| 20 | Sat 10/24 | Community event: "Bluff-off" weekend, best ranked-round score posted in #play wins a shout-out. | — | Community members. |
-| 21 | Sun 10/25 | **Keep/kill review #1** with the rule above. Drop channels that brought no active server. | — | Write the decision in this file. |
-| 22 | Mon 10/26 | Outreach batch 3: 20 servers, only the kinds that worked. If servers ≥ 75: apply for app verification (block E). | — | Verification submitted? |
-| 23 | Tue 10/27 | One-question feedback form through the tip line (one week). | Tip-line variant. | Responses. |
-| 24 | Wed 10/28 | Answer reviews; thank servers that hit a 7-day answer streak (Monday recap shows it). | — | — |
-| 25 | Thu 10/29 | Decide user-install for `/bluff play` (B10) from the feedback. | — | — |
-| 26 | Fri 10/30 | Halloween post in the community server and X with a real, sourced "spooky" fact from the pool (only if one exists; never invent). | — | — |
+| 0 | Sun 10/04 | **Soft setup** (≈3 h): `USER_TODO.md` A-F, with the English texts in (e) blocks A-C: Discord app, community server, top.gg + discordbotlist.com + discords.com submissions, Slack app. Run one full cycle in your own server first (question, answers, `/bluff reveal`). | Fill `COMMUNITY_INVITE_URL` once the invite exists. | One Discord cycle and one Slack play work end to end. |
+| 1 | Mon 10/05 | Block M in (e): repo public before 09:00 ET, then the posts in runbook order (X thread: `posts/x-launch-thread.md`; r/Discord_Bots: `posts/reddit-discordbots.md`). Reply to every comment for 6 h. Add the bot to 3-5 servers you belong to (template below). | Watch Worker logs, D1 writes, 429s. | Servers, web players, errors. |
+| 2 | Tue 10/06 | r/Professors + 3 instructor emails (runbook). Take 3 real screenshots in your server (question, picker, reveal) for the listings. | B1 (link buttons on help/invite). | First natural reveals (8 h) in 3+ servers. |
+| 3 | Wed 10/07 | Decide the offline risk before the top.gg review starts (see "top risk" below). Fix the top 3 launch-day problems; post "what we fixed" in #announcements. | B9 only if chosen; fixes. | Uninstalls. |
+| 4 | Thu 10/08 | Outreach batch 1: 10 servers you belong to (a mod or admin you know). | B3 tip line (vote and review lines stay off until approval). | Servers ≥ 10 [target]. |
+| 5 | Fri 10/09 | Slack: install in 2 more workspaces you belong to. | B7 short links `/invite?ref=`, `/support`. | Slack workspaces ≥ 3. |
+| 6 | Sat 10/10 | Play the daily in the community server; answer every message there within 12 h. | — | Answers per active server per day. |
+| 7 | Sun 10/11 | Week-1 review (numbers only) and a 3-line update in #announcements. top.gg decision window opens. | — | Servers ≥ 15 [target]. |
+| 8 | Mon 10/12 | If top.gg approved: block D (vote link, API token), turn on the vote and review lines, ask the admins of your 5 most active servers for a review. If declined: fix, then resubmit (three declines for the same reason = ban). Outreach batch 2: 10 trivia, geography, quiz or forecasting servers (ask their mods first). | B4 server-count posting (needs the token). | Listing live? Reviews. |
+| 9 | Tue 10/13 | Answer reviews; check the discordbotlist and discords status. | B5 "Add to your server" button on reveal + recap. | Click counts by `ref`. |
+| 10 | Wed 10/14 | Milestone post if you passed 25 or 50 servers (template below), in the community server and on X. | B6 role ping + thread options. | — |
+| 11 | Thu 10/15 | One-question feedback form through the tip line (runs one week). | Tip-line variant. | Responses. |
+| 12 | Fri 10/16 | Announce a "Bluff-off" weekend in #announcements. | B8 brief: question pages for revealed questions. | — |
+| 13 | Sat 10/17 | Bluff-off weekend: the best ranked-round score posted in #play wins a shout-out. | — | Community members. |
+| 14 | Sun 10/18 | **Keep/kill review #1** with the rule above. Drop channels that brought no active server. | — | Write the decision in this file. |
+| 15 | Mon 10/19 | Outreach batch 3: 20 servers, only the kinds that worked. | — | — |
+| 16 | Tue 10/20 | If servers ≥ 75: apply for app verification (block E). | — | Verification submitted? |
+| 17 | Wed 10/21 | Answer reviews; thank servers with a 7-day answer streak (the Monday recap shows it). | — | — |
+| 18 | Thu 10/22 | Read the feedback form; change at most one default (hour or roast mode) and announce it. | — | — |
+| 19 | Fri 10/23 | Second-wave post: two weeks of numbers already public on `/stats` (for example how often "100% sure" was wrong), in the community server and on X. | — | — |
+| 20 | Sat 10/24 | Buffer. | — | — |
+| 21 | Sun 10/25 | Mid-month check against the targets; shift outreach to what works. | — | — |
+| 22 | Mon 10/26 | Outreach batch 4 (only the kinds that worked). | — | — |
+| 23 | Tue 10/27 | Decide user-install for `/bluff play` (B10) from the feedback. | — | — |
+| 24 | Wed 10/28 | Answer reviews; swap listing images for the real screenshots if not done. | — | — |
+| 25 | Thu 10/29 | If verified: enable App Directory discovery (`posts/discord-app-directory.md`). | — | Listed? |
+| 26 | Fri 10/30 | Halloween post with a real, sourced fact from the pool (only if one exists; never invent). | — | — |
 | 27 | Sat 10/31 | Buffer. | — | — |
-| 28 | Sun 11/01 | Month report: numbers only, in the support server and on X; milestone post if 100 servers. | — | — |
-| 29 | Mon 11/02 | If verified: enable App Directory discovery (copy in `posts/discord-app-directory.md`). Prepare Nov 18 (Product Hunt + Slack directory). | — | Listed? |
+| 28 | Sun 11/01 | Month report: numbers only, in the community server and on X; milestone post if 100 servers. | — | — |
+| 29 | Mon 11/02 | Prepare November: Product Hunt and the Slack App Directory (runbook). | — | — |
 | 30 | Tue 11/03 | **Keep/kill review #2**; set the next 30 days from what brought active servers. | — | — |
 
-Every day: `cd ~/howsure/web && npm run tomorrow` (2 min, the runbook's quality gate); read new reviews and the
-community server once.
+Every night from Sun Oct 4: `cd ~/howsure/web && npm run tomorrow` (2 min, the runbook's quality gate). Every day:
+read new reviews and the community server once.
 
 **Top risk: "offline" at top.gg review.** top.gg requires bots to be "online during review" and the submit form
 asks you to confirm it [V/U: the checkbox is reported by a third-party guide]. Who's Bluffing answers over HTTP and
 never connects to the gateway, so it shows offline although every command works. Truth or Dare kept a small gateway
-process for exactly this. Options: (1) submit with the reviewer note in `posts/topgg-listing.md` (cost: maybe one
-decline, and three declines for the same reason bans the account); (2) run a tiny always-on presence process
+process for exactly this. Options: (1) submit with the one-line reviewer note in `posts/topgg-listing.md` (cost: maybe
+one decline, and three declines for the same reason bans the account); (2) run a tiny always-on presence process
 (`GUILDS` intent, no cache, status "Playing /bluff help") on any always-on host (cost: one small process to keep
-alive). My pick: (1) first, switch to (2) on the first decline for "offline". The owner decides on day 5.
+alive). My pick: (1) first, switch to (2) on the first decline for "offline". Decide by Wed Oct 7, before the review.
 
 ### Builder tasks (briefs, not built here)
 
 | ID | Task | Why (evidence) | When |
 |---|---|---|---|
-| B1 | `/bluff help` and `/bluff invite` reply with link buttons: Add to a server · Community · Website. | ToD `help.ts`, `invite.ts` | before Oct 8 |
-| B2 | Subscribe to the `APPLICATION_AUTHORIZED` webhook event: create the install row at once and post one welcome line in the server's system channel if the event's guild data names one [U] ("An admin can type `/bluff setup` to pick the channel, or `/bluff question` to post today's now."). Today a server row only appears after its first command (`discord/src/store.js` line 9), so a silent install never gets a daily post. | [Discord webhook events](https://docs.discord.com/developers/events/webhook-events) | before Oct 8 |
-| B3 | Tip line: one rotating line at 8% under the reveal and the `/bluff play` end screen, never on the question post; `/bluff setup tips:off`. Lines are in `posts/topgg-listing.md`. | ToD `promoMessage()` | build now, vote/review lines on at approval |
+| B1 | `/bluff help` and `/bluff invite` reply with link buttons: Add to a server · Community · Website. | ToD `help.ts`, `invite.ts` | week 1 |
+| B2 | Handle the `APPLICATION_AUTHORIZED` webhook event: create the install row at once and post one welcome line in the server's system channel if the event's guild data names one [U] ("An admin can type `/bluff setup` to pick the channel, or `/bluff question` to post today's now."). Today a server row only appears after its first command (`discord/src/store.js` line 9). `USER_TODO.md` D5 already tells the owner to set the events URL to `/events`, but on 2026-10-04 `discord/src/index.js` routes only `POST /interactions` and `GET /install`, so Discord's check of that URL will fail until the route exists. | [Discord webhook events](https://docs.discord.com/developers/events/webhook-events) | before Sun Oct 4 setup, or skip D5 until built |
+| B3 | Tip line: one rotating line at 8% under the reveal and the `/bluff play` end screen, never on the question post; `/bluff setup tips:off`. Lines are in `posts/topgg-listing.md`. | ToD `promoMessage()` | week 1; vote/review lines at approval |
 | B4 | Post the server count to top.gg (and discordbotlist) from the hourly Worker run; secret `TOPGG_TOKEN`. | ToD gateway posts every 30 min | after approval |
 | B5 | "Add Who's Bluffing to your server" link button on the reveal post and the Monday recap. | ToD buttons on every reply | week 2 |
 | B6 | `/bluff setup ping:@role` and `thread:on` (a thread under each daily post for the discussion). | ToD scheduled-question options | week 2 |
-| B7 | Website short links: `/invite?ref=<source>` (count by ref, no personal data, 302 to Discord) and `/support` → community invite. | ToD `/invite`, `/support` | before Oct 20 |
-| B8 | Question pages for already-revealed questions only (see SEO ideas). | none at ToD: open ground | week 3-4 |
-| B9 | Optional presence process (see top risk). | ToD gateway repo | only if chosen |
-| B10 | User-install (`integration_types` 0 and 1) for `/bluff play` in DMs and group chats. | ToD commit `a779c6e` | decide day 25 |
+| B7 | Website short links: `/invite?ref=<source>` (count by ref, no personal data, 302 to Discord) and `/support` → community invite. | ToD `/invite`, `/support` | week 1 |
+| B8 | Question pages for already-revealed questions only (see SEO ideas). | none at ToD: open ground | weeks 2-3 |
+| B9 | Optional presence process (see top risk). | ToD gateway repo | only if chosen on Oct 7 |
+| B10 | User-install (`integration_types` 0 and 1) for `/bluff play` in DMs and group chats. | ToD commit `a779c6e` | decide Tue Oct 27 |
 
 ### The vote-incentive mechanic
 
@@ -264,7 +268,7 @@ then Server Discovery (requirements shown in Server Settings; size threshold [U]
 |---|---|---|---|
 | 1 Discover | top.gg, bot lists, website `/discord`, reveal button, `/bluff invite`, posts | clicks per `ref` (B7) | better listing copy, more tags |
 | 2 Authorize | Discord's add screen: 3 permissions, no admin | clicks → servers added | keep permissions minimal (83968) |
-| 3 First touch | today: nothing until someone runs a command | servers with a first command within 24 h | B2 welcome line |
+| 3 First touch | today: nothing until someone runs a command; with B2, a welcome line on install | servers with a first command within 24 h | B2 |
 | 4 Setup | admin runs `/bluff setup` or `/bluff question` | servers with a daily post | welcome line names the exact command |
 | 5 First reveal | 8 h later the post turns into the answer | servers with ≥ 3 answers on day 1 | role ping (B6), better hour |
 | 6 Habit | answers on 3+ of the first 7 days | active servers | Monday recap, threads, roast mode |
@@ -290,43 +294,48 @@ Review ask for admins of active servers (after top.gg approval):
 
 ---
 
-## (e) Launch-morning checklist (owner's own clicks only)
+## (e) Launch checklist (owner's own clicks only)
 
-Start Monday Oct 5 at 08:00 ET (block A can start Sunday). Secrets go into your password manager and `wrangler
-secret put`, never into chat. Assets live in `web/public/press/`.
+**Sunday Oct 4 = soft setup** (blocks A-C). **Monday Oct 5 = block M** before the 09:00 ET posts. Blocks D and E wait
+for their trigger. Same order as `USER_TODO.md` (D = Discord app, E = community server, G = listings); this section
+adds the exact English text and the asset for each field. Secrets go into your password manager and
+`wrangler secret put`, never into chat. Icon: `brand/png/icon-512.png` (identical to `web/public/press/icon-512.png`).
 
-### Block A: Discord app (≈20 min clicks + the README terminal steps)
+### Block A: Discord app (Sun, ≈15 min; `USER_TODO.md` D)
 
 1. https://discord.com/developers/applications → **New Application** → Name: `Who's Bluffing?` → Create.
 2. **General Information**
-   - App Icon: upload `web/public/press/icon-512.png`.
+   - App Icon: upload `brand/png/icon-512.png`.
    - Description: paste "App description" from `posts/discord-app-directory.md`.
    - Tags: `trivia`, `quiz`, `daily question`, `leaderboard`, `game`.
    - Terms of Service URL: `https://whosbluffing.com/terms`
    - Privacy Policy URL: `https://whosbluffing.com/privacy`
    - Copy **Application ID** and **Public Key** into your password manager.
 3. **Bot**: Reset Token → password manager. Public Bot: on. Server Members Intent: on. Save.
-4. **Installation**: Guild Install only; Install Link: Discord Provided Link; scopes `applications.commands` + `bot`;
+4. Terminal: `USER_TODO.md` D4 (App ID into `discord/wrangler.toml`, the two secrets, deploy).
+5. **General Information → Interactions Endpoint URL**:
+   `https://whosbluffing-discord.rongaijun41.workers.dev/interactions` → Save.
+   Webhook events (`/events`, `USER_TODO.md` D5): only once B2 exists in the Worker; on 2026-10-04 it does not, and the
+   portal will refuse the URL.
+6. Register the command: `USER_TODO.md` D6.
+7. **Installation**: Guild Install only; Install Link: Discord Provided Link; scopes `applications.commands` + `bot`;
    permissions Send Messages, Embed Links, Read Message History.
-5. Terminal: `discord/README.md` steps 4-7 (D1, deploy, secrets, endpoint URL, register the command).
-6. **General Information → Interactions Endpoint URL**: `https://<your worker host>/interactions` → Save.
-7. Add it to your own server: `https://discord.com/oauth2/authorize?client_id=<APP_ID>&scope=bot+applications.commands&permissions=83968&integration_type=0`
-   then run `/bluff setup channel:#general hour:14`, `/bluff question`, `/bluff play`, `/bluff reveal`.
-8. Later, when B2 is built: the portal's webhook-events page (name [U]) → URL from the builder → enable `Application Authorized`.
+8. Add it to your own server: `https://whosbluffing-discord.rongaijun41.workers.dev/install`, then run
+   `/bluff setup channel:#general hour:14`, `/bluff question`, answer it, `/bluff reveal`, `/bluff play`.
 
-### Block B: community server (≈15 min)
+### Block B: community server (Sun, ≈15 min; `USER_TODO.md` E)
 
 1. Discord → **+** → Create My Own → For a club or community → Name: `Who's Bluffing? Community` → icon
-   `web/public/press/icon-512.png`.
+   `brand/png/icon-512.png`.
 2. Create the channels from the table in (d) with the topics given.
-3. Server Settings → **Enable Community**: rules channel `#rules`, updates channel `#announcements`.
+3. Server Settings → **Enable Community**: rules channel `#rules`, updates channel `#announcements`. Turn on Onboarding.
 4. Paste into **#welcome**:
    > **Welcome to Who's Bluffing?** A daily game about how sure you really are.
    > • Every day the bot posts one question in #daily-reveal. Pick A or B, then say how sure you are, from 50% to 100%.
    > • Eight hours later the answer appears with its source, how everyone split, the top 5 and the bluff of the day.
    > • 50% scores 0. 100% scores +100 if you're right and −300 if you're wrong. Being sure only pays when you are right.
    > • Play a private 10-question round any time in #play with `/bluff play`.
-   > Add the bot to your own server: {INVITE} · Website: https://whosbluffing.com
+   > Add the bot to your own server: https://whosbluffing.com/discord · Website: https://whosbluffing.com
 5. Paste into **#rules**:
    > 1. Be kind. Roast the answer, not the person.
    > 2. No spoilers: don't post today's answer before the reveal.
@@ -335,23 +344,30 @@ secret put`, never into chat. Assets live in `web/public/press/`.
    > 5. Discord's Terms of Service and Community Guidelines apply.
 6. Paste into **#announcements** and publish:
    > Who's Bluffing? is live on Discord. One question a day, a confidence stake, and a reveal of the day's biggest
-   > bluff. Add it to your server: {INVITE}. Press **Follow** above to get updates in your own server.
+   > bluff. Add it to your server: https://whosbluffing.com/discord. Press **Follow** above to get updates in your
+   > own server.
 7. Run `/bluff setup channel:#daily-reveal hour:14 roast:off` in the server.
 8. Invite people → Edit invite link → Expire after **Never**, Max uses **No limit** → copy → send it to the builder for
    `COMMUNITY_INVITE_URL` (and use it as the support link on every listing).
 
-### Block C: listings (Thu Oct 8, ≈40 min)
+### Block C: listings (Sun, ≈40 min; `USER_TODO.md` G), after block A's full cycle works
 
 0. Open https://whosbluffing.com/privacy and check it shows the "Slack and Discord" paragraph (it is in `PRIVACY.md`;
    the note in `discord/README.md` saying it is missing is out of date). Reviewers read it.
-1. **top.gg**: https://top.gg → Login with Discord → Add → Discord Bot → Application ID → fields from
-   `posts/topgg-listing.md` (short + long description, tags, invite, website, support, note to reviewers). No
-   "Source published" line and no GitHub link until the repo is public on Oct 20. Avatar comes from Discord (the icon
-   in block A).
+1. **top.gg**: https://top.gg → Login with Discord → Add → Discord Bot → Application ID → every field from
+   `posts/topgg-listing.md`, including the one-line note to reviewers. Avatar comes from Discord (the block A icon).
 2. **discordbotlist.com**: Login with Discord → Add bot → fields from `posts/discordbotlist.md`.
 3. **discords.com**: Login with Discord → add a bot → reuse `posts/discordbotlist.md` (their field names [U]).
 
-### Block D: after top.gg approval (≈10 min)
+The listings say "Source published" and link GitHub although the repo goes public only on Monday morning: reviewers
+read them days later. For zero gap, do block M step 1 before submitting.
+
+### Block M: Monday Oct 5, before 09:00 ET (≈5 min)
+
+1. Repo public: `USER_TODO.md` A3 (`gh repo edit ... --visibility public`). Open the repo logged out to check.
+2. Then the posts at 09:00 ET in the runbook order; the X thread and the r/Discord_Bots post are in `posts/`.
+
+### Block D: after top.gg approval (≈10 min; expected from about Oct 11)
 
 1. Copy the vote URL (`https://top.gg/bot/<APP_ID>/vote`) to the builder for the tip line (B3).
 2. top.gg bot page → Webhooks / API token → copy → `npx wrangler secret put TOPGG_TOKEN` in `discord/` (B4).
@@ -362,8 +378,9 @@ secret put`, never into chat. Assets live in `web/public/press/`.
 1. Developer Portal → **App Verification**: verify your identity; request Server Members Intent with the reason in
    `posts/discord-app-directory.md`.
 2. After verification: **Discovery → Discovery Settings**: paste the detailed description, upload screenshots
-   (`web/public/press/screen-discord.png`, `screen-home.png`, `screen-question.png`, `screen-result.png`; check the
-   portal's current size limits), add the support server and links → enable Discovery (up to 24 h to appear).
+   (`web/public/press/screen-discord.png`, `screen-home.png`, `screen-question.png`, `screen-result.png`, or your own
+   from day 2; check the portal's current size limits), add the support server and links → enable Discovery (up to
+   24 h to appear).
 
 ---
 
@@ -374,6 +391,6 @@ secret put`, never into chat. Assets live in `web/public/press/`.
 - Who the original 2020 developer is, and the exact handover terms.
 - The current exact App Directory eligibility list (Discord shows it in the Developer Portal); "75 to apply,
   100 required" is from `discord/README.md` and secondary sources.
-- Field names and limits on discords.com and discordbotlist.com; r/discordbots posting rules (Reddit blocked automated
-  reading: read the sidebar before posting).
+- Field names and limits on discords.com and discordbotlist.com; r/Discord_Bots and r/discordbots posting rules
+  (Reddit blocked automated reading: read the sidebar before posting).
 - The 2021 growth driver (23.7K → 157K servers in 5.6 months) under the original developer: no public account.

@@ -44,7 +44,7 @@ or newer (the tests use Node's built-in SQLite).
 name it `Who's Bluffing?` → **Create**. On **General Information**:
 
 - Copy the **Application ID** and the **Public Key**.
-- Upload an icon, and paste a description from `posts/discord-listing.md`.
+- Upload an icon (`brand/png/icon-512.png`), and paste the App description from `posts/discord-app-directory.md`.
 
 **2. Set up the bot user (2 min).** Open the **Bot** page:
 
@@ -135,12 +135,13 @@ Then:
 
 ## List it on top.gg and in the App Directory
 
-Copy for both is in `posts/discord-listing.md`. Let the bot run in your own server for a few days before submitting.
+Copy is in `posts/topgg-listing.md` (also `posts/discordbotlist.md`) and `posts/discord-app-directory.md`. Run one full
+cycle in your own server (question, answers, `/bluff reveal`) before submitting.
 
 **top.gg.** Sign in at https://top.gg with Discord.
 
 1. Choose **Add** (add a bot) and enter the Application ID.
-2. Fill in the short and long description and the tags from `posts/discord-listing.md`.
+2. Fill in the short and long description, the tags and the note to reviewers from `posts/topgg-listing.md`.
 3. Set the prefix to `/` (slash commands only), the invite link to `WORKER_URL/install`, and the website to the Who's Bluffing site.
 4. Submit for review. Reviewers add the bot to a test server and try the commands.
 
