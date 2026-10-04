@@ -38,3 +38,5 @@
    - 11/18（周二）Product Hunt 上线 Slack 应用 + 每日一局（`posts/producthunt.md`）；同日 r/slack、r/startups
    - 12 月：第一篇数据帖（结果本身可晒）；1/25 冻结数字
    中文平台不做（英文单语）。
+10. **iOS App（第二阶段，你准备好 Apple Developer 账号 $99/年时告诉我）**：SwiftUI 客户端接现有 rounds API，原生分享、每日一题小组件、揭晓通知（可选）、Game Center 排名榜。App Store 是第四个分发入口。
+

@@ -7,7 +7,7 @@ HowSure posts five questions to a channel every day. For each one, you give a ra
 
 - One install per workspace; the game posts at the hour you choose.
 - Play in a modal in under a minute; results are private, the leaderboard is public to the channel.
-- Nothing stored but hashed member ids and scores. No message text, no emails. Open source.
+- Nothing stored but hashed member ids and scores. No message text, no emails. Source published for transparency.
 - Part of an open study of overconfidence; anonymous pooled data is published.
 
 Categories: Productivity · Social & Fun. Support: GitHub issues. Privacy policy: /PRIVACY.md in the repo (host it at howsure.me/privacy).

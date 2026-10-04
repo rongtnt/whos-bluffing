@@ -57,3 +57,8 @@ Planning ranges at Jan 25: floor 10K MAU / 50 workspaces; median 60–150K / 500
 
 ## Decisions taken (user can reverse)
 English only; Slack primary; Chrome and Telegram phase 2; Anki add-on stays at v0.1 as a shipped side artifact; name HowSure.
+
+## Phase 2 additions (decided 2026-10-04)
+- **iOS app** once the owner has an Apple Developer account: SwiftUI client on the rounds API, native share sheet, a home-screen widget with the day's question, opt-in notification at the daily reveal, Game Center leaderboard for the ranked round. App Store search becomes the fourth install surface.
+- **Licence**: all rights reserved with a verification grant (LICENSE); datasets CC BY-NC 4.0. Site and posts say "source published", never "open source".
+

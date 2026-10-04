@@ -14,8 +14,8 @@ Three surfaces, one item bank, one question: do people know what they know?
 - Pre-registered hypotheses: `prereg/PREREG.md`. Privacy: `PRIVACY.md`. Design docs: `docs/`.
 - Metrics are defined once in `analysis/test_vectors.json`; the JavaScript and Python implementations must both pass it.
 
-Independent, unaffiliated project. Anonymous, opt-in data. No accounts, no tracking, no ads.
+Independent, unaffiliated, non-commercial project. Anonymous, opt-in data. No accounts, no tracking, no ads. Source published, not open source: see LICENSE.
 
 Prior art, gratefully acknowledged: [AnkiCalibrateAddon](https://github.com/JulHeg/AnkiCalibrateAddon) (JulHeg, MIT) for the idea of rating confidence before an Anki answer; Clearer Thinking / Open Philanthropy's *Calibrate Your Judgment* for calibration training.
 
-License: MIT.
+Licence: all rights reserved — the source is published for transparency and research verification only; no use, copying or redistribution without written permission (see LICENSE). Data releases: CC BY-NC 4.0.

@@ -15,3 +15,6 @@ Build, in this order:
 10. Update sitemap, smoke (200 for every new page; CORS header present; pack/difficulty params honoured), README page map, docs/PARITY.md status marks.
 
 Report back (≤ 20 lines): pages, API changes, verbatim test summaries, screenshots of /discord and /commands at 375 and 1280, deviations.
+
+11. **Licence wording across web/**: the project is NOT open source any more. Replace every footer line "An independent, non-commercial project. Open source under the MIT licence." with "An independent, non-commercial project. Source published for transparency; all rights reserved (see LICENSE on GitHub)." (template web/scripts/page.html and every page), rewrite support.html's "small open-source project" sentence, make sure the generated terms.html reflects the new TERMS.md section "Source and licence", set web/package.json license to "SEE LICENSE IN LICENSE" and private true, and remove the words "open source" from all web copy (grep must be clean except third-party vendor notices).
+

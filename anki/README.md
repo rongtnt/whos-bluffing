@@ -98,7 +98,7 @@ Runtime needs only the Python standard library plus the `aqt`/`anki` bundled wit
 
 Prior art, gratefully acknowledged: [AnkiCalibrateAddon](https://github.com/JulHeg/AnkiCalibrateAddon) by JulHeg (MIT), which first asked for a confidence rating before an Anki answer. HowSure was written from scratch: one keypress both rates and reveals the answer, plus the dashboard and the bilingual interface.
 
-License: MIT.
+Licence: all rights reserved (see the repository LICENSE); published for transparency and research verification only.
 
 ## 中文简介
 

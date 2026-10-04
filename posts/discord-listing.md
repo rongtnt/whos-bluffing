@@ -44,7 +44,7 @@ member, and the bluff count.
 names are looked up only while a leaderboard is drawn. Anonymous answers feed an open study of overconfidence; the
 pooled data will be published.
 
-Free, independent, no ads. Open source.
+Free, independent, no ads. Source published for transparency.
 
 ## App Directory detailed description (shorter)
 

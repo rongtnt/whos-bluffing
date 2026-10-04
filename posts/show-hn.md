@@ -6,4 +6,4 @@ At the end you get a type (Bluffer, Hot-headed, Calibrated, Modest, Hedger), a o
 
 Slack and Discord apps post one question a day in a channel; everyone answers, and at the reveal the channel sees who was right and the day's biggest bluff (anonymous by default; servers can turn on roast mode).
 
-The questions are generated from Wikidata facts with the source attached to every answer; players can flag bad ones. The whole thing is also a pre-registered study: do people get better calibrated with daily feedback? Anonymous data and code are open. No accounts, no tracking, no ads. Cloudflare Pages + Workers + D1, vanilla JS. {URL}
+The questions are generated from Wikidata facts with the source attached to every answer; players can flag bad ones. The whole thing is also a pre-registered study: do people get better calibrated with daily feedback? The anonymous data is released under CC BY-NC and the code is published for anyone to read. No accounts, no tracking, no ads. Cloudflare Pages + Workers + D1, vanilla JS. {URL}

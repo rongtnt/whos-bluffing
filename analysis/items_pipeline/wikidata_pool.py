@@ -65,6 +65,30 @@ MOON_NAMES = ["Moon", "Phobos", "Deimos", "Io", "Europa", "Ganymede", "Callisto"
 MOONS = (f"VALUES ?parent {{ {PLANETS} wd:Q339 }} VALUES ?name {{ {' '.join(f'{chr(34)}{n}{chr(34)}@en' for n in MOON_NAMES)} }} "
          "?item rdfs:label ?name ; wdt:P397 ?parent .")
 DWARF_PLANETS = "wd:Q339 wd:Q596 wd:Q1471 wd:Q1765 wd:Q1770"
+# Famous products and launches by English label ("Which came out first?"). A label can name several things, so films,
+# people, songs, albums, TV series and books are excluded and the best-known match wins (one entity per name).
+PRODUCT_NAMES = [
+    "iPhone", "iPad", "iPod", "Macintosh", "Apple II", "Apple Watch", "AirPods", "Walkman", "Game Boy", "Game Boy Advance",
+    "Nintendo Entertainment System", "Super Nintendo Entertainment System", "Nintendo 64", "GameCube", "Wii", "Nintendo Switch",
+    "Nintendo DS", "PlayStation", "PlayStation 2", "PlayStation 3", "PlayStation 4", "PlayStation 5", "PlayStation Portable",
+    "Xbox", "Xbox 360", "Xbox One", "Sega Genesis", "Atari 2600", "Commodore 64", "ZX Spectrum", "IBM Personal Computer",
+    "BlackBerry", "Nokia 3310", "Amazon Kindle", "Tamagotchi", "Rubik's Cube", "Furby", "Barbie", "Lego", "Monopoly",
+    "Scrabble", "Frisbee", "Slinky", "Post-it Note", "Compact disc", "DVD", "Blu-ray", "Floppy disk", "USB flash drive",
+    "Ford Model T", "Volkswagen Beetle", "Fiat 500", "Toyota Corolla", "Ford Mustang", "Chevrolet Corvette", "Porsche 911",
+    "Toyota Prius", "Tesla Model S", "Tesla Model 3", "Citroën 2CV", "Volkswagen Golf", "Honda Civic", "Land Rover Defender",
+    "Microsoft Windows", "Windows 95", "Windows XP", "Linux", "Android", "iOS", "Google Search", "Gmail", "YouTube",
+    "Facebook", "Twitter", "Instagram", "WhatsApp", "TikTok", "Snapchat", "Wikipedia", "Netflix", "Spotify", "Google Maps",
+    "Skype", "Tetris", "Pac-Man", "Super Mario Bros.", "The Legend of Zelda", "Minecraft", "Fortnite", "World of Warcraft",
+    "The Sims", "Space Invaders", "Pong", "Grand Theft Auto V", "Street Fighter II", "Coca-Cola", "Pepsi", "Big Mac", "Nutella",
+    "Kit Kat", "Red Bull", "Concorde", "Boeing 747", "Airbus A380", "Sputnik 1", "Hubble Space Telescope", "Space Shuttle",
+]
+PRODUCTS = (f"VALUES ?name {{ {' '.join(chr(34) + n.replace(chr(34), '') + chr(34) + '@en' for n in PRODUCT_NAMES)} }} ?item rdfs:label ?name . "
+            "FILTER NOT EXISTS { VALUES ?no { wd:Q11424 wd:Q5 wd:Q134556 wd:Q482994 wd:Q7366 wd:Q5398426 wd:Q7725634 wd:Q506240 } ?item wdt:P31 ?no }")
+LANGUAGES = "VALUES ?cls { wd:Q34770 wd:Q1288568 wd:Q33742 } ?item wdt:P31 ?cls ."
+FIRST_LANGUAGE = WD + "Q36870"  # P518 "applies to part": first language
+COMPANIES = "VALUES ?cls { wd:Q891723 wd:Q4830453 wd:Q6881511 wd:Q783794 wd:Q167037 } ?item wdt:P31 ?cls ."
+# statue, tower, cathedral, church building, monument, lighthouse, obelisk, mosque (+ stadium for the year built)
+LANDMARKS = "wd:Q179700 wd:Q12518 wd:Q2977 wd:Q16970 wd:Q4989906 wd:Q39715 wd:Q170980 wd:Q32815"
 
 
 # Reference quality of the statement ?st: a real reference (anything but P143 imported from / P4656 Wikimedia import
@@ -80,6 +104,32 @@ def quantity_query(where, prop, min_sitelinks, extra=""):
   ?item wikibase:sitelinks ?sitelinks . FILTER(?sitelinks >= {min_sitelinks})
   ?item p:{prop} ?st . ?st wikibase:rank ?rank ; psv:{prop} ?v .
   ?v wikibase:quantityAmount ?amount ; wikibase:quantityUnit ?unit .
+  {REFS}
+  {LABEL}
+}}"""
+
+
+def population_query(where, min_sitelinks, prop="P1082", extra=""):
+    """Year-stamped counts (population, speakers): every statement with its point in time (P585)."""
+    return f"""SELECT DISTINCT ?item ?itemLabel ?sitelinks ?amount ?time ?precision ?rank ?referenced ?imported {extra} WHERE {{
+  {where}
+  ?item wikibase:sitelinks ?sitelinks . FILTER(?sitelinks >= {min_sitelinks})
+  ?item p:{prop} ?st . ?st wikibase:rank ?rank ; ps:{prop} ?amount .
+  OPTIONAL {{ ?st pqv:P585 ?tv . ?tv wikibase:timeValue ?time ; wikibase:timePrecision ?precision . }}
+  {"OPTIONAL { ?st pq:P518 ?part . }" if "?part" in extra else ""}
+  {REFS}
+  {LABEL}
+}}"""
+
+
+def release_query(where, min_sitelinks):
+    """Launch years: publication date (P577) and inception (P571) statements, tagged by ?prop."""
+    return f"""SELECT DISTINCT ?item ?itemLabel ?sitelinks ?prop ?time ?precision ?rank ?referenced ?imported WHERE {{
+  {where}
+  ?item wikibase:sitelinks ?sitelinks . FILTER(?sitelinks >= {min_sitelinks})
+  VALUES (?p ?psv ?prop) {{ (p:P577 psv:P577 "P577") (p:P571 psv:P571 "P571") }}
+  ?item ?p ?st . ?st wikibase:rank ?rank ; ?psv ?tv .
+  ?tv wikibase:timeValue ?time ; wikibase:timePrecision ?precision .
   {REFS}
   {LABEL}
 }}"""
@@ -102,6 +152,8 @@ def article(label, nouns):
 
 
 BUILDING_NOUNS = {"Building", "Tower", "Towers", "Centre", "Center", "Plaza", "Hotel", "Palace", "Spire", "Needle", "Tower 1"}
+LANDMARK_NOUNS = {"Statue", "Tower", "Cathedral", "Church", "Monument", "Lighthouse", "Column", "Obelisk", "Basilica", "Minster",
+                  "Abbey", "Memorial", "Needle", "Pagoda", "Mosque", "Stadium", "Arena", "Bowl", "Dome", "Wheel", "Gate", "Clock"}
 COUNTRY_THE = {"Netherlands", "Philippines", "Bahamas", "Gambia", "Maldives", "Comoros", "Seychelles", "Vatican City"}
 
 
@@ -196,6 +248,29 @@ CATEGORIES = [
          query=year_query("?item p:P793/ps:P793 wd:Q1194369 ; wdt:P2044 [] .",
                           "?item p:P793 ?st . ?st ps:P793 wd:Q1194369 ; wikibase:rank ?rank ; pqv:P585 ?tv .", 15),
          prompt=lambda label, row: f"In what year was {label} first climbed?"),
+    # Relatable categories (2026-10-04): what everyone has heard of.
+    dict(name="country_population", domain="geography", kind="population", prop="P1082", unit="people", accept=[100, 2000000000], cap=230,
+         query=population_query("?item wdt:P297 [] . FILTER NOT EXISTS { ?item wdt:P576 [] }", 20),
+         prompt=lambda label, row: f"What was the population of {country_name(label)} in {row['year']}?",
+         entity=lambda label, row: country_name(label)),
+    dict(name="company_founded", domain="history", kind="year", prop="P571", unit="year", accept=[1500, CURRENT_YEAR], cap=200,
+         query=year_query(COMPANIES, "?item p:P571 ?st . ?st wikibase:rank ?rank ; psv:P571 ?tv .", 60),
+         prompt=lambda label, row: f"In what year was {label} founded?"),
+    dict(name="product_released", domain="everyday", kind="release", prop="P577", unit="year", accept=[1800, CURRENT_YEAR], cap=150,
+         query=release_query(PRODUCTS, 20),
+         prompt=lambda label, row: f"In what year did {label} first come out?"),
+    dict(name="language_speakers", domain="everyday", kind="speakers", prop="P1098", unit="people", accept=[10000, 2000000000], cap=150,
+         query=population_query(LANGUAGES, 40, prop="P1098", extra="?part"),
+         prompt=lambda label, row: f"How many people spoke {label} as a first language in {row['year']}?"),
+    dict(name="landmark_height", domain="everyday", kind="quantity", prop="P2048", unit="m", accept=[1, 700], cap=200,
+         query=quantity_query(f"VALUES ?cls {{ {LANDMARKS} }} ?item wdt:P31 ?cls . FILTER NOT EXISTS {{ ?item wdt:P576 [] }}", "P2048", 30),
+         prompt=lambda label, row: f"How tall is {article(label, LANDMARK_NOUNS)}{label}?",
+         entity=lambda label, row: f"{article(label, LANDMARK_NOUNS)}{label}"),
+    dict(name="landmark_built", domain="history", kind="year", prop="P571", unit="year", accept=[-3000, CURRENT_YEAR], cap=200,
+         query=year_query(f"VALUES ?cls {{ {LANDMARKS} wd:Q483110 }} ?item wdt:P31 ?cls . FILTER NOT EXISTS {{ ?item wdt:P576 [] }}",
+                          "?item p:P571 ?st . ?st wikibase:rank ?rank ; psv:P571 ?tv .", 40),
+         prompt=lambda label, row: f"In what year was {article(label, LANDMARK_NOUNS)}{label} built?",
+         entity=lambda label, row: f"{article(label, LANDMARK_NOUNS)}{label}"),
 ]
 
 LATIN_LABEL = re.compile("^[0-9A-Za-z\u00c0-\u024f\u1e00-\u1eff .,'\u2019()&/+\u2013-]+$")  # Latin letters and accents, en dash
@@ -256,8 +331,44 @@ def ref_quality(rows):
     return best
 
 
+def select_release(rows):
+    """Launch year: the earliest best-ranked publication date (first release anywhere), else a single inception year."""
+    for prop in ("P577", "P571"):
+        stated = best_rank([r for r in rows if r.get("prop") == prop])
+        dated = [r for r in stated if int(r["precision"]) >= 9]
+        if not stated:
+            continue
+        if not dated:
+            return None, "precision"
+        years = sorted(set(year_of(r["time"]) for r in dated))
+        if prop == "P571" and len(years) > 1:
+            return None, "conflict"
+        return years[0], {"source_prop": prop, "_used": dated}
+    return None, "deprecated"
+
+
+def select_speakers(rows):
+    """First-language speakers only (P518 = first language; preferred statements in the same set disagree on total vs
+    second-language counts): the latest year with a point in time, preferred values of that year if any."""
+    first = [r for r in rows if r.get("part") == FIRST_LANGUAGE and not r["rank"].endswith("DeprecatedRank")
+             and r.get("time") and int(r.get("precision", 0)) >= 9]
+    if not first:
+        return None, "no_first_language"
+    year = max(year_of(r["time"]) for r in first)
+    latest = [r for r in first if year_of(r["time"]) == year]
+    latest = [r for r in latest if r["rank"].endswith("PreferredRank")] or latest
+    values = sorted(set(int(round(float(r["amount"]))) for r in latest))
+    if conflicting(values):
+        return None, "conflict"
+    return values[len(values) // 2], {"year": year, "_used": latest}
+
+
 def select_value(category, rows):
     """Returns (answer, extra) for one entity's statement rows, or (None, reason) when the entity is skipped."""
+    if category["kind"] == "release":
+        return select_release(rows)
+    if category["kind"] == "speakers":
+        return select_speakers(rows)
     rows = best_rank(rows)
     if not rows:
         return None, "deprecated"
@@ -314,6 +425,8 @@ def build_category(category, bindings, generated_at):
         if not lo <= answer <= hi:
             skip("bounds")
             continue
+        used = extra.pop("_used", None) or rows
+        source_prop = extra.pop("source_prop", category["prop"])
         row = dict(rows[0], **extra)
         items.append({
             "type": "interval",
@@ -322,12 +435,12 @@ def build_category(category, bindings, generated_at):
             "en": {"prompt": category["prompt"](label, row), "unit": category["unit"]},
             "answer": answer,
             "accept": list(category["accept"]),
-            "source": f"https://www.wikidata.org/wiki/{q}#{category['prop']}",
+            "source": f"https://www.wikidata.org/wiki/{q}#{source_prop}",
             "difficulty_hint": "unknown",
             "volatile": False,
             "generated_at": generated_at,
             "name": category.get("entity", lambda label, row: label)(label, row),
-            "ref_quality": ref_quality(rows),
+            "ref_quality": ref_quality(used),
             "fact_checked": False,
             "sitelinks": int(rows[0].get("sitelinks", 0)),
             "_label": " ".join(normalize(label)),
@@ -356,19 +469,26 @@ def dedupe(items):
     return out, dropped
 
 
+CARRIED = ("enwiki", "views_month")  # written by pageviews.py; kept until its next run
+
+
 def assign_ids(items, previous):
-    """Reuses the id of a statement already in the pool (keyed by source); new statements get the next free ids."""
-    old = {it["source"]: it["id"] for it in previous}
-    used = set(old.values())
+    """Reuses the id of a statement already in the pool (keyed by source); new statements get the next free ids.
+    Pageview fields of a statement already in the pool are carried over."""
+    old_items = {it["source"]: it for it in previous}
+    used = {it["id"] for it in previous}
     next_n = max([int(i[1:]) for i in used] + [0]) + 1
     out = []
     for it in items:
-        if it["source"] in old:
-            item_id = old[it["source"]]
+        prev = old_items.get(it["source"])
+        if prev:
+            item_id = prev["id"]
         else:
             item_id = f"w{next_n:04d}"
             next_n += 1
-        out.append(dict({"id": item_id}, **{k: v for k, v in it.items() if not k.startswith("_")}))
+        new = dict({"id": item_id}, **{k: v for k, v in it.items() if not k.startswith("_")})
+        new.update({k: prev[k] for k in CARRIED if prev and k in prev})
+        out.append(new)
     return out
 
 

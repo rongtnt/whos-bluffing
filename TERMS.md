@@ -35,9 +35,9 @@ What is stored, why, and for how long is described in the [privacy policy](/priv
 
 A teacher who creates a class code, or a member who installs the Slack app, should tell their students or colleagues that answers are collected anonymously for research.
 
-## Open source
+## Source and licence
 
-The code is open source under the MIT licence on [GitHub](https://github.com/rongtnt/howsure). Questions are built from Wikidata and official sources, which are linked from every answer.
+The source code is published on [GitHub](https://github.com/rongtnt/howsure) so that anyone can read it and verify the research. It is not open source: all rights are reserved, and no permission is granted to use, copy, modify or redistribute it, except to run it locally to verify published results (see the LICENSE file). Published datasets are licensed under CC BY-NC 4.0. Questions are built from Wikidata and official sources, each linked from the question.
 
 ## Changes
 
