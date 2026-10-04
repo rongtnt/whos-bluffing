@@ -22,18 +22,18 @@ answers, the split visible to voters, the argument moves to quotes and replies.
 **Ours (poll, options `Nokia` / `BMW`):**
 > Which company is older?
 >
-> Vote. Then reply with how sure you were, from 50% (coin flip) to 100% (stake it all).
+> Vote, then reply with how sure you were, from 50% (a coin flip) to 100% (you would stake everything on it).
 >
-> Answer in 4 hours.
+> The answer will be posted in 4 hours.
 
 **Reveal (reply when the poll closes):**
-> Poll's closed. {W}% of {N} voters picked BMW.
+> The poll is closed. {W}% of {N} voters picked BMW.
 >
-> It's Nokia: founded in 1865 as a paper mill in Finland. BMW: 1916. (Wikidata)
+> The answer is Nokia, founded in 1865 as a paper mill in Finland. BMW was founded in 1916 (Wikidata).
 >
-> If you said BMW at 90% sure, that was a bluff.
+> If you picked BMW at 90% sure, that was a bluff.
 >
-> Today's question, same rules: whosbluffing.com
+> Today's question works the same way, at whosbluffing.com
 
 Facts: Nokia 1865 (wikidata.org/wiki/Q1418), BMW 1916 (wikidata.org/wiki/Q26678); both fact-checked in our bank.
 
@@ -46,18 +46,18 @@ like a coin flip, the near-even split itself becomes the story.
 **Ours (poll, options `Colombia` / `Germany`):**
 > Which country has more people?
 >
-> Vote, then reply with how sure you are. 50% = coin flip. 100% = stake it all.
+> Vote, then reply with how sure you are. 50% means a coin flip, and 100% means you would stake everything on it.
 >
-> Reveal in 4 hours.
+> The answer will be posted in 4 hours.
 
 **Reveal:**
-> Closed. {W}% of {N} voters picked Colombia.
+> The poll is closed. {W}% of {N} voters picked Colombia.
 >
-> Germany has more: about 83 million people, against about 52 million in Colombia (Wikidata).
+> Germany has more people, about 83 million against about 52 million in Colombia (Wikidata).
 >
-> {R}% got it right. Were you sure, or just loud?
+> {R}% got it right. The more interesting question is how sure each of you was.
 >
-> Play today's: whosbluffing.com
+> Today's question is at whosbluffing.com
 
 Facts: Germany 83,467,117 (wikidata.org/wiki/Q183), Colombia 52,321,152 (wikidata.org/wiki/Q739).
 
@@ -68,20 +68,20 @@ likes in two days ([Know Your Meme](https://knowyourmeme.com/memes/100-men-vs-1-
 regular account. Structure: "settle this", one question, pick a side, everyone argues.
 
 **Ours (poll, options `Danube` / `Mississippi`):**
-> Settle this.
+> People argue about this one, so let's settle it.
 >
-> Which river is longer: the Danube or the Mississippi?
+> Which river is longer, the Danube or the Mississippi?
 >
-> Pick a side. Reply with how sure you are. The wrong side at 90% gets named in 4 hours.
+> Pick a side and reply with how sure you are. The answer will be posted in 4 hours.
 
 **Reveal:**
-> Settled. {W}% of {N} of you picked the Danube.
+> It's settled. {W}% of {N} of you picked the Danube.
 >
-> The Mississippi is longer: 3,766 km. The Danube: 2,850 km. (Wikidata)
+> The Mississippi is longer, at 3,766 km against the Danube's 2,850 km (Wikidata).
 >
-> To everyone who replied 90%+ for the Danube: we said we'd name you. We won't. You know who you are.
+> If you replied 90% or more for the Danube, that was a bluff. You know who you are.
 >
-> whosbluffing.com
+> Today's question is at whosbluffing.com
 
 Facts: Mississippi 3,766 km (wikidata.org/wiki/Q1497, fact-checked), Danube 2,850 km (wikidata.org/wiki/Q1653).
 
@@ -92,11 +92,11 @@ Facts: Mississippi 3,766 km (wikidata.org/wiki/Q1497, fact-checked), Danube 2,85
 plus Wordle's share line (#1). Structure: "I got X, what did you get?" with the result line pasted.
 
 **Ours (fill in your own real result):**
-> 10 questions. Pick A or B, then stake how sure you are. At 100% sure, a wrong answer costs 3× what a right one pays.
+> It's ten questions where you pick A or B and say how sure you are. At 100%, a miss costs three times what a hit pays.
 >
-> I got {type}: {x}% right at {y}% sure.
+> I came out {type}, {x}% right at {y}% sure.
 >
-> Reply with yours: Bluffer, Hot-headed, Calibrated, Modest or Hedger.
+> Which type did you get, Bluffer, Hot-headed, Calibrated, Modest or Hedger?
 >
 > whosbluffing.com
 
@@ -107,11 +107,11 @@ plus Wordle's share line (#1). Structure: "I got X, what did you get?" with the 
 Structure: one real overconfidence number, then turn it on the reader.
 
 **Ours:**
-> 6% of Americans think they could beat a grizzly bear in a fight (YouGov, 2021).
+> In a 2021 YouGov poll, 6% of Americans said they could beat a grizzly bear in a fight.
 >
 > Overconfidence is funny until it's yours.
 >
-> 10 questions, a confidence stake on each. Reply with your type.
+> The game is ten questions with a confidence stake on each. Reply with the type you get.
 >
 > whosbluffing.com
 
@@ -123,18 +123,18 @@ Greenland about 14 times smaller than Africa although Mercator maps draw them al
 outlines (#3). Structure: "your map lied" + two shapes at true scale + the answer withheld.
 
 **Ours (image: the two outlines on an equal-area projection, same scale, unlabeled, marked A and B):**
-> Your map has been lying to you.
+> Many world maps make Greenland look enormous.
 >
-> Which is bigger: Greenland or Algeria?
+> Which is bigger, Greenland or Algeria?
 >
-> Say how sure you are before you check. Answer in the reply.
+> Decide how sure you are before you check. The answer is in the reply.
 
 **Reply (post right away):**
-> Algeria: 2,381,741 km². Greenland: 2,166,086 km². (Wikidata)
+> Algeria is bigger, at 2,381,741 km² against Greenland's 2,166,086 km² (Wikidata).
 >
-> Common world maps stretch land near the poles, so Greenland looks far bigger than it is.
+> Maps drawn on the Mercator projection stretch land near the poles, so Greenland looks far bigger than it is.
 >
-> One sourced question like this every day: whosbluffing.com
+> There is one sourced question like this every day at whosbluffing.com
 
 Facts: wikidata.org/wiki/Q262 and wikidata.org/wiki/Q223, both fact-checked. Keep it about square kilometres, not
 about who should own Greenland.
@@ -145,18 +145,23 @@ about who should own Greenland.
 200 m) drew 9.2k upvotes [M, read from a Reddit mirror]; the sub's top posts pass 100k. Structure: one-line title that
 states the surprising fact with numbers, original map, sources in the first comment.
 
-**Ours, r/MapPorn title (read the sidebar first; flag as original content if the sub asks):**
-> Brazil is bigger than Australia: 8,515,767 km² vs 7,692,024 km², both drawn at the same scale on an equal-area projection [OC]
+**Ours, r/MapPorn title (read the sidebar before posting; flag as original content if the sub asks):**
+> Brazil is bigger than Australia (8,515,767 km² vs 7,692,024 km²), both drawn at the same scale on an equal-area projection [OC]
 
-First comment: `Areas from Wikidata (Q155, Q408). Equal-area projection so the sizes compare honestly. I make a daily
-"which is bigger, and how sure are you?" game; happy to share the question list.`
+Comment to post right after: `Areas are from Wikidata (Q155, Q408). I used an equal-area projection so the sizes compare
+honestly. I make a daily "which is bigger, and how sure are you?" game and am happy to share the question list.`
 
 **Ours, X (image: the two outlines, same scale, unlabeled):**
-> Which is bigger: Brazil or Australia?
+> Which is bigger, Brazil or Australia?
 >
 > One of them is a continent. The other is bigger.
 >
-> Say how sure you are. Answer in the reply.
+> Decide how sure you are. The answer is in the reply.
+
+**Reply (post right away):**
+> Brazil is bigger, at 8,515,767 km² against Australia's 7,692,024 km² (Wikidata).
+>
+> There is one sourced question like this every day at whosbluffing.com
 
 ## 8. The dare: three questions, no bluffing
 
@@ -165,21 +170,21 @@ retweets in 3 days, then an NYT op-ed ([Know Your Meme](https://knowyourmeme.com
 three-word dare above a short test, answers go in the replies.
 
 **Ours:**
-> Bet you can't go 3 for 3 without bluffing.
+> Can you get all three of these right without bluffing?
 >
-> 1. Nile or Danube: which is longer?
-> 2. Colombia or Germany: which has more people?
-> 3. Ford or Boeing: which came first?
+> 1. Which is longer, the Nile or the Danube?
+> 2. Which has more people, Colombia or Germany?
+> 3. Which company is older, Ford or Boeing?
 >
-> Reply with your answers and how sure you are for each. Answers in 4 hours.
+> Reply with your answers and how sure you are on each. The answers follow in 4 hours.
 
 **Answer reply (after 4 hours):**
-> 1. Nile: 6,650 km. Danube: 2,850 km.
-> 2. Germany: ~83 million. Colombia: ~52 million.
-> 3. Ford: 1903. Boeing: 1916.
-> (All Wikidata.)
+> 1. The Nile is longer, 6,650 km to 2,850 km.
+> 2. Germany has more people, 83.5 million to 52.3 million.
+> 3. Ford is older, 1903 to Boeing's 1916.
+> The source is Wikidata.
 >
-> 3 for 3 at 100%? Respect. 3 for 3 at 50%? Lucky. Try today's: whosbluffing.com
+> All three right at 100% is impressive. All three right at 50% is lucky and honest. whosbluffing.com
 
 Unlike 8÷2(2+2), every question here has one sourced answer, so the replies argue about confidence, not about the rules.
 
@@ -191,16 +196,16 @@ Unlike 8÷2(2+2), every question here has one sourced answer, so the replies arg
 window per round, an instant reveal, a last frame that loops back to the first.
 
 **Caption:**
-> Your map lied to you. Which is bigger? Say it out loud, then say how sure you are. Most people miss the second one.
-> One a day at whosbluffing.com #geography #mapquiz #quiz
+> Many world maps distort size. Which is bigger? Say your answer out loud, then say how sure you are.
+> There is one question like this every day at whosbluffing.com #geography #mapquiz #quiz
 
 **Script (≈12 s, vertical):**
-- 0-1 s: text "Your map has been lying to you" over a classic world map.
+- 0-1 s: text "Your map has been misleading you" over a classic world map.
 - 1-4 s: Brazil vs Australia outlines, same scale, unlabeled; a 3-second countdown; text "How sure are you?"
 - 4-5 s: reveal "Brazil 8.5M km² · Australia 7.7M km²".
 - 5-8 s: Greenland vs Algeria, same scale, countdown.
 - 8-9 s: reveal "Algeria 2.38M km² · Greenland 2.17M km²".
-- 9-12 s: text "Be honest: were you sure?" + whosbluffing.com, fading back to the first frame so it loops.
+- 9-12 s: text "Be honest. Were you sure?" + whosbluffing.com, fading back to the opening frame so it loops.
 
 ## 10. TikTok / Reels: "I asked my friends how sure they were"
 
@@ -209,12 +214,12 @@ window per round, an instant reveal, a last frame that loops back to the first.
 Structure: "I asked N people", one question, a quick cut per person, the tally at the end.
 
 **Caption (fill in the real count):**
-> I asked {n} friends which company is older, Nokia or BMW, and made them say how sure they were. {k} said 100%. #quiz #trivia #howsure
+> I asked {n} friends whether Nokia or BMW is the older company, and how sure they were. {k} said 100%. #quiz #trivia #howsure
 
 **Script (≈20 s, vertical):**
-- 0-2 s: text "Which company is older: Nokia or BMW? And how sure are you?"
+- 0-2 s: text "Which company is older, Nokia or BMW? And how sure are you?"
 - 2-14 s: one cut per friend: their answer, then their percent as big text ("BMW. 90%.").
-- 14-17 s: reveal "Nokia: 1865 (a paper mill in Finland). BMW: 1916."
+- 14-17 s: reveal "Nokia 1865 (a paper mill in Finland) · BMW 1916"
 - 17-20 s: replay the most confident wrong answer with the game's roast line ("90% sure BMW was older. Bold. Wrong, but bold."),
   then whosbluffing.com.
 
