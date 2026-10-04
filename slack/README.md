@@ -1,18 +1,50 @@
 # HowSure for Slack
 
-A Cloudflare Worker that brings the HowSure daily game to Slack. A workspace installs it once; every day it posts the game in a chosen channel; members play in a form; the channel post shows today's leaderboard.
+A Cloudflare Worker that posts one HowSure question a day in a Slack channel. Members pick A or B and say how sure they are, privately. Hours later the answer is revealed in the same message, with the workspace's points and the day's biggest bluff. Every Monday a recap shows how well calibrated the workspace was last week.
 
 ## What members see
 
-- A daily post: "HowSure #12 — 5 questions, give a range you're 90% sure about. Today's average so far: 2.8/5." with a **Play** button.
-- **Play** opens a form with 5 questions. For each: a low and a high number.
-- After **Submit**: a private result (🟩 truth inside your range, 🟥 outside, each true answer with its source). The daily post updates with players, average and the top 5.
-- Commands:
-  - `/howsure` posts today's game in the current channel.
-  - `/howsure setup #channel [hour]` sets the daily channel and the UTC hour (default 14).
-  - `/howsure stats` posts the 30-day leaderboard (top 10 by total hits; ties go to whoever played more) and how many members played.
+- **The daily post**, at the workspace's hour: "HowSure · Which is longer: the Nile or the Danube?" with two buttons, **A · the Nile** and **B · the Danube**.
+- **Tap A or B:** a private confidence picker appears, only for you: 50% (coin flip), 60%, 70%, 80%, 90%, 100% (stake it all).
+- **Tap a confidence:** the picker turns into "Locked in: B at 80%. Reveal at 22:00 UTC." Nobody else sees your pick, and you get no hint whether you were right.
+- **Change your mind** before the reveal: tap A or B again and pick a new confidence. The picker shows your current answer; the last answer counts.
+- **The reveal** edits the original post (the buttons go away):
+  - the correct answer with both values (and both sources, when the API sends them);
+  - "12 answered · 75% A · 25% B";
+  - the top 5 by points, by display name;
+  - the bluff line: "Someone was 90% sure it was B (the Danube). It wasn't."
+- **The Monday recap** (posted at the workspace's hour, before that day's question): how often each confidence level was right last week, the most calibrated member by name, the bluff count, days played and the workspace's streak.
 
-A member who already played today gets their result again, not a second play.
+### Points
+
+Each answer scores 100 − 400 × (confidence − outcome)², with confidence as a fraction and outcome 1 when right, 0 when wrong. 50% always scores 0; 100% scores +100 when right and −300 when wrong. Honest confidence earns the most points over time. The web API computes the points; the Worker only stores and shows them.
+
+### Roast mode
+
+Off by default. With roast mode off:
+
+- the bluff line says "Someone", never a name;
+- the points list on the reveal and in `/howsure stats` shows only members with more than 0 points, so nobody is named next to a loss.
+
+`/howsure setup roast on` names the biggest bluffer in the reveal and shows everyone's points, negative ones included. `/howsure setup roast off` turns it back off. Any member can change it.
+
+### Reveal timing
+
+The answer is revealed 8 hours after the post hour, at the top of the hour (post hour 14 → reveal 22:00 UTC). If the day's post went up later than the post hour (for example, the channel was set up in the evening), the reveal is 8 hours after the hour it went up, so everyone still gets the full 8 hours. The post and the "Locked in" reply both show the reveal time. Anyone can reveal early with `/howsure reveal`.
+
+A question can be answered until its reveal, and only on its day or the day after (a post at 20:00 is revealed at 04:00 the next day).
+
+## Commands
+
+| Command | What it does |
+|---|---|
+| `/howsure` | Posts today's question in this channel. In the chosen channel (or when none is chosen yet) it becomes the day's post, and the hourly post skips that day; if the day's post is already in this channel, it says so instead of posting twice. Elsewhere it posts a copy: answers count the same, and the reveal happens on the day's post. After today's reveal it posts nothing and says so. |
+| `/howsure setup #channel [hour] [roast on\|off]` | Posts the question in #channel every day at that hour, in UTC (0–23, default 14). Without an hour the hour is set to 14. |
+| `/howsure setup roast on\|off` | Changes roast mode only; channel and hour stay. |
+| `/howsure reveal` | Reveals the open question now, for everyone. |
+| `/howsure stats` | Posts this workspace's 30-day leaderboard in the channel: top 10 by total points (ties: more answers first) and how many members answered. Only revealed days count. |
+
+Anything else shows the command list privately.
 
 ## Set up (about 15 minutes)
 
@@ -28,11 +60,11 @@ You need a Cloudflare account (free plan is fine), a Slack workspace where you m
    ```bash
    npx wrangler d1 create howsure-slack
    ```
-   Paste the printed `database_id` into `wrangler.toml` (replace the zeros), then:
+   Paste the printed `database_id` into `wrangler.toml` (replace the zeros), then apply both migrations:
    ```bash
    npx wrangler d1 migrations apply howsure-slack --remote
    ```
-3. **Point at the web API.** In `wrangler.toml` under `[vars]`, set `API_BASE` to the web deployment's origin. Default: `https://howsure.pages.dev`. Use the custom domain once it exists. No trailing slash, no `/api`.
+3. **Point at the web API.** In `wrangler.toml` under `[vars]`, set `API_BASE` to the web deployment's origin. Default: `https://howsure.pages.dev`. Use the custom domain once it exists. No trailing slash, no `/api`. The Worker calls `/api/round/daily-question`, `/api/round/answer` and `/api/round/reveal` (see `docs/api-rounds.md`).
 4. **Deploy once to get the URL**
    ```bash
    npx wrangler deploy
@@ -47,7 +79,7 @@ You need a Cloudflare account (free plan is fine), a Slack workspace where you m
    openssl rand -hex 32                           # copy this value and keep a copy in your password manager
    npx wrangler secret put SALT                   # paste it
    ```
-   Secrets take effect at once; no redeploy needed. **Never change SALT**: every member id is hashed with it, so a new SALT turns every member into a new player (MAU counted twice, 30-day boards reset).
+   Secrets take effect at once; no redeploy needed. **Never change SALT**: every member id is hashed with it, so a new SALT turns every member into a new player (MAU counted twice, boards and streaks reset).
 7. **Let other workspaces install** (skip if only your own workspace will use it): Slack app page → **Manage Distribution** → finish the checklist → **Activate Public Distribution**.
 8. **Install.** Open `https://WORKER_HOST/slack/oauth/start` and press **Allow**. That URL is the **Add to Slack** link: share it, or link Slack's official Add to Slack button image to it.
 9. **In Slack:**
@@ -55,6 +87,8 @@ You need a Cloudflare account (free plan is fine), a Slack workspace where you m
    /howsure setup #general 14
    /howsure
    ```
+
+Already set up v0.1? Run step 2's `migrations apply` again (it adds `0002_daily_question.sql`), update the app from the new `manifest.yaml` (Slack app page → **App Manifest**), and deploy.
 
 ## Secrets and vars (exact names)
 
@@ -70,14 +104,14 @@ You need a Cloudflare account (free plan is fine), a Slack workspace where you m
 
 `/howsure setup #channel [hour]`. Type `#` and pick the channel so Slack links it. The hour is UTC, 0–23, default 14.
 
-The Worker runs at the top of every hour and posts to each workspace once a day, as soon as its hour has come. If you set it up after that hour, today's game posts at the next full hour.
+The Worker runs at the top of every hour. Each run, in this order: reveals the questions that are due, posts Monday recaps, then posts today's question to each workspace once, as soon as its hour has come. If you set it up after that hour, today's question posts at the next full hour (and is revealed 8 hours after that).
 
 Public channels work without inviting the app. For a private channel, run `/invite @HowSure` in it before setup.
 
 ## Deploy and update
 
 ```bash
-npm test                                       # all tests, mocked Slack and daily API
+npm test                                       # all tests, mocked Slack and rounds API
 npx wrangler deploy --dry-run --outdir dist    # bundle check, uploads nothing
 npx wrangler deploy
 npx wrangler tail                              # live logs (short error codes only)
@@ -85,21 +119,28 @@ npx wrangler tail                              # live logs (short error codes on
 
 ## Data and tokens
 
-Stored in D1: team id, bot token, channel id, post hour, post timestamps, and per-day hits keyed by `sha256(team_id:user_id:SALT)`. No message text, names or emails. Display names are fetched from Slack only while a leaderboard is drawn and are never stored. The daily API receives only the hashed member id and a hashed workspace id (`sha256(team_id:SALT)`), never raw Slack ids.
+Stored in D1, and nothing else:
+
+- per workspace: team id, bot token, channel id, post hour, roast setting, the Monday of the last recap;
+- per workspace per day: the day's post (channel id and message timestamp) and whether it was revealed;
+- per answer: `sha256(team_id:user_id:SALT)`, the date, A or B, the confidence, and whether it was right and its points (both from the API's response, shown only after the reveal).
+
+No message text, names or emails. Display names are fetched from Slack only while a reveal, leaderboard or recap is drawn, and are never stored. The rounds API receives only the hashed member id and `slack:` + a hashed workspace id (`sha256(team_id:SALT)`), never raw Slack ids. The v0.1 table `scores` is no longer used.
 
 **Bot tokens are stored in plain text** in the D1 table `installs`.
 
-- Rotate one workspace's token: reinstall from the Add to Slack link. The callback overwrites the stored token and keeps the channel and hour.
+- Rotate one workspace's token: reinstall from the Add to Slack link. The callback overwrites the stored token and keeps the channel, hour and roast setting.
 - Revoke every token (for example if the database leaked): Slack app page → **OAuth & Permissions** → **Revoke All OAuth Tokens**, then each workspace reinstalls.
 - Rotate the app secrets: **Basic Information** → regenerate the Client Secret or Signing Secret, then `npx wrangler secret put` the new value.
 - When a workspace uninstalls, Slack revokes its token; the next hourly post sees that and deletes the workspace's row.
 
 ## Limits
 
-- Leaderboard names: only members of the channel the board is in (up to 1000 members) can be named. Others show as "a teammate".
-- Any member can run `/howsure setup`.
-- The private result uses Slack's response link, which lasts 30 minutes after pressing Play. After that, press Play again to see the result.
-- The board is updated once per finished play. Very busy workspaces may hit Slack's rate limits at peak times; plays still count.
+- Names: only members of the channel the message is in (up to 1000 members) can be named. Others show as "a teammate". The same goes for the bluffer in roast mode ("Someone" when not found).
+- Any member can run `/howsure setup` and `/howsure reveal`.
+- The confidence picker uses Slack's response link, which lasts 30 minutes after tapping A or B. After that, tap A or B again.
+- Copies posted with `/howsure` outside the chosen channel are not edited at the reveal; tapping them afterwards says the question is closed.
+- If a reveal fails (web API down, Slack error), it is retried every hour until the day after the question's day; `/howsure reveal` also retries.
 - Workers free plan allows 10 ms CPU per request. Name lookups hash up to 1000 member ids, so big channels, or hundreds of workspaces in one hourly run, may need Workers Paid ($5/month).
 - Workspace installs only; Enterprise Grid org-wide installs are not supported.
 - Not in the Slack App Directory yet; installs go through the Add to Slack link.

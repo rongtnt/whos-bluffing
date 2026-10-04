@@ -1,4 +1,5 @@
-// HowSure for Slack: OAuth install, slash command, Play modal, results, channel leaderboard, hourly daily post.
+// HowSure for Slack: OAuth install, slash command, the daily question (A/B → private confidence picker → locked in),
+// the reveal, the Monday recap and the hourly cron.
 // Slack must get an answer within 3 s, so every handler acks first and does the work in ctx.waitUntil.
 
 import { verifySlack } from './verify.js';
@@ -10,11 +11,15 @@ const SCOPES = 'commands,chat:write,chat:write.public,channels:read,groups:read,
 const MAX_BODY = 1 << 20;
 const DAY_MS = 86_400_000;
 const PERIOD_DAYS = 30;
+const STREAK_MAX_DAYS = 365;
 const MAX_MEMBERS = 1000;
+const MONDAY = 1;
 const DEAD_TOKEN = new Set(['token_revoked', 'account_inactive', 'invalid_auth']);
-const SETUP_RE = /^setup\s+<#([CG][A-Z0-9]+)(?:\|[^>]*)?>(?:\s+(\d{1,2}))?$/i;
+const SETUP_RE = /^setup(?:\s+<#([CG][A-Z0-9]+)(?:\|[^>]*)?>(?:\s+(\d{1,2}))?)?(?:\s+roast\s+(on|off))?$/i;
+const DATE_RE = /^\d{4}-\d{2}-\d{2}$/;
 
-const isoDate = (d) => d.toISOString().slice(0, 10);
+const isoDate = (ms) => new Date(ms).toISOString().slice(0, 10);
+const shiftDate = (date, days) => isoDate(Date.parse(`${date}T00:00:00Z`) + days * DAY_MS);
 const textResponse = (body, status = 200) => new Response(body, { status, headers: { 'content-type': 'text/plain; charset=utf-8' } });
 const ack = () => new Response(null, { status: 200 });
 // Logs a short reason only: never request bodies, tokens or env values.
@@ -55,6 +60,17 @@ function background(ctx, env, teamId, url, work) {
   }));
 }
 
+// One rule for the reveal time, used by the post, the locked-in reply and the cron: from the day's post if there is
+// one, else as if posted now.
+const revealTime = (install, date, post, now) =>
+  game.revealAt(date, install.post_hour_utc, post?.ts ? Number(post.ts) * 1000 : now);
+
+// Answers are taken until the day is revealed, for today's and yesterday's question only.
+const isOpen = (post, date, now) => !post?.revealed && date >= isoDate(now - DAY_MS);
+
+// With roast mode off, nobody is named next to zero or negative points.
+const shown = (install, rows) => (install.roast ? rows : rows.filter((r) => r.points > 0));
+
 // ---- OAuth v2 install --------------------------------------------------------------------------------------
 
 const redirectUri = (request) => new URL('/slack/oauth/callback', request.url).href;
@@ -83,10 +99,19 @@ async function oauthCallback(request, env) {
   });
   if (!res.ok || !res.team?.id || !res.access_token) return textResponse('The install did not work. Please use the Add to Slack link again.', 400);
   await store.saveInstall(env.DB, res.team.id, res.access_token, new Date().toISOString());
-  return textResponse('HowSure is installed. In Slack, type /howsure setup #channel to choose where the daily game goes, or /howsure to play now.');
+  return textResponse("HowSure is installed. In Slack, type /howsure setup #channel to choose where the daily question goes, or /howsure to post today's question now.");
 }
 
 // ---- Slash command ------------------------------------------------------------------------------------------
+
+// `setup #channel [HH] [roast on|off]` or `setup roast on|off`. Null fields stay as they are. Null for anything else.
+function parseSetup(args) {
+  const m = SETUP_RE.exec(args);
+  if (!m || !(m[1] || m[3])) return null;
+  const hour = m[1] ? Number(m[2] ?? store.DEFAULT_HOUR) : null;
+  if (hour > 23) return null;
+  return { channel: m[1] ?? null, hour, roast: m[3] ? Number(m[3].toLowerCase() === 'on') : null };
+}
 
 function command(f, env, ctx) {
   const args = (f.text ?? '').trim();
@@ -94,38 +119,58 @@ function command(f, env, ctx) {
     background(ctx, env, f.team_id, f.response_url, work);
     return ack();
   };
-  if (args === '') return later((install) => postGame(env, install, f.channel_id, f.response_url));
-  if (args.toLowerCase() === 'stats') return later((install) => showStats(env, install, f.channel_id, f.response_url));
-  const m = SETUP_RE.exec(args);
-  const hour = m?.[2] === undefined ? store.DEFAULT_HOUR : Number(m[2]);
-  if (m && hour <= 23) return later((install) => setup(env, install, m[1], hour, f.response_url));
+  const sub = args.toLowerCase();
+  if (sub === '') return later((install) => postQuestion(env, install, f.channel_id, f.response_url));
+  if (sub === 'stats') return later((install) => showStats(env, install, f.channel_id, f.response_url));
+  if (sub === 'reveal') return later((install) => revealNow(env, install, f.response_url));
+  const change = parseSetup(args);
+  if (change) return later((install) => setup(env, install, change, f.response_url));
   return Response.json({ response_type: 'ephemeral', text: game.USAGE });
 }
 
-async function postGame(env, install, channel, url) {
-  const day = await api.getDaily(env);
-  const stats = await api.getStats(env, day.date).catch(() => null);
-  const res = await slack(install.bot_token, 'chat.postMessage', { channel, ...game.dailyMessage(day, stats) });
+async function postQuestion(env, install, channel, url) {
+  const now = Date.now();
+  const date = isoDate(now);
+  const post = await store.getPost(env.DB, install.team_id, date);
+  if (post?.revealed) return reply(url, { text: game.ALREADY_OUT });
+  if (post?.channel_id === channel) return reply(url, { text: game.ALREADY_UP });
+  const q = await api.getQuestion(env, date);
+  const msg = game.questionMessage(q, date, revealTime(install, date, post, now));
+  const res = await slack(install.bot_token, 'chat.postMessage', { channel, ...msg });
   if (!res.ok) {
     const noAccess = res.error === 'not_in_channel' || res.error === 'channel_not_found';
     return reply(url, { text: noAccess ? game.CANT_POST : game.FAIL_TEXT });
   }
-  // A manual post in the chosen channel becomes today's post (no second post from the cron, board updates it).
-  if (channel === install.channel_id) await store.claimPost(env.DB, install.team_id, day.date, res.ts);
+  // In the chosen channel (or with none chosen yet) it becomes the day's post: the cron skips the day and the reveal
+  // edits this message. Elsewhere it is an extra copy whose answers count the same.
+  if (!install.channel_id || channel === install.channel_id) await store.claimPost(env.DB, install.team_id, date, channel, res.ts);
 }
 
-async function setup(env, install, channel, hour, url) {
-  const info = await slack(install.bot_token, 'conversations.info', { channel });
-  if (!info.ok || info.channel?.is_archived) return reply(url, { text: game.CANT_POST });
-  await store.setChannel(env.DB, install.team_id, channel, hour);
-  return reply(url, { text: `Done. HowSure will post the daily game in <#${channel}> every day at ${String(hour).padStart(2, '0')}:00 UTC.` });
+async function setup(env, install, change, url) {
+  if (change.channel) {
+    const info = await slack(install.bot_token, 'conversations.info', { channel: change.channel });
+    if (!info.ok || info.channel?.is_archived) return reply(url, { text: game.CANT_POST });
+  }
+  await store.setup(env.DB, install.team_id, change);
+  return reply(url, { text: game.setupDone(await store.getInstall(env.DB, install.team_id)) });
 }
 
 async function showStats(env, install, channel, url) {
-  const since = isoDate(new Date(Date.now() - (PERIOD_DAYS - 1) * DAY_MS));
-  const board = await store.periodBoard(env.DB, install.team_id, since);
-  const names = await displayNames(env, install, channel, board.top.map((r) => r.anon_id));
-  return reply(url, { response_type: 'in_channel', ...game.statsMessage(board, names) });
+  const board = await store.periodBoard(env.DB, install.team_id, isoDate(Date.now() - (PERIOD_DAYS - 1) * DAY_MS));
+  const rows = shown(install, board.top);
+  const names = await displayNames(env, install, channel, rows.map((r) => r.anon_id));
+  return reply(url, { response_type: 'in_channel', ...game.statsMessage(board, rows, names) });
+}
+
+async function revealNow(env, install, url) {
+  const now = Date.now();
+  const [post] = await store.openPosts(env.DB, isoDate(now - DAY_MS), install.team_id);
+  if (!post) {
+    const today = await store.getPost(env.DB, install.team_id, isoDate(now));
+    return reply(url, { text: today?.revealed ? game.ALREADY_OUT : game.NOTHING_TO_REVEAL });
+  }
+  if (!(await revealDay(env, post))) return reply(url, { text: game.ALREADY_OUT });
+  return reply(url, { text: `Revealed in <#${post.channel_id}>.` });
 }
 
 // Names exist only at render time: hash the channel's members, match them to the stored ids, look up matches.
@@ -135,7 +180,7 @@ async function displayNames(env, install, channel, anonIds) {
   if (!anonIds.length) return names;
   const wanted = new Set(anonIds);
   const res = await slack(install.bot_token, 'conversations.members', { channel, limit: MAX_MEMBERS });
-  for (const user of res.ok ? res.members : []) {
+  for (const user of res.members ?? []) {
     const anon = await api.anonId(env, install.team_id, user);
     if (!wanted.has(anon)) continue;
     const info = await slack(install.bot_token, 'users.info', { user });
@@ -145,93 +190,155 @@ async function displayNames(env, install, channel, anonIds) {
   return names;
 }
 
-// ---- Play button and modal ----------------------------------------------------------------------------------
+// ---- A/B tap, confidence tap --------------------------------------------------------------------------------
 
 function interaction(p, env, ctx) {
-  if (p.type === 'block_actions' && p.actions?.some((a) => a.action_id === game.PLAY_ACTION)) {
-    background(ctx, env, p.team.id, p.response_url, (install) => play(env, install, p));
-    return ack();
-  }
-  if (p.type === 'view_submission' && p.view?.callback_id === game.MODAL_ID) {
-    // Validation must answer inside the ack: once we return 200 the modal is gone.
-    const { values, errors } = game.readAnswers(p.view.state.values);
-    if (errors) return Response.json({ response_action: 'errors', errors });
-    const meta = JSON.parse(p.view.private_metadata);
-    background(ctx, env, p.team.id, meta.r, (install) => submit(env, install, p.user.id, meta, values));
-  }
+  const action = p.type === 'block_actions' ? p.actions?.[0] : null;
+  const [kind, arg] = String(action?.action_id ?? '').split(':');
+  if (kind !== game.PICK && kind !== game.CONF) return ack();
+  const now = Date.now();
+  background(ctx, env, p.team?.id, p.response_url, (install) =>
+    (kind === game.PICK ? showPicker : lockIn)(env, install, p, action, Number(arg), now));
   return ack();
 }
 
-// The daily API is idempotent per (anon_id, date, item): a repeat answer returns the first result.
-const sendAnswers = (env, day, values, who, rtMs) =>
-  Promise.all(day.items.map((it) => api.answer(env, { date: day.date, item_id: it.id, ...values.get(it.id), ...who, rt_ms: rtMs })));
-
-async function player(env, teamId, userId) {
-  return { anon_id: await api.anonId(env, teamId, userId), community: await api.communityId(env, teamId) };
+// Button values are ours, but check them anyway: {r: round id, i: item id, d: date, c?: choice, t?: A/B tap time}.
+function readValue(action) {
+  const v = JSON.parse(action.value ?? 'null');
+  if (typeof v?.r !== 'string' || typeof v.i !== 'string' || !DATE_RE.test(v.d ?? '')) throw new Error('bad button value');
+  return v;
 }
 
-async function play(env, install, p) {
-  const day = await api.getDaily(env);
-  const who = await player(env, install.team_id, p.user.id);
-  if (await store.getScore(env.DB, install.team_id, who.anon_id, day.date)) {
-    // Already played: replay the stored results (placeholder ranges are ignored by the idempotent API).
-    const placeholders = new Map(day.items.map((it) => [it.id, { low: it.accept[0], high: it.accept[1] }]));
-    return reply(p.response_url, game.resultMessage(day, await sendAnswers(env, day, placeholders, who, 0), true));
+// A or B: send the private confidence picker (or say the question is closed).
+async function showPicker(env, install, p, action, choice, now) {
+  const v = readValue(action);
+  if (choice !== 0 && choice !== 1) throw new Error('bad choice');
+  const post = await store.getPost(env.DB, install.team_id, v.d);
+  if (!isOpen(post, v.d, now)) return reply(p.response_url, { text: game.CLOSED });
+  const existing = await store.getAnswer(env.DB, install.team_id, await api.anonId(env, install.team_id, p.user.id), v.d);
+  const pick = { r: v.r, i: v.i, d: v.d, c: choice, t: now };
+  return reply(p.response_url, game.pickerMessage(pick, action.text?.text ?? game.LETTERS[choice], existing));
+}
+
+// A confidence: send the answer (a change of mind is a revision), keep the latest, and replace the picker with
+// "Locked in". The API's response carries the truth; none of it is shown before the reveal.
+async function lockIn(env, install, p, action, conf, now) {
+  const v = readValue(action);
+  if (!game.CONFS.includes(conf) || (v.c !== 0 && v.c !== 1)) throw new Error('bad confidence tap');
+  const done = (text) => reply(p.response_url, { text, replace_original: true });
+  const post = await store.getPost(env.DB, install.team_id, v.d);
+  if (!isOpen(post, v.d, now)) return done(game.CLOSED);
+  const [anon, community] = await Promise.all([api.anonId(env, install.team_id, p.user.id), api.communityId(env, install.team_id)]);
+  const existing = await store.getAnswer(env.DB, install.team_id, anon, v.d);
+  const when = revealTime(install, v.d, post, now);
+  let res;
+  try {
+    res = await api.answer(env, {
+      round_id: v.r, item_id: v.i, choice: v.c, conf, rt_ms: Math.max(0, now - (Number(v.t) || now)), anon_id: anon, community,
+      ...(existing && { revision: true }),
+    });
+  } catch (err) {
+    // A 4xx (not a rate limit) means the API refused: a changed answer it would not take, or a closed question.
+    if (!(err.status >= 400 && err.status < 500 && err.status !== 429)) throw err;
+    logError('answer', err);
+    return done(existing ? game.alreadyLockedIn(existing, when) : game.CLOSED);
   }
-  // d pins the day the member saw; r is where the private result goes; t times the play.
-  const meta = { d: day.date, r: p.response_url, t: Date.now() };
-  const res = await slack(install.bot_token, 'views.open', { trigger_id: p.trigger_id, view: game.playModal(day, meta) });
-  if (!res.ok) throw new Error(`views.open ${res.error}`);
+  if (!Number.isFinite(res?.points) || typeof res.correct !== 'boolean') throw new Error('bad answer response');
+  await store.saveAnswer(env.DB, install.team_id, anon, v.d, { choice: v.c, conf, correct: res.correct ? 1 : 0, points: Math.round(res.points) });
+  return done(game.lockedIn(v.c, conf, when));
 }
 
-async function submit(env, install, userId, meta, values) {
-  const day = await api.getDaily(env, meta.d);
-  const who = await player(env, install.team_id, userId);
-  const already = await store.getScore(env.DB, install.team_id, who.anon_id, day.date);
-  // Slack gives no per-field timing: rt_ms is the modal's open-to-submit time split evenly.
-  const rtMs = Math.max(0, Math.round((Date.now() - meta.t) / day.items.length));
-  const results = await sendAnswers(env, day, values, who, rtMs);
-  if (already) return reply(meta.r, game.resultMessage(day, results, true));
-  const done = await api.complete(env, { date: day.date, ...who });
-  await store.addScore(env.DB, install.team_id, who.anon_id, day.date, done.hits);
-  await reply(meta.r, game.resultMessage(day, results));
-  await refreshBoard(env, install, day, done.today).catch((err) => logError('board', err));
-}
+// ---- Reveal -------------------------------------------------------------------------------------------------
 
-// Updates today's post in the chosen channel with the board, or posts one if there is none yet.
-async function refreshBoard(env, install, day, today) {
-  const channel = install.channel_id;
-  if (!channel) return;
-  const board = await store.dayBoard(env.DB, install.team_id, day.date);
-  const names = await displayNames(env, install, channel, board.top.map((r) => r.anon_id));
-  const msg = game.dailyMessage(day, today, board, names);
-  const post = await store.getPost(env.DB, install.team_id, day.date);
-  if (post?.ts && (await slack(install.bot_token, 'chat.update', { channel, ts: post.ts, ...msg })).ok) return;
-  const res = await slack(install.bot_token, 'chat.postMessage', { channel, ...msg });
-  if (res.ok) await store.setPost(env.DB, install.team_id, day.date, res.ts);
+// Edits the day's post into the reveal. `row` = an openPosts row (post and install fields). Returns false when another
+// run revealed it first; on any failure the day is left unrevealed so the next run (or /howsure reveal) retries.
+async function revealDay(env, row) {
+  if (!(await store.claimReveal(env.DB, row.team_id, row.date))) return false;
+  try {
+    const community = await api.communityId(env, row.team_id);
+    const [q, r, top] = await Promise.all([
+      api.getQuestion(env, row.date), api.getReveal(env, row.date, community), store.dayTop(env.DB, row.team_id, row.date),
+    ]);
+    if (r?.correct !== 0 && r?.correct !== 1) throw new Error('bad reveal response');
+    const rows = shown(row, top);
+    const bluff = r.biggest_bluff?.conf > 50 ? r.biggest_bluff : null; // a wrong 50% is no bluff
+    const named = row.roast && bluff ? [bluff.anon_id] : []; // roast off: the bluffer's name is never looked up
+    const names = await displayNames(env, row, row.channel_id, [...rows.map((x) => x.anon_id), ...named]);
+    const msg = game.revealMessage(q, r, rows, names, bluff && { ...bluff, name: named.length ? names.get(bluff.anon_id) : null });
+    const res = await slack(row.bot_token, 'chat.update', { channel: row.channel_id, ts: row.ts, ...msg });
+    if (!res.ok) throw new Error(`chat.update ${res.error}`);
+    return true;
+  } catch (err) {
+    await store.dropReveal(env.DB, row.team_id, row.date);
+    throw err;
+  }
 }
 
 // ---- Hourly cron --------------------------------------------------------------------------------------------
 
-// Posts today's game to every install whose UTC hour has come, once per day (claim in `posts` first).
-// ponytail: sequential posts, fine for a few thousand workspaces per run; batch them if the run gets long.
+// ponytail: sequential Slack calls, fine for a few thousand workspaces per run; batch them if the run gets long.
+async function revealDue(env, now) {
+  for (const row of await store.openPosts(env.DB, isoDate(now - DAY_MS))) {
+    if (now < revealTime(row, row.date, row, now)) continue;
+    await revealDay(env, row).catch((err) => logError('reveal', err));
+  }
+}
+
+// Consecutive days with answers, counting back from `last` (dates newest first).
+function streak(dates, last) {
+  let n = 0;
+  while (dates[n] === shiftDate(last, -n)) n += 1;
+  return n;
+}
+
+// Mondays: last week's recap, once per install (claimed in installs.recap_week), skipped when nobody answered.
+async function postRecaps(env, now) {
+  const d = new Date(now);
+  if (d.getUTCDay() !== MONDAY) return;
+  const monday = isoDate(now);
+  const from = shiftDate(monday, -7);
+  const to = shiftDate(monday, -1);
+  for (const install of await store.recapDue(env.DB, monday, d.getUTCHours())) {
+    if (!(await store.claimRecap(env.DB, install.team_id, monday))) continue;
+    try {
+      const week = await store.weekStats(env.DB, install.team_id, from, to);
+      if (!week.answers) continue;
+      const dates = await store.playedDates(env.DB, install.team_id, shiftDate(to, -STREAK_MAX_DAYS), to);
+      const names = await displayNames(env, install, install.channel_id, week.best ? [week.best.anon_id] : []);
+      const msg = game.recapMessage({ ...week, from, to, streak: streak(dates, to) }, names);
+      const res = await slack(install.bot_token, 'chat.postMessage', { channel: install.channel_id, ...msg });
+      if (!res.ok) throw new Error(`recap ${res.error}`);
+    } catch (err) {
+      await store.dropRecap(env.DB, install.team_id, monday);
+      logError('recap', err);
+    }
+  }
+}
+
+// Posts today's question to every install whose UTC hour has come, once per day (claim in `posts` first).
 async function postDaily(env, now) {
   const date = isoDate(now);
-  const due = await store.dueInstalls(env.DB, date, now.getUTCHours());
+  const due = await store.dueInstalls(env.DB, date, new Date(now).getUTCHours());
   if (!due.length) return;
-  const day = await api.getDaily(env, date);
-  const stats = await api.getStats(env, date).catch(() => null);
-  const msg = game.dailyMessage(day, stats);
+  const q = await api.getQuestion(env, date);
   for (const install of due) {
-    if (!(await store.claimPost(env.DB, install.team_id, date))) continue;
+    if (!(await store.claimPost(env.DB, install.team_id, date, install.channel_id))) continue;
+    const msg = game.questionMessage(q, date, revealTime(install, date, null, now));
     const res = await slack(install.bot_token, 'chat.postMessage', { channel: install.channel_id, ...msg });
     if (res.ok) {
-      await store.setPost(env.DB, install.team_id, date, res.ts);
+      await store.setPost(env.DB, install.team_id, date, install.channel_id, res.ts);
       continue;
     }
     await store.dropClaim(env.DB, install.team_id, date);
     if (DEAD_TOKEN.has(res.error)) await store.deleteInstall(env.DB, install.team_id); // uninstalled workspace
   }
+}
+
+// Reveals first (so Sunday's answer is out before Monday's recap), then the recap, then the new question.
+async function hourly(env, now) {
+  await revealDue(env, now).catch((err) => logError('reveal', err));
+  await postRecaps(env, now).catch((err) => logError('recap', err));
+  await postDaily(env, now).catch((err) => logError('cron', err));
 }
 
 // ---- Router -------------------------------------------------------------------------------------------------
@@ -270,6 +377,6 @@ export default {
   },
 
   async scheduled(controller, env, ctx) {
-    ctx.waitUntil(postDaily(env, new Date(controller.scheduledTime)).catch((err) => logError('cron', err)));
+    ctx.waitUntil(hourly(env, controller.scheduledTime));
   },
 };

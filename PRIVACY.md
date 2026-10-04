@@ -16,7 +16,7 @@ HowSure is an independent, unaffiliated, non-commercial project. No accounts, no
 
 **Classroom mode:** an instructor who creates a class code sees only aggregates for that class, never individual rows, and sees nothing until at least 5 students have finished.
 
-**Slack:** the Slack app stores, per workspace, the workspace id, the chosen channel, the bot token, the posting hour and per-day scores keyed by a salted hash of the member id. It never stores message text, names or emails; display names are fetched from Slack only while drawing a leaderboard.
+**Slack and Discord:** the chat apps store, per workspace or server, its id, the chosen channel, the bot token, the posting hour, the roast-mode setting, the ids of the messages they posted, and each day's answers (choice, confidence, points, right or wrong) keyed by a salted hash of the member id. They never store message text, names or emails; display names are fetched from the platform only while drawing a leaderboard or recap. With roast mode off (the default) nobody is named next to a wrong answer.
 
 **Public numbers:** monthly and daily active players are computed from anonymous ids once a day and published on the stats page using the definitions in `prereg/PREREG.md`.
 

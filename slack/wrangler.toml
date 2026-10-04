@@ -2,7 +2,7 @@ name = "howsure-slack"
 main = "src/index.js"
 compatibility_date = "2026-09-01"
 
-# Hourly: each run posts to the workspaces whose UTC post hour has come (once per day each).
+# Hourly: each run reveals due questions, posts Monday recaps, and posts to the workspaces whose UTC post hour has come.
 # The brief said "0 14 * * *"; that cannot honour `/howsure setup #channel [HH]`. See NOTES.md.
 [triggers]
 crons = ["0 * * * *"]
@@ -14,7 +14,7 @@ database_name = "howsure-slack"
 database_id = "00000000-0000-0000-0000-000000000000"
 
 [vars]
-# Origin of the web deployment that serves /api/daily (no trailing slash, no /api).
+# Origin of the web deployment that serves /api/round/* (no trailing slash, no /api).
 API_BASE = "https://howsure.pages.dev"
 
 # Secrets (set with `npx wrangler secret put NAME`, never in this file):

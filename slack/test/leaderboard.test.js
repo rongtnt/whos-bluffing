@@ -3,58 +3,71 @@ import assert from 'node:assert/strict';
 import * as store from '../src/store.js';
 import { anon, fakeD1, install, makeEnv, mockFetch, replies, send, signedRequest, slashBody } from './helpers.js';
 
-test('day board: players, average, top 5 by hits, scoped to one workspace', async () => {
-  const db = fakeD1();
-  for (const [id, hits] of [['a', 2], ['b', 5], ['c', 4], ['d', 5], ['e', 1], ['f', 3]]) {
-    await store.addScore(db, 'T1', id, '2026-10-31', hits);
+// [anon, date, points]; every day revealed unless listed in `open`.
+async function seed(db, team, rows, open = []) {
+  for (const [id, date, points] of rows) {
+    await store.claimPost(db, team, date, 'C1', '1.0');
+    if (!open.includes(date)) await db.prepare('UPDATE posts SET revealed = 1 WHERE team_id = ? AND date = ?').bind(team, date).run();
+    await store.saveAnswer(db, team, id, date, { choice: 0, conf: 90, correct: Number(points > 0), points });
   }
-  await store.addScore(db, 'T2', 'z', '2026-10-31', 5);
-  await store.addScore(db, 'T1', 'b', '2026-10-31', 0); // a repeat completion is ignored
-  const board = await store.dayBoard(db, 'T1', '2026-10-31');
-  assert.equal(board.players, 6);
-  assert.equal(board.avg, 20 / 6);
-  assert.deepEqual(board.top.map((r) => [r.anon_id, r.hits]), [['b', 5], ['d', 5], ['c', 4], ['f', 3], ['a', 2]]);
-});
+}
 
-test('30-day board: top 10 by total hits, ties broken by more plays, old plays excluded', async () => {
+test('30-day board: top 10 by total points, ties by more answers, unrevealed and old days left out', async () => {
   const db = fakeD1();
-  const plays = { p: [5, 3], q: [3, 3, 2], r: [4, 5], s: [5] };
-  let day = 10;
-  for (const [id, list] of Object.entries(plays)) {
-    for (const hits of list) await store.addScore(db, 'T1', id, `2026-10-${day++}`, hits);
-  }
-  await store.addScore(db, 'T1', 's', '2026-09-01', 5); // outside the window
-  for (let i = 0; i < 12; i += 1) await store.addScore(db, 'T1', `x${i}`, '2026-10-30', 1);
+  await seed(db, 'T1', [
+    ['p', '2026-10-10', 96], ['p', '2026-10-11', 36],
+    ['q', '2026-10-12', 96], ['q', '2026-10-13', 36], ['q', '2026-10-14', 0],
+    ['r', '2026-10-15', 0], ['r', '2026-10-16', 96], ['r', '2026-10-17', 36],
+    ['s', '2026-10-30', 100], ['s', '2026-10-31', 100], // Oct 31 is still open: it must not count
+    ['s', '2026-09-01', 100], // outside the window
+  ], ['2026-10-31']);
+  for (let i = 0; i < 12; i += 1) await seed(db, 'T1', [[`x${i}`, '2026-10-20', 0]]);
+  await seed(db, 'T2', [['z', '2026-10-20', 100]]);
   const board = await store.periodBoard(db, 'T1', '2026-10-02');
-  assert.deepEqual(board.top.slice(0, 4).map((r) => [r.anon_id, r.hits, r.plays]), [['r', 9, 2], ['q', 8, 3], ['p', 8, 2], ['s', 5, 1]]);
+  assert.deepEqual(board.top.slice(0, 4).map((r) => [r.anon_id, r.points, r.answers]),
+    [['q', 132, 3], ['r', 132, 3], ['p', 132, 2], ['s', 100, 1]]);
   assert.equal(board.top.length, 10);
   assert.equal(board.players, 16);
-  assert.equal(board.plays, 20);
+  assert.equal(board.answers, 21);
 });
 
-test('/howsure stats posts the 30-day board in the channel; names only via channel members, never stored', async () => {
+test('/howsure stats posts the 30-day board in the channel; names via channel members only; roast off hides negative totals', async () => {
   const env = makeEnv();
   await install(env);
   const today = new Date().toISOString().slice(0, 10);
   const yesterday = new Date(Date.now() - 86_400_000).toISOString().slice(0, 10);
-  await store.addScore(env.DB, 'T1', anon('T1', 'U1'), today, 4);
-  await store.addScore(env.DB, 'T1', anon('T1', 'U1'), yesterday, 3);
-  await store.addScore(env.DB, 'T1', anon('T1', 'U2'), today, 5);
-  await store.addScore(env.DB, 'T1', anon('T1', 'U3'), today, 1); // not in the channel
+  await seed(env.DB, 'T1', [
+    [anon('T1', 'U1'), today, 96], [anon('T1', 'U1'), yesterday, 64],
+    [anon('T1', 'U2'), today, 100],
+    [anon('T1', 'U3'), today, 36], // not in the channel
+    [anon('T1', 'U4'), today, -300], // negative total
+  ]);
   const calls = mockFetch({
     slack: {
-      'conversations.members': () => ({ members: ['U2', 'U9', 'U1'] }),
-      'users.info': (c) => ({ user: { profile: { display_name: { U1: 'Maya', U2: 'Sam <b>' }[c.body.user] } } }),
+      'conversations.members': () => ({ members: ['U2', 'U9', 'U1', 'U4'] }),
+      'users.info': (c) => ({ user: { profile: { display_name: { U1: 'Maya', U2: 'Sam <b>', U4: 'Lee' }[c.body.user] } } }),
     },
   });
   await send(env, signedRequest(slashBody({ text: 'stats' })));
   const [reply] = replies(calls);
   assert.equal(reply.body.response_type, 'in_channel');
   assert.equal(reply.body.text, [
-    '*HowSure, last 30 days:* 3 members played 4 games.',
-    '1. Maya — 7 hits in 2 plays',
-    '2. Sam &lt;b&gt; — 5 hits in 1 play',
-    '3. a teammate — 1 hit in 1 play',
+    '*HowSure, last 30 days:* 4 members gave 5 answers.',
+    '1. Maya — 160 points in 2 answers',
+    '2. Sam &lt;b&gt; — 100 points in 1 answer',
+    '3. a teammate — 36 points in 1 answer',
   ].join('\n'));
-  assert.ok(!JSON.stringify(env.DB.rows('SELECT * FROM scores')).match(/U1|U2|Maya|Sam/));
+
+  await env.DB.prepare('UPDATE installs SET roast = 1').run();
+  await send(env, signedRequest(slashBody({ text: 'stats' })));
+  assert.match(replies(calls).at(-1).body.text, /\n4\. Lee — -300 points in 1 answer$/);
+  assert.ok(!JSON.stringify(env.DB.rows('SELECT * FROM answers')).match(/U1|U2|Maya|Sam|Lee/));
+});
+
+test('/howsure stats with no revealed answers yet', async () => {
+  const env = makeEnv();
+  await install(env);
+  const calls = mockFetch();
+  await send(env, signedRequest(slashBody({ text: 'stats' })));
+  assert.equal(replies(calls)[0].body.text, "No revealed answers in the last 30 days yet. Type /howsure to post today's question.");
 });

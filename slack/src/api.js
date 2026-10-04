@@ -1,4 +1,4 @@
-// Client for the daily API (docs/api-daily.md) plus the salted member and workspace hashes.
+// Client for the rounds API, chat-platform part (docs/api-rounds.md), plus the salted member and workspace hashes.
 // Raw Slack ids never leave this worker: the API only ever sees the hashes.
 
 const TIMEOUT_MS = 5000;
@@ -15,20 +15,20 @@ function salt(env) {
 }
 
 export const anonId = (env, teamId, userId) => sha256Hex(`${teamId}:${userId}:${salt(env)}`);
-export const communityId = (env, teamId) => sha256Hex(`${teamId}:${salt(env)}`);
+export const communityId = async (env, teamId) => `slack:${await sha256Hex(`${teamId}:${salt(env)}`)}`;
 
+// Throws on any non-2xx; err.status carries the HTTP status (absent on timeouts and network errors).
 async function call(env, path, body) {
   const init = body
     ? { method: 'POST', headers: { 'content-type': 'application/json' }, body: JSON.stringify(body) }
     : {};
   const res = await fetch(env.API_BASE.replace(/\/$/, '') + path, { ...init, signal: AbortSignal.timeout(TIMEOUT_MS) });
-  if (!res.ok) throw new Error(`daily API ${path.split('?')[0]} returned ${res.status}`);
+  if (!res.ok) throw Object.assign(new Error(`rounds API ${path.split('?')[0]} returned ${res.status}`), { status: res.status });
   return res.json();
 }
 
-const dateQuery = (date) => (date ? `?date=${encodeURIComponent(date)}` : '');
-
-export const getDaily = (env, date) => call(env, `/api/daily${dateQuery(date)}`);
-export const getStats = (env, date) => call(env, `/api/daily/stats${dateQuery(date)}`);
-export const answer = (env, body) => call(env, '/api/daily/answer', { ...body, surface: 'slack' });
-export const complete = (env, body) => call(env, '/api/daily/complete', { ...body, surface: 'slack' });
+// The response has no date field, so callers always pass the date and key storage by it.
+export const getQuestion = (env, date) => call(env, `/api/round/daily-question?date=${encodeURIComponent(date)}`);
+export const answer = (env, body) => call(env, '/api/round/answer', { ...body, surface: 'slack' });
+export const getReveal = (env, date, community) =>
+  call(env, `/api/round/reveal?${new URLSearchParams({ date, community })}`);

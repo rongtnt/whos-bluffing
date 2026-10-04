@@ -3,7 +3,7 @@
 # -> Create New App -> From an app manifest.
 display_information:
   name: HowSure
-  description: A daily 5-question estimation game. Give ranges you are 90% sure about and see how your team does.
+  description: One question a day in your channel. Pick A or B, say how sure you are, and see who was bluffing at the reveal.
   background_color: "#1d1c1d"
 features:
   bot_user:
@@ -12,8 +12,8 @@ features:
   slash_commands:
     - command: /howsure
       url: https://YOUR-WORKER-HOST/slack/events
-      description: Post today's game, set the daily channel, or see the leaderboard
-      usage_hint: "[setup #channel hour | stats]"
+      description: Post today's question, reveal the answer, set the channel, or see the leaderboard
+      usage_hint: "[setup #channel hour roast on|off | reveal | stats]"
       should_escape: true
 oauth_config:
   redirect_urls:

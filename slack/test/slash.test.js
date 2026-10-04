@@ -1,25 +1,37 @@
 import { test } from 'node:test';
 import assert from 'node:assert/strict';
-import { DAY, install, makeEnv, mockFetch, replies, send, signedRequest, slackCalls, slashBody } from './helpers.js';
+import { DATE, apiCalls, at, install, makeEnv, mockFetch, replies, send, signedRequest, slackCalls, slashBody } from './helpers.js';
 
-test("/howsure posts today's game with a Play button in the current channel", async () => {
+const NOW = `${DATE}T09:30:00Z`;
+const installs = (env) => env.DB.rows('SELECT channel_id, post_hour_utc, roast FROM installs');
+
+test("/howsure posts today's question with A and B buttons; in the chosen channel it becomes the day's post", async (t) => {
+  at(t, NOW);
   const env = makeEnv();
   await install(env, 'T1', { channel: 'C1' });
   const calls = mockFetch();
   const res = await send(env, signedRequest(slashBody()));
   assert.equal(res.status, 200);
-  const posts = slackCalls(calls, 'chat.postMessage');
-  assert.equal(posts.length, 1);
-  assert.equal(posts[0].body.channel, 'C1');
-  assert.equal(posts[0].headers.authorization, 'Bearer xoxb-T1');
-  assert.equal(posts[0].body.text, "HowSure #12 — 5 questions, give a range you're 90% sure about. Today's average so far: 2.8/5.");
-  const blocks = JSON.parse(posts[0].body.blocks);
-  assert.ok(blocks.some((b) => b.type === 'actions' && b.elements[0].action_id === 'play' && b.elements[0].text.text === 'Play'));
-  // Posted in the chosen channel: it becomes today's post, so the cron will not post a second one.
-  assert.deepEqual(env.DB.rows('SELECT team_id, date, ts FROM posts'), [{ team_id: 'T1', date: DAY.date, ts: '1700000000.000100' }]);
+  const [post] = slackCalls(calls, 'chat.postMessage');
+  assert.equal(post.body.channel, 'C1');
+  assert.equal(post.headers.authorization, 'Bearer xoxb-T1');
+  assert.equal(post.body.text, 'HowSure · Which is longer: the Nile or the Danube?');
+  const blocks = JSON.parse(post.body.blocks);
+  assert.deepEqual(blocks.find((b) => b.type === 'actions').elements.map((b) => b.text.text), ['A · the Nile', 'B · the Danube']);
+  // Posted before the 14:00 post hour: the reveal is still at 14:00 + 8 h.
+  assert.match(blocks.at(-1).elements[0].text, /before the reveal at 22:00 UTC\.$/);
+  assert.equal(apiCalls(calls, '/api/round/daily-question')[0].query.date, DATE);
+  assert.deepEqual(env.DB.rows('SELECT team_id, date, channel_id, ts, revealed FROM posts'),
+    [{ team_id: 'T1', date: DATE, channel_id: 'C1', ts: '1700000000.000100', revealed: 0 }]);
+
+  // A second /howsure there does not post the question twice.
+  await send(env, signedRequest(slashBody()));
+  assert.equal(slackCalls(calls, 'chat.postMessage').length, 1);
+  assert.equal(replies(calls).at(-1).body.text, "Today's question is already up in this channel.");
 });
 
-test('/howsure in another channel posts there and does not become the tracked daily post', async () => {
+test('/howsure in another channel posts a copy there that is not the tracked post', async (t) => {
+  at(t, NOW);
   const env = makeEnv();
   await install(env, 'T1', { channel: 'C1' });
   const calls = mockFetch();
@@ -28,7 +40,28 @@ test('/howsure in another channel posts there and does not become the tracked da
   assert.equal(env.DB.rows('SELECT * FROM posts').length, 0);
 });
 
-test('/howsure with the daily API down: private "taking a break" reply, nothing posted', async () => {
+test('/howsure with no chosen channel tracks the post, so it still gets a reveal', async (t) => {
+  at(t, NOW);
+  const env = makeEnv();
+  await install(env);
+  mockFetch();
+  await send(env, signedRequest(slashBody({ channel_id: 'C5' })));
+  assert.deepEqual(env.DB.rows('SELECT channel_id FROM posts'), [{ channel_id: 'C5' }]);
+});
+
+test('/howsure after the day was revealed posts nothing and says so privately', async (t) => {
+  at(t, NOW);
+  const env = makeEnv();
+  await install(env, 'T1', { channel: 'C1' });
+  await env.DB.prepare("INSERT INTO posts (team_id, date, channel_id, ts, revealed) VALUES ('T1', ?, 'C1', '1.0', 1)").bind(DATE).run();
+  const calls = mockFetch();
+  await send(env, signedRequest(slashBody()));
+  assert.equal(slackCalls(calls, 'chat.postMessage').length, 0);
+  assert.equal(replies(calls)[0].body.text, "Today's answer is already out. A new question comes tomorrow.");
+});
+
+test('/howsure with the API down: private "taking a break" reply, nothing posted', async (t) => {
+  at(t, NOW);
   const env = makeEnv();
   await install(env);
   const calls = mockFetch({ apiDown: true });
@@ -39,26 +72,39 @@ test('/howsure with the daily API down: private "taking a break" reply, nothing 
   assert.equal(reply.body.response_type, 'ephemeral');
 });
 
-test('/howsure setup #channel [HH] stores channel and UTC hour (default 14); bad input shows usage', async () => {
+test('/howsure setup #channel [HH] [roast on|off] and setup roast on|off; bad input shows usage', async () => {
   const env = makeEnv();
   await install(env);
   let calls = mockFetch();
   await send(env, signedRequest(slashBody({ text: 'setup <#C9|general> 9' })));
-  assert.deepEqual(env.DB.rows('SELECT channel_id, post_hour_utc FROM installs'), [{ channel_id: 'C9', post_hour_utc: 9 }]);
+  assert.deepEqual(installs(env), [{ channel_id: 'C9', post_hour_utc: 9, roast: 0 }]);
   assert.equal(slackCalls(calls, 'conversations.info')[0].body.channel, 'C9');
-  assert.match(replies(calls)[0].body.text, /<#C9> every day at 09:00 UTC/);
+  assert.equal(replies(calls)[0].body.text,
+    'Done. HowSure will post the daily question in <#C9> every day at 09:00 UTC and reveal the answer 8 hours later. Roast mode is off.');
 
-  await send(env, signedRequest(slashBody({ text: 'setup <#C8|>' })));
-  assert.deepEqual(env.DB.rows('SELECT channel_id, post_hour_utc FROM installs'), [{ channel_id: 'C8', post_hour_utc: 14 }]);
+  // Roast alone keeps the channel and hour, and checks no channel.
+  calls = mockFetch();
+  await send(env, signedRequest(slashBody({ text: 'setup roast ON' })));
+  assert.deepEqual(installs(env), [{ channel_id: 'C9', post_hour_utc: 9, roast: 1 }]);
+  assert.equal(slackCalls(calls, 'conversations.info').length, 0);
+  assert.match(replies(calls)[0].body.text, /Roast mode is on: the reveal names the biggest bluffer\.$/);
 
-  const usage = await send(env, signedRequest(slashBody({ text: 'setup <#C7|x> 24' })));
-  assert.match((await usage.json()).text, /\/howsure setup #channel \[hour\]/);
+  await send(env, signedRequest(slashBody({ text: 'setup <#C8|> roast off' })));
+  assert.deepEqual(installs(env), [{ channel_id: 'C8', post_hour_utc: 14, roast: 0 }]);
+
+  for (const text of ['setup <#C7|x> 24', 'setup', 'setup roast maybe', 'setup 9', 'play']) {
+    const usage = await send(env, signedRequest(slashBody({ text })));
+    const body = await usage.json();
+    assert.match(body.text, /\/howsure setup #channel \[hour\] \[roast on\|off\]/, text);
+    assert.match(body.text, /\/howsure reveal/);
+  }
+  assert.deepEqual(installs(env), [{ channel_id: 'C8', post_hour_utc: 14, roast: 0 }]);
 
   // A private channel the bot was not invited to is refused and nothing changes.
   calls = mockFetch({ slack: { 'conversations.info': () => ({ ok: false, error: 'channel_not_found' }) } });
-  await send(env, signedRequest(slashBody({ text: 'setup <#G1|secret> 10' })));
+  await send(env, signedRequest(slashBody({ text: 'setup <#G1|secret> 10 roast on' })));
   assert.match(replies(calls)[0].body.text, /invite me with \/invite @HowSure/);
-  assert.deepEqual(env.DB.rows('SELECT channel_id, post_hour_utc FROM installs'), [{ channel_id: 'C8', post_hour_utc: 14 }]);
+  assert.deepEqual(installs(env), [{ channel_id: 'C8', post_hour_utc: 14, roast: 0 }]);
 });
 
 test('a workspace with no install row is told to reinstall', async () => {

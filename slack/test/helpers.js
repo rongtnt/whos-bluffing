@@ -1,7 +1,7 @@
-// Test doubles: D1 on node:sqlite (runs the real migration), a fetch mock for Slack and the daily API,
-// and Slack-signed request builders.
+// Test doubles: D1 on node:sqlite (runs the real migrations), a fetch mock for Slack and the rounds API
+// (docs/api-rounds.md, chat-platform part), and Slack-signed request builders.
 import { DatabaseSync } from 'node:sqlite';
-import { readFileSync } from 'node:fs';
+import { readFileSync, readdirSync } from 'node:fs';
 import { createHash, createHmac } from 'node:crypto';
 import worker from '../src/index.js';
 
@@ -13,7 +13,8 @@ export const anon = (team, user) => sha256(`${team}:${user}:${SALT}`);
 // Same call shapes as D1: prepare().bind().first() | .all() -> {results} | .run() -> {meta}; batch([...]).
 export function fakeD1() {
   const db = new DatabaseSync(':memory:');
-  db.exec(readFileSync(new URL('../migrations/0001_init.sql', import.meta.url), 'utf8'));
+  const dir = new URL('../migrations/', import.meta.url);
+  for (const file of readdirSync(dir).filter((f) => f.endsWith('.sql')).sort()) db.exec(readFileSync(new URL(file, dir), 'utf8'));
   const statement = (sql, args = []) => ({
     bind: (...a) => statement(sql, a),
     first: async () => {
@@ -39,26 +40,25 @@ export const makeEnv = (db = fakeD1()) => ({
   SALT,
 });
 
-export const DAY = {
-  date: '2026-10-31',
-  number: 12,
-  items: [1, 2, 3, 4, 5].map((i) => ({ id: `w${i}`, prompt: `Question ${i}?`, unit: 'm', accept: [0, 100000] })),
-};
+export const DATE = '2026-10-31'; // a Saturday; 2026-11-02 is a Monday
+export const QUESTION = { round_id: `dq-${DATE}`, item_id: 'p00042', prompt: 'Which is longer?', a: 'the Nile', b: 'the Danube' };
+export const QUESTION_TEXT = 'Which is longer: the Nile or the Danube?';
 
-// Odd items are hits, so a full play scores 3/5 with the grid 🟩🟥🟩🟥🟩.
-const answerResult = (itemId) => {
-  const i = Number(itemId.slice(1));
-  return { hit: i % 2 === 1, truth: i * 1000, source: `https://www.wikidata.org/wiki/Q${i}`, log_ratio_error: 0.1 };
-};
+// The contract's scoring rule. In the mock, A (the Nile) is the right answer.
+export const points = (conf, correct) => Math.round(100 - 400 * (conf / 100 - (correct ? 1 : 0)) ** 2);
+const TRUTH = { a_value: 6650, b_value: 2850, unit: 'km', a_source: 'https://www.wikidata.org/wiki/Q3392', b_source: 'https://www.wikidata.org/wiki/Q1653' };
+export const SOURCES = { a_source: TRUTH.a_source, b_source: TRUTH.b_source };
+export const REVEAL = { n: 2, pct_a: 50, pct_b: 50, correct: 0, a_value: 6650, b_value: 2850, unit: 'km', biggest_bluff: null };
 
-// Installs a fetch mock. `slack[method](call)` and `api[path](call)` override the defaults.
+// Installs a fetch mock. `slack[method](call)` and `api[path](call)` override the defaults; an api override may
+// return a Response (for error statuses).
 export function mockFetch({ slack = {}, api = {}, apiDown = false } = {}) {
   const calls = [];
   globalThis.fetch = async (input, init = {}) => {
     const url = new URL(input);
     const raw = init.body;
     const body = raw instanceof URLSearchParams ? Object.fromEntries(raw) : raw ? JSON.parse(raw) : undefined;
-    const call = { url, host: url.hostname, path: url.pathname, method: init.method ?? 'GET', body, headers: init.headers ?? {} };
+    const call = { url, host: url.hostname, path: url.pathname, query: Object.fromEntries(url.searchParams), method: init.method ?? 'GET', body, headers: init.headers ?? {} };
     calls.push(call);
     const json = (data, status = 200) => new Response(JSON.stringify(data), { status, headers: { 'content-type': 'application/json' } });
     if (call.host === 'slack.com') {
@@ -67,13 +67,16 @@ export function mockFetch({ slack = {}, api = {}, apiDown = false } = {}) {
     }
     if (call.host === 'hooks.slack.com') return json({ ok: true });
     if (apiDown) return json({ error: 'down' }, 503);
-    if (api[call.path]) return json(api[call.path](call));
-    if (call.path === '/api/daily') return json(DAY);
-    if (call.path === '/api/daily/stats') return json({ players: 10, avg_hits: 2.8, hist: [0, 1, 2, 3, 3, 1] });
-    if (call.path === '/api/daily/answer') return json(answerResult(call.body.item_id));
-    if (call.path === '/api/daily/complete') {
-      return json({ hits: 3, n: 5, streak: 1, share_text: 'x', today: { players: 11, avg_hits: 2.9, hist: [0, 1, 2, 4, 3, 1] } });
+    if (api[call.path]) {
+      const out = api[call.path](call);
+      return out instanceof Response ? out : json(out);
     }
+    if (call.path === '/api/round/daily-question') return json({ ...QUESTION, round_id: `dq-${call.query.date}` });
+    if (call.path === '/api/round/answer') {
+      const correct = call.body.choice === 0;
+      return json({ correct, truth: TRUTH, points: points(call.body.conf, correct), total: points(call.body.conf, correct) });
+    }
+    if (call.path === '/api/round/reveal') return json(REVEAL); // exactly the contract: no sources
     throw new Error(`unexpected fetch ${url.href}`);
   };
   return calls;
@@ -100,6 +103,12 @@ export const slashBody = (fields = {}) =>
 
 export const payloadBody = (payload) => new URLSearchParams({ payload: JSON.stringify(payload) }).toString();
 
+// Freezes Date at `iso` for one test (node:test mock timers; t.mock.timers.tick(ms) moves it on).
+export const at = (t, iso) => t.mock.timers.enable({ apis: ['Date'], now: Date.parse(iso) });
+
+// A Slack message ts (epoch seconds plus a suffix) for a moment.
+export const tsAt = (iso) => `${Date.parse(iso) / 1000}.000100`;
+
 // Collects ctx.waitUntil work so a test can wait for it.
 export function makeCtx() {
   const tasks = [];
@@ -114,9 +123,9 @@ export async function send(env, request) {
   return res;
 }
 
-export async function install(env, team = 'T1', { channel = null, hour = 14 } = {}) {
-  await env.DB.prepare('INSERT INTO installs (team_id, bot_token, channel_id, post_hour_utc, installed_at) VALUES (?, ?, ?, ?, ?)')
-    .bind(team, `xoxb-${team}`, channel, hour, '2026-10-01T00:00:00Z').run();
+export async function install(env, team = 'T1', { channel = null, hour = 14, roast = 0 } = {}) {
+  await env.DB.prepare('INSERT INTO installs (team_id, bot_token, channel_id, post_hour_utc, roast, installed_at) VALUES (?, ?, ?, ?, ?, ?)')
+    .bind(team, `xoxb-${team}`, channel, hour, roast, '2026-10-01T00:00:00Z').run();
 }
 
 export { worker };
