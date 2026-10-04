@@ -33,7 +33,11 @@ split, today's top 5 and the bluff of the day.
 - `/bluff help` · `/bluff invite`
 
 Roast mode (off by default) names the day's biggest bluffer. A recap arrives every Monday. No messages, usernames or
-user ids are stored with answers. Free, no ads, no accounts. Source published for transparency (from Oct 20).
+user ids are stored with answers. Free, no ads, no accounts.
+
+## Add on Oct 20 (repo public), at the end of the long description
+
+Source published for transparency.
 
 ## Note to reviewers (if the form has one)
 

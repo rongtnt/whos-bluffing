@@ -169,7 +169,7 @@ Owner time is the owner's own clicks and posts; "B#" are builder tasks listed be
 | 10 | Wed 10/14 | Read the first top.gg reviewer message if any; fix fast (three declines for the same reason = ban). | B6 role ping + thread options. | — |
 | 11 | Thu 10/15 | top.gg decision window opens (review ≈ a week). If approved: grab the vote link and API token (block D). | B4 server-count posting (needs the token). | Listing live? |
 | 12 | Fri 10/16 | Runbook T-1: freeze the pre-registration, play tomorrow's game on your phone. | — | `/api/kpi` `as_of` = today. |
-| 13 | Sat 10/17 | **Soft launch.** Turn on the vote and review lines in the tip rotation. Ask the admins of your 5 most active servers for a top.gg review (template below). | — | Reviews ≥ 3. |
+| 13 | Sat 10/17 | **Soft launch.** If top.gg has approved (otherwise on the day it does): turn on the vote and review lines in the tip rotation and ask the admins of your 5 most active servers for a review (template below). | — | Reviews ≥ 3. |
 | 14 | Sun 10/18 | Buffer. Answer reviews. | — | — |
 | 15 | Mon 10/19 | Final copy pass on `posts/`; check every link; schedule nothing you cannot answer live. | B7 short links `/invite`, `/support`. | — |
 | 16 | Tue 10/20 | **Launch day (runbook):** repo public; Show HN, r/InternetIsBeautiful, r/samplesize, LessWrong + EA Forum, newsletter emails; X thread (`posts/x-launch-thread.md`). Add the "Source published" line and GitHub link to top.gg and discordbotlist. | — | Reply to every comment for 6 h. |
@@ -204,7 +204,7 @@ alive). My pick: (1) first, switch to (2) on the first decline for "offline". Th
 | ID | Task | Why (evidence) | When |
 |---|---|---|---|
 | B1 | `/bluff help` and `/bluff invite` reply with link buttons: Add to a server · Community · Website. | ToD `help.ts`, `invite.ts` | before Oct 8 |
-| B2 | Subscribe to the `APPLICATION_AUTHORIZED` webhook event: create the install row at once and post one welcome line in the server's system channel ("An admin can type `/bluff setup` to pick the channel, or `/bluff question` to post today's now."). Today a server row only appears after its first command (`discord/src/store.js` line 9), so a silent install never gets a daily post. | [Discord webhook events](https://docs.discord.com/developers/events/webhook-events) | before Oct 8 |
+| B2 | Subscribe to the `APPLICATION_AUTHORIZED` webhook event: create the install row at once and post one welcome line in the server's system channel if the event's guild data names one [U] ("An admin can type `/bluff setup` to pick the channel, or `/bluff question` to post today's now."). Today a server row only appears after its first command (`discord/src/store.js` line 9), so a silent install never gets a daily post. | [Discord webhook events](https://docs.discord.com/developers/events/webhook-events) | before Oct 8 |
 | B3 | Tip line: one rotating line at 8% under the reveal and the `/bluff play` end screen, never on the question post; `/bluff setup tips:off`. Lines are in `posts/topgg-listing.md`. | ToD `promoMessage()` | build now, vote/review lines on at approval |
 | B4 | Post the server count to top.gg (and discordbotlist) from the hourly Worker run; secret `TOPGG_TOKEN`. | ToD gateway posts every 30 min | after approval |
 | B5 | "Add Who's Bluffing to your server" link button on the reveal post and the Monday recap. | ToD buttons on every reply | week 2 |
@@ -216,7 +216,8 @@ alive). My pick: (1) first, switch to (2) on the first decline for "offline". Th
 
 ### The vote-incentive mechanic
 
-- **Phase 1 (from top.gg approval):** ask, no reward. One tip-line slot out of 4-6 (≈1.5-2% of eligible replies),
+- **Phase 1 (from top.gg approval):** ask, no reward. One tip-line slot out of six at an 8% tip rate (≈1.3% of
+  eligible replies; Truth or Dare's rate was 8% → 1.1%),
   plus a Vote button in `/bluff help` and one line in the Monday recap. Text in `posts/topgg-listing.md`.
   This is what Truth or Dare did; their votes followed the ask rate and never drove growth.
 - **Phase 2 (only if `ref=topgg` clicks show votes bring installs):** a top.gg vote webhook marks the voter with a ✓
@@ -311,7 +312,7 @@ secret put`, never into chat. Assets live in `web/public/press/`.
 6. **General Information → Interactions Endpoint URL**: `https://<your worker host>/interactions` → Save.
 7. Add it to your own server: `https://discord.com/oauth2/authorize?client_id=<APP_ID>&scope=bot+applications.commands&permissions=83968&integration_type=0`
    then run `/bluff setup channel:#general hour:14`, `/bluff question`, `/bluff play`, `/bluff reveal`.
-8. Later, when B2 is built: **Webhooks** (Events) → URL from the builder → enable `Application Authorized`.
+8. Later, when B2 is built: the portal's webhook-events page (name [U]) → URL from the builder → enable `Application Authorized`.
 
 ### Block B: community server (≈15 min)
 
@@ -341,6 +342,8 @@ secret put`, never into chat. Assets live in `web/public/press/`.
 
 ### Block C: listings (Thu Oct 8, ≈40 min)
 
+0. Open https://whosbluffing.com/privacy and check it shows the "Slack and Discord" paragraph (it is in `PRIVACY.md`;
+   the note in `discord/README.md` saying it is missing is out of date). Reviewers read it.
 1. **top.gg**: https://top.gg → Login with Discord → Add → Discord Bot → Application ID → fields from
    `posts/topgg-listing.md` (short + long description, tags, invite, website, support, note to reviewers). No
    "Source published" line and no GitHub link until the repo is public on Oct 20. Avatar comes from Discord (the icon

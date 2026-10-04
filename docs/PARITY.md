@@ -20,3 +20,25 @@ Legend: ✅ have · 🔧 being built (rounds builder) · ➕ to build next (brie
 | Bot listings (top.gg, App Directory) | copy ready in posts/discord-listing.md | 👤 submit after deploy | — |
 | Status / changelog / press kit | `/status`, `/changelog` (rendered from CHANGELOG.md), `/press` (logo, screenshots, boilerplate) | ✅ | they have none |
 | Find other players | challenge links, daily ranked leaderboard, community server | ✅/👤 | asynchronous play works without a server |
+
+## What they have that we still lack (public-source review, 2026-10-04)
+
+Evidence and dates: `docs/GROWTH_PLAYBOOK.md`. B# = builder task listed there. Rows above are not repeated.
+
+| Theirs (evidence) | Ours today | Next step |
+|---|---|---|
+| Always-online gateway process: status "Truth or Dare • /help", server count posted to top.gg every 30 min (gateway repo `bot.js`) | HTTP only, shows offline; top.gg rules say "must be online during review" | owner decides day 5: reviewer note first, presence process (B9) on a decline |
+| Server count shown on bot lists (top.gg 1,579,429) | nothing posted | B4 after top.gg approval (`TOPGG_TOKEN`) |
+| Install callback: a gateway sees every new server | server row only after its first command; silent installs never get a daily post | B2: `APPLICATION_AUTHORIZED` webhook event + welcome line |
+| Tip line on 8-10% of replies: vote, review, feature tips (`promoMessage()`) | none | B3; free `tips:off` switch (theirs is premium) |
+| Link buttons on `/help` and `/invite` (Add · Support · Website); "New Question" buttons under every question | `/bluff invite` replies with plain text | B1; B5 "Add to your server" on reveal + recap |
+| Role ping and auto-thread for the scheduled question | channel, hour, roast only | B6 |
+| Short links `/invite`, `/support` used everywhere | none | B7, with `?ref=` click counts |
+| User-install: works in DMs and group chats (since 2024-03-18) | server installs only | B10, decide day 25 |
+| `/suggest`: players send question ideas to the support server | flags on wrong answers only | #feedback channel first, command later |
+| Support server as a play hub: 22,233 members, Discoverable, onboarding, announcement channel | not created | block B on day 1; Community on; Discovery when big enough |
+| 285 top.gg reviews, owner replies to reviews | no listing yet | review ask after approval; reply within a day |
+| Milestone posts with a thank-you donation; holiday events in the server | none | templates in the playbook; donation optional |
+| Public questions API reused widely (634 GitHub code results, Raycast extension) | API documented, little known | attribution line + dev listings, after launch |
+| Questions in 7 languages | English only | declined by design |
+| Separate 18+ bot to keep the main one all-ages | all-ages content | not needed; an advantage for App Directory review |

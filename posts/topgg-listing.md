@@ -55,7 +55,9 @@ overconfidence; the pooled data will be released.
 
 Free. No ads. No accounts. Three permissions only: Send Messages, Embed Links, Read Message History.
 
-Source published on GitHub for transparency.   ← add this line on Oct 20, not before
+## Add on Oct 20 (repo public), as the last line of the long description
+
+Source published on GitHub for transparency.
 
 ## Note to reviewers
 

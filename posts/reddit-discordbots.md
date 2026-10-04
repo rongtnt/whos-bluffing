@@ -1,7 +1,7 @@
 # r/discordbots post (Wed Oct 21)
 
 Read the subreddit's sidebar rules first: automated reading of Reddit was blocked, so its rules on self-promotion,
-flair and posting frequency are unverified. One subreddit per day; reply to every comment for the first few hours.
+flair and posting frequency are unverified. One subreddit per day; reply to every comment for the opening hours.
 Replace `{INVITE}` with `https://whosbluffing.com/discord` (the page has the Add button).
 
 **Title:** I made a free Discord bot that posts one question a day and scores how sure people are

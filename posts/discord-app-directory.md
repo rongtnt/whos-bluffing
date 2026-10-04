@@ -45,10 +45,13 @@ best, and how many bluffs there were.
 
 **PRIVACY**
 No messages, usernames or user ids are stored with answers. Each member is a salted hash. The anonymous answers feed a
-public study of overconfidence; the pooled data will be released. Free, no ads, no accounts. Source published for
-transparency (add this sentence on Oct 20, not before).
+public study of overconfidence; the pooled data will be released. Free, no ads, no accounts.
 
 Help and feedback: our community server (link below).
+
+## Add on Oct 20 (repo public), at the end of the PRIVACY paragraph
+
+Source published for transparency.
 
 ## Other fields
 
