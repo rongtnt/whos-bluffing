@@ -3,6 +3,7 @@
 // text). A pack is a set of pair categories (items/pairs.json); `all` is every category.
 export const PACKS = {
   all: { label: 'All', categories: null },
+  ai: { label: 'AI', categories: ['ai_timeline', 'ai_released', 'ai_company_founded', 'ai_params'] },
   geography: { label: 'Geography', categories: ['country_area', 'country_population', 'mountain_elevation', 'river_length', 'lake'] },
   space: { label: 'Space', categories: ['solar_system_size', 'solar_system_distance'] },
   elements: { label: 'Elements', categories: ['element_melting_point'] },

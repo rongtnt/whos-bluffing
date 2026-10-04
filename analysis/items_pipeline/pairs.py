@@ -5,7 +5,10 @@
     python3 analysis/items_pipeline/pairs.py
 
 Pairs: two items of items/pool.json with the same category and unit; the larger value is at least 1.3 times the
-smaller (melting points compared in kelvin), or, for years, at least 10 years apart ("Which came first?").
+smaller (melting points compared in kelvin), or, for years, at least 10 years apart ("Which came first?"). The AI pack's
+categories (items/ai_curated.json: ai_released, ai_company_founded, ai_params) need only 2 years (MIN_GAPS, written to
+each template as `min_gap`), their year difficulty scales to match (easy >= 10 years, medium >= 4), their items count as
+famous (`famous`), and they stay out of ranked rounds and the chat question (QUICK_ONLY).
 Left out: city populations, volatile items, retired items (`retired_at` in the pool, or daily/runtime.json, an export of
 items_runtime), the disputed items in DISPUTED, and countries under 20,000 monthly views (famous countries only). An item
 marked `ranked_ok: false` (fact-checked, but its definition or figure is ambiguous) is paired for quick rounds and its
@@ -54,6 +57,17 @@ COUNTRY_CATEGORIES = ("country_area", "country_population")
 RULE_LADDER = ([(gap, 2, 2) for gap in (ITEM_NO_REUSE_DAYS, 14, 7, 5)] + [(gap, 2, None) for gap in (ITEM_NO_REUSE_DAYS, 14, 7, 5)]
                + [(7, 3, None), (5, 4, None)])
 EXCLUDED_CATEGORIES = {"city_population"}
+# Hand-curated categories (items/ai_curated.json, the AI pack): quick rounds only, never a ranked round or the chat question.
+QUICK_ONLY = {"ai_released", "ai_company_founded", "ai_params"}
+# From AI_SLOT_FROM on, ranked slot 1 (index 0) of every day is one ai_timeline pair (with_ai_slot); the category takes no
+# other ranked slot and is never the chat question. Its items need real pageviews >= FAME_RANKED there (ai_slot_ok).
+AI_SLOT = "ai_timeline"
+AI_SLOT_FROM = "2026-10-05"
+FIRST_WEEK = ("OpenAI", "Anthropic", "ChatGPT", "Claude")  # the first week's AI pairs prefer these names
+# AI pairs that must exist (people tend to get them wrong); picked before the 25-per-item cap can drop them.
+MUST_PAIRS = {frozenset(p) for p in (("Anthropic (founded)", "ChatGPT (released)"), ("Stable Diffusion (released)", "ChatGPT (released)"),
+                                      ("OpenAI (founded)", "the Transformer paper (posted)"), ("DeepMind (bought by Google)", "OpenAI (founded)"),
+                                      ("Midjourney (open beta)", "DALL·E 2 (announced)"))}
 FAME_RANKED = 50000  # both items' monthly views, for ranked rounds, the chat question and "easy" rounds
 FAME_NORMAL = 20000  # both items, for the default ("normal") quick rounds
 MIN_VIEWS = {"country_population": FAME_NORMAL}  # famous countries only
@@ -87,7 +101,15 @@ TEMPLATES = {
     ("language_speakers", "people"): ("Which language has more native speakers?", "had more native speakers", "had fewer native speakers"),
     ("landmark_height", "m"): ("Which is taller?", "was taller", "was shorter"),
     ("landmark_built", "year"): ("Which is older?", "was older", "was newer"),
+    ("ai_released", "year"): ("Which came first?", "came first", "came later"),
+    ("ai_company_founded", "year"): ("Which came first?", "was founded first", "was founded later"),
+    ("ai_params", "parameters"): ("Which model has more parameters?", "had more parameters", "had fewer parameters"),
+    ("ai_timeline", "month"): ("Which came first?", "came first", "came later"),
 }
+# Minimum gap per (category, unit) when it is not MIN_GAP years or MIN_RATIO: AI years are 2 apart (the field is young;
+# a deviation from PREREG's 10, logged in CHANGELOG.md). Year difficulty scales with it: easy >= 5x, medium >= 2x.
+MIN_GAPS = {("ai_released", "year"): 2, ("ai_company_founded", "year"): 2, ("ai_params", "parameters"): MIN_RATIO,
+            ("ai_timeline", "month"): 3}  # months: answers are YYYYMM numbers (202211 = November 2022)
 NOT_A_PLANET = {"Pluto"}  # "its planet": moons of a dwarf planet stay out of the orbit-distance pairs
 REF_RANK = {"none": 0, "imported": 1, "referenced": 2}
 
@@ -96,9 +118,26 @@ def is_year(unit):
     return unit == "year"
 
 
-def difficulty(ratio=None, gap=None):
+def is_time(unit):
+    """Years and months (YYYYMM): the earlier one is the right answer and pairs are measured by the gap."""
+    return unit in ("year", "month")
+
+
+def month_index(answer):
+    """202211 -> months since year 0, so gaps across a new year count right (2022-11 to 2023-02 is 3)."""
+    return answer // 100 * 12 + answer % 100 - 1
+
+
+def min_gap(category, unit):
+    """The smallest gap (years, or months for unit month) or value ratio a pair of this category and unit needs."""
+    return MIN_GAPS.get((category, unit), MIN_GAP if is_time(unit) else MIN_RATIO)
+
+
+def difficulty(ratio=None, gap=None, least=MIN_GAP):
+    """From the ratio (>= 3 easy, 1.6-3 medium, below hard) or the year gap (>= 5x the minimum gap easy, >= 2x medium:
+    50 and 20 years at the usual 10)."""
     if gap is not None:
-        return "easy" if gap >= 50 else "medium" if gap >= 20 else "hard"
+        return "easy" if gap >= 5 * least else "medium" if gap >= 2 * least else "hard"
     return "easy" if ratio >= 3 else "medium" if ratio >= 1.6 else "hard"
 
 
@@ -107,7 +146,8 @@ def item_ref(item):
 
 
 def views(item):
-    return item.get("views_month", 0)
+    """Monthly views; an item marked `famous` (the curated AI items) counts as famous whatever its article's views."""
+    return max(item.get("views_month", 0), FAME_RANKED) if item.get("famous") else item.get("views_month", 0)
 
 
 def band(fame):
@@ -156,17 +196,19 @@ def numbering(doc):
 
 def measure(a, b):
     """(ratio, gap) of two items of one group; None when they are too close to pair."""
-    if is_year(a["en"]["unit"]):
-        gap = abs(a["answer"] - b["answer"])
-        return (None, gap) if gap >= MIN_GAP else None
+    least = min_gap(a["category"], a["en"]["unit"])
+    if is_time(a["en"]["unit"]):
+        at = month_index if a["en"]["unit"] == "month" else (lambda x: x)
+        gap = abs(at(a["answer"]) - at(b["answer"]))
+        return (None, gap) if gap >= least else None
     lo, hi = sorted((comparable(a), comparable(b)))
     ratio = hi / lo
-    return (round(ratio, 3), None) if ratio >= MIN_RATIO else None
+    return (round(ratio, 3), None) if ratio >= least else None
 
 
 def correct_index(a, b):
-    """0 when a is the right answer: the larger value, or the earlier year."""
-    if is_year(a["en"]["unit"]):
+    """0 when a is the right answer: the larger value, or the earlier year or month."""
+    if is_time(a["en"]["unit"]):
         return 0 if a["answer"] < b["answer"] else 1
     return 0 if comparable(a) > comparable(b) else 1
 
@@ -190,10 +232,13 @@ def candidates(items):
         group.sort(key=lambda it: it["id"])
         for i, a in enumerate(group):
             for b in group[i + 1:]:
+                if entity(a) == entity(b):
+                    continue  # two facts about one entity (DeepMind founded / bought) are never compared
                 m = measure(a, b)
                 if m:
                     both = item_ref(a) == item_ref(b) == "referenced"
-                    out.append((pair_key(a["id"], b["id"]), m[0], m[1], difficulty(*m), tier(min(views(a), views(b)), both)))
+                    level = difficulty(*m, least=min_gap(a["category"], a["en"]["unit"]))
+                    out.append((pair_key(a["id"], b["id"]), m[0], m[1], level, tier(min(views(a), views(b)), both)))
     return out
 
 
@@ -239,7 +284,9 @@ def build_pairs(pool_items, previous=(), retired=(), scheduled=(), generated_at=
     retired = set(retired)
     items = [it for it in pool_items if usable(it, retired)]
     known, next_n = numbering(numbers if numbers is not None else {"pairs": list(previous)})
-    chosen = select(candidates(items), preferred=frozenset(pair_key(p["a_id"], p["b_id"]) for p in previous))
+    cands = candidates(items)
+    must = {c[0] for c in cands if frozenset((by_id[c[0][0]].get("name"), by_id[c[0][1]].get("name"))) in MUST_PAIRS}
+    chosen = select(cands, preferred=frozenset(pair_key(p["a_id"], p["b_id"]) for p in previous) | must)
     pairs, seen = [], set()
     for key, ratio, gap, level, _ in chosen:
         first = by_id[key[0]]
@@ -256,7 +303,8 @@ def build_pairs(pool_items, previous=(), retired=(), scheduled=(), generated_at=
     present = {number_key(p["a_id"], p["b_id"], p["category"], p["unit"]) for p in pairs}
     absent = sorted([n, a, b, k[2], k[3]] for k, (n, a, b) in known.items() if k not in present)
     doc = {"version": 1, "generated_at": generated_at, "next_number": next_n,
-           "templates": [{"category": c, "unit": u, "prompt": t[0], "more": t[1], "less": t[2]} for (c, u), t in TEMPLATES.items()],
+           "templates": [{"category": c, "unit": u, "prompt": t[0], "more": t[1], "less": t[2], "min_gap": min_gap(c, u)}
+                         for (c, u), t in TEMPLATES.items()],
            "pairs": pairs, "absent": absent}
     return doc, report(pairs, items, carried)
 
@@ -298,8 +346,63 @@ def report(pairs, items, carried):
 
 def ranked_ok(pair):
     """May be used in a ranked round or as the chat question: both items referenced or fact-checked (PREREG), famous,
-    and neither marked ranked_ok: false."""
-    return pair["ref_quality"] == "referenced" and pair.get("fame", 0) >= FAME_RANKED and pair.get("ranked_ok", True)
+    neither marked ranked_ok: false, and not from a quick-only category (QUICK_ONLY: the AI pack)."""
+    return (pair["ref_quality"] == "referenced" and pair.get("fame", 0) >= FAME_RANKED and pair.get("ranked_ok", True)
+            and pair["category"] not in QUICK_ONLY and pair["category"] != AI_SLOT)
+
+
+def ai_slot_ok(pair, items):
+    """May fill the AI slot: an AI_SLOT pair, fact-checked, both items with >= FAME_RANKED monthly views of their own (real
+    pageviews, not the `famous` mark: the ranked round keeps its familiarity bar)."""
+    return (pair["category"] == AI_SLOT and pair["ref_quality"] == "referenced" and pair.get("ranked_ok", True)
+            and all(items[i].get("views_month", 0) >= FAME_RANKED for i in (pair["a_id"], pair["b_id"])))
+
+
+def with_ai_slot(pairs, rounds, items, start=AI_SLOT_FROM, entity_of=None, item_gap=5):
+    """A new rounds dict in which every ranked day from start on has an AI_SLOT pair in slot 1 (index 0). A day without
+    one gets the first free pair (not on another day within 180 days, its items not on another day within item_gap
+    days, no entity the day already has; the must-pairs first, the first week's OpenAI/Anthropic/ChatGPT/Claude pairs
+    next, then items rested longest and best known). It takes the place of a ranked pair of the same difficulty (the
+    3/4/3 mix holds), from the day's most common category. Earlier days and days that have one are left alone."""
+    ent = (lambda i: entity_of.get(i, i)) if entity_of else (lambda i: i)
+    by_id = {p["id"]: p for p in pairs}
+    out = {d: {"ranked": list(e["ranked"]), "question": e["question"]} for d, e in rounds.items()}
+    cands = [p for p in pairs if ai_slot_ok(p, items)]
+    pair_uses, item_uses = {}, {}
+
+    def mark(date, pid, add):
+        for key, table in [(pid, pair_uses)] + [(i, item_uses) for i in (by_id[pid]["a_id"], by_id[pid]["b_id"])]:
+            (table.setdefault(key, set()).add if add else table.setdefault(key, set()).discard)(date)
+
+    for d, e in out.items():
+        for pid in day_pairs(e):
+            mark(d, pid, True)
+    for date in sorted(d for d in out if d >= start):
+        day = out[date]
+        if by_id[day["ranked"][0]]["category"] == AI_SLOT:
+            continue
+        rest_days = lambda p: min([days_between(d, date) for i in (p["a_id"], p["b_id"]) for d in item_uses.get(i, ()) if d != date] + [999])
+        free = [p for p in cands if rest_days(p) >= item_gap
+                and all(days_between(d, date) >= PAIR_NO_REUSE_DAYS for d in pair_uses.get(p["id"], ()) if d != date)]
+        early = days_between(date, start) < 7
+        free.sort(key=lambda p: (frozenset((p["a"], p["b"])) not in MUST_PAIRS, not (early and any(w in p["a"] + p["b"] for w in FIRST_WEEK)),
+                                 -min(rest_days(p), 60), -p["fame"], p["id"]))
+        for p in free:
+            ranked = day["ranked"]
+            count = {}
+            for x in ranked:
+                count[by_id[x]["category"]] = count.get(by_id[x]["category"], 0) + 1
+            slots = sorted((k for k, x in enumerate(ranked) if by_id[x]["difficulty_hint"] == p["difficulty_hint"]),
+                           key=lambda k: (-count[by_id[ranked[k]]["category"]], -k))
+            k = next((k for k in slots if not {ent(p["a_id"]), ent(p["b_id"])} & {ent(i) for j, x in enumerate(ranked + [day["question"]])
+                                                                                if j != k for i in (by_id[x]["a_id"], by_id[x]["b_id"])}), None)
+            if k is None:
+                continue
+            mark(date, ranked[k], False)
+            day["ranked"] = [p["id"]] + [x for j, x in enumerate(ranked) if j != k]
+            mark(date, p["id"], True)
+            break
+    return out
 
 
 # --- ranked rounds and chat questions --------------------------------------------------------------------------
@@ -489,8 +592,10 @@ def main(argv=None):
     scheduled = {i for e in rounds.values() for i in day_pairs(e)}
     doc, rep = build_pairs(pool["items"], previous, retired, scheduled, numbers=last)
     levels = {}
+    entity_of = {it["id"]: entity(it) for it in pool["items"]}
     rounds = extend_rounds(doc["pairs"], rounds, args.today, retired_pairs=retired_pairs, popularity={it["id"]: views(it) for it in pool["items"]},
-                           entity_of={it["id"]: entity(it) for it in pool["items"]}, log=levels)
+                           entity_of=entity_of, log=levels)
+    rounds = with_ai_slot(doc["pairs"], rounds, {it["id"]: it for it in pool["items"]}, entity_of=entity_of)
     ahead = [d for d in rounds if d >= args.today]
     by_rung = {f"gap {g} days, {c} per category" + (f", countries {j} together" if j else ""): sum(1 for v in levels.values() if v == [g, c, j])
                for g, c, j in RULE_LADDER}

@@ -1,6 +1,7 @@
 {
  "version": 1,
  "generated_at": "2026-10-04",
+ "next_number": 3421,
  "items": [
   {
    "id": "w0001",
@@ -82018,6 +82019,3251 @@
    "notes": "curated launch year: released in October 1998",
    "enwiki": "Furby",
    "views_month": 10478
+  },
+  {
+   "id": "w3303",
+   "type": "interval",
+   "category": "ai_released",
+   "domain": "everyday",
+   "en": {
+    "prompt": "In what year did ELIZA first come out?",
+    "unit": "year"
+   },
+   "answer": 1966,
+   "accept": [
+    1950,
+    2026
+   ],
+   "source": "https://en.wikipedia.org/wiki/ELIZA",
+   "difficulty_hint": "unknown",
+   "volatile": false,
+   "generated_at": "2026-10-04",
+   "name": "ELIZA",
+   "ref_quality": "none",
+   "fact_checked": true,
+   "famous": true,
+   "notes": "curated: Joseph Weizenbaum's chatbot, described in his 1966 paper (written 1964-1966)",
+   "replaces": "https://www.wikidata.org/wiki/Q580318#P577",
+   "enwiki": "ELIZA",
+   "views_month": 20671
+  },
+  {
+   "id": "w3304",
+   "type": "interval",
+   "category": "ai_released",
+   "domain": "everyday",
+   "en": {
+    "prompt": "In what year did Deep Blue beat Garry Kasparov in a match?",
+    "unit": "year"
+   },
+   "answer": 1997,
+   "accept": [
+    1950,
+    2026
+   ],
+   "source": "https://en.wikipedia.org/wiki/Deep_Blue_versus_Garry_Kasparov",
+   "difficulty_hint": "unknown",
+   "volatile": false,
+   "generated_at": "2026-10-04",
+   "name": "Deep Blue's win over Kasparov",
+   "ref_quality": "none",
+   "fact_checked": true,
+   "famous": true,
+   "notes": "curated: IBM's Deep Blue won the May 1997 rematch 3.5-2.5 (it had lost the 1996 match)",
+   "replaces": "https://www.wikidata.org/wiki/Q3235334#P577",
+   "enwiki": "Deep Blue versus Garry Kasparov",
+   "views_month": 8482
+  },
+  {
+   "id": "w3305",
+   "type": "interval",
+   "category": "ai_released",
+   "domain": "everyday",
+   "en": {
+    "prompt": "In what year did the Roomba first come out?",
+    "unit": "year"
+   },
+   "answer": 2002,
+   "accept": [
+    1950,
+    2026
+   ],
+   "source": "https://en.wikipedia.org/wiki/Roomba",
+   "difficulty_hint": "unknown",
+   "volatile": false,
+   "generated_at": "2026-10-04",
+   "name": "the Roomba",
+   "ref_quality": "none",
+   "fact_checked": true,
+   "famous": true,
+   "notes": "curated: iRobot's robot vacuum, first introduced in September 2002",
+   "replaces": "https://www.wikidata.org/wiki/Q74050#P577",
+   "enwiki": "Roomba",
+   "views_month": 8234
+  },
+  {
+   "id": "w3306",
+   "type": "interval",
+   "category": "ai_released",
+   "domain": "everyday",
+   "en": {
+    "prompt": "In what year did Google Translate first come out?",
+    "unit": "year"
+   },
+   "answer": 2006,
+   "accept": [
+    1950,
+    2026
+   ],
+   "source": "https://en.wikipedia.org/wiki/Google_Translate",
+   "difficulty_hint": "unknown",
+   "volatile": false,
+   "generated_at": "2026-10-04",
+   "name": "Google Translate",
+   "ref_quality": "none",
+   "fact_checked": true,
+   "famous": true,
+   "notes": "curated: launched on April 28, 2006",
+   "replaces": "https://www.wikidata.org/wiki/Q135622#P577",
+   "enwiki": "Google Translate",
+   "views_month": 100368
+  },
+  {
+   "id": "w3307",
+   "type": "interval",
+   "category": "ai_released",
+   "domain": "everyday",
+   "en": {
+    "prompt": "In what year did ImageNet first come out?",
+    "unit": "year"
+   },
+   "answer": 2009,
+   "accept": [
+    1950,
+    2026
+   ],
+   "source": "https://en.wikipedia.org/wiki/ImageNet",
+   "difficulty_hint": "unknown",
+   "volatile": false,
+   "generated_at": "2026-10-04",
+   "name": "ImageNet",
+   "ref_quality": "none",
+   "fact_checked": true,
+   "famous": true,
+   "notes": "curated: the image database, first presented at CVPR 2009",
+   "replaces": "https://www.wikidata.org/wiki/Q24901201#P577",
+   "enwiki": "ImageNet",
+   "views_month": 5942
+  },
+  {
+   "id": "w3308",
+   "type": "interval",
+   "category": "ai_released",
+   "domain": "everyday",
+   "en": {
+    "prompt": "In what year did IBM Watson play Jeopardy! against its champions?",
+    "unit": "year"
+   },
+   "answer": 2011,
+   "accept": [
+    1950,
+    2026
+   ],
+   "source": "https://en.wikipedia.org/wiki/IBM_Watson",
+   "difficulty_hint": "unknown",
+   "volatile": false,
+   "generated_at": "2026-10-04",
+   "name": "IBM Watson on Jeopardy!",
+   "ref_quality": "none",
+   "fact_checked": true,
+   "famous": true,
+   "notes": "curated: Watson played Jeopardy! against Ken Jennings and Brad Rutter in 2011",
+   "replaces": "https://www.wikidata.org/wiki/Q12253#P577",
+   "enwiki": "IBM Watson",
+   "views_month": 5556
+  },
+  {
+   "id": "w3309",
+   "type": "interval",
+   "category": "ai_released",
+   "domain": "everyday",
+   "en": {
+    "prompt": "In what year did Siri come built into the iPhone?",
+    "unit": "year"
+   },
+   "answer": 2011,
+   "accept": [
+    1950,
+    2026
+   ],
+   "source": "https://en.wikipedia.org/wiki/Siri",
+   "difficulty_hint": "unknown",
+   "volatile": false,
+   "generated_at": "2026-10-04",
+   "name": "Siri on the iPhone",
+   "ref_quality": "none",
+   "fact_checked": true,
+   "famous": true,
+   "notes": "curated: built into the iPhone 4s on October 14, 2011 (a standalone app came out in February 2010)",
+   "replaces": "https://www.wikidata.org/wiki/Q582159#P577",
+   "enwiki": "Siri",
+   "views_month": 31516
+  },
+  {
+   "id": "w3310",
+   "type": "interval",
+   "category": "ai_released",
+   "domain": "everyday",
+   "en": {
+    "prompt": "In what year did AlexNet first come out?",
+    "unit": "year"
+   },
+   "answer": 2012,
+   "accept": [
+    1950,
+    2026
+   ],
+   "source": "https://en.wikipedia.org/wiki/AlexNet",
+   "difficulty_hint": "unknown",
+   "volatile": false,
+   "generated_at": "2026-10-04",
+   "name": "AlexNet",
+   "ref_quality": "none",
+   "fact_checked": true,
+   "famous": true,
+   "notes": "curated: won the ImageNet challenge; entry submitted September 30, 2012",
+   "replaces": "https://www.wikidata.org/wiki/Q28325009#P577",
+   "enwiki": "AlexNet",
+   "views_month": 11266
+  },
+  {
+   "id": "w3311",
+   "type": "interval",
+   "category": "ai_released",
+   "domain": "everyday",
+   "en": {
+    "prompt": "In what year did word2vec first come out?",
+    "unit": "year"
+   },
+   "answer": 2013,
+   "accept": [
+    1950,
+    2026
+   ],
+   "source": "https://en.wikipedia.org/wiki/Word2Vec",
+   "difficulty_hint": "unknown",
+   "volatile": false,
+   "generated_at": "2026-10-04",
+   "name": "word2vec",
+   "ref_quality": "none",
+   "fact_checked": true,
+   "famous": true,
+   "notes": "curated: introduced in two 2013 papers by Tomas Mikolov and colleagues at Google",
+   "replaces": "https://www.wikidata.org/wiki/Q22673982#P577",
+   "enwiki": "Word2Vec",
+   "views_month": 667
+  },
+  {
+   "id": "w3312",
+   "type": "interval",
+   "category": "ai_released",
+   "domain": "everyday",
+   "en": {
+    "prompt": "In what year did Amazon Alexa first come out?",
+    "unit": "year"
+   },
+   "answer": 2014,
+   "accept": [
+    1950,
+    2026
+   ],
+   "source": "https://en.wikipedia.org/wiki/Amazon_Alexa",
+   "difficulty_hint": "unknown",
+   "volatile": false,
+   "generated_at": "2026-10-04",
+   "name": "Amazon Alexa",
+   "ref_quality": "none",
+   "fact_checked": true,
+   "famous": true,
+   "notes": "curated: announced with the Echo on November 6, 2014",
+   "replaces": "https://www.wikidata.org/wiki/Q28022144#P577",
+   "enwiki": "Amazon Alexa",
+   "views_month": 15716
+  },
+  {
+   "id": "w3313",
+   "type": "interval",
+   "category": "ai_released",
+   "domain": "everyday",
+   "en": {
+    "prompt": "In what year did Tesla Autopilot first come out?",
+    "unit": "year"
+   },
+   "answer": 2015,
+   "accept": [
+    1950,
+    2026
+   ],
+   "source": "https://en.wikipedia.org/wiki/Tesla_Autopilot",
+   "difficulty_hint": "unknown",
+   "volatile": false,
+   "generated_at": "2026-10-04",
+   "name": "Tesla Autopilot",
+   "ref_quality": "none",
+   "fact_checked": true,
+   "famous": true,
+   "notes": "curated: first Autopilot software (version 7.0) in October 2015; the hardware shipped from 2014",
+   "replaces": "https://www.wikidata.org/wiki/Q27150149#P577",
+   "enwiki": "Tesla Autopilot",
+   "views_month": 9635
+  },
+  {
+   "id": "w3314",
+   "type": "interval",
+   "category": "ai_released",
+   "domain": "everyday",
+   "en": {
+    "prompt": "In what year did TensorFlow first come out?",
+    "unit": "year"
+   },
+   "answer": 2015,
+   "accept": [
+    1950,
+    2026
+   ],
+   "source": "https://en.wikipedia.org/wiki/TensorFlow",
+   "difficulty_hint": "unknown",
+   "volatile": false,
+   "generated_at": "2026-10-04",
+   "name": "TensorFlow",
+   "ref_quality": "none",
+   "fact_checked": true,
+   "famous": true,
+   "notes": "curated: first released under the Apache License 2.0 in 2015",
+   "replaces": "https://www.wikidata.org/wiki/Q21447895#P577",
+   "enwiki": "TensorFlow",
+   "views_month": 7856
+  },
+  {
+   "id": "w3315",
+   "type": "interval",
+   "category": "ai_released",
+   "domain": "everyday",
+   "en": {
+    "prompt": "In what year did AlphaGo play its match against Lee Sedol?",
+    "unit": "year"
+   },
+   "answer": 2016,
+   "accept": [
+    1950,
+    2026
+   ],
+   "source": "https://en.wikipedia.org/wiki/AlphaGo_versus_Lee_Sedol",
+   "difficulty_hint": "unknown",
+   "volatile": false,
+   "generated_at": "2026-10-04",
+   "name": "AlphaGo's match against Lee Sedol",
+   "ref_quality": "none",
+   "fact_checked": true,
+   "famous": true,
+   "notes": "curated: played in Seoul, March 9-15, 2016; AlphaGo won 4-1",
+   "replaces": "https://www.wikidata.org/wiki/Q23016184#P577",
+   "enwiki": "AlphaGo versus Lee Sedol",
+   "views_month": 10751
+  },
+  {
+   "id": "w3316",
+   "type": "interval",
+   "category": "ai_released",
+   "domain": "everyday",
+   "en": {
+    "prompt": "In what year did Google Assistant first come out?",
+    "unit": "year"
+   },
+   "answer": 2016,
+   "accept": [
+    1950,
+    2026
+   ],
+   "source": "https://en.wikipedia.org/wiki/Google_Assistant",
+   "difficulty_hint": "unknown",
+   "volatile": false,
+   "generated_at": "2026-10-04",
+   "name": "Google Assistant",
+   "ref_quality": "none",
+   "fact_checked": true,
+   "famous": true,
+   "notes": "curated: unveiled at Google's developer conference on May 18, 2016",
+   "replaces": "https://www.wikidata.org/wiki/Q25025241#P577",
+   "enwiki": "Google Assistant",
+   "views_month": 9186
+  },
+  {
+   "id": "w3317",
+   "type": "interval",
+   "category": "ai_released",
+   "domain": "everyday",
+   "en": {
+    "prompt": "In what year did the Transformer paper (\"Attention Is All You Need\") come out?",
+    "unit": "year"
+   },
+   "answer": 2017,
+   "accept": [
+    1950,
+    2026
+   ],
+   "source": "https://en.wikipedia.org/wiki/Attention_Is_All_You_Need",
+   "difficulty_hint": "unknown",
+   "volatile": false,
+   "generated_at": "2026-10-04",
+   "name": "the Transformer paper",
+   "ref_quality": "none",
+   "fact_checked": true,
+   "famous": true,
+   "notes": "curated: \"Attention Is All You Need\", the 2017 paper that introduced the transformer",
+   "replaces": "https://www.wikidata.org/wiki/Q30249683#P577",
+   "fun": "After the Transformer paper, each of its eight authors left Google to join other companies or start their own.",
+   "enwiki": "Attention Is All You Need",
+   "views_month": 45829
+  },
+  {
+   "id": "w3318",
+   "type": "interval",
+   "category": "ai_released",
+   "domain": "everyday",
+   "en": {
+    "prompt": "In what year did BERT first come out?",
+    "unit": "year"
+   },
+   "answer": 2018,
+   "accept": [
+    1950,
+    2026
+   ],
+   "source": "https://en.wikipedia.org/wiki/BERT_(language_model)",
+   "difficulty_hint": "unknown",
+   "volatile": false,
+   "generated_at": "2026-10-04",
+   "name": "BERT",
+   "ref_quality": "none",
+   "fact_checked": true,
+   "famous": true,
+   "notes": "curated: introduced by researchers at Google in October 2018",
+   "replaces": "https://www.wikidata.org/wiki/Q61726893#P577",
+   "enwiki": "BERT (language model)",
+   "views_month": 13466
+  },
+  {
+   "id": "w3319",
+   "type": "interval",
+   "category": "ai_released",
+   "domain": "everyday",
+   "en": {
+    "prompt": "In what year did Waymo start its public robotaxi service, Waymo One?",
+    "unit": "year"
+   },
+   "answer": 2018,
+   "accept": [
+    1950,
+    2026
+   ],
+   "source": "https://en.wikipedia.org/wiki/Waymo",
+   "difficulty_hint": "unknown",
+   "volatile": false,
+   "generated_at": "2026-10-04",
+   "name": "Waymo's robotaxi service",
+   "ref_quality": "none",
+   "fact_checked": true,
+   "famous": true,
+   "notes": "curated: Waymo One launched in Phoenix in December 2018",
+   "replaces": "https://www.wikidata.org/wiki/Q15330#P577",
+   "enwiki": "Waymo",
+   "views_month": 52676
+  },
+  {
+   "id": "w3320",
+   "type": "interval",
+   "category": "ai_released",
+   "domain": "everyday",
+   "en": {
+    "prompt": "In what year did GPT-2 first come out?",
+    "unit": "year"
+   },
+   "answer": 2019,
+   "accept": [
+    1950,
+    2026
+   ],
+   "source": "https://en.wikipedia.org/wiki/GPT-2",
+   "difficulty_hint": "unknown",
+   "volatile": false,
+   "generated_at": "2026-10-04",
+   "name": "GPT-2",
+   "ref_quality": "none",
+   "fact_checked": true,
+   "famous": true,
+   "notes": "curated: partially released in February 2019 (the full model in November 2019)",
+   "replaces": "https://www.wikidata.org/wiki/Q95726727#P577",
+   "fun": "OpenAI held back the full GPT-2 in February 2019 over misuse concerns, then released all of it in November 2019.",
+   "enwiki": "GPT-2",
+   "views_month": 8805
+  },
+  {
+   "id": "w3321",
+   "type": "interval",
+   "category": "ai_released",
+   "domain": "everyday",
+   "en": {
+    "prompt": "In what year did GPT-3 first come out?",
+    "unit": "year"
+   },
+   "answer": 2020,
+   "accept": [
+    1950,
+    2026
+   ],
+   "source": "https://en.wikipedia.org/wiki/GPT-3",
+   "difficulty_hint": "unknown",
+   "volatile": false,
+   "generated_at": "2026-10-04",
+   "name": "GPT-3",
+   "ref_quality": "none",
+   "fact_checked": true,
+   "famous": true,
+   "notes": "curated: released by OpenAI in 2020",
+   "replaces": "https://www.wikidata.org/wiki/Q95726734#P577",
+   "enwiki": "GPT-3",
+   "views_month": 14564
+  },
+  {
+   "id": "w3322",
+   "type": "interval",
+   "category": "ai_released",
+   "domain": "everyday",
+   "en": {
+    "prompt": "In what year did AlphaFold 2 first come out?",
+    "unit": "year"
+   },
+   "answer": 2020,
+   "accept": [
+    1950,
+    2026
+   ],
+   "source": "https://en.wikipedia.org/wiki/AlphaFold",
+   "difficulty_hint": "unknown",
+   "volatile": false,
+   "generated_at": "2026-10-04",
+   "name": "AlphaFold 2",
+   "ref_quality": "none",
+   "fact_checked": true,
+   "famous": true,
+   "notes": "curated: entered the CASP14 competition in November 2020",
+   "replaces": "https://www.wikidata.org/wiki/Q60827595#P577",
+   "enwiki": "AlphaFold",
+   "views_month": 14077
+  },
+  {
+   "id": "w3323",
+   "type": "interval",
+   "category": "ai_released",
+   "domain": "everyday",
+   "en": {
+    "prompt": "In what year did DALL·E first come out?",
+    "unit": "year"
+   },
+   "answer": 2021,
+   "accept": [
+    1950,
+    2026
+   ],
+   "source": "https://en.wikipedia.org/wiki/DALL-E",
+   "difficulty_hint": "unknown",
+   "volatile": false,
+   "generated_at": "2026-10-04",
+   "name": "DALL·E",
+   "ref_quality": "none",
+   "fact_checked": true,
+   "famous": true,
+   "notes": "curated: revealed in an OpenAI blog post on January 5, 2021",
+   "replaces": "https://www.wikidata.org/wiki/Q105078662#P577",
+   "enwiki": "DALL-E",
+   "views_month": 12400
+  },
+  {
+   "id": "w3324",
+   "type": "interval",
+   "category": "ai_released",
+   "domain": "everyday",
+   "en": {
+    "prompt": "In what year did GitHub Copilot first come out?",
+    "unit": "year"
+   },
+   "answer": 2021,
+   "accept": [
+    1950,
+    2026
+   ],
+   "source": "https://en.wikipedia.org/wiki/GitHub_Copilot",
+   "difficulty_hint": "unknown",
+   "volatile": false,
+   "generated_at": "2026-10-04",
+   "name": "GitHub Copilot",
+   "ref_quality": "none",
+   "fact_checked": true,
+   "famous": true,
+   "notes": "curated: announced for technical preview on June 29, 2021",
+   "replaces": "https://www.wikidata.org/wiki/Q107435063#P577",
+   "enwiki": "GitHub Copilot",
+   "views_month": 9382
+  },
+  {
+   "id": "w3325",
+   "type": "interval",
+   "category": "ai_released",
+   "domain": "everyday",
+   "en": {
+    "prompt": "In what year did Midjourney first come out?",
+    "unit": "year"
+   },
+   "answer": 2022,
+   "accept": [
+    1950,
+    2026
+   ],
+   "source": "https://en.wikipedia.org/wiki/Midjourney",
+   "difficulty_hint": "unknown",
+   "volatile": false,
+   "generated_at": "2026-10-04",
+   "name": "Midjourney",
+   "ref_quality": "none",
+   "fact_checked": true,
+   "famous": true,
+   "notes": "curated: the image generator's open beta began on July 12, 2022",
+   "replaces": "https://www.wikidata.org/wiki/Q113070628#P577",
+   "enwiki": "Midjourney",
+   "views_month": 16878
+  },
+  {
+   "id": "w3326",
+   "type": "interval",
+   "category": "ai_released",
+   "domain": "everyday",
+   "en": {
+    "prompt": "In what year did Stable Diffusion first come out?",
+    "unit": "year"
+   },
+   "answer": 2022,
+   "accept": [
+    1950,
+    2026
+   ],
+   "source": "https://en.wikipedia.org/wiki/Stable_Diffusion",
+   "difficulty_hint": "unknown",
+   "volatile": false,
+   "generated_at": "2026-10-04",
+   "name": "Stable Diffusion",
+   "ref_quality": "none",
+   "fact_checked": true,
+   "famous": true,
+   "notes": "curated: the text-to-image model released in 2022",
+   "replaces": "https://www.wikidata.org/wiki/Q113660857#P577",
+   "fun": "Stable Diffusion came out on 22 August 2022, about three months before ChatGPT.",
+   "enwiki": "Stable Diffusion",
+   "views_month": 20092
+  },
+  {
+   "id": "w3327",
+   "type": "interval",
+   "category": "ai_released",
+   "domain": "everyday",
+   "en": {
+    "prompt": "In what year did ChatGPT first come out?",
+    "unit": "year"
+   },
+   "answer": 2022,
+   "accept": [
+    1950,
+    2026
+   ],
+   "source": "https://en.wikipedia.org/wiki/ChatGPT",
+   "difficulty_hint": "unknown",
+   "volatile": false,
+   "generated_at": "2026-10-04",
+   "name": "ChatGPT",
+   "ref_quality": "none",
+   "fact_checked": true,
+   "famous": true,
+   "notes": "curated: released on November 30, 2022",
+   "replaces": "https://www.wikidata.org/wiki/Q115564437#P577",
+   "enwiki": "ChatGPT",
+   "views_month": 2090045
+  },
+  {
+   "id": "w3328",
+   "type": "interval",
+   "category": "ai_released",
+   "domain": "everyday",
+   "en": {
+    "prompt": "In what year did GPT-4 first come out?",
+    "unit": "year"
+   },
+   "answer": 2023,
+   "accept": [
+    1950,
+    2026
+   ],
+   "source": "https://en.wikipedia.org/wiki/GPT-4",
+   "difficulty_hint": "unknown",
+   "volatile": false,
+   "generated_at": "2026-10-04",
+   "name": "GPT-4",
+   "ref_quality": "none",
+   "fact_checked": true,
+   "famous": true,
+   "notes": "curated: released in ChatGPT in March 2023",
+   "replaces": "https://www.wikidata.org/wiki/Q116709136#P577",
+   "fun": "Anthropic introduced Claude on 14 March 2023, the same day OpenAI announced GPT-4.",
+   "enwiki": "GPT-4",
+   "views_month": 13427
+  },
+  {
+   "id": "w3329",
+   "type": "interval",
+   "category": "ai_released",
+   "domain": "everyday",
+   "en": {
+    "prompt": "In what year did Claude first come out?",
+    "unit": "year"
+   },
+   "answer": 2023,
+   "accept": [
+    1950,
+    2026
+   ],
+   "source": "https://en.wikipedia.org/wiki/Claude_(AI)",
+   "difficulty_hint": "unknown",
+   "volatile": false,
+   "generated_at": "2026-10-04",
+   "name": "Claude",
+   "ref_quality": "none",
+   "fact_checked": true,
+   "famous": true,
+   "notes": "curated: Anthropic's chatbot, released in March 2023",
+   "replaces": "https://www.wikidata.org/wiki/Q118876059#P577",
+   "fun": "Anthropic introduced Claude on 14 March 2023, the same day OpenAI announced GPT-4.",
+   "enwiki": "Claude (AI)",
+   "views_month": 147471
+  },
+  {
+   "id": "w3330",
+   "type": "interval",
+   "category": "ai_released",
+   "domain": "everyday",
+   "en": {
+    "prompt": "In what year did Llama first come out?",
+    "unit": "year"
+   },
+   "answer": 2023,
+   "accept": [
+    1950,
+    2026
+   ],
+   "source": "https://en.wikipedia.org/wiki/Llama_(language_model)",
+   "difficulty_hint": "unknown",
+   "volatile": false,
+   "generated_at": "2026-10-04",
+   "name": "Llama",
+   "ref_quality": "none",
+   "fact_checked": true,
+   "famous": true,
+   "notes": "curated: Meta's first Llama announced on February 24, 2023",
+   "replaces": "https://www.wikidata.org/wiki/Q116894231#P577",
+   "enwiki": "Llama (language model)",
+   "views_month": 16522
+  },
+  {
+   "id": "w3331",
+   "type": "interval",
+   "category": "ai_released",
+   "domain": "everyday",
+   "en": {
+    "prompt": "In what year did Gemini first come out?",
+    "unit": "year"
+   },
+   "answer": 2023,
+   "accept": [
+    1950,
+    2026
+   ],
+   "source": "https://en.wikipedia.org/wiki/Gemini_(language_model)",
+   "difficulty_hint": "unknown",
+   "volatile": false,
+   "generated_at": "2026-10-04",
+   "name": "Gemini",
+   "ref_quality": "none",
+   "fact_checked": true,
+   "famous": true,
+   "notes": "curated: Google's model family announced on December 6, 2023",
+   "replaces": "https://www.wikidata.org/wiki/Q123688361#P577",
+   "enwiki": "Gemini (language model)",
+   "views_month": 26577
+  },
+  {
+   "id": "w3332",
+   "type": "interval",
+   "category": "ai_released",
+   "domain": "everyday",
+   "en": {
+    "prompt": "In what year did Grok first come out?",
+    "unit": "year"
+   },
+   "answer": 2023,
+   "accept": [
+    1950,
+    2026
+   ],
+   "source": "https://en.wikipedia.org/wiki/Grok_(chatbot)",
+   "difficulty_hint": "unknown",
+   "volatile": false,
+   "generated_at": "2026-10-04",
+   "name": "Grok",
+   "ref_quality": "none",
+   "fact_checked": true,
+   "famous": true,
+   "notes": "curated: launched by xAI in November 2023",
+   "replaces": "https://www.wikidata.org/wiki/Q123361035#P577",
+   "enwiki": "Grok (chatbot)",
+   "views_month": 52224
+  },
+  {
+   "id": "w3333",
+   "type": "interval",
+   "category": "ai_released",
+   "domain": "everyday",
+   "en": {
+    "prompt": "In what year did Sora first come out?",
+    "unit": "year"
+   },
+   "answer": 2024,
+   "accept": [
+    1950,
+    2026
+   ],
+   "source": "https://en.wikipedia.org/wiki/Sora_(text-to-video_model)",
+   "difficulty_hint": "unknown",
+   "volatile": false,
+   "generated_at": "2026-10-04",
+   "name": "Sora",
+   "ref_quality": "none",
+   "fact_checked": true,
+   "famous": true,
+   "notes": "curated: OpenAI previewed the video model in February 2024",
+   "replaces": "https://www.wikidata.org/wiki/Q124544998#P577",
+   "enwiki": "Sora (text-to-video model)",
+   "views_month": 19313
+  },
+  {
+   "id": "w3334",
+   "type": "interval",
+   "category": "ai_released",
+   "domain": "everyday",
+   "en": {
+    "prompt": "In what year did OpenAI o1 first come out?",
+    "unit": "year"
+   },
+   "answer": 2024,
+   "accept": [
+    1950,
+    2026
+   ],
+   "source": "https://en.wikipedia.org/wiki/OpenAI_o1",
+   "difficulty_hint": "unknown",
+   "volatile": false,
+   "generated_at": "2026-10-04",
+   "name": "OpenAI o1",
+   "ref_quality": "none",
+   "fact_checked": true,
+   "famous": true,
+   "notes": "curated: a preview was released on September 12, 2024",
+   "replaces": "https://www.wikidata.org/wiki/Q130288245#P577",
+   "fun": "OpenAI went from o1 to o3. It skipped o2 to avoid a trademark clash with the O2 mobile network.",
+   "enwiki": "OpenAI o1",
+   "views_month": 4015
+  },
+  {
+   "id": "w3335",
+   "type": "interval",
+   "category": "ai_released",
+   "domain": "everyday",
+   "en": {
+    "prompt": "In what year did DeepSeek-R1 first come out?",
+    "unit": "year"
+   },
+   "answer": 2025,
+   "accept": [
+    1950,
+    2026
+   ],
+   "source": "https://en.wikipedia.org/wiki/DeepSeek_(AI)",
+   "difficulty_hint": "unknown",
+   "volatile": false,
+   "generated_at": "2026-10-04",
+   "name": "DeepSeek-R1",
+   "ref_quality": "none",
+   "fact_checked": true,
+   "famous": true,
+   "notes": "curated: released on January 20, 2025",
+   "replaces": "https://www.wikidata.org/wiki/Q132324293#P577",
+   "enwiki": "DeepSeek (AI)",
+   "views_month": 640
+  },
+  {
+   "id": "w3336",
+   "type": "interval",
+   "category": "ai_company_founded",
+   "domain": "history",
+   "en": {
+    "prompt": "In what year was iRobot founded?",
+    "unit": "year"
+   },
+   "answer": 1990,
+   "accept": [
+    1950,
+    2026
+   ],
+   "source": "https://en.wikipedia.org/wiki/IRobot",
+   "difficulty_hint": "unknown",
+   "volatile": false,
+   "generated_at": "2026-10-04",
+   "name": "iRobot",
+   "ref_quality": "none",
+   "fact_checked": true,
+   "famous": true,
+   "notes": "curated: founded in 1990 by Rodney Brooks, Colin Angle and Helen Greiner",
+   "replaces": "https://www.wikidata.org/wiki/Q285161#P571",
+   "enwiki": "IRobot",
+   "views_month": 8627
+  },
+  {
+   "id": "w3337",
+   "type": "interval",
+   "category": "ai_company_founded",
+   "domain": "history",
+   "en": {
+    "prompt": "In what year was Boston Dynamics founded?",
+    "unit": "year"
+   },
+   "answer": 1992,
+   "accept": [
+    1950,
+    2026
+   ],
+   "source": "https://en.wikipedia.org/wiki/Boston_Dynamics",
+   "difficulty_hint": "unknown",
+   "volatile": false,
+   "generated_at": "2026-10-04",
+   "name": "Boston Dynamics",
+   "ref_quality": "none",
+   "fact_checked": true,
+   "famous": true,
+   "notes": "curated: spun off from MIT in 1992 by Marc Raibert",
+   "replaces": "https://www.wikidata.org/wiki/Q2298325#P571",
+   "enwiki": "Boston Dynamics",
+   "views_month": 11090
+  },
+  {
+   "id": "w3338",
+   "type": "interval",
+   "category": "ai_company_founded",
+   "domain": "history",
+   "en": {
+    "prompt": "In what year was Nvidia founded?",
+    "unit": "year"
+   },
+   "answer": 1993,
+   "accept": [
+    1950,
+    2026
+   ],
+   "source": "https://en.wikipedia.org/wiki/Nvidia",
+   "difficulty_hint": "unknown",
+   "volatile": false,
+   "generated_at": "2026-10-04",
+   "name": "Nvidia",
+   "ref_quality": "none",
+   "fact_checked": true,
+   "famous": true,
+   "notes": "curated: founded on April 5, 1993",
+   "replaces": "https://www.wikidata.org/wiki/Q182477#P571",
+   "enwiki": "Nvidia",
+   "views_month": 162860
+  },
+  {
+   "id": "w3339",
+   "type": "interval",
+   "category": "ai_company_founded",
+   "domain": "history",
+   "en": {
+    "prompt": "In what year was Palantir founded?",
+    "unit": "year"
+   },
+   "answer": 2003,
+   "accept": [
+    1950,
+    2026
+   ],
+   "source": "https://en.wikipedia.org/wiki/Palantir",
+   "difficulty_hint": "unknown",
+   "volatile": false,
+   "generated_at": "2026-10-04",
+   "name": "Palantir",
+   "ref_quality": "none",
+   "fact_checked": true,
+   "famous": true,
+   "notes": "curated: founded in 2003 by Peter Thiel, Alex Karp and others",
+   "replaces": "https://www.wikidata.org/wiki/Q2047336#P571",
+   "enwiki": "Palantir",
+   "views_month": 125231
+  },
+  {
+   "id": "w3340",
+   "type": "interval",
+   "category": "ai_company_founded",
+   "domain": "history",
+   "en": {
+    "prompt": "In what year was DeepMind founded?",
+    "unit": "year"
+   },
+   "answer": 2010,
+   "accept": [
+    1950,
+    2026
+   ],
+   "source": "https://en.wikipedia.org/wiki/Google_DeepMind",
+   "difficulty_hint": "unknown",
+   "volatile": false,
+   "generated_at": "2026-10-04",
+   "name": "DeepMind",
+   "ref_quality": "none",
+   "fact_checked": true,
+   "famous": true,
+   "notes": "curated: founded in November 2010 by Demis Hassabis, Shane Legg and Mustafa Suleyman",
+   "replaces": "https://www.wikidata.org/wiki/Q15733006#P571",
+   "fun": "DeepMind was founded in November 2010, five years before OpenAI.",
+   "enwiki": "Google DeepMind",
+   "views_month": 34598
+  },
+  {
+   "id": "w3341",
+   "type": "interval",
+   "category": "ai_company_founded",
+   "domain": "history",
+   "en": {
+    "prompt": "In what year was Databricks founded?",
+    "unit": "year"
+   },
+   "answer": 2013,
+   "accept": [
+    1950,
+    2026
+   ],
+   "source": "https://en.wikipedia.org/wiki/Databricks",
+   "difficulty_hint": "unknown",
+   "volatile": false,
+   "generated_at": "2026-10-04",
+   "name": "Databricks",
+   "ref_quality": "none",
+   "fact_checked": true,
+   "famous": true,
+   "notes": "curated: founded in 2013 by the creators of Apache Spark",
+   "replaces": "https://www.wikidata.org/wiki/Q18350420#P571",
+   "enwiki": "Databricks",
+   "views_month": 34028
+  },
+  {
+   "id": "w3342",
+   "type": "interval",
+   "category": "ai_company_founded",
+   "domain": "history",
+   "en": {
+    "prompt": "In what year was Cruise founded?",
+    "unit": "year"
+   },
+   "answer": 2013,
+   "accept": [
+    1950,
+    2026
+   ],
+   "source": "https://en.wikipedia.org/wiki/Cruise_(autonomous_vehicle)",
+   "difficulty_hint": "unknown",
+   "volatile": false,
+   "generated_at": "2026-10-04",
+   "name": "Cruise",
+   "ref_quality": "none",
+   "fact_checked": true,
+   "famous": true,
+   "notes": "curated: the self-driving car company founded in 2013 by Kyle Vogt and Dan Kan",
+   "replaces": "https://www.wikidata.org/wiki/Q42377899#P571",
+   "enwiki": "Cruise (autonomous vehicle)",
+   "views_month": 3982
+  },
+  {
+   "id": "w3343",
+   "type": "interval",
+   "category": "ai_company_founded",
+   "domain": "history",
+   "en": {
+    "prompt": "In what year was OpenAI founded?",
+    "unit": "year"
+   },
+   "answer": 2015,
+   "accept": [
+    1950,
+    2026
+   ],
+   "source": "https://en.wikipedia.org/wiki/OpenAI",
+   "difficulty_hint": "unknown",
+   "volatile": false,
+   "generated_at": "2026-10-04",
+   "name": "OpenAI",
+   "ref_quality": "none",
+   "fact_checked": true,
+   "famous": true,
+   "notes": "curated: founded in December 2015 as a nonprofit",
+   "replaces": "https://www.wikidata.org/wiki/Q21708200#P571",
+   "fun": "OpenAI was founded as a non-profit in December 2015 and created a capped-profit company in 2019.",
+   "enwiki": "OpenAI",
+   "views_month": 223256
+  },
+  {
+   "id": "w3344",
+   "type": "interval",
+   "category": "ai_company_founded",
+   "domain": "history",
+   "en": {
+    "prompt": "In what year was Hugging Face founded?",
+    "unit": "year"
+   },
+   "answer": 2016,
+   "accept": [
+    1950,
+    2026
+   ],
+   "source": "https://en.wikipedia.org/wiki/Hugging_Face",
+   "difficulty_hint": "unknown",
+   "volatile": false,
+   "generated_at": "2026-10-04",
+   "name": "Hugging Face",
+   "ref_quality": "none",
+   "fact_checked": true,
+   "famous": true,
+   "notes": "curated: founded in 2016 in New York City",
+   "replaces": "https://www.wikidata.org/wiki/Q108943604#P571",
+   "enwiki": "Hugging Face",
+   "views_month": 139612
+  },
+  {
+   "id": "w3345",
+   "type": "interval",
+   "category": "ai_company_founded",
+   "domain": "history",
+   "en": {
+    "prompt": "In what year was Scale AI founded?",
+    "unit": "year"
+   },
+   "answer": 2016,
+   "accept": [
+    1950,
+    2026
+   ],
+   "source": "https://en.wikipedia.org/wiki/Scale_AI",
+   "difficulty_hint": "unknown",
+   "volatile": false,
+   "generated_at": "2026-10-04",
+   "name": "Scale AI",
+   "ref_quality": "none",
+   "fact_checked": true,
+   "famous": true,
+   "notes": "curated: founded in 2016 by Alexandr Wang and Lucy Guo",
+   "replaces": "https://www.wikidata.org/wiki/Q112629176#P571",
+   "enwiki": "Scale AI",
+   "views_month": 26695
+  },
+  {
+   "id": "w3346",
+   "type": "interval",
+   "category": "ai_company_founded",
+   "domain": "history",
+   "en": {
+    "prompt": "In what year was Groq founded?",
+    "unit": "year"
+   },
+   "answer": 2016,
+   "accept": [
+    1950,
+    2026
+   ],
+   "source": "https://en.wikipedia.org/wiki/Groq",
+   "difficulty_hint": "unknown",
+   "volatile": false,
+   "generated_at": "2026-10-04",
+   "name": "Groq",
+   "ref_quality": "none",
+   "fact_checked": true,
+   "famous": true,
+   "notes": "curated: founded in 2016 by former Google engineers led by Jonathan Ross",
+   "replaces": "https://www.wikidata.org/wiki/Q126050137#P571",
+   "enwiki": "Groq",
+   "views_month": 11403
+  },
+  {
+   "id": "w3347",
+   "type": "interval",
+   "category": "ai_company_founded",
+   "domain": "history",
+   "en": {
+    "prompt": "In what year was Runway founded?",
+    "unit": "year"
+   },
+   "answer": 2018,
+   "accept": [
+    1950,
+    2026
+   ],
+   "source": "https://en.wikipedia.org/wiki/Runway_(company)",
+   "difficulty_hint": "unknown",
+   "volatile": false,
+   "generated_at": "2026-10-04",
+   "name": "Runway",
+   "ref_quality": "none",
+   "fact_checked": true,
+   "famous": true,
+   "notes": "curated: the AI video company founded in 2018",
+   "replaces": "https://www.wikidata.org/wiki/Q123367593#P571",
+   "enwiki": "Runway (company)",
+   "views_month": 6221
+  },
+  {
+   "id": "w3348",
+   "type": "interval",
+   "category": "ai_company_founded",
+   "domain": "history",
+   "en": {
+    "prompt": "In what year was Cohere founded?",
+    "unit": "year"
+   },
+   "answer": 2019,
+   "accept": [
+    1950,
+    2026
+   ],
+   "source": "https://en.wikipedia.org/wiki/Cohere",
+   "difficulty_hint": "unknown",
+   "volatile": false,
+   "generated_at": "2026-10-04",
+   "name": "Cohere",
+   "ref_quality": "none",
+   "fact_checked": true,
+   "famous": true,
+   "notes": "curated: founded in 2019 by Aidan Gomez, Ivan Zhang and Nick Frosst",
+   "replaces": "https://www.wikidata.org/wiki/Q110363143#P571",
+   "enwiki": "Cohere",
+   "views_month": 12009
+  },
+  {
+   "id": "w3349",
+   "type": "interval",
+   "category": "ai_company_founded",
+   "domain": "history",
+   "en": {
+    "prompt": "In what year was Stability AI founded?",
+    "unit": "year"
+   },
+   "answer": 2019,
+   "accept": [
+    1950,
+    2026
+   ],
+   "source": "https://en.wikipedia.org/wiki/Stability_AI",
+   "difficulty_hint": "unknown",
+   "volatile": false,
+   "generated_at": "2026-10-04",
+   "name": "Stability AI",
+   "ref_quality": "none",
+   "fact_checked": true,
+   "famous": true,
+   "notes": "curated: founded in 2019 by Emad Mostaque and Cyrus Hodes",
+   "replaces": "https://www.wikidata.org/wiki/Q123592234#P571",
+   "enwiki": "Stability AI",
+   "views_month": 5119
+  },
+  {
+   "id": "w3350",
+   "type": "interval",
+   "category": "ai_company_founded",
+   "domain": "history",
+   "en": {
+    "prompt": "In what year was Anthropic founded?",
+    "unit": "year"
+   },
+   "answer": 2021,
+   "accept": [
+    1950,
+    2026
+   ],
+   "source": "https://en.wikipedia.org/wiki/Anthropic",
+   "difficulty_hint": "unknown",
+   "volatile": false,
+   "generated_at": "2026-10-04",
+   "name": "Anthropic",
+   "ref_quality": "none",
+   "fact_checked": true,
+   "famous": true,
+   "notes": "curated: founded in January 2021 by former OpenAI employees",
+   "replaces": "https://www.wikidata.org/wiki/Q116758847#P571",
+   "fun": "Anthropic was founded in January 2021 by seven former OpenAI employees.",
+   "enwiki": "Anthropic",
+   "views_month": 242191
+  },
+  {
+   "id": "w3351",
+   "type": "interval",
+   "category": "ai_company_founded",
+   "domain": "history",
+   "en": {
+    "prompt": "In what year was Character.AI founded?",
+    "unit": "year"
+   },
+   "answer": 2021,
+   "accept": [
+    1950,
+    2026
+   ],
+   "source": "https://en.wikipedia.org/wiki/Character.ai",
+   "difficulty_hint": "unknown",
+   "volatile": false,
+   "generated_at": "2026-10-04",
+   "name": "Character.AI",
+   "ref_quality": "none",
+   "fact_checked": true,
+   "famous": true,
+   "notes": "curated: established in November 2021 by Noam Shazeer and Daniel de Freitas",
+   "replaces": "https://www.wikidata.org/wiki/Q115517493#P571",
+   "enwiki": "Character.ai",
+   "views_month": 22329
+  },
+  {
+   "id": "w3352",
+   "type": "interval",
+   "category": "ai_company_founded",
+   "domain": "history",
+   "en": {
+    "prompt": "In what year was Perplexity AI founded?",
+    "unit": "year"
+   },
+   "answer": 2022,
+   "accept": [
+    1950,
+    2026
+   ],
+   "source": "https://en.wikipedia.org/wiki/Perplexity_AI",
+   "difficulty_hint": "unknown",
+   "volatile": false,
+   "generated_at": "2026-10-04",
+   "name": "Perplexity AI",
+   "ref_quality": "none",
+   "fact_checked": true,
+   "famous": true,
+   "notes": "curated: founded on August 22, 2022",
+   "replaces": "https://www.wikidata.org/wiki/Q124333951#P571",
+   "enwiki": "Perplexity AI",
+   "views_month": 73416
+  },
+  {
+   "id": "w3353",
+   "type": "interval",
+   "category": "ai_company_founded",
+   "domain": "history",
+   "en": {
+    "prompt": "In what year was ElevenLabs founded?",
+    "unit": "year"
+   },
+   "answer": 2022,
+   "accept": [
+    1950,
+    2026
+   ],
+   "source": "https://en.wikipedia.org/wiki/ElevenLabs",
+   "difficulty_hint": "unknown",
+   "volatile": false,
+   "generated_at": "2026-10-04",
+   "name": "ElevenLabs",
+   "ref_quality": "none",
+   "fact_checked": true,
+   "famous": true,
+   "notes": "curated: founded in 2022 by Piotr Dabkowski and Mati Staniszewski",
+   "replaces": "https://www.wikidata.org/wiki/Q116798355#P571",
+   "enwiki": "ElevenLabs",
+   "views_month": 26267
+  },
+  {
+   "id": "w3354",
+   "type": "interval",
+   "category": "ai_company_founded",
+   "domain": "history",
+   "en": {
+    "prompt": "In what year was Mistral AI founded?",
+    "unit": "year"
+   },
+   "answer": 2023,
+   "accept": [
+    1950,
+    2026
+   ],
+   "source": "https://en.wikipedia.org/wiki/Mistral_AI",
+   "difficulty_hint": "unknown",
+   "volatile": false,
+   "generated_at": "2026-10-04",
+   "name": "Mistral AI",
+   "ref_quality": "none",
+   "fact_checked": true,
+   "famous": true,
+   "notes": "curated: established in April 2023 in Paris",
+   "replaces": "https://www.wikidata.org/wiki/Q119718658#P571",
+   "enwiki": "Mistral AI",
+   "views_month": 32119
+  },
+  {
+   "id": "w3355",
+   "type": "interval",
+   "category": "ai_company_founded",
+   "domain": "history",
+   "en": {
+    "prompt": "In what year was xAI founded?",
+    "unit": "year"
+   },
+   "answer": 2023,
+   "accept": [
+    1950,
+    2026
+   ],
+   "source": "https://en.wikipedia.org/wiki/SpaceXAI",
+   "difficulty_hint": "unknown",
+   "volatile": false,
+   "generated_at": "2026-10-04",
+   "name": "xAI",
+   "ref_quality": "none",
+   "fact_checked": true,
+   "famous": true,
+   "notes": "curated: founded by Elon Musk on March 9, 2023 (renamed SpaceXAI in 2026)",
+   "replaces": "https://www.wikidata.org/wiki/Q120599684#P571",
+   "enwiki": "SpaceXAI",
+   "views_month": 38569
+  },
+  {
+   "id": "w3356",
+   "type": "interval",
+   "category": "ai_company_founded",
+   "domain": "history",
+   "en": {
+    "prompt": "In what year was DeepSeek founded?",
+    "unit": "year"
+   },
+   "answer": 2023,
+   "accept": [
+    1950,
+    2026
+   ],
+   "source": "https://en.wikipedia.org/wiki/DeepSeek",
+   "difficulty_hint": "unknown",
+   "volatile": false,
+   "generated_at": "2026-10-04",
+   "name": "DeepSeek",
+   "ref_quality": "none",
+   "fact_checked": true,
+   "famous": true,
+   "notes": "curated: founded in July 2023 by Liang Wenfeng",
+   "replaces": "https://www.wikidata.org/wiki/Q131577453#P571",
+   "enwiki": "DeepSeek",
+   "views_month": 69213
+  },
+  {
+   "id": "w3357",
+   "type": "interval",
+   "category": "ai_company_founded",
+   "domain": "history",
+   "en": {
+    "prompt": "In what year was Safe Superintelligence founded?",
+    "unit": "year"
+   },
+   "answer": 2024,
+   "accept": [
+    1950,
+    2026
+   ],
+   "source": "https://en.wikipedia.org/wiki/Safe_Superintelligence_Inc.",
+   "difficulty_hint": "unknown",
+   "volatile": false,
+   "generated_at": "2026-10-04",
+   "name": "Safe Superintelligence",
+   "ref_quality": "none",
+   "fact_checked": true,
+   "famous": true,
+   "notes": "curated: Ilya Sutskever announced the company on June 19, 2024",
+   "replaces": "https://www.wikidata.org/wiki/Q130302670#P571",
+   "enwiki": "Safe Superintelligence Inc.",
+   "views_month": 12916
+  },
+  {
+   "id": "w3358",
+   "type": "interval",
+   "category": "ai_params",
+   "domain": "everyday",
+   "en": {
+    "prompt": "How many parameters does GPT-1 have?",
+    "unit": "parameters"
+   },
+   "answer": 117000000,
+   "accept": [
+    1000000.0,
+    10000000000000.0
+   ],
+   "source": "https://en.wikipedia.org/wiki/GPT-1",
+   "difficulty_hint": "unknown",
+   "volatile": false,
+   "generated_at": "2026-10-04",
+   "name": "GPT-1",
+   "ref_quality": "none",
+   "fact_checked": true,
+   "famous": true,
+   "notes": "curated: 117 million parameters",
+   "replaces": "https://www.wikidata.org/wiki/Q95726718#P577",
+   "enwiki": "GPT-1",
+   "views_month": 8412
+  },
+  {
+   "id": "w3359",
+   "type": "interval",
+   "category": "ai_params",
+   "domain": "everyday",
+   "en": {
+    "prompt": "How many parameters does BERT-large have?",
+    "unit": "parameters"
+   },
+   "answer": 340000000,
+   "accept": [
+    1000000.0,
+    10000000000000.0
+   ],
+   "source": "https://en.wikipedia.org/wiki/BERT_(language_model)#Architecture",
+   "difficulty_hint": "unknown",
+   "volatile": false,
+   "generated_at": "2026-10-04",
+   "name": "BERT-large",
+   "ref_quality": "none",
+   "fact_checked": true,
+   "famous": true,
+   "notes": "curated: BERT-large: 340 million parameters (BERT-base: 110 million)",
+   "replaces": "https://www.wikidata.org/wiki/Q61726893#P577",
+   "enwiki": "BERT (language model)",
+   "views_month": 13466
+  },
+  {
+   "id": "w3360",
+   "type": "interval",
+   "category": "ai_params",
+   "domain": "everyday",
+   "en": {
+    "prompt": "How many parameters does GPT-2 have?",
+    "unit": "parameters"
+   },
+   "answer": 1500000000,
+   "accept": [
+    1000000.0,
+    10000000000000.0
+   ],
+   "source": "https://en.wikipedia.org/wiki/GPT-2#Full_1.5B_release",
+   "difficulty_hint": "unknown",
+   "volatile": false,
+   "generated_at": "2026-10-04",
+   "name": "GPT-2",
+   "ref_quality": "none",
+   "fact_checked": true,
+   "famous": true,
+   "notes": "curated: the full model: 1.5 billion parameters",
+   "replaces": "https://www.wikidata.org/wiki/Q95726727#P577",
+   "fun": "OpenAI held back the full GPT-2 in February 2019 over misuse concerns, then released all of it in November 2019.",
+   "enwiki": "GPT-2",
+   "views_month": 8805
+  },
+  {
+   "id": "w3361",
+   "type": "interval",
+   "category": "ai_params",
+   "domain": "everyday",
+   "en": {
+    "prompt": "How many parameters does GPT-J have?",
+    "unit": "parameters"
+   },
+   "answer": 6000000000,
+   "accept": [
+    1000000.0,
+    10000000000000.0
+   ],
+   "source": "https://en.wikipedia.org/wiki/GPT-J",
+   "difficulty_hint": "unknown",
+   "volatile": false,
+   "generated_at": "2026-10-04",
+   "name": "GPT-J",
+   "ref_quality": "none",
+   "fact_checked": true,
+   "famous": true,
+   "notes": "curated: 6 billion parameters (the \"6B\" in its full name)",
+   "replaces": "https://www.wikidata.org/wiki/Q116937684#P577",
+   "enwiki": "GPT-J",
+   "views_month": 772
+  },
+  {
+   "id": "w3362",
+   "type": "interval",
+   "category": "ai_params",
+   "domain": "everyday",
+   "en": {
+    "prompt": "How many parameters does the largest T5 have?",
+    "unit": "parameters"
+   },
+   "answer": 11000000000,
+   "accept": [
+    1000000.0,
+    10000000000000.0
+   ],
+   "source": "https://en.wikipedia.org/wiki/T5_(language_model)",
+   "difficulty_hint": "unknown",
+   "volatile": false,
+   "generated_at": "2026-10-04",
+   "name": "the largest T5",
+   "ref_quality": "none",
+   "fact_checked": true,
+   "famous": true,
+   "notes": "curated: the original T5 came in sizes up to 11B",
+   "replaces": "https://www.wikidata.org/wiki/Q125510562#P577",
+   "enwiki": "T5 (language model)",
+   "views_month": 1629
+  },
+  {
+   "id": "w3363",
+   "type": "interval",
+   "category": "ai_params",
+   "domain": "everyday",
+   "en": {
+    "prompt": "How many parameters does the original DALL·E have?",
+    "unit": "parameters"
+   },
+   "answer": 12000000000,
+   "accept": [
+    1000000.0,
+    10000000000000.0
+   ],
+   "source": "https://en.wikipedia.org/wiki/DALL-E#DALL-E",
+   "difficulty_hint": "unknown",
+   "volatile": false,
+   "generated_at": "2026-10-04",
+   "name": "the original DALL·E",
+   "ref_quality": "none",
+   "fact_checked": true,
+   "famous": true,
+   "notes": "curated: its transformer has 12 billion parameters",
+   "replaces": "https://www.wikidata.org/wiki/Q105078662#P577",
+   "enwiki": "DALL-E",
+   "views_month": 12400
+  },
+  {
+   "id": "w3364",
+   "type": "interval",
+   "category": "ai_params",
+   "domain": "everyday",
+   "en": {
+    "prompt": "How many parameters does the largest Gemma 2 have?",
+    "unit": "parameters"
+   },
+   "answer": 27000000000,
+   "accept": [
+    1000000.0,
+    10000000000000.0
+   ],
+   "source": "https://en.wikipedia.org/wiki/Gemma_(language_model)#Variants",
+   "difficulty_hint": "unknown",
+   "volatile": false,
+   "generated_at": "2026-10-04",
+   "name": "the largest Gemma 2",
+   "ref_quality": "none",
+   "fact_checked": true,
+   "famous": true,
+   "notes": "curated: Gemma 2 came in 2B, 9B and 27B sizes",
+   "replaces": "https://www.wikidata.org/wiki/Q124629757#P577",
+   "enwiki": "Gemma (language model)",
+   "views_month": 7108
+  },
+  {
+   "id": "w3365",
+   "type": "interval",
+   "category": "ai_params",
+   "domain": "everyday",
+   "en": {
+    "prompt": "How many parameters does Mixtral 8x7B have?",
+    "unit": "parameters"
+   },
+   "answer": 46700000000,
+   "accept": [
+    1000000.0,
+    10000000000000.0
+   ],
+   "source": "https://mistral.ai/news/mixtral-of-experts/",
+   "difficulty_hint": "unknown",
+   "volatile": false,
+   "generated_at": "2026-10-04",
+   "name": "Mixtral 8x7B",
+   "ref_quality": "none",
+   "fact_checked": true,
+   "famous": true,
+   "notes": "curated: 46.7B total parameters, 12.9B used per token (Mistral AI's announcement)",
+   "enwiki": null,
+   "views_month": 0
+  },
+  {
+   "id": "w3366",
+   "type": "interval",
+   "category": "ai_params",
+   "domain": "everyday",
+   "en": {
+    "prompt": "How many parameters does the largest original Llama have?",
+    "unit": "parameters"
+   },
+   "answer": 65000000000,
+   "accept": [
+    1000000.0,
+    10000000000000.0
+   ],
+   "source": "https://en.wikipedia.org/wiki/Llama_(language_model)#Initial_release",
+   "difficulty_hint": "unknown",
+   "volatile": false,
+   "generated_at": "2026-10-04",
+   "name": "the largest original Llama",
+   "ref_quality": "none",
+   "fact_checked": true,
+   "famous": true,
+   "notes": "curated: the first Llama's largest model: 65B",
+   "replaces": "https://www.wikidata.org/wiki/Q116894231#P577",
+   "enwiki": "Llama (language model)",
+   "views_month": 16522
+  },
+  {
+   "id": "w3367",
+   "type": "interval",
+   "category": "ai_params",
+   "domain": "everyday",
+   "en": {
+    "prompt": "How many parameters does Chinchilla have?",
+    "unit": "parameters"
+   },
+   "answer": 70000000000,
+   "accept": [
+    1000000.0,
+    10000000000000.0
+   ],
+   "source": "https://en.wikipedia.org/wiki/Chinchilla_(language_model)",
+   "difficulty_hint": "unknown",
+   "volatile": false,
+   "generated_at": "2026-10-04",
+   "name": "Chinchilla",
+   "ref_quality": "none",
+   "fact_checked": true,
+   "famous": true,
+   "notes": "curated: 70B parameters, trained on 1.4T tokens",
+   "replaces": "https://www.wikidata.org/wiki/Q116470626#P577",
+   "enwiki": "Chinchilla (language model)",
+   "views_month": 1295
+  },
+  {
+   "id": "w3368",
+   "type": "interval",
+   "category": "ai_params",
+   "domain": "everyday",
+   "en": {
+    "prompt": "How many parameters does GPT-3 have?",
+    "unit": "parameters"
+   },
+   "answer": 175000000000,
+   "accept": [
+    1000000.0,
+    10000000000000.0
+   ],
+   "source": "https://en.wikipedia.org/wiki/GPT-3#GPT-3_models",
+   "difficulty_hint": "unknown",
+   "volatile": false,
+   "generated_at": "2026-10-04",
+   "name": "GPT-3",
+   "ref_quality": "none",
+   "fact_checked": true,
+   "famous": true,
+   "notes": "curated: 175 billion parameters",
+   "replaces": "https://www.wikidata.org/wiki/Q95726734#P577",
+   "enwiki": "GPT-3",
+   "views_month": 14564
+  },
+  {
+   "id": "w3369",
+   "type": "interval",
+   "category": "ai_params",
+   "domain": "everyday",
+   "en": {
+    "prompt": "How many parameters does BLOOM have?",
+    "unit": "parameters"
+   },
+   "answer": 176000000000,
+   "accept": [
+    1000000.0,
+    10000000000000.0
+   ],
+   "source": "https://en.wikipedia.org/wiki/BLOOM_(language_model)",
+   "difficulty_hint": "unknown",
+   "volatile": false,
+   "generated_at": "2026-10-04",
+   "name": "BLOOM",
+   "ref_quality": "none",
+   "fact_checked": true,
+   "famous": true,
+   "notes": "curated: 176 billion parameters",
+   "replaces": "https://www.wikidata.org/wiki/Q113013356#P577",
+   "enwiki": "BLOOM (language model)",
+   "views_month": 1190
+  },
+  {
+   "id": "w3370",
+   "type": "interval",
+   "category": "ai_params",
+   "domain": "everyday",
+   "en": {
+    "prompt": "How many parameters does the largest Falcon have?",
+    "unit": "parameters"
+   },
+   "answer": 180000000000,
+   "accept": [
+    1000000.0,
+    10000000000000.0
+   ],
+   "source": "https://falconllm.tii.ae/falcon-180b.html",
+   "difficulty_hint": "unknown",
+   "volatile": false,
+   "generated_at": "2026-10-04",
+   "name": "the largest Falcon",
+   "ref_quality": "none",
+   "fact_checked": true,
+   "famous": true,
+   "notes": "curated: Falcon 180B: 180 billion parameters (TII's announcement)",
+   "enwiki": null,
+   "views_month": 0
+  },
+  {
+   "id": "w3371",
+   "type": "interval",
+   "category": "ai_params",
+   "domain": "everyday",
+   "en": {
+    "prompt": "How many parameters does Gopher have?",
+    "unit": "parameters"
+   },
+   "answer": 280000000000,
+   "accept": [
+    1000000.0,
+    10000000000000.0
+   ],
+   "source": "https://deepmind.google/blog/language-modelling-at-scale-gopher-ethical-considerations-and-retrieval/",
+   "difficulty_hint": "unknown",
+   "volatile": false,
+   "generated_at": "2026-10-04",
+   "name": "Gopher",
+   "ref_quality": "none",
+   "fact_checked": true,
+   "famous": true,
+   "notes": "curated: a 280 billion parameter model (DeepMind's announcement)",
+   "enwiki": null,
+   "views_month": 0
+  },
+  {
+   "id": "w3372",
+   "type": "interval",
+   "category": "ai_params",
+   "domain": "everyday",
+   "en": {
+    "prompt": "How many parameters does Grok-1 have?",
+    "unit": "parameters"
+   },
+   "answer": 314000000000,
+   "accept": [
+    1000000.0,
+    10000000000000.0
+   ],
+   "source": "https://x.ai/news/grok-os",
+   "difficulty_hint": "unknown",
+   "volatile": false,
+   "generated_at": "2026-10-04",
+   "name": "Grok-1",
+   "ref_quality": "none",
+   "fact_checked": true,
+   "famous": true,
+   "notes": "curated: a 314 billion parameter mixture-of-experts model (xAI's open release)",
+   "replaces": "https://www.wikidata.org/wiki/Q123361035#P577",
+   "enwiki": "Grok (chatbot)",
+   "views_month": 52224
+  },
+  {
+   "id": "w3373",
+   "type": "interval",
+   "category": "ai_params",
+   "domain": "everyday",
+   "en": {
+    "prompt": "How many parameters does the largest Llama 3.1 have?",
+    "unit": "parameters"
+   },
+   "answer": 405000000000,
+   "accept": [
+    1000000.0,
+    10000000000000.0
+   ],
+   "source": "https://en.wikipedia.org/wiki/Llama_(language_model)#Llama_3",
+   "difficulty_hint": "unknown",
+   "volatile": false,
+   "generated_at": "2026-10-04",
+   "name": "the largest Llama 3.1",
+   "ref_quality": "none",
+   "fact_checked": true,
+   "famous": true,
+   "notes": "curated: Llama 3.1 came in 8B, 70B and 405B sizes",
+   "replaces": "https://www.wikidata.org/wiki/Q116894231#P577",
+   "enwiki": "Llama (language model)",
+   "views_month": 16522
+  },
+  {
+   "id": "w3374",
+   "type": "interval",
+   "category": "ai_params",
+   "domain": "everyday",
+   "en": {
+    "prompt": "How many parameters does Megatron-Turing NLG have?",
+    "unit": "parameters"
+   },
+   "answer": 530000000000,
+   "accept": [
+    1000000.0,
+    10000000000000.0
+   ],
+   "source": "https://www.microsoft.com/en-us/research/blog/using-deepspeed-and-megatron-to-train-megatron-turing-nlg-530b-the-worlds-largest-and-most-powerful-generative-language-model/",
+   "difficulty_hint": "unknown",
+   "volatile": false,
+   "generated_at": "2026-10-04",
+   "name": "Megatron-Turing NLG",
+   "ref_quality": "none",
+   "fact_checked": true,
+   "famous": true,
+   "notes": "curated: 530 billion parameters (Microsoft and NVIDIA's announcement)",
+   "enwiki": null,
+   "views_month": 0
+  },
+  {
+   "id": "w3375",
+   "type": "interval",
+   "category": "ai_params",
+   "domain": "everyday",
+   "en": {
+    "prompt": "How many parameters does PaLM have?",
+    "unit": "parameters"
+   },
+   "answer": 540000000000,
+   "accept": [
+    1000000.0,
+    10000000000000.0
+   ],
+   "source": "https://en.wikipedia.org/wiki/PaLM",
+   "difficulty_hint": "unknown",
+   "volatile": false,
+   "generated_at": "2026-10-04",
+   "name": "PaLM",
+   "ref_quality": "none",
+   "fact_checked": true,
+   "famous": true,
+   "notes": "curated: a 540 billion-parameter model",
+   "replaces": "https://www.wikidata.org/wiki/Q117232125#P577",
+   "enwiki": "PaLM",
+   "views_month": 1869
+  },
+  {
+   "id": "w3376",
+   "type": "interval",
+   "category": "ai_params",
+   "domain": "everyday",
+   "en": {
+    "prompt": "How many parameters does DeepSeek-V3 have?",
+    "unit": "parameters"
+   },
+   "answer": 671000000000,
+   "accept": [
+    1000000.0,
+    10000000000000.0
+   ],
+   "source": "https://api-docs.deepseek.com/news/news1226/",
+   "difficulty_hint": "unknown",
+   "volatile": false,
+   "generated_at": "2026-10-04",
+   "name": "DeepSeek-V3",
+   "ref_quality": "none",
+   "fact_checked": true,
+   "famous": true,
+   "notes": "curated: 671B mixture-of-experts parameters, 37B active (DeepSeek's announcement)",
+   "enwiki": null,
+   "views_month": 0
+  },
+  {
+   "id": "w3377",
+   "type": "interval",
+   "category": "ai_timeline",
+   "domain": "history",
+   "en": {
+    "prompt": "Nvidia (founded): in what month and year?",
+    "unit": "month"
+   },
+   "answer": 199304,
+   "accept": [
+    195001,
+    202612
+   ],
+   "source": "https://en.wikipedia.org/wiki/Nvidia#Founding",
+   "difficulty_hint": "unknown",
+   "volatile": false,
+   "generated_at": "2026-10-04",
+   "name": "Nvidia (founded)",
+   "ref_quality": "none",
+   "fact_checked": true,
+   "famous": true,
+   "notes": "curated: 5 April 1993 (Wikipedia)",
+   "replaces": "https://www.wikidata.org/wiki/Q182477#P585",
+   "month": "1993-04",
+   "enwiki": "Nvidia",
+   "views_month": 162860
+  },
+  {
+   "id": "w3378",
+   "type": "interval",
+   "category": "ai_timeline",
+   "domain": "history",
+   "en": {
+    "prompt": "Google Translate (launched): in what month and year?",
+    "unit": "month"
+   },
+   "answer": 200604,
+   "accept": [
+    195001,
+    202612
+   ],
+   "source": "https://en.wikipedia.org/wiki/Google_Translate#History",
+   "difficulty_hint": "unknown",
+   "volatile": false,
+   "generated_at": "2026-10-04",
+   "name": "Google Translate (launched)",
+   "ref_quality": "none",
+   "fact_checked": true,
+   "famous": true,
+   "notes": "curated: 28 April 2006 (Wikipedia)",
+   "replaces": "https://www.wikidata.org/wiki/Q135622#P585",
+   "month": "2006-04",
+   "enwiki": "Google Translate",
+   "views_month": 100368
+  },
+  {
+   "id": "w3379",
+   "type": "interval",
+   "category": "ai_timeline",
+   "domain": "history",
+   "en": {
+    "prompt": "DeepMind (founded): in what month and year?",
+    "unit": "month"
+   },
+   "answer": 201009,
+   "accept": [
+    195001,
+    202612
+   ],
+   "source": "https://en.wikipedia.org/wiki/Google_DeepMind",
+   "difficulty_hint": "unknown",
+   "volatile": false,
+   "generated_at": "2026-10-04",
+   "name": "DeepMind (founded)",
+   "ref_quality": "none",
+   "fact_checked": true,
+   "famous": true,
+   "notes": "curated: incorporated 23 September 2010 (Wikipedia infobox, citing Companies House; its history section says November 2010)",
+   "replaces": "https://www.wikidata.org/wiki/Q15733006#P585",
+   "month": "2010-09",
+   "enwiki": "Google DeepMind",
+   "views_month": 34598
+  },
+  {
+   "id": "w3380",
+   "type": "interval",
+   "category": "ai_timeline",
+   "domain": "history",
+   "en": {
+    "prompt": "DeepMind (bought by Google): in what month and year?",
+    "unit": "month"
+   },
+   "answer": 201401,
+   "accept": [
+    195001,
+    202612
+   ],
+   "source": "https://en.wikipedia.org/wiki/Google_DeepMind#History",
+   "difficulty_hint": "unknown",
+   "volatile": false,
+   "generated_at": "2026-10-04",
+   "name": "DeepMind (bought by Google)",
+   "ref_quality": "none",
+   "fact_checked": true,
+   "famous": true,
+   "notes": "curated: Google confirmed the purchase on 26 January 2014 (Wikipedia)",
+   "replaces": "https://www.wikidata.org/wiki/Q15733006#P585",
+   "month": "2014-01",
+   "enwiki": "Google DeepMind",
+   "views_month": 34598
+  },
+  {
+   "id": "w3381",
+   "type": "interval",
+   "category": "ai_timeline",
+   "domain": "history",
+   "en": {
+    "prompt": "OpenAI (founded): in what month and year?",
+    "unit": "month"
+   },
+   "answer": 201512,
+   "accept": [
+    195001,
+    202612
+   ],
+   "source": "https://openai.com/index/introducing-openai/",
+   "difficulty_hint": "unknown",
+   "volatile": false,
+   "generated_at": "2026-10-04",
+   "name": "OpenAI (founded)",
+   "ref_quality": "none",
+   "fact_checked": true,
+   "famous": true,
+   "notes": "curated: announced 11 December 2015 (OpenAI's post; Wikipedia: December 2015)",
+   "replaces": "https://www.wikidata.org/wiki/Q21708200#P585",
+   "month": "2015-12",
+   "fun": "OpenAI was founded as a non-profit in December 2015 and created a capped-profit company in 2019.",
+   "enwiki": "OpenAI",
+   "views_month": 223256
+  },
+  {
+   "id": "w3382",
+   "type": "interval",
+   "category": "ai_timeline",
+   "domain": "history",
+   "en": {
+    "prompt": "the Transformer paper (posted): in what month and year?",
+    "unit": "month"
+   },
+   "answer": 201706,
+   "accept": [
+    195001,
+    202612
+   ],
+   "source": "https://arxiv.org/abs/1706.03762",
+   "difficulty_hint": "unknown",
+   "volatile": false,
+   "generated_at": "2026-10-04",
+   "name": "the Transformer paper (posted)",
+   "ref_quality": "none",
+   "fact_checked": true,
+   "famous": true,
+   "notes": "curated: \"Attention Is All You Need\" submitted to arXiv on 12 June 2017",
+   "replaces": "https://www.wikidata.org/wiki/Q30249683#P585",
+   "month": "2017-06",
+   "fun": "After the Transformer paper, each of its eight authors left Google to join other companies or start their own.",
+   "enwiki": "Attention Is All You Need",
+   "views_month": 45829
+  },
+  {
+   "id": "w3383",
+   "type": "interval",
+   "category": "ai_timeline",
+   "domain": "history",
+   "en": {
+    "prompt": "GPT-1 (released): in what month and year?",
+    "unit": "month"
+   },
+   "answer": 201806,
+   "accept": [
+    195001,
+    202612
+   ],
+   "source": "https://en.wikipedia.org/wiki/GPT-1",
+   "difficulty_hint": "unknown",
+   "volatile": false,
+   "generated_at": "2026-10-04",
+   "name": "GPT-1 (released)",
+   "ref_quality": "none",
+   "fact_checked": true,
+   "famous": true,
+   "notes": "curated: June 2018: OpenAI's paper \"Improving Language Understanding by Generative Pre-Training\" (Wikipedia gives the month)",
+   "replaces": "https://www.wikidata.org/wiki/Q95726718#P585",
+   "month": "2018-06",
+   "enwiki": "GPT-1",
+   "views_month": 8412
+  },
+  {
+   "id": "w3384",
+   "type": "interval",
+   "category": "ai_timeline",
+   "domain": "history",
+   "en": {
+    "prompt": "BERT (released): in what month and year?",
+    "unit": "month"
+   },
+   "answer": 201810,
+   "accept": [
+    195001,
+    202612
+   ],
+   "source": "https://en.wikipedia.org/wiki/BERT_(language_model)#History",
+   "difficulty_hint": "unknown",
+   "volatile": false,
+   "generated_at": "2026-10-04",
+   "name": "BERT (released)",
+   "ref_quality": "none",
+   "fact_checked": true,
+   "famous": true,
+   "notes": "curated: October 2018 (Wikipedia gives the month)",
+   "replaces": "https://www.wikidata.org/wiki/Q61726893#P585",
+   "month": "2018-10",
+   "enwiki": "BERT (language model)",
+   "views_month": 13466
+  },
+  {
+   "id": "w3385",
+   "type": "interval",
+   "category": "ai_timeline",
+   "domain": "history",
+   "en": {
+    "prompt": "Waymo One robotaxis (launched): in what month and year?",
+    "unit": "month"
+   },
+   "answer": 201812,
+   "accept": [
+    195001,
+    202612
+   ],
+   "source": "https://en.wikipedia.org/wiki/Waymo#History",
+   "difficulty_hint": "unknown",
+   "volatile": false,
+   "generated_at": "2026-10-04",
+   "name": "Waymo One robotaxis (launched)",
+   "ref_quality": "none",
+   "fact_checked": true,
+   "famous": true,
+   "notes": "curated: December 2018 in Phoenix (Wikipedia gives the month)",
+   "replaces": "https://www.wikidata.org/wiki/Q15330#P585",
+   "month": "2018-12",
+   "enwiki": "Waymo",
+   "views_month": 52676
+  },
+  {
+   "id": "w3386",
+   "type": "interval",
+   "category": "ai_timeline",
+   "domain": "history",
+   "en": {
+    "prompt": "GPT-2 (announced): in what month and year?",
+    "unit": "month"
+   },
+   "answer": 201902,
+   "accept": [
+    195001,
+    202612
+   ],
+   "source": "https://en.wikipedia.org/wiki/GPT-2#Release",
+   "difficulty_hint": "unknown",
+   "volatile": false,
+   "generated_at": "2026-10-04",
+   "name": "GPT-2 (announced)",
+   "ref_quality": "none",
+   "fact_checked": true,
+   "famous": true,
+   "notes": "curated: first announced 14 February 2019 (Wikipedia)",
+   "replaces": "https://www.wikidata.org/wiki/Q95726727#P585",
+   "month": "2019-02",
+   "fun": "OpenAI held back the full GPT-2 in February 2019 over misuse concerns, then released all of it in November 2019.",
+   "enwiki": "GPT-2",
+   "views_month": 8805
+  },
+  {
+   "id": "w3387",
+   "type": "interval",
+   "category": "ai_timeline",
+   "domain": "history",
+   "en": {
+    "prompt": "OpenAI (creates a capped-profit company): in what month and year?",
+    "unit": "month"
+   },
+   "answer": 201903,
+   "accept": [
+    195001,
+    202612
+   ],
+   "source": "https://openai.com/index/openai-lp/",
+   "difficulty_hint": "unknown",
+   "volatile": false,
+   "generated_at": "2026-10-04",
+   "name": "OpenAI (creates a capped-profit company)",
+   "ref_quality": "none",
+   "fact_checked": true,
+   "famous": true,
+   "notes": "curated: OpenAI LP announced 11 March 2019 (OpenAI's post, read via the Internet Archive)",
+   "replaces": "https://www.wikidata.org/wiki/Q21708200#P585",
+   "month": "2019-03",
+   "enwiki": "OpenAI",
+   "views_month": 223256
+  },
+  {
+   "id": "w3388",
+   "type": "interval",
+   "category": "ai_timeline",
+   "domain": "history",
+   "en": {
+    "prompt": "Microsoft's first $1 billion in OpenAI: in what month and year?",
+    "unit": "month"
+   },
+   "answer": 201907,
+   "accept": [
+    195001,
+    202612
+   ],
+   "source": "https://news.microsoft.com/source/2019/07/22/openai-forms-exclusive-computing-partnership-with-microsoft-to-build-new-azure-ai-supercomputing-technologies/",
+   "difficulty_hint": "unknown",
+   "volatile": false,
+   "generated_at": "2026-10-04",
+   "name": "Microsoft's first $1 billion in OpenAI",
+   "ref_quality": "none",
+   "fact_checked": true,
+   "famous": true,
+   "notes": "curated: announced 22 July 2019 (Microsoft's press release)",
+   "replaces": "https://www.wikidata.org/wiki/Q21708200#P585",
+   "month": "2019-07",
+   "enwiki": "OpenAI",
+   "views_month": 223256
+  },
+  {
+   "id": "w3389",
+   "type": "interval",
+   "category": "ai_timeline",
+   "domain": "history",
+   "en": {
+    "prompt": "GPT-3 (paper): in what month and year?",
+    "unit": "month"
+   },
+   "answer": 202005,
+   "accept": [
+    195001,
+    202612
+   ],
+   "source": "https://en.wikipedia.org/wiki/GPT-3#Training_and_capabilities",
+   "difficulty_hint": "unknown",
+   "volatile": false,
+   "generated_at": "2026-10-04",
+   "name": "GPT-3 (paper)",
+   "ref_quality": "none",
+   "fact_checked": true,
+   "famous": true,
+   "notes": "curated: arXiv preprint 28 May 2020 (Wikipedia)",
+   "replaces": "https://www.wikidata.org/wiki/Q95726734#P585",
+   "month": "2020-05",
+   "enwiki": "GPT-3",
+   "views_month": 14564
+  },
+  {
+   "id": "w3390",
+   "type": "interval",
+   "category": "ai_timeline",
+   "domain": "history",
+   "en": {
+    "prompt": "AlphaFold 2 (wins CASP14): in what month and year?",
+    "unit": "month"
+   },
+   "answer": 202011,
+   "accept": [
+    195001,
+    202612
+   ],
+   "source": "https://deepmind.google/blog/alphafold-a-solution-to-a-50-year-old-grand-challenge-in-biology/",
+   "difficulty_hint": "unknown",
+   "volatile": false,
+   "generated_at": "2026-10-04",
+   "name": "AlphaFold 2 (wins CASP14)",
+   "ref_quality": "none",
+   "fact_checked": true,
+   "famous": true,
+   "notes": "curated: 30 November 2020 (DeepMind's post)",
+   "replaces": "https://www.wikidata.org/wiki/Q60827595#P585",
+   "month": "2020-11",
+   "enwiki": "AlphaFold",
+   "views_month": 14077
+  },
+  {
+   "id": "w3391",
+   "type": "interval",
+   "category": "ai_timeline",
+   "domain": "history",
+   "en": {
+    "prompt": "Anthropic (founded): in what month and year?",
+    "unit": "month"
+   },
+   "answer": 202101,
+   "accept": [
+    195001,
+    202612
+   ],
+   "source": "https://en.wikipedia.org/wiki/Anthropic#History",
+   "difficulty_hint": "unknown",
+   "volatile": false,
+   "generated_at": "2026-10-04",
+   "name": "Anthropic (founded)",
+   "ref_quality": "none",
+   "fact_checked": true,
+   "famous": true,
+   "notes": "curated: January 2021 (Wikipedia gives the month)",
+   "replaces": "https://www.wikidata.org/wiki/Q116758847#P585",
+   "month": "2021-01",
+   "fun": "Anthropic was founded in January 2021 by seven former OpenAI employees.",
+   "enwiki": "Anthropic",
+   "views_month": 242191
+  },
+  {
+   "id": "w3392",
+   "type": "interval",
+   "category": "ai_timeline",
+   "domain": "history",
+   "en": {
+    "prompt": "GitHub Copilot (preview): in what month and year?",
+    "unit": "month"
+   },
+   "answer": 202106,
+   "accept": [
+    195001,
+    202612
+   ],
+   "source": "https://en.wikipedia.org/wiki/GitHub_Copilot#History",
+   "difficulty_hint": "unknown",
+   "volatile": false,
+   "generated_at": "2026-10-04",
+   "name": "GitHub Copilot (preview)",
+   "ref_quality": "none",
+   "fact_checked": true,
+   "famous": true,
+   "notes": "curated: technical preview announced 29 June 2021 (Wikipedia)",
+   "replaces": "https://www.wikidata.org/wiki/Q107435063#P585",
+   "month": "2021-06",
+   "enwiki": "GitHub Copilot",
+   "views_month": 9382
+  },
+  {
+   "id": "w3393",
+   "type": "interval",
+   "category": "ai_timeline",
+   "domain": "history",
+   "en": {
+    "prompt": "DALL·E 2 (announced): in what month and year?",
+    "unit": "month"
+   },
+   "answer": 202204,
+   "accept": [
+    195001,
+    202612
+   ],
+   "source": "https://en.wikipedia.org/wiki/DALL-E#DALL-E_2",
+   "difficulty_hint": "unknown",
+   "volatile": false,
+   "generated_at": "2026-10-04",
+   "name": "DALL·E 2 (announced)",
+   "ref_quality": "none",
+   "fact_checked": true,
+   "famous": true,
+   "notes": "curated: 6 April 2022 (Wikipedia)",
+   "replaces": "https://www.wikidata.org/wiki/Q105078662#P585",
+   "month": "2022-04",
+   "enwiki": "DALL-E",
+   "views_month": 12400
+  },
+  {
+   "id": "w3394",
+   "type": "interval",
+   "category": "ai_timeline",
+   "domain": "history",
+   "en": {
+    "prompt": "Midjourney (open beta): in what month and year?",
+    "unit": "month"
+   },
+   "answer": 202207,
+   "accept": [
+    195001,
+    202612
+   ],
+   "source": "https://en.wikipedia.org/wiki/Midjourney#History",
+   "difficulty_hint": "unknown",
+   "volatile": false,
+   "generated_at": "2026-10-04",
+   "name": "Midjourney (open beta)",
+   "ref_quality": "none",
+   "fact_checked": true,
+   "famous": true,
+   "notes": "curated: 12 July 2022 (Wikipedia)",
+   "replaces": "https://www.wikidata.org/wiki/Q113070628#P585",
+   "month": "2022-07",
+   "enwiki": "Midjourney",
+   "views_month": 16878
+  },
+  {
+   "id": "w3395",
+   "type": "interval",
+   "category": "ai_timeline",
+   "domain": "history",
+   "en": {
+    "prompt": "Stable Diffusion (released): in what month and year?",
+    "unit": "month"
+   },
+   "answer": 202208,
+   "accept": [
+    195001,
+    202612
+   ],
+   "source": "https://stability.ai/news-updates/stable-diffusion-public-release",
+   "difficulty_hint": "unknown",
+   "volatile": false,
+   "generated_at": "2026-10-04",
+   "name": "Stable Diffusion (released)",
+   "ref_quality": "none",
+   "fact_checked": true,
+   "famous": true,
+   "notes": "curated: public release 22 August 2022 (Stability AI's post)",
+   "replaces": "https://www.wikidata.org/wiki/Q113660857#P585",
+   "month": "2022-08",
+   "fun": "Stable Diffusion came out on 22 August 2022, about three months before ChatGPT.",
+   "enwiki": "Stable Diffusion",
+   "views_month": 20092
+  },
+  {
+   "id": "w3396",
+   "type": "interval",
+   "category": "ai_timeline",
+   "domain": "history",
+   "en": {
+    "prompt": "Perplexity AI (founded): in what month and year?",
+    "unit": "month"
+   },
+   "answer": 202208,
+   "accept": [
+    195001,
+    202612
+   ],
+   "source": "https://en.wikipedia.org/wiki/Perplexity_AI#History",
+   "difficulty_hint": "unknown",
+   "volatile": false,
+   "generated_at": "2026-10-04",
+   "name": "Perplexity AI (founded)",
+   "ref_quality": "none",
+   "fact_checked": true,
+   "famous": true,
+   "notes": "curated: 22 August 2022 (Wikipedia)",
+   "replaces": "https://www.wikidata.org/wiki/Q124333951#P585",
+   "month": "2022-08",
+   "enwiki": "Perplexity AI",
+   "views_month": 73416
+  },
+  {
+   "id": "w3397",
+   "type": "interval",
+   "category": "ai_timeline",
+   "domain": "history",
+   "en": {
+    "prompt": "ChatGPT (released): in what month and year?",
+    "unit": "month"
+   },
+   "answer": 202211,
+   "accept": [
+    195001,
+    202612
+   ],
+   "source": "https://en.wikipedia.org/wiki/ChatGPT",
+   "difficulty_hint": "unknown",
+   "volatile": false,
+   "generated_at": "2026-10-04",
+   "name": "ChatGPT (released)",
+   "ref_quality": "none",
+   "fact_checked": true,
+   "famous": true,
+   "notes": "curated: 30 November 2022 (Wikipedia)",
+   "replaces": "https://www.wikidata.org/wiki/Q115564437#P585",
+   "month": "2022-11",
+   "enwiki": "ChatGPT",
+   "views_month": 2090045
+  },
+  {
+   "id": "w3398",
+   "type": "interval",
+   "category": "ai_timeline",
+   "domain": "history",
+   "en": {
+    "prompt": "Microsoft's $10 billion in OpenAI: in what month and year?",
+    "unit": "month"
+   },
+   "answer": 202301,
+   "accept": [
+    195001,
+    202612
+   ],
+   "source": "https://en.wikipedia.org/wiki/OpenAI#Partnership_with_Microsoft",
+   "difficulty_hint": "unknown",
+   "volatile": false,
+   "generated_at": "2026-10-04",
+   "name": "Microsoft's $10 billion in OpenAI",
+   "ref_quality": "none",
+   "fact_checked": true,
+   "famous": true,
+   "notes": "curated: announced 23 January 2023 (Wikipedia)",
+   "replaces": "https://www.wikidata.org/wiki/Q21708200#P585",
+   "month": "2023-01",
+   "enwiki": "OpenAI",
+   "views_month": 223256
+  },
+  {
+   "id": "w3399",
+   "type": "interval",
+   "category": "ai_timeline",
+   "domain": "history",
+   "en": {
+    "prompt": "Llama (released): in what month and year?",
+    "unit": "month"
+   },
+   "answer": 202302,
+   "accept": [
+    195001,
+    202612
+   ],
+   "source": "https://en.wikipedia.org/wiki/Llama_(language_model)#Initial_release",
+   "difficulty_hint": "unknown",
+   "volatile": false,
+   "generated_at": "2026-10-04",
+   "name": "Llama (released)",
+   "ref_quality": "none",
+   "fact_checked": true,
+   "famous": true,
+   "notes": "curated: announced 24 February 2023 (Wikipedia)",
+   "replaces": "https://www.wikidata.org/wiki/Q116894231#P585",
+   "month": "2023-02",
+   "enwiki": "Llama (language model)",
+   "views_month": 16522
+  },
+  {
+   "id": "w3400",
+   "type": "interval",
+   "category": "ai_timeline",
+   "domain": "history",
+   "en": {
+    "prompt": "Claude (released): in what month and year?",
+    "unit": "month"
+   },
+   "answer": 202303,
+   "accept": [
+    195001,
+    202612
+   ],
+   "source": "https://www.anthropic.com/news/introducing-claude",
+   "difficulty_hint": "unknown",
+   "volatile": false,
+   "generated_at": "2026-10-04",
+   "name": "Claude (released)",
+   "ref_quality": "none",
+   "fact_checked": true,
+   "famous": true,
+   "notes": "curated: 14 March 2023 (Anthropic's post)",
+   "replaces": "https://www.wikidata.org/wiki/Q118876059#P585",
+   "month": "2023-03",
+   "fun": "Anthropic introduced Claude on 14 March 2023, the same day OpenAI announced GPT-4.",
+   "enwiki": "Claude (AI)",
+   "views_month": 147471
+  },
+  {
+   "id": "w3401",
+   "type": "interval",
+   "category": "ai_timeline",
+   "domain": "history",
+   "en": {
+    "prompt": "GPT-4 (released): in what month and year?",
+    "unit": "month"
+   },
+   "answer": 202303,
+   "accept": [
+    195001,
+    202612
+   ],
+   "source": "https://en.wikipedia.org/wiki/GPT-4#Capabilities",
+   "difficulty_hint": "unknown",
+   "volatile": false,
+   "generated_at": "2026-10-04",
+   "name": "GPT-4 (released)",
+   "ref_quality": "none",
+   "fact_checked": true,
+   "famous": true,
+   "notes": "curated: 14 March 2023 (Wikipedia)",
+   "replaces": "https://www.wikidata.org/wiki/Q116709136#P585",
+   "month": "2023-03",
+   "fun": "Anthropic introduced Claude on 14 March 2023, the same day OpenAI announced GPT-4.",
+   "enwiki": "GPT-4",
+   "views_month": 13427
+  },
+  {
+   "id": "w3402",
+   "type": "interval",
+   "category": "ai_timeline",
+   "domain": "history",
+   "en": {
+    "prompt": "Google Bard (opens): in what month and year?",
+    "unit": "month"
+   },
+   "answer": 202303,
+   "accept": [
+    195001,
+    202612
+   ],
+   "source": "https://en.wikipedia.org/wiki/Google_Gemini#Launch",
+   "difficulty_hint": "unknown",
+   "volatile": false,
+   "generated_at": "2026-10-04",
+   "name": "Google Bard (opens)",
+   "ref_quality": "none",
+   "fact_checked": true,
+   "famous": true,
+   "notes": "curated: early access opened 21 March 2023 (Wikipedia)",
+   "replaces": "https://www.wikidata.org/wiki/Q116698014#P585",
+   "month": "2023-03",
+   "fun": "Google's Bard opened in March 2023 and was renamed Gemini in February 2024, less than a year later.",
+   "enwiki": "Google Gemini",
+   "views_month": 78141
+  },
+  {
+   "id": "w3403",
+   "type": "interval",
+   "category": "ai_timeline",
+   "domain": "history",
+   "en": {
+    "prompt": "Claude 2 (released): in what month and year?",
+    "unit": "month"
+   },
+   "answer": 202307,
+   "accept": [
+    195001,
+    202612
+   ],
+   "source": "https://en.wikipedia.org/wiki/Claude_(AI)#Claude_2_2",
+   "difficulty_hint": "unknown",
+   "volatile": false,
+   "generated_at": "2026-10-04",
+   "name": "Claude 2 (released)",
+   "ref_quality": "none",
+   "fact_checked": true,
+   "famous": true,
+   "notes": "curated: July 2023 (Wikipedia gives the month)",
+   "replaces": "https://www.wikidata.org/wiki/Q118876059#P585",
+   "month": "2023-07",
+   "enwiki": "Claude (AI)",
+   "views_month": 147471
+  },
+  {
+   "id": "w3404",
+   "type": "interval",
+   "category": "ai_timeline",
+   "domain": "history",
+   "en": {
+    "prompt": "DeepSeek (founded): in what month and year?",
+    "unit": "month"
+   },
+   "answer": 202307,
+   "accept": [
+    195001,
+    202612
+   ],
+   "source": "https://en.wikipedia.org/wiki/DeepSeek#Founding",
+   "difficulty_hint": "unknown",
+   "volatile": false,
+   "generated_at": "2026-10-04",
+   "name": "DeepSeek (founded)",
+   "ref_quality": "none",
+   "fact_checked": true,
+   "famous": true,
+   "notes": "curated: spun off as a company on 17 July 2023 (Wikipedia)",
+   "replaces": "https://www.wikidata.org/wiki/Q131577453#P585",
+   "month": "2023-07",
+   "enwiki": "DeepSeek",
+   "views_month": 69213
+  },
+  {
+   "id": "w3405",
+   "type": "interval",
+   "category": "ai_timeline",
+   "domain": "history",
+   "en": {
+    "prompt": "Amazon invests in Anthropic: in what month and year?",
+    "unit": "month"
+   },
+   "answer": 202309,
+   "accept": [
+    195001,
+    202612
+   ],
+   "source": "https://www.anthropic.com/news/anthropic-amazon",
+   "difficulty_hint": "unknown",
+   "volatile": false,
+   "generated_at": "2026-10-04",
+   "name": "Amazon invests in Anthropic",
+   "ref_quality": "none",
+   "fact_checked": true,
+   "famous": true,
+   "notes": "curated: announced 25 September 2023 (Anthropic's post)",
+   "replaces": "https://www.wikidata.org/wiki/Q116758847#P585",
+   "month": "2023-09",
+   "enwiki": "Anthropic",
+   "views_month": 242191
+  },
+  {
+   "id": "w3406",
+   "type": "interval",
+   "category": "ai_timeline",
+   "domain": "history",
+   "en": {
+    "prompt": "Google invests in Anthropic: in what month and year?",
+    "unit": "month"
+   },
+   "answer": 202310,
+   "accept": [
+    195001,
+    202612
+   ],
+   "source": "https://en.wikipedia.org/wiki/Anthropic#Funding",
+   "difficulty_hint": "unknown",
+   "volatile": false,
+   "generated_at": "2026-10-04",
+   "name": "Google invests in Anthropic",
+   "ref_quality": "none",
+   "fact_checked": true,
+   "famous": true,
+   "notes": "curated: October 2023, $500 million (Wikipedia gives the month)",
+   "replaces": "https://www.wikidata.org/wiki/Q116758847#P585",
+   "month": "2023-10",
+   "enwiki": "Anthropic",
+   "views_month": 242191
+  },
+  {
+   "id": "w3407",
+   "type": "interval",
+   "category": "ai_timeline",
+   "domain": "history",
+   "en": {
+    "prompt": "Grok (announced): in what month and year?",
+    "unit": "month"
+   },
+   "answer": 202311,
+   "accept": [
+    195001,
+    202612
+   ],
+   "source": "https://x.ai/news/grok",
+   "difficulty_hint": "unknown",
+   "volatile": false,
+   "generated_at": "2026-10-04",
+   "name": "Grok (announced)",
+   "ref_quality": "none",
+   "fact_checked": true,
+   "famous": true,
+   "notes": "curated: 3 November 2023 (xAI's post)",
+   "replaces": "https://www.wikidata.org/wiki/Q123361035#P585",
+   "month": "2023-11",
+   "enwiki": "Grok (chatbot)",
+   "views_month": 52224
+  },
+  {
+   "id": "w3408",
+   "type": "interval",
+   "category": "ai_timeline",
+   "domain": "history",
+   "en": {
+    "prompt": "OpenAI's board removes Sam Altman: in what month and year?",
+    "unit": "month"
+   },
+   "answer": 202311,
+   "accept": [
+    195001,
+    202612
+   ],
+   "source": "https://en.wikipedia.org/wiki/Removal_of_Sam_Altman_from_OpenAI",
+   "difficulty_hint": "unknown",
+   "volatile": false,
+   "generated_at": "2026-10-04",
+   "name": "OpenAI's board removes Sam Altman",
+   "ref_quality": "none",
+   "fact_checked": true,
+   "famous": true,
+   "notes": "curated: 17 November 2023; he was reinstated on 22 November (Wikipedia)",
+   "replaces": "https://www.wikidata.org/wiki/Q123567706#P585",
+   "month": "2023-11",
+   "enwiki": "Removal of Sam Altman from OpenAI",
+   "views_month": 18434
+  },
+  {
+   "id": "w3409",
+   "type": "interval",
+   "category": "ai_timeline",
+   "domain": "history",
+   "en": {
+    "prompt": "Gemini (announced): in what month and year?",
+    "unit": "month"
+   },
+   "answer": 202312,
+   "accept": [
+    195001,
+    202612
+   ],
+   "source": "https://en.wikipedia.org/wiki/Gemini_(language_model)#Launch",
+   "difficulty_hint": "unknown",
+   "volatile": false,
+   "generated_at": "2026-10-04",
+   "name": "Gemini (announced)",
+   "ref_quality": "none",
+   "fact_checked": true,
+   "famous": true,
+   "notes": "curated: 6 December 2023 (Wikipedia)",
+   "replaces": "https://www.wikidata.org/wiki/Q123688361#P585",
+   "month": "2023-12",
+   "enwiki": "Gemini (language model)",
+   "views_month": 26577
+  },
+  {
+   "id": "w3410",
+   "type": "interval",
+   "category": "ai_timeline",
+   "domain": "history",
+   "en": {
+    "prompt": "the GPT Store (launched): in what month and year?",
+    "unit": "month"
+   },
+   "answer": 202401,
+   "accept": [
+    195001,
+    202612
+   ],
+   "source": "https://en.wikipedia.org/wiki/ChatGPT#GPTs_and_plugins",
+   "difficulty_hint": "unknown",
+   "volatile": false,
+   "generated_at": "2026-10-04",
+   "name": "the GPT Store (launched)",
+   "ref_quality": "none",
+   "fact_checked": true,
+   "famous": true,
+   "notes": "curated: January 2024 (Wikipedia gives the month)",
+   "replaces": "https://www.wikidata.org/wiki/Q115564437#P585",
+   "month": "2024-01",
+   "enwiki": "ChatGPT",
+   "views_month": 2090045
+  },
+  {
+   "id": "w3411",
+   "type": "interval",
+   "category": "ai_timeline",
+   "domain": "history",
+   "en": {
+    "prompt": "Bard (renamed Gemini): in what month and year?",
+    "unit": "month"
+   },
+   "answer": 202402,
+   "accept": [
+    195001,
+    202612
+   ],
+   "source": "https://en.wikipedia.org/wiki/Google_Gemini",
+   "difficulty_hint": "unknown",
+   "volatile": false,
+   "generated_at": "2026-10-04",
+   "name": "Bard (renamed Gemini)",
+   "ref_quality": "none",
+   "fact_checked": true,
+   "famous": true,
+   "notes": "curated: February 2024 (Wikipedia gives the month)",
+   "replaces": "https://www.wikidata.org/wiki/Q116698014#P585",
+   "month": "2024-02",
+   "fun": "Google's Bard opened in March 2023 and was renamed Gemini in February 2024, less than a year later.",
+   "enwiki": "Google Gemini",
+   "views_month": 78141
+  },
+  {
+   "id": "w3412",
+   "type": "interval",
+   "category": "ai_timeline",
+   "domain": "history",
+   "en": {
+    "prompt": "Sora (announced): in what month and year?",
+    "unit": "month"
+   },
+   "answer": 202402,
+   "accept": [
+    195001,
+    202612
+   ],
+   "source": "https://en.wikipedia.org/wiki/Sora_(text-to-video_model)#History",
+   "difficulty_hint": "unknown",
+   "volatile": false,
+   "generated_at": "2026-10-04",
+   "name": "Sora (announced)",
+   "ref_quality": "none",
+   "fact_checked": true,
+   "famous": true,
+   "notes": "curated: first previewed 15 February 2024 (Wikipedia)",
+   "replaces": "https://www.wikidata.org/wiki/Q124544998#P585",
+   "month": "2024-02",
+   "enwiki": "Sora (text-to-video model)",
+   "views_month": 19313
+  },
+  {
+   "id": "w3413",
+   "type": "interval",
+   "category": "ai_timeline",
+   "domain": "history",
+   "en": {
+    "prompt": "Claude 3 (released): in what month and year?",
+    "unit": "month"
+   },
+   "answer": 202403,
+   "accept": [
+    195001,
+    202612
+   ],
+   "source": "https://en.wikipedia.org/wiki/Claude_(AI)#Claude_3",
+   "difficulty_hint": "unknown",
+   "volatile": false,
+   "generated_at": "2026-10-04",
+   "name": "Claude 3 (released)",
+   "ref_quality": "none",
+   "fact_checked": true,
+   "famous": true,
+   "notes": "curated: 4 March 2024 (Wikipedia)",
+   "replaces": "https://www.wikidata.org/wiki/Q118876059#P585",
+   "month": "2024-03",
+   "enwiki": "Claude (AI)",
+   "views_month": 147471
+  },
+  {
+   "id": "w3414",
+   "type": "interval",
+   "category": "ai_timeline",
+   "domain": "history",
+   "en": {
+    "prompt": "Llama 3 (released): in what month and year?",
+    "unit": "month"
+   },
+   "answer": 202404,
+   "accept": [
+    195001,
+    202612
+   ],
+   "source": "https://en.wikipedia.org/wiki/Llama_(language_model)#Llama_3",
+   "difficulty_hint": "unknown",
+   "volatile": false,
+   "generated_at": "2026-10-04",
+   "name": "Llama 3 (released)",
+   "ref_quality": "none",
+   "fact_checked": true,
+   "famous": true,
+   "notes": "curated: 18 April 2024 (Wikipedia)",
+   "replaces": "https://www.wikidata.org/wiki/Q116894231#P585",
+   "month": "2024-04",
+   "enwiki": "Llama (language model)",
+   "views_month": 16522
+  },
+  {
+   "id": "w3415",
+   "type": "interval",
+   "category": "ai_timeline",
+   "domain": "history",
+   "en": {
+    "prompt": "GPT-4o (released): in what month and year?",
+    "unit": "month"
+   },
+   "answer": 202405,
+   "accept": [
+    195001,
+    202612
+   ],
+   "source": "https://en.wikipedia.org/wiki/GPT-4o",
+   "difficulty_hint": "unknown",
+   "volatile": false,
+   "generated_at": "2026-10-04",
+   "name": "GPT-4o (released)",
+   "ref_quality": "none",
+   "fact_checked": true,
+   "famous": true,
+   "notes": "curated: May 2024 (Wikipedia gives the month)",
+   "replaces": "https://www.wikidata.org/wiki/Q125919502#P585",
+   "month": "2024-05",
+   "enwiki": "GPT-4o",
+   "views_month": 7504
+  },
+  {
+   "id": "w3416",
+   "type": "interval",
+   "category": "ai_timeline",
+   "domain": "history",
+   "en": {
+    "prompt": "Grok-2 (announced): in what month and year?",
+    "unit": "month"
+   },
+   "answer": 202408,
+   "accept": [
+    195001,
+    202612
+   ],
+   "source": "https://en.wikipedia.org/wiki/Grok_(chatbot)#Grok-2",
+   "difficulty_hint": "unknown",
+   "volatile": false,
+   "generated_at": "2026-10-04",
+   "name": "Grok-2 (announced)",
+   "ref_quality": "none",
+   "fact_checked": true,
+   "famous": true,
+   "notes": "curated: 14 August 2024 (Wikipedia)",
+   "replaces": "https://www.wikidata.org/wiki/Q123361035#P585",
+   "month": "2024-08",
+   "enwiki": "Grok (chatbot)",
+   "views_month": 52224
+  },
+  {
+   "id": "w3417",
+   "type": "interval",
+   "category": "ai_timeline",
+   "domain": "history",
+   "en": {
+    "prompt": "OpenAI o1 (released): in what month and year?",
+    "unit": "month"
+   },
+   "answer": 202409,
+   "accept": [
+    195001,
+    202612
+   ],
+   "source": "https://en.wikipedia.org/wiki/OpenAI_o1#History",
+   "difficulty_hint": "unknown",
+   "volatile": false,
+   "generated_at": "2026-10-04",
+   "name": "OpenAI o1 (released)",
+   "ref_quality": "none",
+   "fact_checked": true,
+   "famous": true,
+   "notes": "curated: preview released 12 September 2024 (Wikipedia)",
+   "replaces": "https://www.wikidata.org/wiki/Q130288245#P585",
+   "month": "2024-09",
+   "fun": "OpenAI went from o1 to o3. It skipped o2 to avoid a trademark clash with the O2 mobile network.",
+   "enwiki": "OpenAI o1",
+   "views_month": 4015
+  },
+  {
+   "id": "w3418",
+   "type": "interval",
+   "category": "ai_timeline",
+   "domain": "history",
+   "en": {
+    "prompt": "DeepSeek-R1 (released): in what month and year?",
+    "unit": "month"
+   },
+   "answer": 202501,
+   "accept": [
+    195001,
+    202612
+   ],
+   "source": "https://en.wikipedia.org/wiki/DeepSeek_(AI)#History",
+   "difficulty_hint": "unknown",
+   "volatile": false,
+   "generated_at": "2026-10-04",
+   "name": "DeepSeek-R1 (released)",
+   "ref_quality": "none",
+   "fact_checked": true,
+   "famous": true,
+   "notes": "curated: 20 January 2025 (Wikipedia)",
+   "replaces": "https://www.wikidata.org/wiki/Q132324293#P585",
+   "month": "2025-01",
+   "enwiki": "DeepSeek (AI)",
+   "views_month": 640
+  },
+  {
+   "id": "w3419",
+   "type": "interval",
+   "category": "ai_timeline",
+   "domain": "history",
+   "en": {
+    "prompt": "Claude Code (released): in what month and year?",
+    "unit": "month"
+   },
+   "answer": 202502,
+   "accept": [
+    195001,
+    202612
+   ],
+   "source": "https://en.wikipedia.org/wiki/Claude_(AI)#Claude_Code",
+   "difficulty_hint": "unknown",
+   "volatile": false,
+   "generated_at": "2026-10-04",
+   "name": "Claude Code (released)",
+   "ref_quality": "none",
+   "fact_checked": true,
+   "famous": true,
+   "notes": "curated: February 2025 (Wikipedia gives the month)",
+   "replaces": "https://www.wikidata.org/wiki/Q118876059#P585",
+   "month": "2025-02",
+   "enwiki": "Claude (AI)",
+   "views_month": 147471
+  },
+  {
+   "id": "w3420",
+   "type": "interval",
+   "category": "ai_timeline",
+   "domain": "history",
+   "en": {
+    "prompt": "ChatGPT Atlas (launched): in what month and year?",
+    "unit": "month"
+   },
+   "answer": 202510,
+   "accept": [
+    195001,
+    202612
+   ],
+   "source": "https://en.wikipedia.org/wiki/ChatGPT#Features",
+   "difficulty_hint": "unknown",
+   "volatile": false,
+   "generated_at": "2026-10-04",
+   "name": "ChatGPT Atlas (launched)",
+   "ref_quality": "none",
+   "fact_checked": true,
+   "famous": true,
+   "notes": "curated: October 2025 (Wikipedia gives the month)",
+   "replaces": "https://www.wikidata.org/wiki/Q115564437#P585",
+   "month": "2025-10",
+   "enwiki": "ChatGPT",
+   "views_month": 2090045
   }
  ],
  "views_window": "20260701-20260930"

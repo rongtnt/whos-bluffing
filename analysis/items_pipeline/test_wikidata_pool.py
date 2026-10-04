@@ -209,6 +209,67 @@ class Curated(unittest.TestCase):
             self.assertEqual(e["name"], w.PRODUCTS.get(e["qid"]), e)  # a famous product of the list, named the same way
 
 
+class AiPack(unittest.TestCase):
+    ENTRIES = [{"category": "ai_released", "name": "ChatGPT", "answer": 2022, "note": "released on November 30, 2022",
+                "source": "https://en.wikipedia.org/wiki/ChatGPT", "qid": "Q115564437"},
+               {"category": "ai_params", "name": "Grok-1", "answer": 314e9, "note": "314 billion parameters",
+                "source": "https://x.ai/news/grok-os"},
+               {"category": "ai_released", "name": "Deep Blue's win over Kasparov", "answer": 1997, "note": "May 1997 rematch",
+                "source": "https://en.wikipedia.org/wiki/Deep_Blue_versus_Garry_Kasparov", "qid": "Q3235334",
+                "prompt": "In what year did Deep Blue beat Garry Kasparov in a match?"},
+               {"category": "ai_timeline", "name": "ChatGPT (released)", "month": "2022-11", "note": "30 November 2022",
+                "source": "https://en.wikipedia.org/wiki/ChatGPT", "qid": "Q115564437", "fun": "A reveal line."}]
+
+    def test_ai_items_are_merged_fact_checked_famous_and_keep_their_ids(self):
+        first, report = w.build_pool(RAW, ai=self.ENTRIES, generated_at="2026-10-04")
+        ai = {it["name"]: it for it in first["items"] if it["category"].startswith("ai_")}
+        self.assertEqual(set(ai), {"ChatGPT", "Grok-1", "Deep Blue's win over Kasparov", "ChatGPT (released)"})
+        chat = ai["ChatGPT"]
+        self.assertEqual((chat["answer"], chat["fact_checked"], chat["famous"], chat["replaces"], chat["domain"]),
+                         (2022, True, True, "https://www.wikidata.org/wiki/Q115564437#P577", "everyday"))
+        self.assertEqual(chat["en"], {"prompt": "In what year did ChatGPT first come out?", "unit": "year"})
+        self.assertEqual(chat["notes"], "curated: released on November 30, 2022")
+        self.assertEqual(ai["Grok-1"]["en"], {"prompt": "How many parameters does Grok-1 have?", "unit": "parameters"})
+        self.assertNotIn("replaces", ai["Grok-1"])  # no Wikidata entity named: its own id is its entity
+        self.assertEqual(ai["Deep Blue's win over Kasparov"]["en"]["prompt"], "In what year did Deep Blue beat Garry Kasparov in a match?")
+        self.assertEqual(report["_total"]["ai"], 4)
+        month = ai["ChatGPT (released)"]  # same source as the year item, another category: its own id
+        self.assertEqual((month["answer"], month["month"], month["en"]["unit"], month["fun"], month["domain"]),
+                         (202211, "2022-11", "month", "A reveal line.", "history"))
+        self.assertNotEqual(month["id"], chat["id"])
+        self.assertNotIn("fun", chat)
+        self.assertEqual(w.format_answer(month), "Nov 2022")
+        second, _ = w.build_pool(RAW, first["items"], ai=self.ENTRIES, next_number=first["next_number"], generated_at="2026-10-05")
+        again = {it["name"]: it["id"] for it in second["items"] if it["category"].startswith("ai_")}
+        self.assertEqual(again, {n: it["id"] for n, it in ai.items()})  # same ids; their notes do not pin a second copy
+
+    def test_the_ai_file_is_clean(self):
+        with open(os.path.join(HERE, "..", "..", "items", "ai_curated.json")) as f:
+            entries = json.load(f)["items"]
+        self.assertEqual(len({(e["category"], e["source"]) for e in entries}), len(entries))  # ids are kept by category and source
+        self.assertEqual(len({(e["category"], e["name"]) for e in entries}), len(entries))
+        by_cat = {}
+        for e in entries:
+            cat = w.AI_CATEGORIES[e["category"]]
+            self.assertRegex(e["source"], r"^https://[^ ]+$")
+            self.assertTrue(e["name"] and e["note"], e)
+            answer = int(e["month"].replace("-", "")) if e["category"] == "ai_timeline" else e["answer"]
+            if e["category"] == "ai_timeline":
+                self.assertRegex(e["month"], r"^(19|20)\d\d-(0[1-9]|1[0-2])$")
+            self.assertTrue(cat["accept"][0] <= answer <= cat["accept"][1], e)
+            self.assertLessEqual(len(e.get("fun", "")), 140)
+            if "qid" in e:
+                self.assertRegex(e["qid"], r"^Q\d+$")
+            by_cat.setdefault(e["category"], []).append(e)
+        self.assertEqual(set(by_cat), set(w.AI_CATEGORIES))
+        self.assertTrue(all(len(v) >= 15 for v in by_cat.values()), {k: len(v) for k, v in by_cat.items()})
+        timeline = {e["name"]: e["month"] for e in by_cat["ai_timeline"]}
+        for name, month in (("OpenAI (founded)", "2015-12"), ("Anthropic (founded)", "2021-01"), ("ChatGPT (released)", "2022-11"),
+                            ("the Transformer paper (posted)", "2017-06"), ("DeepMind (bought by Google)", "2014-01"),
+                            ("Stable Diffusion (released)", "2022-08"), ("Midjourney (open beta)", "2022-07"), ("DALL·E 2 (announced)", "2022-04")):
+            self.assertEqual(timeline.get(name), month, name)
+
+
 class References(unittest.TestCase):
     def row(self, referenced, imported, rank=NORMAL):
         return {"referenced": referenced, "imported": imported, "rank": rank}
@@ -337,7 +398,7 @@ class Cli(unittest.TestCase):
             with redirect_stderr(io.StringIO()):
                 code = w.main(["--fixture", FIXTURE, "--out", out, "--schedule", os.path.join(tmp, "none.json"),
                                "--rounds", os.path.join(tmp, "none.json"), "--pairs", os.path.join(tmp, "none.json"),
-                               "--curated", os.path.join(tmp, "none.json")])
+                               "--curated", os.path.join(tmp, "none.json"), "--ai", os.path.join(tmp, "none.json")])
             self.assertEqual(code, 0)
             with open(out) as f:
                 self.assertEqual(len(json.load(f)["items"]), 21)

@@ -43,6 +43,7 @@ class Flags(unittest.TestCase):
         self.assertIn("repeat: Yemen also on 2026-10-06 (another fact)", text)  # its area, 2 days later
         self.assertNotIn("2026-10-11", text.split("## 2026-10-04")[1].split("|")[-2])  # 7 days away is not "in one week"
         self.assertEqual(L.fmt(-2560, "year"), "2560 BC")
+        self.assertEqual((L.fmt(202211, "month"), L.fmt(202101, "month")), ("Nov 2022", "Jan 2021"))
         names = {L.norm_name(it["name"]): set() for it in pool}
         for it in pool:
             names[L.norm_name(it["name"])].add(L.entity(it))

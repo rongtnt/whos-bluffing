@@ -27,12 +27,11 @@ their source links; fix or drop a bad item by editing `items/pool.json` (or swap
 | landmark_height | 101 | 113 | bounds: 2, conflict: 10 |
 | landmark_built | 187 | 217 | bounds: 1, conflict: 5, label: 1, precision: 23 |
 
-**Total: 3263 items** (9 cross-category duplicates dropped, 0 scheduled items carried over from the previous pool).
+**Total: 3381 items** (9 cross-category duplicates dropped, 0 scheduled items carried over from the previous pool).
 
 ## 30 random samples
 
 - [ ] `w0132` What is the area of Costa Rica? → **51,180 km²** · https://www.wikidata.org/wiki/Q800#P2046
-- [ ] `w0160` What is the area of Papua New Guinea? → **462,840 km²** · https://www.wikidata.org/wiki/Q691#P2046
 - [ ] `w0207` What is the area of Martinique? → **1,128 km²** · https://www.wikidata.org/wiki/Q17054#P2046
 - [ ] `w0256` How high is Cho Oyu above sea level? → **8,188 m** · https://www.wikidata.org/wiki/Q170089#P2044
 - [ ] `w0269` How high is Table Mountain above sea level? → **1,085 m** · https://www.wikidata.org/wiki/Q213360#P2044
@@ -61,5 +60,6 @@ their source links; fix or drop a bad item by editing `items/pool.json` (or swap
 - [ ] `w3092` In what year was Topkapı Palace built? → **1460** · https://www.wikidata.org/wiki/Q170495#P571
 - [ ] `w3211` In what year was Arena das Dunas built? → **2014** · https://www.wikidata.org/wiki/Q1343986#P571
 - [ ] `w3299` In what year did the Apple II first come out? → **1977** · https://en.wikipedia.org/wiki/Apple_II
+- [ ] `w3390` AlphaFold 2 (wins CASP14): in what month and year? → **Nov 2020** · https://deepmind.google/blog/alphafold-a-solution-to-a-50-year-old-grand-challenge-in-biology/
 
 Not generated: independence years. Wikidata has no consistent property for them ("inception" often records a different event, e.g. Mexico 1810, Nigeria 1963), so they were left out rather than guessed.

@@ -4,7 +4,8 @@ article title from its Wikidata sitelink, or null) and `views_month` (average mo
 full calendar months; 0 without an article or without data). Pairs are gated on these numbers (pairs.py).
 
     python3 analysis/items_pipeline/pageviews.py                    # live: Wikidata sitelinks + Wikimedia pageviews API
-    python3 analysis/items_pipeline/pageviews.py --cache DIR        # also keep the raw answers in DIR (reused when present)
+    python3 analysis/items_pipeline/pageviews.py --cache DIR        # also keep the raw answers in DIR (reused; only new
+                                                                    # items are fetched)
     python3 analysis/items_pipeline/pageviews.py --today 2026-10-04 # which 3 months: the full months before this date
 
 Python 3.9+, standard library only. Polite: a descriptive User-Agent, at most WORKERS requests in flight (Wikimedia's
@@ -116,16 +117,20 @@ def annotate(items, titles, views):
     return out
 
 
-def cached(path, compute):
-    """compute() once; its result kept as JSON at path (when a path is given) and reused on the next run."""
+def cached(path, keys, fetch):
+    """{key: value} for keys: from the JSON file at path when there is one (and a path is given); the keys it lacks
+    (new items) are fetched with fetch(missing) and the file is updated, so a rerun asks only for what is new."""
+    have = {}
     if path and os.path.exists(path):
         with open(path) as f:
-            return json.load(f)
-    value = compute()
-    if path:
-        with open(path, "w") as f:
-            json.dump(value, f, ensure_ascii=False)
-    return value
+            have = json.load(f)
+    missing = sorted(set(keys) - set(have))
+    if missing:
+        have.update(fetch(missing))
+        if path:
+            with open(path, "w") as f:
+                json.dump(have, f, ensure_ascii=False)
+    return have
 
 
 def bands(items):
@@ -148,8 +153,9 @@ def main(argv=None):
     path = lambda name: args.cache and os.path.join(args.cache, name)
     qids = [q for q in map(qid_of, pool["items"]) if q]
     try:
-        titles = cached(path("titles.json"), lambda: fetch_titles(qids))
-        views = cached(path(f"views-{start}-{end}.json"), lambda: fetch_views([t for t in titles.values() if t], start, end))
+        titles = cached(path("titles.json"), qids, fetch_titles)
+        views = cached(path(f"views-{start}-{end}.json"), [titles[q] for q in qids if titles.get(q)],
+                       lambda missing: fetch_views(missing, start, end))
     except (urllib.error.URLError, OSError) as e:
         print(f"error: Wikidata or the pageviews API is unreachable ({e}). The pool was not changed.", file=sys.stderr)
         return 2

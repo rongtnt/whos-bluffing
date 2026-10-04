@@ -39,7 +39,12 @@ def stated_year(item):
     return int(m.group(1)) if m else None
 
 
+MONTHS = ("Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec")
+
+
 def fmt(value, unit):
+    if unit == "month":  # YYYYMM: 202211 -> "Nov 2022"
+        return f"{MONTHS[value % 100 - 1]} {value // 100}"
     if unit == "year":
         return f"{-value} BC" if value < 0 else str(value)
     return f"{value:,} {unit}" if isinstance(value, int) or float(value).is_integer() else f"{value:,} {unit}"

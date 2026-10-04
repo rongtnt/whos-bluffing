@@ -66,6 +66,18 @@ class Pageviews(unittest.TestCase):
         self.assertEqual(pv.fetch_views(["Nile", "Nowhere"], *WINDOW, get=get), {"Nile": 75236, "Nowhere": 0})
         self.assertIn("rongtnt/whos-bluffing", pv.USER_AGENT)
 
+    def test_a_cache_fetches_only_what_it_lacks_and_keeps_it(self):
+        with tempfile.TemporaryDirectory() as tmp:
+            path = os.path.join(tmp, "titles.json")
+            with open(path, "w") as f:
+                json.dump({"Q1": "One"}, f)
+            asked = []
+            got = pv.cached(path, ["Q1", "Q2"], lambda missing: asked.append(missing) or {q: q.lower() for q in missing})
+            self.assertEqual((got, asked), ({"Q1": "One", "Q2": "q2"}, [["Q2"]]))
+            with open(path) as f:
+                self.assertEqual(json.load(f), {"Q1": "One", "Q2": "q2"})
+            self.assertEqual(pv.cached(path, ["Q1", "Q2"], lambda missing: 1 / 0), {"Q1": "One", "Q2": "q2"})  # nothing new
+
     def test_cached_run_writes_views_and_the_window_into_the_pool(self):
         with tempfile.TemporaryDirectory() as tmp:
             pool = os.path.join(tmp, "pool.json")

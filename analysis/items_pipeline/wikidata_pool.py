@@ -23,7 +23,8 @@ P143 / Wikimedia import URL P4656 / retrieved P813; `imported` = only Wikipedia-
 `fact_checked` (false for generated items). Items with `notes` in the previous pool were corrected by hand: they are
 pinned (kept verbatim with `fact_checked: true`), and the generated twin of the same Wikidata statement (their
 `replaces` URL, or their own source when it is a Wikidata link) is dropped. Curated launch years (items/launch_years.json:
-famous products whose Wikidata items have no launch date) are merged as fact-checked product_released items.
+famous products whose Wikidata items have no launch date) are merged as fact-checked product_released items, and the AI
+pack (items/ai_curated.json: AI_CATEGORIES, no Wikidata query) as fact-checked items marked `famous`.
 """
 import argparse
 import datetime
@@ -508,14 +509,15 @@ CARRIED = ("enwiki", "views_month")  # written by pageviews.py; kept until its n
 
 
 def assign_ids(items, previous, next_number=1):
-    """Reuses the id of a statement already in the pool (keyed by source); new statements get the next free ids, from
-    next_number up (the pool's high-water mark: pairs and live answers store item ids, so an id is never reused).
-    Pageview fields of a statement already in the pool are carried over."""
-    old_items = {it["source"]: it for it in previous}
+    """Reuses the id of a statement already in the pool (keyed by category and source: one curated page can back facts of
+    two categories); new statements get the next free ids, from next_number up (the pool's high-water mark: pairs and
+    live answers store item ids, so an id is never reused). Pageview fields of a statement already in the pool are
+    carried over."""
+    old_items = {(it.get("category"), it["source"]): it for it in previous}
     next_n = max([int(it["id"][1:]) + 1 for it in previous] + [next_number])
     out = []
     for it in items:
-        prev = old_items.get(it["source"])
+        prev = old_items.get((it.get("category"), it["source"]))
         if prev:
             item_id = prev["id"]
         else:
@@ -572,9 +574,46 @@ def curated_items(entries, generated_at):
             for e in entries]
 
 
-def build_pool(responses, previous_items=(), scheduled_ids=(), generated_at=None, curated=(), next_number=1):
-    """responses: {category name: SPARQL JSON}; curated: items/launch_years.json entries; next_number: the last pool's
-    `next_number` (ids of dropped items are never handed out again). Returns (pool dict, report)."""
+# The AI pack's categories: hand-curated (items/ai_curated.json), one https source per item. `prop` is the Wikidata
+# property the `replaces` link points at (its entity is read for pageviews and the one-entity-per-round rule).
+AI_CATEGORIES = {
+    "ai_released": dict(domain="everyday", unit="year", accept=[1950, CURRENT_YEAR], prop="P577",
+                        prompt="In what year did {name} first come out?"),
+    "ai_company_founded": dict(domain="history", unit="year", accept=[1950, CURRENT_YEAR], prop="P571",
+                               prompt="In what year was {name} founded?"),
+    "ai_params": dict(domain="everyday", unit="parameters", accept=[1e6, 1e13], prop="P577",
+                      prompt="How many parameters does {name} have?"),
+    # Events at month precision: the entry's `month` (YYYY-MM) becomes the answer YYYYMM (a number, as every pool
+    # answer is; 202211 = November 2022) and stays as `month` for display.
+    "ai_timeline": dict(domain="history", unit="month", accept=[195001, CURRENT_YEAR * 100 + 12], prop="P585",
+                        prompt="{name}: in what month and year?"),
+}
+
+
+def ai_items(entries, generated_at):
+    """Items from items/ai_curated.json entries {category, name, answer (or month: YYYY-MM), note, source[, qid][, prompt]
+    [, fun]}: fact-checked, `famous` (the familiarity gate treats them as famous), the note in `notes`, the optional reveal
+    line in `fun`."""
+    out = []
+    for e in entries:
+        cat = AI_CATEGORIES[e["category"]]
+        answer = int(e["month"].replace("-", "")) if "month" in e else e["answer"]
+        it = {"type": "interval", "category": e["category"], "domain": cat["domain"],
+              "en": {"prompt": e.get("prompt") or cat["prompt"].format(name=e["name"]), "unit": cat["unit"]}, "answer": answer,
+              "accept": list(cat["accept"]), "source": e["source"], "difficulty_hint": "unknown", "volatile": False,
+              "generated_at": generated_at, "name": e["name"], "ref_quality": "none", "fact_checked": True, "famous": True,
+              "notes": f"curated: {e['note']}"}
+        if e.get("qid"):
+            it["replaces"] = f"https://www.wikidata.org/wiki/{e['qid']}#{cat['prop']}"
+        it.update({k: e[k] for k in ("month", "fun") if k in e})
+        out.append(it)
+    return out
+
+
+def build_pool(responses, previous_items=(), scheduled_ids=(), generated_at=None, curated=(), next_number=1, ai=()):
+    """responses: {category name: SPARQL JSON}; curated: items/launch_years.json entries; ai: items/ai_curated.json
+    entries; next_number: the last pool's `next_number` (ids of dropped items are never handed out again). Returns
+    (pool dict, report)."""
     generated_at = generated_at or datetime.date.today().isoformat()
     previous_items = list(previous_items)
     all_items, report = [], {}
@@ -594,7 +633,7 @@ def build_pool(responses, previous_items=(), scheduled_ids=(), generated_at=None
     all_items, cross_dupes = dedupe(all_items)
     # Curated launch years are rebuilt from their file every time: they win over a generated or pinned twin, and their
     # previous copies (which carry notes) are not pinned again. assign_ids keeps their ids by source.
-    cur = curated_items(curated, generated_at)
+    cur = curated_items(curated, generated_at) + ai_items(ai, generated_at)
     cur_sources, cur_keys = {it["source"] for it in cur}, {twin_key(it) for it in cur}
     pinned, all_items = pin([it for it in previous_items if it["source"] not in cur_sources], all_items)
     pinned = [p for p in pinned if twin_key(p) not in cur_keys]
@@ -605,7 +644,7 @@ def build_pool(responses, previous_items=(), scheduled_ids=(), generated_at=None
     carried = [it for it in previous_items if it["id"] in set(scheduled_ids) - present]
     pool_items = sorted(pool_items + carried, key=lambda it: it["id"])
     report["_total"] = {"kept": len(pool_items), "carried_scheduled": len(carried), "cross_category_duplicates": cross_dupes,
-                        "pinned": len(pinned), "curated": len(cur)}
+                        "pinned": len(pinned), "curated": len(cur), "ai": len(ai)}
     high = max([next_number] + [int(it["id"][1:]) + 1 for it in pool_items + previous_items])
     return {"version": 1, "generated_at": generated_at, "next_number": high, "items": pool_items}, report
 
@@ -668,8 +707,18 @@ def review_markdown(pool, report, seed=20261020):
     return "\n".join(lines)
 
 
+MONTHS = ("Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec")
+
+
+def format_month(answer):
+    """202211 -> "Nov 2022"."""
+    return f"{MONTHS[answer % 100 - 1]} {answer // 100}"
+
+
 def format_answer(item):
     unit = item["en"]["unit"]
+    if unit == "month":
+        return format_month(item["answer"])
     return str(item["answer"]) if unit == "year" else f"{item['answer']:,} {unit}"
 
 
@@ -690,6 +739,7 @@ def main(argv=None):
     ap.add_argument("--rounds", default=os.path.join(ROOT, "daily", "rounds.json"), help="ranked rounds: their pairs' items are kept too")
     ap.add_argument("--pairs", default=os.path.join(ROOT, "items", "pairs.json"))
     ap.add_argument("--curated", default=os.path.join(ROOT, "items", "launch_years.json"), help="curated launch years")
+    ap.add_argument("--ai", default=os.path.join(ROOT, "items", "ai_curated.json"), help="the AI pack's curated items")
     args = ap.parse_args(argv)
 
     if args.fixture:
@@ -711,7 +761,7 @@ def main(argv=None):
         for pid in list(day["ranked"]) + [day["question"]]:
             scheduled.update(pair_items.get(pid, ()))
     pool, report = build_pool(responses, previous, scheduled, curated=read_json(args.curated, {"items": []})["items"],
-                              next_number=last.get("next_number", 1))
+                              next_number=last.get("next_number", 1), ai=read_json(args.ai, {"items": []})["items"])
     with open(args.out, "w") as f:
         json.dump(pool, f, ensure_ascii=False, indent=1)
         f.write("\n")

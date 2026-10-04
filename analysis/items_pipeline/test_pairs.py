@@ -194,6 +194,90 @@ class Rules(unittest.TestCase):
         self.assertEqual([built[0]["a"], built[0]["b"]][built[0]["truth"]], "the Great Pyramid")  # BCE years compare as numbers
 
 
+class AiPack(unittest.TestCase):
+    def ai(self, n, category, answer, views=100):
+        unit = "parameters" if category == "ai_params" else "year"
+        return item(n, category, answer, ref="none", unit=unit, views=views, fact_checked=True, famous=True)
+
+    def test_ai_years_need_two_years_their_difficulty_scales_and_parameters_need_1_3(self):
+        years = [self.ai(n, "ai_released", y) for n, y in enumerate((2012, 2013, 2014, 2016, 2022), start=1)]
+        got = {abs(p["gap"]): p["difficulty_hint"] for p in pairs_of(years)}
+        self.assertEqual(got, {2: "hard", 4: "medium", 6: "medium", 8: "medium", 3: "hard", 9: "medium", 10: "easy"})
+        self.assertNotIn(1, got)  # 2012 / 2013: too close
+        founded = pairs_of([self.ai(1, "ai_company_founded", 2015), self.ai(2, "ai_company_founded", 2021)])
+        self.assertEqual(([founded[0]["a"], founded[0]["b"]][founded[0]["truth"]], founded[0]["prompt"]), ("thing 1", "Which came first?"))
+        params = [self.ai(1, "ai_params", 1.0e9), self.ai(2, "ai_params", 1.29e9), self.ai(3, "ai_params", 1.3e9)]
+        self.assertEqual({tuple(sorted((p["a_id"], p["b_id"]))) for p in pairs_of(params)}, {("w0001", "w0003")})
+        self.assertEqual(pairs_of(params)[0]["prompt"], "Which model has more parameters?")
+        self.assertEqual([P.difficulty(gap=g) for g in (50, 49, 20, 19, 10)], ["easy", "medium", "medium", "hard", "hard"])  # unchanged
+        doc = P.build_pairs(years, generated_at="2026-10-04")[0]
+        gaps = {(t["category"], t["unit"]): t["min_gap"] for t in doc["templates"]}
+        self.assertEqual((gaps[("ai_released", "year")], gaps[("ai_company_founded", "year")], gaps[("ai_params", "parameters")],
+                          gaps[("first_flight", "year")], gaps[("country_area", "km²")]), (2, 2, 1.3, 10, 1.3))
+
+    def month(self, n, name, yyyymm, views=100, qid=None):
+        it = self.ai(n, "ai_timeline", yyyymm, views=views)
+        it.update(en={"prompt": "When?", "unit": "month"}, name=name)
+        if qid:
+            it["replaces"] = f"https://www.wikidata.org/wiki/{qid}#P585"
+        return it
+
+    def test_months_need_three_months_across_new_year_and_the_earlier_one_is_right(self):
+        its = [self.month(1, "Stable Diffusion (released)", 202208), self.month(2, "ChatGPT (released)", 202211),
+               self.month(3, "Claude (released)", 202303), self.month(4, "Anthropic (founded)", 202101),
+               self.month(5, "GPT-4 (released)", 202303)]
+        got = {frozenset((p["a"], p["b"])): (p["gap"], p["difficulty_hint"], [p["a"], p["b"]][p["truth"]]) for p in pairs_of(its)}
+        self.assertEqual(got[frozenset(("Stable Diffusion (released)", "ChatGPT (released)"))], (3, "hard", "Stable Diffusion (released)"))
+        self.assertEqual(got[frozenset(("ChatGPT (released)", "Claude (released)"))], (4, "hard", "ChatGPT (released)"))  # Nov to Mar
+        self.assertEqual(got[frozenset(("Anthropic (founded)", "ChatGPT (released)"))], (22, "easy", "Anthropic (founded)"))
+        self.assertEqual(got[frozenset(("Anthropic (founded)", "Stable Diffusion (released)"))][1], "easy")  # 19 months
+        self.assertNotIn(frozenset(("Claude (released)", "GPT-4 (released)")), got)  # the same month
+        self.assertEqual(P.month_index(202302) - P.month_index(202211), 3)
+
+    def test_one_entity_is_never_compared_with_itself_and_must_pairs_survive_the_cap(self):
+        dm = [self.month(1, "DeepMind (founded)", 201009, qid="Q15733006"), self.month(2, "DeepMind (bought by Google)", 201401, qid="Q15733006")]
+        self.assertEqual(pairs_of(dm), [])
+        crowd = [self.month(10 + k, f"event {k}", 199001 + 100 * k) for k in range(30)]  # each could take 25 slots
+        must = [self.month(2, "ChatGPT (released)", 202211), self.month(3, "Anthropic (founded)", 202101)]
+        names = {frozenset((p["a"], p["b"])) for p in pairs_of(crowd + must)}
+        self.assertIn(frozenset(("Anthropic (founded)", "ChatGPT (released)")), names)
+
+    def test_ranked_days_from_the_start_get_one_ai_timeline_pair_in_slot_one(self):
+        base = spread_pool(Rounds.CATS, 120)
+        ai = [self.month(900 + k, f"OpenAI event {k}" if k < 3 else f"event {k}", 201001 + 50 * k, views=80000, qid=f"Q9{k}") for k in range(16)]
+        ai.append(self.month(950, "quiet event", 202605, views=1000, qid="Q950"))  # famous by mark only: never ranked
+        items = {it["id"]: it for it in base + ai}
+        pairs = pairs_of(base + ai)
+        days = P.extend_rounds(pairs, {}, "2026-10-01", days=30)
+        out = P.with_ai_slot(pairs, days, items, start="2026-10-05")
+        by_id = {p["id"]: p for p in pairs}
+        for d, e in out.items():
+            cats = [by_id[x]["category"] for x in e["ranked"]]
+            self.assertEqual(cats.count("ai_timeline"), int(d >= "2026-10-05"), d)
+            if d >= "2026-10-05":
+                self.assertEqual(cats[0], "ai_timeline")
+                self.assertNotIn("w0950", (by_id[e["ranked"][0]]["a_id"], by_id[e["ranked"][0]]["b_id"]))
+            else:
+                self.assertEqual(e, days[d])
+            levels = [by_id[x]["difficulty_hint"] for x in e["ranked"]]
+            self.assertEqual((levels.count("easy"), levels.count("medium"), levels.count("hard"), len(levels)), (3, 4, 3, 10))
+            ents = [i for x in e["ranked"] + [e["question"]] for i in (by_id[x]["a_id"], by_id[x]["b_id"])]
+            self.assertEqual(len(set(ents)), 22)
+        early = [by_id[out[d]["ranked"][0]] for d in sorted(out) if "2026-10-05" <= d < "2026-10-12"]
+        self.assertTrue(all("OpenAI" in p["a"] + p["b"] for p in early[:2]))  # the first week prefers OpenAI pairs
+        self.assertEqual(P.with_ai_slot(pairs, out, items, start="2026-10-05"), out)  # idempotent
+
+    def test_ai_items_count_as_famous_and_never_enter_ranked_days_or_the_question(self):
+        ai = [self.ai(900 + k, "ai_released", 1960 + 3 * k) for k in range(20)]
+        pairs = pairs_of(spread_pool(Rounds.CATS, 120) + ai)
+        mine = [p for p in pairs if p["category"] == "ai_released"]
+        self.assertTrue(mine and all(p["fame"] >= P.FAME_RANKED and p["ref_quality"] == "referenced" for p in mine))
+        self.assertFalse(any(P.ranked_ok(p) for p in mine))
+        days = P.extend_rounds(pairs, {}, "2026-10-03", days=20)
+        used = {pid for e in days.values() for pid in P.day_pairs(e)}
+        self.assertTrue(days and not used & {p["id"] for p in mine})
+
+
 class Stability(unittest.TestCase):
     def test_ids_and_a_b_order_survive_a_rebuild_and_new_pairs_get_new_ids(self):
         items = spread_pool(["river_length"], 40)

@@ -99,10 +99,11 @@ export const publicPool = (pool) => ({
   version: pool.version, items: pool.items.map((i) => ({ id: i.id, category: i.category, prompt: i.en.prompt, unit: i.en.unit })),
 });
 
-// The API's copy of the pool: the fields functions/_daily.js and functions/_rounds.js read (keeps the bundle small).
+// The API's copy of the pool: the fields functions/_daily.js and functions/_rounds.js read (keeps the bundle small), plus
+// `fun`, an optional reveal line on some curated AI items (items/ai_curated.json). Never in publicPool: it is answer-free.
 export const serverPool = (pool) => ({
   version: pool.version,
-  items: pool.items.map(({ id, category, en, answer, accept, source, name, replaces }) => ({ id, category, en, answer, accept, source, name, replaces })),
+  items: pool.items.map(({ id, category, en, answer, accept, source, name, replaces, fun }) => ({ id, category, en, answer, accept, source, name, replaces, ...(fun ? { fun } : {}) })),
 });
 
 const LEVELS_R = ['easy', 'medium', 'hard'];

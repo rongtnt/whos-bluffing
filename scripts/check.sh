@@ -88,7 +88,7 @@ print("schedule OK")
 PY
 
 
-say "daily rounds: live-file guard (10 ranked + 1 question, famous + referenced/fact-checked, 3/4/3 difficulty, ≤4 per category, 180d pair / 5d item reuse)"
+say "daily rounds: live-file guard (10 ranked + 1 question, famous + referenced/fact-checked, 3/4/3 difficulty, ≤4 per category, 180d pair / 5d item reuse; from 2026-10-05 slot 1 = the day's one ai_timeline pair, ≥ 3 months apart)"
 python3 - "$root" <<'PY' || fail=1
 import json, sys, datetime as dt, collections
 root = sys.argv[1]
@@ -98,6 +98,8 @@ pairs = json.load(open(f"{root}/items/pairs.json")); plist = pairs["pairs"] if i
 pair = {p["id"]: p for p in plist}
 rounds = json.load(open(f"{root}/daily/rounds.json"))
 FAME, CAT_MAX, ITEM_GAP, PAIR_GAP = 50000, 4, 5, 180
+AI_SLOT, AI_FROM, AI_MONTHS = "ai_timeline", "2026-10-05", 3  # ranked slot 1 from AI_FROM; no other AI pair, ever
+month = lambda i: item[i]["answer"] // 100 * 12 + item[i]["answer"] % 100 - 1
 ok_item = lambda i: (item[i].get("ref_quality") == "referenced" or item[i].get("fact_checked")) and (item[i].get("views_month") or 0) >= FAME
 entity = lambda i: item[i].get("replaces") or item[i].get("source")
 last_pair, last_item, bad = {}, {}, []
@@ -118,6 +120,9 @@ for d in sorted(rounds):
         if pid in last_pair and (day - last_pair[pid]).days < PAIR_GAP: bad.append((d, f"pair {pid} reused <{PAIR_GAP}d"))
         last_pair[pid] = day
     if len(set(ents)) != 22: bad.append((d, "entities not distinct"))
+    ai = [k for k, pid in enumerate(ids) if pair[pid]["category"].startswith("ai_")]
+    if ai != ([0] if d >= AI_FROM else []) or (ai and pair[ranked[0]]["category"] != AI_SLOT): bad.append((d, f"AI pairs at {ai}"))
+    elif ai and abs(month(pair[ranked[0]]["a_id"]) - month(pair[ranked[0]]["b_id"])) < AI_MONTHS: bad.append((d, "AI pair < 3 months apart"))
     cats = collections.Counter(pair[pid]["category"] for pid in ranked)
     if max(cats.values()) > CAT_MAX: bad.append((d, f"category >{CAT_MAX}"))
     diff = collections.Counter(pair[pid]["difficulty_hint"] for pid in ranked)
