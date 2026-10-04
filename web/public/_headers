@@ -11,3 +11,5 @@
   Cache-Control: public, max-age=0, must-revalidate
 /*.json
   Cache-Control: public, max-age=0, must-revalidate
+/press/*
+  Cache-Control: public, max-age=0, must-revalidate
