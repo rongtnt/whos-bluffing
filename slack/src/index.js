@@ -12,6 +12,7 @@ const MAX_BODY = 1 << 20;
 const DAY_MS = 86_400_000;
 const PERIOD_DAYS = 30;
 const STREAK_MAX_DAYS = 365;
+const REVEAL_WINDOW_DAYS = 7; // a reveal that keeps failing is retried hourly for up to a week
 const MAX_MEMBERS = 1000;
 const MONDAY = 1;
 const DEAD_TOKEN = new Set(['token_revoked', 'account_inactive', 'invalid_auth']);
@@ -143,7 +144,7 @@ async function postQuestion(env, install, channel, url) {
   }
   // In the chosen channel (or with none chosen yet) it becomes the day's post: the cron skips the day and the reveal
   // edits this message. Elsewhere it is an extra copy whose answers count the same.
-  if (!install.channel_id || channel === install.channel_id) await store.claimPost(env.DB, install.team_id, date, channel, res.ts);
+  if (!install.channel_id || channel === install.channel_id) await store.claimPost(env.DB, install.team_id, date, channel, q, res.ts);
 }
 
 async function setup(env, install, change, url) {
@@ -164,7 +165,7 @@ async function showStats(env, install, channel, url) {
 
 async function revealNow(env, install, url) {
   const now = Date.now();
-  const [post] = await store.openPosts(env.DB, isoDate(now - DAY_MS), install.team_id);
+  const [post] = await store.openPosts(env.DB, isoDate(now - REVEAL_WINDOW_DAYS * DAY_MS), install.team_id);
   if (!post) {
     const today = await store.getPost(env.DB, install.team_id, isoDate(now));
     return reply(url, { text: today?.revealed ? game.ALREADY_OUT : game.NOTHING_TO_REVEAL });
@@ -221,7 +222,7 @@ async function showPicker(env, install, p, action, choice, now) {
 }
 
 // A confidence: send the answer (a change of mind is a revision), keep the latest, and replace the picker with
-// "Locked in". The API's response carries the truth; none of it is shown before the reveal.
+// "Locked in". The API answers {locked, points_pending}: right or wrong and points only come with the reveal.
 async function lockIn(env, install, p, action, conf, now) {
   const v = readValue(action);
   if (!game.CONFS.includes(conf) || (v.c !== 0 && v.c !== 1)) throw new Error('bad confidence tap');
@@ -231,40 +232,44 @@ async function lockIn(env, install, p, action, conf, now) {
   const [anon, community] = await Promise.all([api.anonId(env, install.team_id, p.user.id), api.communityId(env, install.team_id)]);
   const existing = await store.getAnswer(env.DB, install.team_id, anon, v.d);
   const when = revealTime(install, v.d, post, now);
-  let res;
   try {
-    res = await api.answer(env, {
+    await api.answer(env, {
       round_id: v.r, item_id: v.i, choice: v.c, conf, rt_ms: Math.max(0, now - (Number(v.t) || now)), anon_id: anon, community,
       ...(existing && { revision: true }),
     });
   } catch (err) {
-    // A 4xx (not a rate limit) means the API refused: a changed answer it would not take, or a closed question.
-    if (!(err.status >= 400 && err.status < 500 && err.status !== 429)) throw err;
+    // 409 locked (the question's day is over) or 404 unknown round or item: the API refused the answer.
+    if (err.status !== 409 && err.status !== 404) throw err;
     logError('answer', err);
     return done(existing ? game.alreadyLockedIn(existing, when) : game.CLOSED);
   }
-  if (!Number.isFinite(res?.points) || typeof res.correct !== 'boolean') throw new Error('bad answer response');
-  await store.saveAnswer(env.DB, install.team_id, anon, v.d, { choice: v.c, conf, correct: res.correct ? 1 : 0, points: Math.round(res.points) });
+  await store.saveAnswer(env.DB, install.team_id, anon, v.d, { choice: v.c, conf });
   return done(game.lockedIn(v.c, conf, when));
 }
 
 // ---- Reveal -------------------------------------------------------------------------------------------------
 
-// Edits the day's post into the reveal. `row` = an openPosts row (post and install fields). Returns false when another
-// run revealed it first; on any failure the day is left unrevealed so the next run (or /howsure reveal) retries.
+// The API's biggest bluff, if it is one: a wrong answer at BLUFF_CONF or more.
+const bluffOf = (r) => {
+  const b = r.biggest_bluff;
+  return b?.conf >= game.BLUFF_CONF && b.choice !== r.correct ? b : null;
+};
+
+// Edits the day's post into the reveal, drawn from the question stored with the post (no daily-question call, so a
+// late reveal works). Scores the day's answers from the revealed answer first. `row` = an openPosts row (post and
+// install fields). Returns false when another run revealed it first; on any failure the day is left unrevealed so
+// the next run (or /howsure reveal) retries.
 async function revealDay(env, row) {
   if (!(await store.claimReveal(env.DB, row.team_id, row.date))) return false;
   try {
-    const community = await api.communityId(env, row.team_id);
-    const [q, r, top] = await Promise.all([
-      api.getQuestion(env, row.date), api.getReveal(env, row.date, community), store.dayTop(env.DB, row.team_id, row.date),
-    ]);
+    const r = await api.getReveal(env, row.date, await api.communityId(env, row.team_id));
     if (r?.correct !== 0 && r?.correct !== 1) throw new Error('bad reveal response');
-    const rows = shown(row, top);
-    const bluff = r.biggest_bluff?.conf > 50 ? r.biggest_bluff : null; // a wrong 50% is no bluff
+    await store.scoreDay(env.DB, row.team_id, row.date, r.correct);
+    const rows = shown(row, await store.dayTop(env.DB, row.team_id, row.date));
+    const bluff = bluffOf(r);
     const named = row.roast && bluff ? [bluff.anon_id] : []; // roast off: the bluffer's name is never looked up
     const names = await displayNames(env, row, row.channel_id, [...rows.map((x) => x.anon_id), ...named]);
-    const msg = game.revealMessage(q, r, rows, names, bluff && { ...bluff, name: named.length ? names.get(bluff.anon_id) : null });
+    const msg = game.revealMessage(row, r, rows, names, bluff && { ...bluff, name: named.length ? names.get(bluff.anon_id) : null });
     const res = await slack(row.bot_token, 'chat.update', { channel: row.channel_id, ts: row.ts, ...msg });
     if (!res.ok) throw new Error(`chat.update ${res.error}`);
     return true;
@@ -278,7 +283,7 @@ async function revealDay(env, row) {
 
 // ponytail: sequential Slack calls, fine for a few thousand workspaces per run; batch them if the run gets long.
 async function revealDue(env, now) {
-  for (const row of await store.openPosts(env.DB, isoDate(now - DAY_MS))) {
+  for (const row of await store.openPosts(env.DB, isoDate(now - REVEAL_WINDOW_DAYS * DAY_MS))) {
     if (now < revealTime(row, row.date, row, now)) continue;
     await revealDay(env, row).catch((err) => logError('reveal', err));
   }
@@ -322,11 +327,11 @@ async function postDaily(env, now) {
   if (!due.length) return;
   const q = await api.getQuestion(env, date);
   for (const install of due) {
-    if (!(await store.claimPost(env.DB, install.team_id, date, install.channel_id))) continue;
+    if (!(await store.claimPost(env.DB, install.team_id, date, install.channel_id, q))) continue;
     const msg = game.questionMessage(q, date, revealTime(install, date, null, now));
     const res = await slack(install.bot_token, 'chat.postMessage', { channel: install.channel_id, ...msg });
     if (res.ok) {
-      await store.setPost(env.DB, install.team_id, date, install.channel_id, res.ts);
+      await store.setPost(env.DB, install.team_id, date, res.ts);
       continue;
     }
     await store.dropClaim(env.DB, install.team_id, date);

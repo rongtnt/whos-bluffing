@@ -1,7 +1,7 @@
 import { test } from 'node:test';
 import assert from 'node:assert/strict';
 import {
-  DATE, QUESTION, SALT, anon, apiCalls, at, install, makeEnv, mockFetch, payloadBody, replies, send, sha256, signedRequest, tsAt,
+  BOT_KEY, DATE, QUESTION, SALT, anon, apiCalls, at, install, makeEnv, mockFetch, payloadBody, replies, send, sha256, signedRequest, tsAt,
 } from './helpers.js';
 
 const POST_URL = 'https://hooks.slack.com/actions/T1/1/post';
@@ -65,7 +65,7 @@ test('A/B tap sends a private confidence picker: 50 to 100, "coin flip" to "stak
   assert.equal(answers(env).length, 0);
 });
 
-test('confidence tap: contract payload to /api/round/answer, answer stored, picker replaced by "Locked in", truth hidden', async (t) => {
+test('confidence tap: contract payload to /api/round/answer, answer stored without points, picker replaced by "Locked in"', async (t) => {
   at(t, NOW);
   const env = await setup();
   const calls = mockFetch();
@@ -78,6 +78,7 @@ test('confidence tap: contract payload to /api/round/answer, answer stored, pick
     community: `slack:${sha256(`T1:${SALT}`)}`, surface: 'slack',
   });
   assert.ok(!('revision' in call.body), 'a first answer is not a revision');
+  assert.equal(call.headers['x-howsure-bot'], BOT_KEY);
 
   assert.equal(locked.url.href, PICKER_URL);
   assert.equal(locked.body.replace_original, true);
@@ -85,7 +86,8 @@ test('confidence tap: contract payload to /api/round/answer, answer stored, pick
   assert.equal(locked.body.text, 'Locked in: B at 80%. Reveal at 22:00 UTC.');
   assert.equal(locked.body.blocks, undefined);
 
-  assert.deepEqual(answers(env), [{ team_id: 'T1', anon_id: me, date: DATE, choice: 1, conf: 80, correct: 0, points: -156 }]);
+  // The API answers {locked, points_pending}: right or wrong and points wait for the reveal.
+  assert.deepEqual(answers(env), [{ team_id: 'T1', anon_id: me, date: DATE, choice: 1, conf: 80, correct: null, points: null }]);
   assert.ok(!JSON.stringify(calls.filter((c) => c.host === 'api.test')).includes('U1'), 'raw member id reached the API');
 });
 
@@ -104,18 +106,16 @@ test('changing your mind before the reveal sends revision: true and the last ans
   assert.equal(second.body.revision, true);
   assert.deepEqual([second.body.choice, second.body.conf], [0, 90]);
   assert.equal(replies(calls).at(-1).body.text, 'Locked in: A at 90%. Reveal at 22:00 UTC.');
-  assert.deepEqual(answers(env).map((a) => [a.choice, a.conf, a.correct, a.points]), [[0, 90, 1, 96]]);
+  assert.deepEqual(answers(env).map((a) => [a.choice, a.conf, a.correct, a.points]), [[0, 90, null, null]]);
 });
 
-test('the API refusing a revision (4xx) shows "already locked in" and keeps the first answer', async (t) => {
+test('the API refusing a revision (409 locked) shows "already locked in" and keeps the first answer', async (t) => {
   at(t, NOW);
   const env = await setup();
   let refuse = false;
   const calls = mockFetch({
     api: {
-      '/api/round/answer': () => (refuse
-        ? new Response('{"error":"locked"}', { status: 409 })
-        : { correct: false, truth: {}, points: -156, total: -156 }),
+      '/api/round/answer': () => (refuse ? new Response('{"error":"locked"}', { status: 409 }) : { locked: true, points_pending: true }),
     },
   });
   await answer(t, env, calls, 1, 80);
@@ -160,13 +160,15 @@ test('confidence tap with the API down: "taking a break", the picker stays, noth
   assert.equal(answers(env).length, 0);
 });
 
-test('storage holds only the salted hash, choice, confidence, correct and points: no ids, names or text', async (t) => {
+test('storage holds only the salted hash and the answer, plus the day\'s question on the post: no ids, names or messages', async (t) => {
   at(t, NOW);
   const env = await setup();
   const calls = mockFetch();
   await answer(t, env, calls, 0, 90, 'U1');
   await answer(t, env, calls, 1, 60, 'U7');
   const dump = JSON.stringify(['installs', 'posts', 'answers', 'scores'].map((table) => env.DB.rows(`SELECT * FROM ${table}`)));
-  for (const forbidden of ['U1', 'U7', 'Nile', 'Danube', 'Which is longer', 'Locked in']) assert.ok(!dump.includes(forbidden), forbidden);
-  assert.deepEqual(env.DB.rows('PRAGMA table_info(answers)').map((c) => c.name), ['team_id', 'anon_id', 'date', 'choice', 'conf', 'correct', 'points']);
+  for (const forbidden of ['U1', 'U7', 'Locked in', 'You picked', 'coin flip']) assert.ok(!dump.includes(forbidden), forbidden);
+  const columns = (table) => env.DB.rows(`PRAGMA table_info(${table})`).map((c) => c.name);
+  assert.deepEqual(columns('answers'), ['team_id', 'anon_id', 'date', 'choice', 'conf', 'correct', 'points']);
+  assert.deepEqual(columns('posts'), ['team_id', 'date', 'ts', 'channel_id', 'revealed', 'item_id', 'prompt', 'a', 'b']);
 });

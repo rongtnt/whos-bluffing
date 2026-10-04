@@ -7,6 +7,7 @@ import worker from '../src/index.js';
 
 export const SECRET = 'test-signing-secret';
 export const SALT = 'test-salt';
+export const BOT_KEY = 'test-bot-key';
 export const sha256 = (s) => createHash('sha256').update(s).digest('hex');
 export const anon = (team, user) => sha256(`${team}:${user}:${SALT}`);
 
@@ -38,6 +39,7 @@ export const makeEnv = (db = fakeD1()) => ({
   SLACK_CLIENT_ID: 'client-id',
   SLACK_CLIENT_SECRET: 'client-secret',
   SALT,
+  BOT_KEY,
 });
 
 export const DATE = '2026-10-31'; // a Saturday; 2026-11-02 is a Monday
@@ -46,9 +48,8 @@ export const QUESTION_TEXT = 'Which is longer: the Nile or the Danube?';
 
 // The contract's scoring rule. In the mock, A (the Nile) is the right answer.
 export const points = (conf, correct) => Math.round(100 - 400 * (conf / 100 - (correct ? 1 : 0)) ** 2);
-const TRUTH = { a_value: 6650, b_value: 2850, unit: 'km', a_source: 'https://www.wikidata.org/wiki/Q3392', b_source: 'https://www.wikidata.org/wiki/Q1653' };
-export const SOURCES = { a_source: TRUTH.a_source, b_source: TRUTH.b_source };
-export const REVEAL = { n: 2, pct_a: 50, pct_b: 50, correct: 0, a_value: 6650, b_value: 2850, unit: 'km', biggest_bluff: null };
+export const SOURCES = { a_source: 'https://www.wikidata.org/wiki/Q3392', b_source: 'https://www.wikidata.org/wiki/Q1653' };
+export const REVEAL = { n: 2, pct_a: 50, pct_b: 50, correct: 0, a_value: 6650, b_value: 2850, unit: 'km', ...SOURCES, biggest_bluff: null };
 
 // Installs a fetch mock. `slack[method](call)` and `api[path](call)` override the defaults; an api override may
 // return a Response (for error statuses).
@@ -72,11 +73,8 @@ export function mockFetch({ slack = {}, api = {}, apiDown = false } = {}) {
       return out instanceof Response ? out : json(out);
     }
     if (call.path === '/api/round/daily-question') return json({ ...QUESTION, round_id: `dq-${call.query.date}` });
-    if (call.path === '/api/round/answer') {
-      const correct = call.body.choice === 0;
-      return json({ correct, truth: TRUTH, points: points(call.body.conf, correct), total: points(call.body.conf, correct) });
-    }
-    if (call.path === '/api/round/reveal') return json(REVEAL); // exactly the contract: no sources
+    if (call.path === '/api/round/answer') return json({ locked: true, points_pending: true }); // dq- rounds: no truth, no points
+    if (call.path === '/api/round/reveal') return json(REVEAL);
     throw new Error(`unexpected fetch ${url.href}`);
   };
   return calls;

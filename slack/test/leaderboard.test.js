@@ -1,14 +1,15 @@
 import { test } from 'node:test';
 import assert from 'node:assert/strict';
 import * as store from '../src/store.js';
-import { anon, fakeD1, install, makeEnv, mockFetch, replies, send, signedRequest, slashBody } from './helpers.js';
+import { QUESTION, anon, fakeD1, install, makeEnv, mockFetch, replies, send, signedRequest, slashBody } from './helpers.js';
 
-// [anon, date, points]; every day revealed unless listed in `open`.
+// [anon, date, points], written as already scored; every day revealed unless listed in `open`.
 async function seed(db, team, rows, open = []) {
   for (const [id, date, points] of rows) {
-    await store.claimPost(db, team, date, 'C1', '1.0');
+    await store.claimPost(db, team, date, 'C1', QUESTION, '1.0');
     if (!open.includes(date)) await db.prepare('UPDATE posts SET revealed = 1 WHERE team_id = ? AND date = ?').bind(team, date).run();
-    await store.saveAnswer(db, team, id, date, { choice: 0, conf: 90, correct: Number(points > 0), points });
+    await db.prepare('INSERT INTO answers (team_id, anon_id, date, choice, conf, correct, points) VALUES (?, ?, ?, 0, 90, ?, ?)')
+      .bind(team, id, date, Number(points > 0), points).run();
   }
 }
 

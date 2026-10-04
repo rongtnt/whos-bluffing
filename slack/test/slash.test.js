@@ -1,6 +1,6 @@
 import { test } from 'node:test';
 import assert from 'node:assert/strict';
-import { DATE, apiCalls, at, install, makeEnv, mockFetch, replies, send, signedRequest, slackCalls, slashBody } from './helpers.js';
+import { DATE, QUESTION, apiCalls, at, install, makeEnv, mockFetch, replies, send, signedRequest, slackCalls, slashBody } from './helpers.js';
 
 const NOW = `${DATE}T09:30:00Z`;
 const installs = (env) => env.DB.rows('SELECT channel_id, post_hour_utc, roast FROM installs');
@@ -23,6 +23,8 @@ test("/howsure posts today's question with A and B buttons; in the chosen channe
   assert.equal(apiCalls(calls, '/api/round/daily-question')[0].query.date, DATE);
   assert.deepEqual(env.DB.rows('SELECT team_id, date, channel_id, ts, revealed FROM posts'),
     [{ team_id: 'T1', date: DATE, channel_id: 'C1', ts: '1700000000.000100', revealed: 0 }]);
+  assert.deepEqual(env.DB.rows('SELECT item_id, prompt, a, b FROM posts'),
+    [{ item_id: QUESTION.item_id, prompt: QUESTION.prompt, a: QUESTION.a, b: QUESTION.b }]);
 
   // A second /howsure there does not post the question twice.
   await send(env, signedRequest(slashBody()));
@@ -105,6 +107,17 @@ test('/howsure setup #channel [HH] [roast on|off] and setup roast on|off; bad in
   await send(env, signedRequest(slashBody({ text: 'setup <#G1|secret> 10 roast on' })));
   assert.match(replies(calls)[0].body.text, /invite me with \/invite @HowSure/);
   assert.deepEqual(installs(env), [{ channel_id: 'C8', post_hour_utc: 14, roast: 0 }]);
+});
+
+test('without BOT_KEY the API is never called: private "taking a break", nothing posted', async (t) => {
+  at(t, NOW);
+  const env = { ...makeEnv(), BOT_KEY: undefined };
+  await install(env, 'T1', { channel: 'C1' });
+  const calls = mockFetch();
+  await send(env, signedRequest(slashBody()));
+  assert.equal(calls.filter((c) => c.host === 'api.test').length, 0);
+  assert.equal(slackCalls(calls, 'chat.postMessage').length, 0);
+  assert.equal(replies(calls)[0].body.text, 'HowSure is taking a break, try again in a minute.');
 });
 
 test('a workspace with no install row is told to reinstall', async () => {

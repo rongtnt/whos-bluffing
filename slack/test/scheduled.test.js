@@ -1,6 +1,7 @@
 import { test } from 'node:test';
 import assert from 'node:assert/strict';
-import { DATE, QUESTION, apiCalls, install, makeCtx, makeEnv, mockFetch, slackCalls, tsAt, worker } from './helpers.js';
+import * as store from '../src/store.js';
+import { BOT_KEY, DATE, QUESTION, apiCalls, install, makeCtx, makeEnv, mockFetch, slackCalls, tsAt, worker } from './helpers.js';
 
 // Runs the hourly cron at `iso`. Slack's mock stamps posts with that moment, like the real ts.
 async function runCron(env, iso, clock) {
@@ -30,7 +31,11 @@ test('scheduled() posts the question once per day to every install whose UTC hou
   assert.deepEqual(buttons.map((b) => [b.action_id, b.text.text]), [['pick:0', 'A · the Nile'], ['pick:1', 'B · the Danube']]);
   assert.deepEqual(JSON.parse(buttons[0].value), { r: QUESTION.round_id, i: QUESTION.item_id, d: DATE });
   assert.match(blocks.at(-1).elements[0].text, /before the reveal at 22:00 UTC\.$/);
-  assert.equal(apiCalls(calls, '/api/round/daily-question')[0].query.date, DATE);
+  const [question] = apiCalls(calls, '/api/round/daily-question');
+  assert.equal(question.query.date, DATE);
+  assert.equal(question.headers['x-howsure-bot'], BOT_KEY);
+  assert.deepEqual(env.DB.rows("SELECT item_id, prompt, a, b FROM posts WHERE team_id = 'T1'"),
+    [{ item_id: QUESTION.item_id, prompt: QUESTION.prompt, a: QUESTION.a, b: QUESTION.b }]);
 
   await runCron(env, `${DATE}T20:00:00Z`);
   assert.deepEqual(posted(), ['C1', 'C2', 'C3']);
@@ -103,7 +108,7 @@ test('scheduled() reveals each post once, at the hour it promised: post hour + 8
 test('scheduled(): a reveal that fails (API down) is retried at the next tick', async () => {
   const env = makeEnv();
   await install(env, 'T1', { channel: 'C1', hour: 14 });
-  await env.DB.prepare('INSERT INTO posts (team_id, date, channel_id, ts) VALUES (?, ?, ?, ?)').bind('T1', DATE, 'C1', tsAt(`${DATE}T14:00:01Z`)).run();
+  await store.claimPost(env.DB, 'T1', DATE, 'C1', QUESTION, tsAt(`${DATE}T14:00:01Z`));
   mockFetch({ apiDown: true });
   await runCron(env, `${DATE}T22:00:00Z`);
   assert.deepEqual(env.DB.rows('SELECT revealed FROM posts'), [{ revealed: 0 }]);
@@ -129,4 +134,19 @@ test('two overlapping cron runs still post, reveal and recap once each (the clai
     '*HowSure · last week in this workspace* (Oct 26 – Nov 1)',
     'HowSure · Which is longer: the Nile or the Danube?',
   ]);
+});
+
+test('a reveal delayed past yesterday still happens, drawn from the stored question (no daily-question call)', async () => {
+  const env = makeEnv();
+  await install(env, 'T1', { channel: 'C1', hour: 14 });
+  await store.claimPost(env.DB, 'T1', DATE, 'C1', QUESTION, tsAt(`${DATE}T14:00:01Z`));
+  mockFetch({ apiDown: true });
+  await runCron(env, `${DATE}T22:00:00Z`);
+  await runCron(env, '2026-11-01T22:00:00Z');
+  const calls = mockFetch();
+  await runCron(env, '2026-11-03T10:00:00Z'); // three days on; before T1's post hour, so no new question either
+  assert.equal(slackCalls(calls, 'chat.update').length, 1);
+  assert.match(JSON.parse(slackCalls(calls, 'chat.update')[0].body.blocks)[0].text.text, /^\*HowSure\* · Which is longer: the Nile or the Danube\?\n/);
+  assert.equal(apiCalls(calls, '/api/round/daily-question').length, 0);
+  assert.equal(apiCalls(calls, '/api/round/reveal')[0].query.date, DATE);
 });

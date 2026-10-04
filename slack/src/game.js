@@ -22,7 +22,7 @@ export const LETTERS = ['A', 'B'];
 export const CONFS = [50, 60, 70, 80, 90, 100];
 const CONF_LABELS = { 50: 'coin flip', 100: 'stake it all' };
 export const REVEAL_DELAY_H = 8;
-export const BLUFF_CONF = 80; // a bluff = a wrong answer at this confidence or more (weekly recap)
+export const BLUFF_CONF = 80; // a bluff = a wrong answer at this confidence or more (reveal line and weekly recap)
 export const MIN_CALIBRATED_ANSWERS = 3; // answers in the week needed to be "most calibrated"
 
 const HOUR_MS = 3_600_000;

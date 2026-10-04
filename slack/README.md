@@ -9,15 +9,19 @@ A Cloudflare Worker that posts one HowSure question a day in a Slack channel. Me
 - **Tap a confidence:** the picker turns into "Locked in: B at 80%. Reveal at 22:00 UTC." Nobody else sees your pick, and you get no hint whether you were right.
 - **Change your mind** before the reveal: tap A or B again and pick a new confidence. The picker shows your current answer; the last answer counts.
 - **The reveal** edits the original post (the buttons go away):
-  - the correct answer with both values (and both sources, when the API sends them);
+  - the correct answer with both values and their sources;
   - "12 answered · 75% A · 25% B";
   - the top 5 by points, by display name;
-  - the bluff line: "Someone was 90% sure it was B (the Danube). It wasn't."
+  - the bluff line, when the day's biggest bluff is a wrong answer at 80% or more: "Someone was 90% sure it was B (the Danube). It wasn't."
 - **The Monday recap** (posted at the workspace's hour, before that day's question): how often each confidence level was right last week, the most calibrated member by name, the bluff count, days played and the workspace's streak.
 
 ### Points
 
-Each answer scores 100 − 400 × (confidence − outcome)², with confidence as a fraction and outcome 1 when right, 0 when wrong. 50% always scores 0; 100% scores +100 when right and −300 when wrong. Honest confidence earns the most points over time. The web API computes the points; the Worker only stores and shows them.
+Each answer scores 100 − 400 × (confidence − outcome)², with confidence as a fraction and outcome 1 when right, 0 when wrong. 50% always scores 0; 100% scores +100 when right and −300 when wrong. Honest confidence earns the most points over time.
+
+Nothing is scored before the reveal: when you lock in, the web API confirms the answer without saying whether it is right. At the reveal the Worker scores every answer against the revealed answer with this formula (the same one the API uses).
+
+A **bluff** is a wrong answer at 80% or more. The reveal's bluff line and the recap's bluff count both use this rule.
 
 ### Roast mode
 
@@ -78,7 +82,9 @@ You need a Cloudflare account (free plan is fine), a Slack workspace where you m
    npx wrangler secret put SLACK_SIGNING_SECRET   # paste the Signing Secret
    openssl rand -hex 32                           # copy this value and keep a copy in your password manager
    npx wrangler secret put SALT                   # paste it
+   npx wrangler secret put BOT_KEY                # paste the BOT_KEY set on the web project
    ```
+   `BOT_KEY` is the shared key the web API expects in the `x-howsure-bot` header on every call (it needs it for same-day reveals, and the rate limit skips requests that carry it). Use the value set on the web project; if it has none yet, make one with `openssl rand -hex 32` and set it on both. Without it every call to the web API fails and members see "taking a break".
    Secrets take effect at once; no redeploy needed. **Never change SALT**: every member id is hashed with it, so a new SALT turns every member into a new player (MAU counted twice, boards and streaks reset).
 7. **Let other workspaces install** (skip if only your own workspace will use it): Slack app page → **Manage Distribution** → finish the checklist → **Activate Public Distribution**.
 8. **Install.** Open `https://WORKER_HOST/slack/oauth/start` and press **Allow**. That URL is the **Add to Slack** link: share it, or link Slack's official Add to Slack button image to it.
@@ -98,6 +104,7 @@ Already set up v0.1? Run step 2's `migrations apply` again (it adds `0002_daily_
 | `SLACK_CLIENT_SECRET` | secret | Basic Information → App Credentials |
 | `SLACK_SIGNING_SECRET` | secret | Basic Information → App Credentials |
 | `SALT` | secret | `openssl rand -hex 32`, set once, never change |
+| `BOT_KEY` | secret | the same value as the web project's `BOT_KEY` |
 | `API_BASE` | var in `wrangler.toml` | web origin, e.g. `https://howsure.pages.dev` |
 
 ## Picking the channel
@@ -122,16 +129,17 @@ npx wrangler tail                              # live logs (short error codes on
 Stored in D1, and nothing else:
 
 - per workspace: team id, bot token, channel id, post hour, roast setting, the Monday of the last recap;
-- per workspace per day: the day's post (channel id and message timestamp) and whether it was revealed;
-- per answer: `sha256(team_id:user_id:SALT)`, the date, A or B, the confidence, and whether it was right and its points (both from the API's response, shown only after the reveal).
+- per workspace per day: the day's post (channel id and message timestamp), whether it was revealed, and the day's question as the API served it (item id, prompt and both options: HowSure's own text, kept so a late reveal can still be drawn);
+- per answer: `sha256(team_id:user_id:SALT)`, the date, A or B, the confidence, and, from the reveal on, whether it was right and its points.
 
-No message text, names or emails. Display names are fetched from Slack only while a reveal, leaderboard or recap is drawn, and are never stored. The rounds API receives only the hashed member id and `slack:` + a hashed workspace id (`sha256(team_id:SALT)`), never raw Slack ids. The v0.1 table `scores` is no longer used.
+No member messages, names or emails. Display names are fetched from Slack only while a reveal, leaderboard or recap is drawn, and are never stored. The rounds API receives only the hashed member id and `slack:` + a hashed workspace id (`sha256(team_id:SALT)`), never raw Slack ids. Every call to it carries the `x-howsure-bot` header with `BOT_KEY`. The v0.1 table `scores` is no longer used.
 
 **Bot tokens are stored in plain text** in the D1 table `installs`.
 
 - Rotate one workspace's token: reinstall from the Add to Slack link. The callback overwrites the stored token and keeps the channel, hour and roast setting.
 - Revoke every token (for example if the database leaked): Slack app page → **OAuth & Permissions** → **Revoke All OAuth Tokens**, then each workspace reinstalls.
 - Rotate the app secrets: **Basic Information** → regenerate the Client Secret or Signing Secret, then `npx wrangler secret put` the new value.
+- Rotate `BOT_KEY`: set the new value on the web project and here at the same time (`npx wrangler secret put BOT_KEY`).
 - When a workspace uninstalls, Slack revokes its token; the next hourly post sees that and deletes the workspace's row.
 
 ## Limits
@@ -140,7 +148,7 @@ No message text, names or emails. Display names are fetched from Slack only whil
 - Any member can run `/howsure setup` and `/howsure reveal`.
 - The confidence picker uses Slack's response link, which lasts 30 minutes after tapping A or B. After that, tap A or B again.
 - Copies posted with `/howsure` outside the chosen channel are not edited at the reveal; tapping them afterwards says the question is closed.
-- If a reveal fails (web API down, Slack error), it is retried every hour until the day after the question's day; `/howsure reveal` also retries.
+- If a reveal fails (web API down, Slack error), it is retried every hour for up to a week, drawn from the question stored with the post; `/howsure reveal` also retries.
 - Workers free plan allows 10 ms CPU per request. Name lookups hash up to 1000 member ids, so big channels, or hundreds of workspaces in one hourly run, may need Workers Paid ($5/month).
 - Workspace installs only; Enterprise Grid org-wide installs are not supported.
 - Not in the Slack App Directory yet; installs go through the Add to Slack link.

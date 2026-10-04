@@ -1,7 +1,7 @@
 import { test } from 'node:test';
 import assert from 'node:assert/strict';
 import * as store from '../src/store.js';
-import { anon, install, makeCtx, makeEnv, mockFetch, points, slackCalls, worker } from './helpers.js';
+import { QUESTION, anon, install, makeCtx, makeEnv, mockFetch, slackCalls, worker } from './helpers.js';
 
 const MONDAY = '2026-11-02'; // recaps Mon Oct 26 – Sun Nov 1
 
@@ -20,11 +20,13 @@ const WEEK = [
   ['U8', '2026-10-24', 70, 1], ['U8', '2026-10-25', 70, 1], ['U8', '2026-10-22', 70, 1], // the week before (streak only)
 ];
 
+// Each day's answer is A; days are revealed and scored the way the reveal does it.
 async function seed(env, team, rows) {
   for (const [user, date, conf, correct] of rows) {
-    await store.claimPost(env.DB, team, date, 'C1', '1.0');
+    await store.claimPost(env.DB, team, date, 'C1', QUESTION, '1.0');
     await env.DB.prepare('UPDATE posts SET revealed = 1 WHERE team_id = ? AND date = ?').bind(team, date).run();
-    await store.saveAnswer(env.DB, team, anon(team, user), date, { choice: correct ? 0 : 1, conf, correct, points: points(conf, correct) });
+    await store.saveAnswer(env.DB, team, anon(team, user), date, { choice: correct ? 0 : 1, conf });
+    await store.scoreDay(env.DB, team, date, 0);
   }
 }
 

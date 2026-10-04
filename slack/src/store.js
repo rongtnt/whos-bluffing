@@ -1,6 +1,6 @@
 // D1 access. Stored: team id, bot token, channel id, post hour, roast setting, the last recap week, per-day posts
-// (channel, ts, revealed) and per-day answers (choice, conf, correct, points) keyed by the salted member hash.
-// Never message text, names, emails or raw member ids.
+// (channel, ts, revealed, the day's question as served) and per-day answers (choice, conf; correct and points from
+// the reveal) keyed by the salted member hash. Never member messages, names, emails or raw member ids.
 
 import { BLUFF_CONF, MIN_CALIBRATED_ANSWERS } from './game.js';
 
@@ -37,18 +37,18 @@ export async function dueInstalls(db, date, hour) {
 export const getPost = (db, teamId, date) =>
   db.prepare('SELECT date, channel_id, ts, revealed FROM posts WHERE team_id = ? AND date = ?').bind(teamId, date).first();
 
-// Records the day's post unless one exists. Returns true when this call created the row (the cron's claim).
-export async function claimPost(db, teamId, date, channel, ts = null) {
-  const res = await db.prepare('INSERT OR IGNORE INTO posts (team_id, date, channel_id, ts) VALUES (?, ?, ?, ?)')
-    .bind(teamId, date, channel, ts).run();
+// Records the day's post with its question (`q` as daily-question served it) unless one exists. Returns true when
+// this call created the row (the cron's claim).
+export async function claimPost(db, teamId, date, channel, q, ts = null) {
+  const res = await db.prepare(
+    'INSERT OR IGNORE INTO posts (team_id, date, channel_id, ts, item_id, prompt, a, b) VALUES (?, ?, ?, ?, ?, ?, ?, ?)',
+  ).bind(teamId, date, channel, ts, q.item_id, q.prompt, q.a, q.b).run();
   return res.meta.changes === 1;
 }
 
-export const setPost = (db, teamId, date, channel, ts) =>
-  db.prepare(
-    `INSERT INTO posts (team_id, date, channel_id, ts) VALUES (?, ?, ?, ?)
-     ON CONFLICT(team_id, date) DO UPDATE SET channel_id = excluded.channel_id, ts = excluded.ts`,
-  ).bind(teamId, date, channel, ts).run();
+// Fills in the ts of a claimed post.
+export const setPost = (db, teamId, date, ts) =>
+  db.prepare('UPDATE posts SET ts = ? WHERE team_id = ? AND date = ?').bind(ts, teamId, date).run();
 
 // Releases a claim whose post failed, so the next hourly run retries.
 export const dropClaim = (db, teamId, date) =>
@@ -58,7 +58,7 @@ export const dropClaim = (db, teamId, date) =>
 // reveal needs from the install.
 export async function openPosts(db, since, teamId = null) {
   const { results } = await db.prepare(
-    `SELECT p.team_id, p.date, p.channel_id, p.ts, i.bot_token, i.post_hour_utc, i.roast
+    `SELECT p.team_id, p.date, p.channel_id, p.ts, p.prompt, p.a, p.b, i.bot_token, i.post_hour_utc, i.roast
      FROM posts p JOIN installs i ON i.team_id = p.team_id
      WHERE p.revealed = 0 AND p.ts IS NOT NULL AND p.channel_id IS NOT NULL AND p.date >= ?
      AND p.team_id = COALESCE(?, p.team_id) ORDER BY p.date DESC`,
@@ -78,13 +78,21 @@ export const dropReveal = (db, teamId, date) =>
 export const getAnswer = (db, teamId, anonId, date) =>
   db.prepare('SELECT choice, conf FROM answers WHERE team_id = ? AND date = ? AND anon_id = ?').bind(teamId, date, anonId).first();
 
-// Last answer wins.
-export const saveAnswer = (db, teamId, anonId, date, { choice, conf, correct, points }) =>
+// Last answer wins. Right or wrong and points are unknown until the reveal.
+export const saveAnswer = (db, teamId, anonId, date, { choice, conf }) =>
   db.prepare(
-    `INSERT INTO answers (team_id, anon_id, date, choice, conf, correct, points) VALUES (?, ?, ?, ?, ?, ?, ?)
+    `INSERT INTO answers (team_id, anon_id, date, choice, conf) VALUES (?, ?, ?, ?, ?)
      ON CONFLICT(team_id, date, anon_id) DO UPDATE SET
-       choice = excluded.choice, conf = excluded.conf, correct = excluded.correct, points = excluded.points`,
-  ).bind(teamId, anonId, date, choice, conf, correct, points).run();
+       choice = excluded.choice, conf = excluded.conf, correct = NULL, points = NULL`,
+  ).bind(teamId, anonId, date, choice, conf).run();
+
+// At the reveal: right or wrong against the revealed answer, and the contract's points 100 − 400·(c − y)², computed
+// in whole numbers as 100 − (conf − 100·y)² / 25 (exact, since conf is a multiple of 10).
+export const scoreDay = (db, teamId, date, correct) =>
+  db.prepare(
+    `UPDATE answers SET correct = (choice = ?1), points = 100 - (conf - 100 * (choice = ?1)) * (conf - 100 * (choice = ?1)) / 25
+     WHERE team_id = ?2 AND date = ?3`,
+  ).bind(correct, teamId, date).run();
 
 // The day's top 5 by points (for the reveal).
 export async function dayTop(db, teamId, date) {
