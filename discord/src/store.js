@@ -87,13 +87,22 @@ export const releaseReveal = (db, guildId, date) =>
 export const getAnswer = (db, guildId, date, anonId) =>
   db.prepare('SELECT * FROM answers WHERE guild_id = ? AND date = ? AND anon_id = ?').bind(guildId, date, anonId).first();
 
-// A change of mind before the reveal replaces the member's answer.
+// A change of mind before the reveal replaces the member's answer. Points and right/wrong stay NULL until the
+// reveal: the API answers daily questions with {locked: true, points_pending: true}.
 export const saveAnswer = (db, a) =>
   db.prepare(
-    `INSERT INTO answers (guild_id, anon_id, date, choice, conf, points, correct) VALUES (?, ?, ?, ?, ?, ?, ?)
-     ON CONFLICT(guild_id, date, anon_id) DO UPDATE SET
-       choice = excluded.choice, conf = excluded.conf, points = excluded.points, correct = excluded.correct`,
-  ).bind(a.guild_id, a.anon_id, a.date, a.choice, a.conf, a.points, a.correct).run();
+    `INSERT INTO answers (guild_id, anon_id, date, choice, conf) VALUES (?, ?, ?, ?, ?)
+     ON CONFLICT(guild_id, date, anon_id) DO UPDATE SET choice = excluded.choice, conf = excluded.conf`,
+  ).bind(a.guild_id, a.anon_id, a.date, a.choice, a.conf).run();
+
+// At the reveal: right/wrong from the revealed answer, and points by the contract's rule 100 - 400(c - y)^2
+// (c = conf / 100, y = 1 when right). Running it twice gives the same result.
+export const settleAnswers = (db, guildId, date, correctChoice) =>
+  db.prepare(
+    `UPDATE answers SET correct = (choice = ?),
+       points = CAST(ROUND(100 - 400 * (conf / 100.0 - (choice = ?)) * (conf / 100.0 - (choice = ?))) AS INTEGER)
+     WHERE guild_id = ? AND date = ?`,
+  ).bind(correctChoice, correctChoice, correctChoice, guildId, date).run();
 
 // One day's top 5 by points, positive scores only: a bluffer's named negative score next to the anonymous
 // bluff line would give them away when roast mode is off.
@@ -104,23 +113,23 @@ export async function dayTop(db, guildId, date) {
   return results;
 }
 
-// Since `since` (inclusive): members, answers, days with answers, top 10 by points (ties: more answers first).
+// Revealed answers since `since` (inclusive): members, answers, days, top 10 by points (ties: more answers first).
 export async function periodBoard(db, guildId, since) {
+  const where = 'FROM answers WHERE guild_id = ? AND date >= ? AND points IS NOT NULL';
   const [agg, top] = await db.batch([
+    db.prepare(`SELECT COUNT(DISTINCT anon_id) AS players, COUNT(*) AS answers, COUNT(DISTINCT date) AS days ${where}`)
+      .bind(guildId, since),
     db.prepare(
-      'SELECT COUNT(DISTINCT anon_id) AS players, COUNT(*) AS answers, COUNT(DISTINCT date) AS days FROM answers WHERE guild_id = ? AND date >= ?',
-    ).bind(guildId, since),
-    db.prepare(
-      `SELECT anon_id, SUM(points) AS points, COUNT(*) AS answers FROM answers WHERE guild_id = ? AND date >= ?
+      `SELECT anon_id, SUM(points) AS points, COUNT(*) AS answers ${where}
        GROUP BY anon_id ORDER BY points DESC, answers DESC, anon_id LIMIT 10`,
     ).bind(guildId, since),
   ]);
   return { ...agg.results[0], top: top.results };
 }
 
-// Answers from `from` to `to` (inclusive): per confidence level, per member, and wrong answers at `bluffConf`+.
+// Revealed answers from `from` to `to` (inclusive): per confidence level, per member, and wrong ones at `bluffConf`+.
 export async function weekStats(db, guildId, from, to, bluffConf) {
-  const where = 'FROM answers WHERE guild_id = ? AND date BETWEEN ? AND ?';
+  const where = 'FROM answers WHERE guild_id = ? AND date BETWEEN ? AND ? AND correct IS NOT NULL';
   const [levels, members, bluffs] = await db.batch([
     db.prepare(`SELECT conf, COUNT(*) AS n, SUM(correct) AS hits ${where} GROUP BY conf ORDER BY conf`).bind(guildId, from, to),
     db.prepare(
@@ -137,7 +146,7 @@ export async function weekStats(db, guildId, from, to, bluffConf) {
   };
 }
 
-// Days from `from` to `to` (inclusive) with at least one answer, newest first (for the streak).
+// Days from `from` to `to` (inclusive) with at least one answer, revealed or not, newest first (for the streak).
 export async function answerDays(db, guildId, from, to) {
   const { results } = await db.prepare('SELECT DISTINCT date FROM answers WHERE guild_id = ? AND date BETWEEN ? AND ? ORDER BY date DESC')
     .bind(guildId, from, to).all();

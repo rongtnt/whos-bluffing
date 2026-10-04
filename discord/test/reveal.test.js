@@ -1,8 +1,9 @@
 import { test } from 'node:test';
 import assert from 'node:assert/strict';
 import { bluffLine, revealMessage } from '../src/game.js';
+import * as store from '../src/store.js';
 import {
-  CHANNEL, DATE, GUILD, MANAGER, QUESTION, TRUTH, addAnswer, addPost, anon, apiCalls, commandPayload, community, install,
+  CHANNEL, DATE, GUILD, MANAGER, QUESTION, TRUTH, addAnswer, addPost, anon, apiCalls, commandPayload, community, fakeD1, install,
   makeEnv, memberLists, messageEdits, mockFetch, originalEdits, runCron, send, signedRequest,
 } from './helpers.js';
 
@@ -25,10 +26,11 @@ const HEAD = [
 async function answeredDay(env, roast = 0) {
   await install(env, GUILD, { channel: CHANNEL, roast });
   await addPost(env);
-  await addAnswer(env, { user: MAYA, choice: 0, conf: 90 }); // +96
-  await addAnswer(env, { user: SAM, choice: 0, conf: 70 }); // +64
-  await addAnswer(env, { user: ANA, choice: 0, conf: 60 }); // +36
-  await addAnswer(env, { user: LEE, choice: 1, conf: 90 }); // -224, the bluff
+  // Points are pending until the reveal settles them from its `correct` (A): +96, +64, +36, and -224 for the bluff.
+  await addAnswer(env, { user: MAYA, choice: 0, conf: 90, pending: true });
+  await addAnswer(env, { user: SAM, choice: 0, conf: 70, pending: true });
+  await addAnswer(env, { user: ANA, choice: 0, conf: 60, pending: true });
+  await addAnswer(env, { user: LEE, choice: 1, conf: 90, pending: true });
 }
 
 const revealCommand = (permissions = MANAGER) => signedRequest(commandPayload('reveal', [], { permissions }));
@@ -59,6 +61,28 @@ test('reveal, roast off: both values with sources, the split, top 5 by name (pos
     allowed_mentions: { parse: [] },
   });
   assert.deepEqual(env.DB.rows('SELECT revealed FROM posts'), [{ revealed: 1 }]);
+  assert.deepEqual(env.DB.rows('SELECT anon_id, points, correct FROM answers ORDER BY points DESC'), [
+    { anon_id: anon(GUILD, MAYA), points: 96, correct: 1 },
+    { anon_id: anon(GUILD, SAM), points: 64, correct: 1 },
+    { anon_id: anon(GUILD, ANA), points: 36, correct: 1 },
+    { anon_id: anon(GUILD, LEE), points: -224, correct: 0 },
+  ]);
+  const [reveal] = apiCalls(calls, '/api/round/reveal');
+  assert.equal(reveal.headers['x-howsure-bot'], 'test-bot-key');
+});
+
+test("settling at the reveal follows the contract's points rule at every confidence, either answer right", async () => {
+  const db = fakeD1();
+  const conf = [50, 60, 70, 80, 90, 100];
+  for (const c of conf) {
+    await store.saveAnswer(db, { guild_id: 'G', anon_id: `a${c}`, date: DATE, choice: 0, conf: c });
+    await store.saveAnswer(db, { guild_id: 'G', anon_id: `b${c}`, date: DATE, choice: 1, conf: c });
+  }
+  await store.settleAnswers(db, 'G', DATE, 1); // B was right
+  const got = Object.fromEntries(db.rows('SELECT anon_id, points, correct FROM answers').map((r) => [r.anon_id, [r.points, r.correct]]));
+  // Vectors from the rounds brief: 100% right +100, 50% 0, 100% wrong -300, 80% wrong -156.
+  assert.deepEqual(conf.map((c) => got[`b${c}`]), [[0, 1], [36, 1], [64, 1], [84, 1], [96, 1], [100, 1]]);
+  assert.deepEqual(conf.map((c) => got[`a${c}`]), [[0, 0], [-44, 0], [-96, 0], [-156, 0], [-224, 0], [-300, 0]]);
 });
 
 test('reveal, roast on: names the biggest bluffer; names are looked up, never stored', async () => {

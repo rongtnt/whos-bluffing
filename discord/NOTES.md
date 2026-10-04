@@ -25,6 +25,7 @@ run them under Node 22 against a real key pair.
      these, a reveal delayed past yesterday could never be drawn, because `daily-question` only serves today and
      yesterday. This is HowSure's own text, never member messages.
    - `answers.correct`: needed for calibration. At 50% confidence, points are 0 whether right or wrong.
+     `answers.points` and `answers.correct` are NULL until the reveal settles them (see below).
    - `play_state.items`: the round's 10 questions (prompt and options only). No API call returns a round by id.
    - `installs.last_recap`: makes the Monday recap happen once per server per week.
 4. **`setup` and `reveal` need Manage Server (or Administrator)**, checked in code from `member.permissions`. Discord
@@ -50,6 +51,22 @@ run them under Node 22 against a real key pair.
   answers for this question are closed." if they have none. The stored answer is not changed.
 - The bot refuses answers itself once its own reveal has happened (`posts.revealed`). There is no API call in that case.
 - 400, 404 and 429 are treated as "taking a break". A failed reveal is retried at the next hourly tick.
+
+## Contract follow-ups applied (coordinator message 2, 2026-10-03)
+
+- **Bot key:** every call to the web API carries `x-howsure-bot: <BOT_KEY>` (new secret). It is required for
+  same-day reveals and exempt from the `/api/*` rate limit. If BOT_KEY is missing, the worker fails fast: no call is
+  sent, the log says `BOT_KEY is not set`, and members see "taking a break". The test mock answers 403 to any API call
+  without the header, so every test checks it.
+- **No early peeking:** answers to `dq-<date>` come back `{locked: true, points_pending: true}`. The bot stores choice
+  and confidence only and shows "Locked in: B at 80%. Reveal at 22:00 UTC." (it never showed points). At the reveal
+  it settles every answer of that server and day from the reveal's `correct`, using the contract's rule
+  `100 − 400·(c − y)²`. The top 5, the 30-day board and the recap read those settled points. Values and sources come
+  from the reveal response. The reveal gives no per-member points, so the bot computes them; the API computes the same
+  numbers from the same rule.
+- **Pending answers** count for the streak (a day with an answer) but not for the 30-day board or the recap's
+  calibration, which read revealed answers only.
+- The migration (never deployed) was edited in place rather than given a 0002.
 
 ## Definitions the brief left open
 
@@ -104,12 +121,8 @@ run them under Node 22 against a real key pair.
   setting, its own daily posts, and per-day answers (choice, confidence, points) keyed by a salted hash of the member
   id. It never stores messages, usernames or member ids. Display names are fetched from Discord only while drawing a
   leaderboard."
-- **The planned rate-limit rule on `/api/*`** (USER_TODO: about 20 requests per IP per minute) would throttle the Slack
-  and Discord workers. Their requests to the Pages site all come from Cloudflare's worker egress, not from players.
-  They need an exemption (a header secret or a separate route).
-- **`/api/round/answer` returns the truth at once,** including for `dq-<date>`. Anyone calling the public API can
-  learn the day's answer before a server's reveal. The bot never shows it early, but leaderboards are only as honest
-  as that.
+- Resolved by the contract follow-ups: the rate-limit concern (the `x-howsure-bot` header is exempt) and early
+  peeking (`dq-` answers no longer return the truth).
 - **PREREG's MAU definition** lists "an in-channel Slack answer". `docs/api-rounds.md` counts a Discord in-channel
   answer as a play too, so the definition should say Slack or Discord.
 
@@ -125,10 +138,11 @@ grep -n -i -E "user_id|username|global_name|nick" src/store.js migrations/0001_i
 
 ## Verified and not verified
 
-- Verified: 34 tests with mocked Discord and a mocked rounds API, against the real migration on SQLite. The wrangler
-  4.147.0 dry-run bundle builds. Ed25519 was checked in workerd. Mutation check: 20 deliberate bugs, each of which
+- Verified: 36 tests with mocked Discord and a mocked rounds API, against the real migration on SQLite. The wrangler
+  4.147.0 dry-run bundle builds. Ed25519 was checked in workerd. Mutation check: 24 deliberate bugs, each of which
   turned the suite red:
-  - no salt; no signature check; no revision flag
+  - no salt; no bot key header; no signature check; no revision flag
+  - wrong points rule at settle; reveal never settles points; pending answers on the 30-day board
   - negative scores in the daily top; reveal never marked; double tap answered twice; completion counted twice
   - lost channel retried forever; failed post keeps its claim; setup open to all
   - no bluff threshold; roast off names; weak escaping; streak counts the recap day

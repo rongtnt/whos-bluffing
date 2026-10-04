@@ -20,4 +20,4 @@ API_BASE = "https://howsure.pages.dev"
 DISCORD_APP_ID = "REPLACE_WITH_APPLICATION_ID"
 
 # Secrets (set with `npx wrangler secret put NAME`, never in this file):
-# DISCORD_PUBLIC_KEY, DISCORD_BOT_TOKEN, SALT
+# DISCORD_PUBLIC_KEY, DISCORD_BOT_TOKEN, SALT, BOT_KEY

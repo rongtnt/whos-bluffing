@@ -33,7 +33,7 @@ test('tapping B on the daily post answers at once with a private confidence pick
   assert.equal(calls.length, 0);
 });
 
-test('a confidence tap defers, sends the hashed answer to the API, stores it, and edits the picker into "Locked in"', async () => {
+test('a confidence tap defers, sends the hashed answer with the bot key, stores it with points pending, and shows "Locked in"', async () => {
   const env = makeEnv();
   await postedToday(env);
   const calls = mockFetch();
@@ -45,6 +45,7 @@ test('a confidence tap defers, sends the hashed answer to the API, stores it, an
     round_id: 'dq-2026-10-06', item_id: 'p00042', choice: 1, conf: 80, rt_ms: 4000,
     anon_id: anon(GUILD, USER), community: community(GUILD), surface: 'discord',
   });
+  assert.equal(answer.headers['x-howsure-bot'], 'test-bot-key');
   assert.ok(!JSON.stringify(calls.filter((c) => c.host === 'api.test')).includes(USER), 'raw user id reached the API');
 
   const [edit] = originalEdits(calls);
@@ -52,7 +53,7 @@ test('a confidence tap defers, sends the hashed answer to the API, stores it, an
   assert.deepEqual(edit.body, { allowed_mentions: { parse: [] }, content: 'Locked in: B at 80%. Reveal at 22:00 UTC.', components: [] });
 
   assert.deepEqual(env.DB.rows('SELECT guild_id, anon_id, date, choice, conf, points, correct FROM answers'), [
-    { guild_id: GUILD, anon_id: anon(GUILD, USER), date: DATE, choice: 1, conf: 80, points: -156, correct: 0 },
+    { guild_id: GUILD, anon_id: anon(GUILD, USER), date: DATE, choice: 1, conf: 80, points: null, correct: null },
   ]);
 });
 
@@ -67,7 +68,7 @@ test('changing your mind before the reveal sends revision: true and replaces the
   assert.equal(first.body.revision, undefined);
   assert.equal(second.body.revision, true);
   assert.deepEqual([second.body.choice, second.body.conf], [0, 60]);
-  assert.deepEqual(env.DB.rows('SELECT choice, conf, points, correct FROM answers'), [{ choice: 0, conf: 60, points: 36, correct: 1 }]);
+  assert.deepEqual(env.DB.rows('SELECT choice, conf, points, correct FROM answers'), [{ choice: 0, conf: 60, points: null, correct: null }]);
   assert.equal(originalEdits(calls).at(-1).body.content, 'Locked in: A at 60%. Reveal at 22:00 UTC.');
 });
 
@@ -108,5 +109,15 @@ test('API down: the picker stays for another try and a private "taking a break" 
   assert.deepEqual(followUps(calls)[0].body, {
     allowed_mentions: { parse: [] }, flags: 64, content: 'HowSure is taking a break, try again in a minute.',
   });
+  assert.equal(env.DB.rows('SELECT * FROM answers').length, 0);
+});
+
+test('without BOT_KEY nothing reaches the web API and the member gets the "taking a break" notice', async () => {
+  const env = { ...makeEnv(), BOT_KEY: undefined };
+  await postedToday(env);
+  const calls = mockFetch();
+  await send(env, signedRequest(tapAfter(cId(0, 90), 1000)));
+  assert.equal(calls.filter((c) => c.host === 'api.test').length, 0);
+  assert.equal(followUps(calls)[0].body.content, 'HowSure is taking a break, try again in a minute.');
   assert.equal(env.DB.rows('SELECT * FROM answers').length, 0);
 });

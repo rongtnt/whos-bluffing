@@ -11,6 +11,7 @@ export const signWith = (privateKey, ts, body) => sign(null, Buffer.from(ts + bo
 export const signBody = (ts, body) => signWith(keys.privateKey, ts, body);
 
 export const SALT = 'test-salt';
+export const BOT_KEY = 'test-bot-key';
 export const APP_ID = '424242';
 // Snowflake-shaped ids long enough never to appear by chance inside a sha256 hex string.
 export const GUILD = '770000000000000001';
@@ -54,6 +55,7 @@ export const makeEnv = (db = fakeD1()) => ({
   DISCORD_PUBLIC_KEY: PUBLIC_KEY,
   DISCORD_BOT_TOKEN: 'bot-token',
   SALT,
+  BOT_KEY,
 });
 
 export const DATE = '2026-10-06'; // a Tuesday
@@ -73,7 +75,8 @@ export const COMPLETE = {
 
 // Installs a fetch mock. `discord(call)` may return {status, body} to override Discord; `api[path](call)` overrides the
 // API with data, or with a Response to set the status; `slow` delays every API answer (to make taps overlap).
-// The answer mock is idempotent per (anon_id, round_id, item_id) unless the body carries revision: true.
+// Like the real API: every call needs x-howsure-bot (403 otherwise), daily `dq-` answers come back locked with points
+// pending, and quick-round answers are idempotent per (anon_id, round_id, item_id).
 export function mockFetch({ discord = () => undefined, api = {}, apiDown = false, slow = 0 } = {}) {
   const calls = [];
   const answered = new Map();
@@ -91,6 +94,7 @@ export function mockFetch({ discord = () => undefined, api = {}, apiDown = false
       return json({});
     }
     if (slow) await new Promise((resolve) => setTimeout(resolve, slow));
+    if (call.headers['x-howsure-bot'] !== BOT_KEY) return json({ error: 'bot key' }, 403);
     if (apiDown) return json({ error: 'down' }, 503);
     if (api[call.path]) {
       const out = api[call.path](call);
@@ -100,6 +104,7 @@ export function mockFetch({ discord = () => undefined, api = {}, apiDown = false
     if (call.path === '/api/round') return json({ round_id: 'r1', mode: 'quick', date: DATE, items: roundItems() });
     if (call.path === '/api/round/complete') return json(COMPLETE);
     if (call.path === '/api/round/reveal') return json(REVEAL);
+    if (call.path === '/api/round/answer' && call.body.round_id.startsWith('dq-')) return json({ locked: true, points_pending: true });
     if (call.path === '/api/round/answer') {
       const b = call.body;
       const key = `${b.anon_id}:${b.round_id}:${b.item_id}`;
@@ -180,10 +185,11 @@ export async function addPost(env, { guild = GUILD, date = DATE, channel = CHANN
     .bind(guild, date, channel, message, revealAt, revealed, QUESTION.prompt, QUESTION.a, QUESTION.b).run();
 }
 
-export async function addAnswer(env, { guild = GUILD, user, date = DATE, choice, conf }) {
+// A revealed answer (A was right), or with `pending` one still waiting for its reveal (points and right/wrong NULL).
+export async function addAnswer(env, { guild = GUILD, user, date = DATE, choice, conf, pending = false }) {
   const correct = choice === 0;
   await env.DB.prepare('INSERT INTO answers (guild_id, anon_id, date, choice, conf, points, correct) VALUES (?, ?, ?, ?, ?, ?, ?)')
-    .bind(guild, anon(guild, user), date, choice, conf, points(conf, correct), correct ? 1 : 0).run();
+    .bind(guild, anon(guild, user), date, choice, conf, pending ? null : points(conf, correct), pending ? null : Number(correct)).run();
 }
 
 export { worker };

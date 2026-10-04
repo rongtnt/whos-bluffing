@@ -94,10 +94,15 @@ npx wrangler secret put DISCORD_PUBLIC_KEY    # paste the Public Key (General In
 npx wrangler secret put DISCORD_BOT_TOKEN     # paste the bot token (Bot page)
 openssl rand -hex 32                          # copy this value and keep a copy in your password manager
 npx wrangler secret put SALT                  # paste it
+npx wrangler secret put BOT_KEY               # paste the web project's BOT_KEY (the same value the Slack worker uses)
 ```
 
 Secrets take effect at once; no redeploy is needed. **Never change SALT.** Every member id is hashed with it, so a new
 SALT turns every member into a new player: MAU is counted twice and the boards reset.
+
+**BOT_KEY** goes out as the `x-howsure-bot` header on every call to the web API. The API needs it to reveal today's
+question, and the rate limit on `/api/*` exempts it. Without it every API call is refused at once and members see
+"taking a break". To rotate it, change it on the web project and on every bot together.
 
 **6. Interactions Endpoint URL (1 min).** On **General Information**, set **Interactions Endpoint URL** to
 `WORKER_URL/interactions` and press **Save Changes**. Discord checks the URL there and then: it sends one signed
@@ -162,6 +167,7 @@ Discord section yet; one is needed before listing (suggested text in `NOTES.md` 
 | `DISCORD_PUBLIC_KEY` | secret | General Information → Public Key |
 | `DISCORD_BOT_TOKEN` | secret | Bot → Reset Token |
 | `SALT` | secret | `openssl rand -hex 32`, set once, never change |
+| `BOT_KEY` | secret | the web project's BOT_KEY, sent as `x-howsure-bot` on every API call |
 | `DISCORD_APP_ID` | var in `wrangler.toml` | General Information → Application ID (public) |
 | `API_BASE` | var in `wrangler.toml` | web origin, e.g. `https://howsure.pages.dev` |
 
@@ -180,7 +186,8 @@ Stored in D1:
 
 - The server id, the chosen channel, the post hour, the reveal delay and the roast flag.
 - For each daily post: its message id and the day's question as the API served it.
-- For each answer: choice, confidence, points and right/wrong, under `sha256(guild_id:user_id:SALT)`.
+- For each answer: choice and confidence under `sha256(guild_id:user_id:SALT)`, plus points and right/wrong once the
+  reveal settles them. The API keeps daily points back until the reveal, so nobody can peek.
 - For a `/howsure play` round in progress: the round's questions and the running score.
 
 No member messages, usernames or raw Discord user ids are stored. Display names are fetched from Discord only while a

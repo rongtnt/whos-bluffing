@@ -9,20 +9,24 @@ async function sha256Hex(s) {
   return [...new Uint8Array(buf)].map((b) => b.toString(16).padStart(2, '0')).join('');
 }
 
-function salt(env) {
-  if (!env.SALT) throw new Error('SALT is not set'); // never hash without the salt
-  return env.SALT;
+// Never hash without the salt, never call the API without the bot key.
+function secret(env, name) {
+  if (!env[name]) throw new Error(`${name} is not set`);
+  return env[name];
 }
 
-export const anonId = (env, guildId, userId) => sha256Hex(`${guildId}:${userId}:${salt(env)}`);
-export const communityId = async (env, guildId) => `discord:${await sha256Hex(`${guildId}:${salt(env)}`)}`;
+export const anonId = (env, guildId, userId) => sha256Hex(`${guildId}:${userId}:${secret(env, 'SALT')}`);
+export const communityId = async (env, guildId) => `discord:${await sha256Hex(`${guildId}:${secret(env, 'SALT')}`)}`;
 
+// Every call carries x-howsure-bot: the API needs it for same-day reveals, and the rate limit exempts it.
 async function call(env, path, body) {
+  const headers = { 'x-howsure-bot': secret(env, 'BOT_KEY') };
   const init = body
-    ? { method: 'POST', headers: { 'content-type': 'application/json' }, body: JSON.stringify(body) }
-    : {};
+    ? { method: 'POST', headers: { ...headers, 'content-type': 'application/json' }, body: JSON.stringify(body) }
+    : { headers };
   const res = await fetch(env.API_BASE.replace(/\/$/, '') + path, { ...init, signal: AbortSignal.timeout(TIMEOUT_MS) });
-  // 400 invalid, 404 unknown round or item, 409 locked (a daily question older than yesterday), 429 rate limited.
+  // 400 invalid, 403 missing bot key, 404 unknown round or item, 409 locked (a daily question older than yesterday),
+  // 429 rate limited.
   if (!res.ok) throw Object.assign(new Error(`rounds API ${path.split('?')[0]} returned ${res.status}`), { status: res.status });
   return res.json();
 }

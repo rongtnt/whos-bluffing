@@ -226,9 +226,9 @@ async function lockIn(env, i, [date, roundId, itemId, choiceText, confText]) {
   const conf = Number(confText);
   const me = await who(env, i);
   const before = await store.getAnswer(env.DB, i.guild_id, date, me.anon_id);
-  let res;
   try {
-    res = await api.answer(env, {
+    // Daily questions come back {locked: true, points_pending: true}: no truth and no points until the reveal.
+    await api.answer(env, {
       round_id: roundId,
       item_id: itemId,
       choice,
@@ -242,20 +242,22 @@ async function lockIn(env, i, [date, roundId, itemId, choiceText, confText]) {
     // 409: the API locked that day (older than yesterday). Show the answer that stands, if there is one.
     return before ? game.lockedIn(before.choice, before.conf, post.reveal_at, true) : { content: game.TOO_LATE, components: [] };
   }
-  await store.saveAnswer(env.DB, {
-    guild_id: i.guild_id, anon_id: me.anon_id, date, choice, conf, points: Math.round(res.points), correct: res.correct ? 1 : 0,
-  });
+  await store.saveAnswer(env.DB, { guild_id: i.guild_id, anon_id: me.anon_id, date, choice, conf });
   return game.lockedIn(choice, conf, post.reveal_at);
 }
 
 // Edits the question post into the answer, drawn from the question stored with the post (daily-question only serves
-// today and yesterday) and the reveal endpoint. Returns false when someone else revealed it first. A post that is
-// gone (message or channel deleted, access lost) stays revealed; any other failure releases it for the next hourly run.
+// today and yesterday) and the reveal endpoint, whose `correct` also settles this server's points. Returns false when
+// someone else revealed it first. A post that is gone (message or channel deleted, access lost) stays revealed; any
+// other failure releases it for the next hourly run.
 export async function revealPost(env, post) {
   if (!(await store.claimReveal(env.DB, post.guild_id, post.date))) return false;
   try {
     const community = await api.communityId(env, post.guild_id);
-    const [r, top] = await Promise.all([api.reveal(env, post.date, community), store.dayTop(env.DB, post.guild_id, post.date)]);
+    const r = await api.reveal(env, post.date, community);
+    if (r.correct !== 0 && r.correct !== 1) throw new Error('reveal came without the right answer');
+    await store.settleAnswers(env.DB, post.guild_id, post.date, r.correct);
+    const top = await store.dayTop(env.DB, post.guild_id, post.date);
     const bluff = r.biggest_bluff?.conf >= game.BLUFF_CONF ? r.biggest_bluff : null;
     const named = [...top.map((t) => t.anon_id), ...(bluff && post.roast ? [bluff.anon_id] : [])];
     const names = await memberNames(env, post.guild_id, named);

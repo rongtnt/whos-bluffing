@@ -37,8 +37,8 @@ CREATE TABLE answers (
   date TEXT NOT NULL,
   choice INTEGER NOT NULL,                  -- 0 = A, 1 = B
   conf INTEGER NOT NULL,                    -- 50, 60, ... 100
-  points INTEGER NOT NULL,
-  correct INTEGER NOT NULL,                 -- needed for calibration: 50% scores 0 points right or wrong
+  points INTEGER,                           -- NULL until the reveal: the API keeps daily points back until then
+  correct INTEGER,                          -- NULL until the reveal; kept for calibration (50% scores 0 right or wrong)
   PRIMARY KEY (guild_id, date, anon_id)
 );
 

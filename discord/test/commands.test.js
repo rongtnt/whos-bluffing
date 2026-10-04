@@ -102,7 +102,7 @@ test("/howsure question posts today's question here with the bot token, once; la
   assert.equal(env2.DB.rows('SELECT * FROM posts').length, 0);
 });
 
-test('/howsure stats is public: the 30-day board by points with names looked up live, plus participation', async () => {
+test('/howsure stats is public: the 30-day board by points (revealed answers) with names looked up live, plus participation', async () => {
   const env = makeEnv();
   await install(env);
   const [MAYA, SAM, ANA] = ['880000000000000031', '880000000000000032', '880000000000000033'];
@@ -112,6 +112,7 @@ test('/howsure stats is public: the 30-day board by points with names looked up 
   await addAnswer(env, { user: SAM, date: today(), choice: 0, conf: 100 }); // +100
   await addAnswer(env, { user: ANA, date: yesterday, choice: 0, conf: 50 }); // 0
   await addAnswer(env, { user: ANA, date: '2020-01-01', choice: 0, conf: 100 }); // outside the window
+  await addAnswer(env, { user: '880000000000000034', date: today(), choice: 1, conf: 90, pending: true }); // not revealed yet
   const calls = mockFetch({
     discord: (c) => (c.path.endsWith('/members')
       ? { body: [{ user: { id: SAM, username: 'sam' }, nick: 'Sam' }, { user: { id: MAYA, username: 'maya', global_name: 'Maya' } }] }
