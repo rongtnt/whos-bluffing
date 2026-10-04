@@ -4,7 +4,7 @@
 
 // Addresses that exist only once the owner has set them up. An empty string hides whatever depends on it.
 const SLACK_INSTALL_URL = 'https://whosbluffing-slack.rongaijun41.workers.dev/slack/oauth/start'; // the Slack Worker's install URL (slack/README.md, step 8)
-const DISCORD_INSTALL_URL = 'https://whosbluffing-discord.rongaijun41.workers.dev/install'; // the Discord Worker's /install (discord/README.md, step 8)
+const DISCORD_INSTALL_URL = ''; // set to 'https://whosbluffing-discord.rongaijun41.workers.dev/install' once the Discord app exists; hidden while empty // the Discord Worker's /install (discord/README.md, step 8)
 const COMMUNITY_INVITE_URL = ''; // invite link to the Who's Bluffing Discord server (/community shows "opening soon" until set)
 const CONTACT_EMAIL = 'hello@whosbluffing.com'; // e.g. hello@whosbluffing.com once email routing works (hidden until set)
 const GITHUB_URL = 'https://github.com/rongtnt/whos-bluffing';
@@ -53,7 +53,7 @@ const ACTIONS_URL = 'https://github.com/rongtnt/whos-bluffing/actions'; // the r
   // Links that point at a constant: set the address, or keep them hidden while it is empty.
   function wireLinks() {
     for (const a of all('[data-slack-install]')) a.href = SLACK_INSTALL_URL;
-    for (const a of all('[data-discord-install]')) a.href = DISCORD_INSTALL_URL;
+    for (const a of all('[data-discord-install]')) { if (DISCORD_INSTALL_URL) a.href = DISCORD_INSTALL_URL; else a.hidden = true; }
     const social = { github: GITHUB_URL, community: COMMUNITY_INVITE_URL, x: X_URL, bluesky: BLUESKY_URL };
     for (const a of all('[data-social]')) {
       const url = social[a.dataset.social];
