@@ -20,6 +20,10 @@ export const HIST_MIN = -3000; // ten answers at 100% and wrong
 export const HIST_BUCKETS = 1001; // scores are multiples of 4 from -3000 to 1000
 export const BIN_WIDTH = 100; // /api/round/stats bins
 export const CONFIDENT_MISS = 70; // a wrong answer at this confidence or more can be roasted
+// A daily question is open on its UTC day and the next: it takes answers and revisions, and revealing it needs the bot
+// header (no peeking). Afterwards answers get 409 locked, the reveal is public and the KPI run settles leftover points.
+export const QUESTION_OPEN_DAYS = 2;
+const openFrom = (today) => addDays(today, 1 - QUESTION_OPEN_DAYS);
 const COMMUNITY_RE = /^(slack|discord|room):[A-Za-z0-9_-]{1,64}$/;
 const QUICK_RE = /^[A-Z2-9]{12}$/; // CODE_ALPHABET
 const NICK_RE = /^[\p{L}\p{N} .'_-]{1,24}$/u;
@@ -305,7 +309,7 @@ export async function answer(db, data, b, now) {
   if (bad) return bad;
   const today = todayUTC(now);
   const parsed = parseRoundId(b.round_id);
-  if (parsed.kind === 'question' && parsed.date < addDays(today, -1)) return err(409, 'locked'); // open today and yesterday only
+  if (parsed.kind === 'question' && parsed.date < openFrom(today)) return err(409, 'locked');
   const round = await resolveRound(db, data, b.round_id, now);
   if (round.error) return round.error;
   if (!round.ids.includes(b.item_id)) return err(404, 'item is not in this round');
@@ -359,11 +363,11 @@ const SETTLE_SQL = `UPDATE round_answers SET correct = (choice = ?1),
   points = 100 - ((conf - 100 * (choice = ?1)) * (conf - 100 * (choice = ?1))) / 25
   WHERE round_id = ?2 AND points IS NULL`;
 
-// KPI-run pass: settles every daily question that no longer takes answers (before yesterday), within `days` back.
+// KPI-run pass: settles every daily question that no longer takes answers, within `days` back.
 export async function settleQuestions(db, data, now, days = 35) {
   const today = todayUTC(now);
   const stmts = [];
-  for (let k = 2; k <= days; k += 1) {
+  for (let k = QUESTION_OPEN_DAYS; k <= days; k += 1) {
     const date = addDays(today, -k);
     const q = data.rounds[date]?.question;
     if (q) stmts.push(db.prepare(SETTLE_SQL).bind(data.pairs.get(q).truth, `dq-${date}`));
@@ -559,14 +563,14 @@ export function dailyQuestion(data, dateParam, now) {
   const today = todayUTC(now);
   const date = dateParam || today;
   if (!isDate(date)) return err(400, 'date must be YYYY-MM-DD');
-  const q = (date === today || date === addDays(today, -1)) && data.rounds[date]?.question;
+  const q = date >= openFrom(today) && date <= today && data.rounds[date]?.question;
   if (!q) return err(404, 'no daily question for that date (today or yesterday only)');
   const { prompt, a, b } = pairView(data, q);
   return ok({ round_id: `dq-${date}`, item_id: q, prompt, a, b });
 }
 
-// Settles the community's pending answers, then counts them. Today's reveal needs the bot header; earlier days are
-// public. biggest_bluff = the most confident wrong answer (earliest on a tie), or null.
+// Settles the community's pending answers, then counts them. While the question is open (today or yesterday) the reveal
+// needs the bot header; earlier days are public. biggest_bluff = the most confident wrong answer (earliest on a tie).
 export async function reveal(db, data, params, now, isBot) {
   const today = todayUTC(now);
   const date = params.date || today;
@@ -574,7 +578,7 @@ export async function reveal(db, data, params, now, isBot) {
   if (typeof params.community !== 'string' || !COMMUNITY_RE.test(params.community)) return err(400, 'community is required (slack:…, discord:… or room:…)');
   const q = date <= today && data.rounds[date]?.question;
   if (!q) return err(404, 'no daily question for that date');
-  if (date === today && !isBot) return err(403, "today's reveal needs the bot header");
+  if (date >= openFrom(today) && !isBot) return err(403, 'the question still takes answers: its reveal needs the bot header');
   const p = data.pairs.get(q);
   const roundId = `dq-${date}`;
   const [, counts, bluff] = await db.batch([

@@ -261,7 +261,7 @@ test('daily question: today or yesterday; answers locked in without truth or poi
   assert.equal((await db.prepare('SELECT rounds FROM player_days WHERE anon_id = ? AND day = ?').bind('f'.repeat(64), DAY).first()).rounds, 0);
 });
 
-test('reveal: today needs the bot header (403), earlier days are public; settles points; counts, split and biggest bluff per community', async () => {
+test('reveal: today and yesterday need the bot header (403), older days are public; settles points; counts, split and biggest bluff per community', async () => {
   const db = openD1();
   const p = DATA.pairs.get(DAYS[DAY].question);
   const say = (who, right, conf, community = 'slack:team1', at = '10:00') => answer(db, DATA, { round_id: `dq-${DAY}`, item_id: p.id,
@@ -270,7 +270,9 @@ test('reveal: today needs the bot header (403), earlier days are public; settles
   await say('b', false, 90, 'slack:team1', '10:01');
   await say('c', false, 90, 'slack:team1', '10:02'); // same confidence, later: not the biggest bluff
   await say('d', false, 100, 'discord:guild9'); // another community
-  assert.deepEqual(await reveal(db, DATA, { community: 'slack:team1' }, NOW, false), { status: 403, body: { error: "today's reveal needs the bot header" } });
+  const peek = { status: 403, body: { error: 'the question still takes answers: its reveal needs the bot header' } };
+  assert.deepEqual(await reveal(db, DATA, { community: 'slack:team1' }, NOW, false), peek);
+  assert.deepEqual(await reveal(db, DATA, { date: PREV, community: 'slack:team1' }, NOW, false), peek); // yesterday's still takes answers
   const r = await reveal(db, DATA, { community: 'slack:team1' }, NOW, true);
   const [a, b] = [DATA.items.get(p.a_id), DATA.items.get(p.b_id)];
   const wrong = 1 - p.truth;
@@ -278,8 +280,8 @@ test('reveal: today needs the bot header (403), earlier days are public; settles
     unit: a.en.unit, a_source: a.source, b_source: b.source, biggest_bluff: { anon_id: 'b'.padEnd(64, '0'), conf: 90, choice: wrong } });
   const pts = await db.prepare('SELECT anon_id, correct, points FROM round_answers WHERE round_id = ? ORDER BY anon_id').bind(`dq-${DAY}`).all();
   assert.deepEqual(pts.results.map((x) => [x.anon_id[0], x.correct, x.points]), [['a', 1, 84], ['b', 0, -224], ['c', 0, -224], ['d', null, null]]);
-  assert.equal((await reveal(db, DATA, { date: PREV, community: 'slack:team1' }, NOW, false)).status, 200); // past dates are public
-  assert.deepEqual((await reveal(db, DATA, { date: PREV, community: 'slack:team1' }, NOW, false)).body.n, 0);
+  assert.deepEqual((await reveal(db, DATA, { date: PREV, community: 'slack:team1' }, NOW, true)).body.n, 0); // with the header
+  assert.equal((await reveal(db, DATA, { date: OLD, community: 'slack:team1' }, NOW, false)).status, 200); // closed questions are public
   assert.equal((await reveal(db, DATA, { date: NEXT, community: 'slack:team1' }, NOW, true)).status, 404);
   assert.equal((await reveal(db, DATA, { community: 'team1' }, NOW, true)).status, 400);
   // The KPI run settles what nobody revealed once the question is closed (before yesterday).

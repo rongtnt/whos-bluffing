@@ -537,7 +537,11 @@ expect "reveal (bot header) -> 2 answers in the workspace, split, values, source
 req GET "/api/round/reveal?community=$GUILD" '' "x-howsure-bot: $BOT_KEY"
 expect "reveal per community (the Discord server) -> 1 answer, no bluff" 200 'r.n === 1 && r.biggest_bluff === null'
 req GET "/api/round/reveal?date=$YESTERDAY&community=$TEAM"
-expect "yesterday's reveal is public (no header) -> 200" 200 'r.n === 0'
+expect "yesterday's reveal without the bot header -> 403 (that question still takes answers)" 403 '/bot header/.test(r.error)'
+req GET "/api/round/reveal?date=$YESTERDAY&community=$TEAM" '' "x-howsure-bot: $BOT_KEY"
+expect "yesterday's reveal with the bot header -> 200" 200 'r.n === 0'
+req GET "/api/round/reveal?date=$TWO_AGO&community=$TEAM"
+expect "the reveal of two days ago is public (no header) -> 200" 200 'r.n === 0 && (r.correct === 0 || r.correct === 1)'
 req GET "/api/round/reveal?date=$TODAY"
 expect "reveal without a community -> 400" 400 'r.error'
 
