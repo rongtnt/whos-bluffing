@@ -4,7 +4,7 @@ Status: draft. The final version is committed **before** the public launch of th
 
 ## Study A — Web game (cross-sectional and within-person)
 
-**Design (revised 2026-10-03, before launch; see CHANGELOG).** The viral game is a round of 10 two-alternative comparison questions ("Which is longer: the Nile or the Danube?"). For each, the player picks an option and states a confidence of 50, 60, 70, 80, 90 or 100%, then sees the truth and both sources. Points follow the quadratic proper scoring rule 100 − 400(c − y)² (50% scores 0; 100% right +100; 100% wrong −300), so honest confidence maximizes expected points. One **ranked round** per UTC day (same 10 items for everyone, drawn only from items with a Wikidata reference or an independent fact-check) plus unlimited **quick rounds**. Challenge links let a second player take the same round. In Slack, one comparison question is posted per day in a channel; members answer with a confidence and the result is revealed at the workspace's hour. The 5-minute **full assessment** at `/test` keeps the earlier design (12 two-alternative items + 6 interval items + 2 attention checks).
+**Design (revised 2026-10-03, before launch; see CHANGELOG).** The viral game is a round of 10 two-alternative comparison questions ("Which is longer: the Nile or the Danube?"). For each, the player picks an option and states a confidence of 50, 60, 70, 80, 90 or 100%, then sees the truth and both sources. Points follow the quadratic proper scoring rule 100 − 400(c − y)² (50% scores 0; 100% right +100; 100% wrong −300), so honest confidence maximizes expected points. One **ranked round** per UTC day (same 10 items for everyone, drawn only from items with a Wikidata reference or an independent fact-check) plus unlimited **quick rounds**. Challenge links let a second player take the same round. In Slack and Discord, one comparison question is posted per day in a channel; members answer with a confidence and the result is revealed at the community's hour; members can also play full rounds inside the chat app. The 5-minute **full assessment** at `/test` keeps the earlier design (12 two-alternative items + 6 interval items + 2 attention checks).
 
 **Items.** Comparison pairs are generated from numeric facts of the same category and measurement definition with a ratio ≥ 1.3 (year categories: "Which came first?" with a gap ≥ 10 years); city populations are excluded. Every underlying value carries a source link; a flagged pair retires, and so does any pair sharing a retired value. Pair difficulty is first estimated from the ratio and later from play data.
 
@@ -39,7 +39,7 @@ Status: draft. The final version is committed **before** the public launch of th
 
 ## Metric definitions (for any public number)
 - **MAU**: anonymous ids with ≥ 1 play — a completed round of 10 (ranked or quick), a completed full assessment, or an in-channel Slack answer — in the trailing 30 days, summed across web and Slack without cross-surface deduplication (a person who plays on both counts twice; stated wherever MAU is reported). **DAU** likewise for one UTC day.
-- **Communities**: Slack workspaces with ≥ 1 completed play in the trailing 30 days plus classrooms with ≥ 5 finished assessments.
+- **Communities**: Slack workspaces, Discord servers and rooms with ≥ 1 play in the trailing 30 days, plus classrooms with ≥ 5 finished assessments; reported per platform and summed.
 - Computed once a day by a scheduled job into a `kpi` table; the public stats page and any application text use only that table.
 
 ## Data release
