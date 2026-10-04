@@ -19,7 +19,7 @@ How it works:
 
 1. Once a day it posts a question in the channel you pick, like "Which is longer: the Nile or the Danube?"
 2. Members tap A or B, then say how sure they are, from 50% to 100%. Answers stay private.
-3. Eight hours later the post turns into the reveal: the answer with sources, how the server split, the top 5, and the bluff of the day ("Someone was 90% sure the Danube is longer. It isn't.").
+3. At reveal time (your server picks the window, up to 23 hours) the post turns into the reveal: the answer with sources, how the server split, the top 5, and the bluff of the day ("Someone was 90% sure the Danube is longer. It isn't.").
 
 The scoring punishes bluffing: 50% scores 0, 100% scores +100 if you're right and −300 if you're wrong. Being sure only pays when you are right, so the leaderboard ends up showing who actually knows what they know.
 

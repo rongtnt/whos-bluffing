@@ -31,7 +31,7 @@ Don't take my word for it. Every answer comes with its source, so you can check.
 Spot a wrong one? Flag it. A question flagged by several players is taken out and checked.
 
 **5/**
-It also lives in Discord. Add the bot and it posts one question a day in your channel. Everyone answers privately. Eight hours later the post turns into the reveal: the answer, how the server split, the top 5 and the bluff of the day.
+It also lives in Discord. Add the bot and it posts one question a day in your channel. Everyone answers privately. At reveal time the post turns into the answer: how the server split, the top 5 and the bluff of the day.
 
 **6/**
 Roast mode is off by default, so the bluffer stays anonymous. Turn it on and the reveal names them. Brave servers only.
