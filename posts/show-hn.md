@@ -7,3 +7,5 @@ Each round ends with a type (Bluffer, Hot-headed, Calibrated, Modest, Hedger), a
 Slack and Discord apps post one question a day in a channel; everyone answers, and the reveal shows the channel who was right and the day's biggest bluff (anonymous by default; servers can turn on roast mode).
 
 Questions are built from Wikidata facts, with the source attached to every answer; players can flag bad ones. It is also a pre-registered study: do people get better calibrated with daily feedback? The anonymous data will be released under CC BY-NC, and the source is published for anyone to read. No accounts, no tracking, no ads. Cloudflare Pages + Workers + D1, vanilla JS. https://whosbluffing.com
+
+Attach: nothing (HN posts take no media); to show the game, link https://whosbluffing.com/press/demo.gif (`web/public/press/demo.gif`, live once deployed) in your opening comment.

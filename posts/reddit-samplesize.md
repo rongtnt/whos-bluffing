@@ -4,6 +4,8 @@ Replace `{URL}`. The title keeps the subreddit's usual format: `[Casual]` at the
 the end (check the sidebar; automated reading of Reddit was blocked). PLACES.md suggests linking `/test` (the 5-minute
 version) here; this body describes the one-minute game, so either link `{URL}` or rewrite the body for `/test`.
 
+Attach: `web/public/press/demo.gif` (640 × 640, 11 s loop) inline in the body if the subreddit allows images; otherwise post without it.
+
 ## Title options
 
 1. [Casual] Think you know things? Ten questions, one minute, and a score that makes bluffing cost you (everyone)

@@ -5,6 +5,7 @@ Paste-ready. Replace `<APP_ID>` (Developer Portal → General Information) and `
 `/bluff reveal`): reviewers try the commands.
 Claims that must stay true: "source published" (the repo is public from Mon Oct 5 morning); the data "will be
 released", never "is published", until it is out. Never "open source", "first" or "largest"; no mention of AI.
+Media: put `![Who's Bluffing demo](https://whosbluffing.com/press/demo.gif)` (the file `web/public/press/demo.gif`, 640 × 640, 11 s loop; live once deployed) at the top of the long description.
 
 ## Fields
 

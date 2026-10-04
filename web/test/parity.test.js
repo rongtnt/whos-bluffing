@@ -191,7 +191,7 @@ test('status page: verdicts for the server check and the KPI run; press images a
   assert.equal(kpiVerdict(null).state, 'down');
   assert.deepEqual(pngSize(readFileSync(new URL('public/og.png', WEB))), [1200, 630]);
   const press = read('public/press.html');
-  for (const [, file, w, h] of press.matchAll(/src="\/press\/(screen-[a-z]+\.png)" width="(\d+)" height="(\d+)"/g)) {
+  for (const [, file, w, h] of press.matchAll(/src="\/press\/([a-z0-9-]+\.png)" width="(\d+)" height="(\d+)"/g)) {
     assert.deepEqual(pngSize(readFileSync(new URL(`public/press/${file}`, WEB))), [Number(w), Number(h)], file);
   }
 });

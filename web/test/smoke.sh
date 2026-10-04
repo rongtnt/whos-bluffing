@@ -127,7 +127,7 @@ content /status '<script type="module" src="/status.js"></script>' 'status page 
 content /press '<p class="boilerplate">' 'press kit'
 content /changelog '<h1 id="changelog">Changelog</h1>' 'changelog (generated from CHANGELOG.md)'
 content /commands.json '"label": "Web shortcuts"' 'commands.json'
-for f in press/logo.png:image/png press/logo-dark.png:image/png press/icon-512.png:image/png press/logo.svg:image/svg+xml press/screen-home.png:image/png press/screen-question.png:image/png press/screen-result.png:image/png press/screen-discord.png:image/png; do
+for f in press/logo.png:image/png press/logo-dark.png:image/png press/icon-512.png:image/png press/logo.svg:image/svg+xml press/screen-home.png:image/png press/screen-question.png:image/png press/screen-result.png:image/png press/screen-discord.png:image/png press/demo.mp4:video/mp4 press/demo.gif:image/gif press/demo-poster.png:image/png press/demo-vertical.mp4:video/mp4 press/demo-vertical-poster.png:image/png; do
   META=$(curl -s -o /dev/null -w '%{http_code} %{content_type}' "$BASE/${f%%:*}")
   [[ "$META" == "200 ${f#*:}"* ]] || fail "GET /${f%%:*} -> 200 ${f#*:}" "$META"; pass "GET /${f%%:*} -> 200 ${f#*:}"
 done

@@ -13,8 +13,13 @@
 //                                          players for the leaderboard, and opens a challenge link from a fifth
 //   node design/render.js results [BASE]   design/screens/results-<width>-<theme>.png at 375, 768 and 1280 px: the full
 //                                          assessment (/test) played through to its results page, whole page
-import { spawn } from 'node:child_process';
-import { mkdtempSync, writeFileSync, readFileSync, rmSync } from 'node:fs';
+//   node design/render.js demo [BASE] [square|poster|vertical]
+//                                          public/press/demo.mp4 (1080x1080), demo.gif (640 px, loops), demo-poster.png
+//                                          (1200x675), demo-vertical.mp4 (1080x1920) and demo-vertical-poster.png (or one
+//                                          part): today's ranked round played in the page with motion on, shot with
+//                                          Page.captureScreenshot and cut with ffmpeg (FFMPEG=/path/to/ffmpeg picks another)
+import { spawn, spawnSync } from 'node:child_process';
+import { mkdtempSync, mkdirSync, writeFileSync, readFileSync, rmSync, copyFileSync, existsSync } from 'node:fs';
 import { tmpdir } from 'node:os';
 import { join } from 'node:path';
 import { fileURLToPath } from 'node:url';
@@ -73,8 +78,8 @@ async function evaluate(cdp, expression) {
 }
 
 // Opens url at the given size and theme; waits for the app's first render (html.ready) unless waitReady is false.
-async function open(cdp, url, { width, height = 900, dark = false, mobile = width < 768, motion = 'reduce', waitReady = true }) {
-  await cdp.send('Emulation.setDeviceMetricsOverride', { width, height, deviceScaleFactor: 1, mobile });
+async function open(cdp, url, { width, height = 900, scale = 1, dark = false, mobile = width < 768, motion = 'reduce', waitReady = true }) {
+  await cdp.send('Emulation.setDeviceMetricsOverride', { width, height, deviceScaleFactor: scale, mobile });
   await cdp.send('Emulation.setEmulatedMedia', { features: [
     { name: 'prefers-color-scheme', value: dark ? 'dark' : 'light' }, { name: 'prefers-reduced-motion', value: motion }] });
   const loaded = cdp.next('Page.loadEventFired');
@@ -279,7 +284,246 @@ async function checks(cdp, base) {
   return problems;
 }
 
-const [mode = 'assets', base = 'http://127.0.0.1:8788'] = process.argv.slice(2);
+// --- the press demo (mode demo) -------------------------------------------------------------------------------------
+
+const FFMPEG = process.env.FFMPEG ?? 'ffmpeg';
+const PRESS = join(WEB, 'public/press');
+const FPS = 30;
+const MAX_SHOT_S = 0.2; // a longer gap between two shots is not shown as a freeze
+const START_HOLD_S = 0.6;
+const LOCKUP_S = 1.5;
+const END_HOLD_S = 1.5;
+const GIF_S = 12;
+const INTRO_S = 5; // demo-vertical: intro clip, round, end card
+const ROUND_S = 17;
+const END_CARD_S = 3;
+// Ten answers per take, [right, conf]; a take shows the leading ones and plays the rest off camera. Both takes end
+// Hot-headed (7 of 10 right at 81 to 82% sure), the 100% miss giving the roast line.
+const SQUARE_PLAN = [[1, 80], [0, 100], [1, 90], [1, 80], [0, 70], [1, 80], [1, 80], [0, 80], [1, 80], [1, 80]];
+const VERTICAL_PLAN = [[0, 100], [1, 80], [0, 70], [1, 80], [1, 80], [0, 80], [1, 80], [1, 80], [1, 80], [1, 80]];
+// demo-vertical follows posts/video-script.md: captions in the top third, the game below them (the nav hidden, the
+// round pushed down), so a caption never covers it.
+const VERTICAL_TOP = 140; // CSS px above the round
+const CAPTION_Y = 250; // px, the captions' centre in the 1080x1920 frame
+// Chrome's JPEG shots are full-range BT.601; the videos are limited-range BT.709, tagged so.
+const TO_709 = 'scale=out_color_matrix=bt709:out_range=tv,setsar=1,format=yuv420p';
+const TAGS_709 = ['-colorspace', 'bt709', '-color_primaries', 'bt709', '-color_trc', 'bt709', '-color_range', 'tv'];
+
+function ffmpeg(...args) {
+  const r = spawnSync(FFMPEG, ['-y', '-loglevel', 'error', ...args], { stdio: 'inherit' });
+  if (r.status !== 0) throw new Error(`ffmpeg exited with ${r.status}: ${args.join(' ')}`);
+}
+
+// JPEG shots of the viewport every 1/FPS s (or as fast as Chrome returns them) while on. Frames are { file, t }, t in
+// ms on a clock that stops while paused, so a pause leaves no gap.
+function recorder(cdp, dir) {
+  const frames = [];
+  let on = false, done = false, clock = 0, since = 0, busy = Promise.resolve();
+  const now = () => clock + (on ? Date.now() - since : 0);
+  const loop = (async () => {
+    while (!done) {
+      if (!on) { await sleep(5); continue; }
+      const t0 = Date.now();
+      const asked = now();
+      busy = cdp.send('Page.captureScreenshot', { format: 'jpeg', quality: 92, optimizeForSpeed: true });
+      const { data } = await busy;
+      const t = (asked + now()) / 2; // a shot takes ~50 ms; it shows the page somewhere inside that
+      const file = join(dir, `f${String(frames.length).padStart(5, '0')}.jpg`);
+      writeFileSync(file, Buffer.from(data, 'base64'));
+      frames.push({ file, t });
+      await sleep(Math.max(0, 1000 / FPS - (Date.now() - t0)));
+    }
+  })();
+  return {
+    frames, now,
+    start() { since = Date.now(); on = true; },
+    async pause() { clock = now(); on = false; await busy; },
+    async stop() { await this.pause(); done = true; await loop; },
+  };
+}
+
+// An ffmpeg concat list: each shot lasts until the next one (at most MAX_SHOT_S), the opening one `lead` s longer, then
+// the stills of `tail` ([file, s] each). The last entry is repeated: concat ignores the duration of the last one.
+function concatList(path, frames, lead = 0, tail = []) {
+  const shots = [...frames.map((f, i) => [f.file, (i ? 0 : lead)
+    + (i + 1 < frames.length ? Math.min(MAX_SHOT_S, (frames[i + 1].t - f.t) / 1000) : 1 / FPS)]), ...tail];
+  writeFileSync(path, [...shots.flatMap(([file, s]) => [`file '${file}'`, `duration ${s.toFixed(4)}`]), `file '${shots.at(-1)[0]}'`].join('\n'));
+  return shots.reduce((sum, [, s]) => sum + s, 0);
+}
+
+// In the page: taps the right (or wrong) option of the question on screen, then waits for the confidence picker.
+const pickInPage = (truth, right) => `(async () => { ${waitFor('button.pick')};
+  const st = JSON.parse(localStorage.getItem('whosbluffing_round')); const k = st.items.findIndex((i) => !st.answers[i.id]);
+  const t = ${JSON.stringify(Object.fromEntries(truth))}[st.items[k].id];
+  document.querySelectorAll('button.pick')[${right ? 't' : '1 - t'}].click(); ${waitFor('#conf:not([hidden]) [data-conf="50"]')}; return true; })()`;
+// In the page: stakes conf (the button shown pressed for a beat, as under a finger), then waits for the reveal.
+const stakeInPage = (conf) => `(async () => { const b = ${waitFor(`#conf:not([hidden]) [data-conf="${conf}"]`)};
+  b.setAttribute('aria-pressed', 'true'); await new Promise((r) => setTimeout(r, 300)); b.click(); ${waitFor('.reveal')}; return true; })()`;
+const nextInPage = `(async () => { (${waitFor('#next')}).click(); ${waitFor('button.pick')}; return true; })()`;
+
+// A fresh player in this browser (sound off).
+async function freshPlayer(cdp, base, view) {
+  await open(cdp, `${base}/support`, view);
+  await evaluate(cdp, `localStorage.clear(); localStorage.setItem('whosbluffing_anon', ${JSON.stringify(JSON.stringify(`demo${Date.now().toString(36)}`.padEnd(22, 'p')))});
+    localStorage.setItem('whosbluffing_sound', 'off'); true`);
+}
+
+// One take of today's ranked round, played by clicks at width x height CSS px times scale, motion on: the home page
+// for `home` ms (if set), then the answers of `plan`, those with a hold on camera (read ms on the question, think ms
+// on the open picker, the hold on the reveal), the rest paused; then the end screen for endHold ms. Returns
+// { frames, marks }, marks in ms on the recorder's clock.
+async function demoTake(cdp, base, truth, dir, { width, height, scale, home = 0, prep, read, think, holds, plan, endHold }) {
+  mkdirSync(dir, { recursive: true });
+  await freshPlayer(cdp, base, { width, height, scale });
+  await open(cdp, `${base}/`, { width, height, scale, motion: 'no-preference' });
+  if (prep) await evaluate(cdp, prep);
+  const rec = recorder(cdp, dir);
+  const marks = {};
+  const mark = (name, t = rec.now()) => { marks[name] = t; console.log(`  ${(t / 1000).toFixed(2)} s  ${name}`); };
+  if (home) { rec.start(); mark('home'); await sleep(home); }
+  await evaluate(cdp, `(async () => { document.getElementById('play').click(); ${waitFor('button.pick')}; return true; })()`);
+  if (!home) rec.start();
+  for (const [k, [right, conf]] of plan.entries()) {
+    if (k) await evaluate(cdp, nextInPage);
+    if (k >= holds.length) { await evaluate(cdp, pickInPage(truth, right)); await evaluate(cdp, stakeInPage(conf)); continue; }
+    mark(`q${k + 1}`); await sleep(read);
+    await evaluate(cdp, pickInPage(truth, right)); mark(`q${k + 1} pick`); await sleep(think);
+    await evaluate(cdp, stakeInPage(conf)); mark(`q${k + 1} reveal`); await sleep(holds[k]);
+    if (k + 1 === holds.length) { mark('cut'); await rec.pause(); }
+  }
+  await evaluate(cdp, `(async () => { (${waitFor('#next')}).click(); ${waitFor('.result-title')};
+    document.getElementById('app').scrollIntoView({ behavior: 'instant' }); return true; })()`);
+  rec.start();
+  const n = rec.frames.length;
+  while (rec.frames.length === n) await sleep(5);
+  mark('end', rec.frames[n].t); // the end screen's opening shot: the cut
+  await sleep(endHold);
+  await rec.stop();
+  console.log(`  ${rec.frames.length} shots in ${(rec.now() / 1000).toFixed(1)} s (${(rec.frames.length / rec.now() * 1000).toFixed(1)} per s)`);
+  return { frames: rec.frames, marks };
+}
+
+// A still from an HTML string, width x height at 1x; transparent where the page is.
+async function still(cdp, file, html, width, height) {
+  const page = `${file}.html`;
+  writeFileSync(page, html);
+  await cdp.send('Emulation.setDefaultBackgroundColorOverride', { color: { r: 0, g: 0, b: 0, a: 0 } });
+  await open(cdp, `file://${page}`, { width, height, mobile: false, waitReady: false });
+  await capture(cdp, file, width, height);
+  await cdp.send('Emulation.setDefaultBackgroundColorOverride', {});
+}
+
+const cardPage = (css, body) => `<!doctype html><html lang="en" data-theme="light"><head><meta charset="utf-8">
+<link rel="stylesheet" href="file://${WEB}public/styles.css"><style>html, body { width: 1080px; height: 1920px; margin: 0; } ${css}</style></head>
+<body>${body}</body></html>`;
+// A caption: white 800-weight type on a soft dark band, centred at y px of a 1080x1920 frame.
+const captionPage = (text) => cardPage(`html, body { background: transparent !important; }
+p { position: absolute; left: 50%; top: ${CAPTION_Y}px; transform: translate(-50%, -50%); margin: 0; padding: 24px 42px; border-radius: 32px;
+  white-space: nowrap; background: rgba(14, 17, 22, 0.7); box-shadow: 0 0 56px 18px rgba(14, 17, 22, 0.3);
+  color: #fff; font: 800 60px/1.15 var(--font); letter-spacing: -0.02em; }`, `<p>${text}</p>`);
+const endCardPage = cardPage(`body { display: flex; flex-direction: column; align-items: center; justify-content: center; background: var(--bg); }
+img { width: 1040px; height: auto; margin-bottom: 40px; } p { margin: 0; font: 800 72px/1.2 var(--font); letter-spacing: -0.02em; color: var(--text); }
+p + p { margin-top: 20px; font: 800 60px/1.2 var(--font); color: var(--accent); }`,
+`<img src="file://${PRESS}/logo.png" alt=""><p>Your turn. Prove it.</p><p>whosbluffing.com</p>`);
+
+// demo.mp4: a 600 px square page at 1.8x (1080x1080): the home page, three answers, the end screen, then og.png as the
+// lockup card. demo.gif: question 1 to the end of the question 2 reveal (at most GIF_S), 640 px.
+async function squareDemo(cdp, base, truth, dir) {
+  console.log('square take');
+  const take = await demoTake(cdp, base, truth, join(dir, 'square'), { width: 600, height: 600, scale: 1.8, home: 1500,
+    read: 1300, think: 1100, holds: [2600, 3200, 2200], plan: SQUARE_PLAN, endHold: 4000 });
+  const card = join(dir, 'lockup.jpg');
+  ffmpeg('-i', join(WEB, 'public/og.png'), '-vf', 'scale=1080:-1:flags=lanczos,pad=1080:1080:0:(oh-ih)/2:color=#FBFAF7,format=yuvj420p', '-q:v', '1', card);
+  const list = join(dir, 'square.txt');
+  const total = concatList(list, take.frames, START_HOLD_S, [[card, LOCKUP_S + END_HOLD_S]]);
+  const mp4 = join(dir, 'demo.mp4');
+  ffmpeg('-f', 'concat', '-safe', '0', '-i', list, '-vf', `fps=${FPS},${TO_709}`, '-t', total.toFixed(3), // -t: fps would stretch the repeated still
+    '-c:v', 'libx264', '-preset', 'slow', '-crf', '20', ...TAGS_709, '-movflags', '+faststart', '-an', mp4);
+  const at = (name) => START_HOLD_S + (take.marks[name] - take.frames[0].t) / 1000; // in the mp4
+  const to = at('q3');
+  const from = Math.max(at('q1'), to - GIF_S);
+  ffmpeg('-ss', from.toFixed(3), '-t', (to - from).toFixed(3), '-i', mp4, '-vf',
+    'fps=15,scale=640:-1:flags=lanczos,split[a][b];[a]palettegen=stats_mode=diff[p];[b][p]paletteuse=dither=bayer:bayer_scale=5:diff_mode=rectangle',
+    '-loop', '0', join(dir, 'demo.gif'));
+}
+
+// demo-poster.png (1200x675): question 1 with an option picked and the confidence picker open; the nav keeps only the
+// lockup.
+async function demoPoster(cdp, base, dir) {
+  console.log('poster');
+  await freshPlayer(cdp, base, { width: 1200, height: 675 });
+  await open(cdp, `${base}/`, { width: 1200, height: 675 });
+  await evaluate(cdp, `(async () => { document.getElementById('play').click(); ${waitFor('button.pick')};
+    document.querySelectorAll('button.pick')[1].click(); ${waitFor('#conf:not([hidden]) [data-conf="80"]')};
+    for (const el of document.querySelectorAll('.nav-links, .nav-bar .icon-btn')) el.style.display = 'none';
+    const css = (sel, props) => Object.assign(document.querySelector(sel).style, props);
+    css('html', { scrollbarGutter: 'auto' });
+    css('.nav', { borderBottom: '0', background: 'transparent', backdropFilter: 'none' });
+    css('.nav-bar', { maxWidth: 'none', minHeight: '96px', padding: '0 44px' });
+    css('.nav .brand', { fontSize: '32px', gap: '12px' });
+    css('#app', { zoom: '1.32', paddingTop: '0' });
+    return true; })()`);
+  await capture(cdp, join(dir, 'demo-poster.png'), 1200, 675);
+}
+
+// demo-vertical.mp4 (1080x1920), timed and worded by posts/video-script.md: the intro clip under two captions
+// (INTRO_S), a 375 px page at 2.88 answering question 1 wrong at 100% then the end screen, under five captions
+// (ROUND_S), and the end card: the lockup, the last line and the address (END_CARD_S). Captions change on the beat
+// (the tap, the stake, the cut). demo-vertical-poster.png: the intro's closing frame under its second caption.
+async function verticalDemo(cdp, base, truth, dir) {
+  console.log('vertical take');
+  const prep = `(() => { document.querySelector('.nav').style.display = 'none';
+    Object.assign(document.getElementById('app').style, { paddingTop: '${VERTICAL_TOP}px', scrollMarginTop: '0' }); return true; })()`;
+  const take = await demoTake(cdp, base, truth, join(dir, 'vertical'), { width: 375, height: 667, scale: 2.88, prep,
+    read: 3000, think: 2680, holds: [6000], plan: VERTICAL_PLAN, endHold: 5600 });
+  const at = (name) => INTRO_S + (take.marks[name] - take.frames[0].t) / 1000; // in the cut
+  const captions = [['Think you know things?', 0, 2.5], ['Let’s see who’s bluffing.', 2.5, INTRO_S],
+    ['Easy question. Pick one.', INTRO_S, at('q1 pick')], ['How sure? 100%, obviously.', at('q1 pick'), at('q1 reveal')],
+    ['100% sure. 100% wrong.', at('q1 reveal'), at('q1 reveal') + 3], ['That’s minus 300 points.', at('q1 reveal') + 3, at('end')],
+    ['And yes, it roasts you.', at('end'), INTRO_S + ROUND_S]];
+  const files = [];
+  for (const [i, [text]] of captions.entries()) {
+    files.push(join(dir, `caption${i}.png`));
+    await still(cdp, files[i], captionPage(text), 1080, 1920);
+  }
+  const card = join(dir, 'end-card.png');
+  await still(cdp, card, endCardPage, 1080, 1920);
+  const list = join(dir, 'vertical.txt');
+  const shot = concatList(list, take.frames);
+  if (shot < ROUND_S) throw new Error(`the vertical take is ${shot.toFixed(2)} s, shorter than ${ROUND_S} s`);
+  const intro = join(PRESS, 'intro-cards-raw.mp4');
+  const graph = [`[0:v]trim=duration=${INTRO_S},setpts=PTS-STARTPTS,fps=${FPS},scale=1080:1920:flags=lanczos:in_color_matrix=bt709:in_range=tv:out_color_matrix=bt709:out_range=tv,setsar=1,format=yuv420p[intro]`,
+    `[1:v]fps=${FPS},crop=1080:1920:0:0,${TO_709},trim=duration=${ROUND_S},setpts=PTS-STARTPTS[round]`, `[2:v]fps=${FPS},${TO_709},trim=duration=${END_CARD_S}[end]`,
+    '[intro][round][end]concat=n=3:v=1:a=0[v0]',
+    ...captions.map(([, from, to], i) => `[v${i}][${i + 3}:v]overlay=0:0:enable='gte(t,${from.toFixed(3)})*lt(t,${to.toFixed(3)})'[v${i + 1}]`)];
+  ffmpeg('-i', intro, '-f', 'concat', '-safe', '0', '-i', list, '-loop', '1', '-t', String(END_CARD_S), '-i', card,
+    ...files.flatMap((f) => ['-i', f]), '-filter_complex', graph.join(';'), '-map', `[v${captions.length}]`, '-an',
+    '-c:v', 'libx264', '-preset', 'slow', '-crf', '21', ...TAGS_709, '-movflags', '+faststart', join(dir, 'demo-vertical.mp4'));
+  ffmpeg('-ss', String(INTRO_S - 0.08), '-i', intro, '-i', files[1], '-filter_complex',
+    '[0:v]scale=1080:1920:flags=lanczos:in_color_matrix=bt709:in_range=tv,format=rgb24[b];[b][1:v]overlay=0:0:format=rgb',
+    '-frames:v', '1', join(dir, 'demo-vertical-poster.png'));
+}
+
+async function demo(cdp, base, only) {
+  const ranked = await fetch(`${base}/api/round?mode=ranked`).then((r) => r.json());
+  const all = truthOf();
+  const truth = new Map(ranked.items.map((i) => [i.id, all.get(i.id)]));
+  const players = [['1111111110', [90]], ['1101101101', [80, 70]], ['1010101010', [100, 60]], ['1111110000', [70]]];
+  for (const [i, [pattern, confs]] of players.entries()) {
+    await playRoundApi(base, ranked, `demoApi${Date.now().toString(36)}${i}`.padEnd(22, 'x'), pattern, confs); // for the rank tile
+  }
+  const dir = mkdtempSync(join(tmpdir(), 'whosbluffing-demo-'));
+  if (!only || only === 'square') await squareDemo(cdp, base, truth, dir);
+  if (!only || only === 'poster') await demoPoster(cdp, base, dir);
+  if (!only || only === 'vertical') await verticalDemo(cdp, base, truth, dir);
+  // Copied in at the end: a write under public/ makes `wrangler pages dev` reload, which would break a take.
+  for (const f of ['demo.mp4', 'demo.gif', 'demo-poster.png', 'demo-vertical.mp4', 'demo-vertical-poster.png']) {
+    if (existsSync(join(dir, f))) { copyFileSync(join(dir, f), join(PRESS, f)); console.log(`wrote web/public/press/${f}`); }
+  }
+  rmSync(dir, { recursive: true, force: true });
+}
+
+const [mode = 'assets', base = 'http://127.0.0.1:8788', part] = process.argv.slice(2);
 const cdp = await launch();
 let failed = 0;
 try {
@@ -288,7 +532,8 @@ try {
   else if (mode === 'checks') failed = await checks(cdp, base);
   else if (mode === 'rounds') await roundScreens(cdp, base);
   else if (mode === 'results') await resultScreens(cdp, base);
-  else throw new Error(`unknown mode ${mode} (assets | screens | checks | rounds | results)`);
+  else if (mode === 'demo') await demo(cdp, base, part);
+  else throw new Error(`unknown mode ${mode} (assets | screens | checks | rounds | results | demo)`);
 } finally {
   cdp.close();
 }
