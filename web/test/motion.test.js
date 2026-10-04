@@ -193,7 +193,7 @@ test('sound: a silent no-op without WebAudio; with it, notes only while the spea
   assert.equal(started.length, 8, 'muted: no notes');
 });
 
-test('brand mark: the share card draws the five-piece question mark, and no five-squares-in-a-row logo is left', async () => {
+test('brand mark: two fanned cards with the pip cut out, on every page, the challenge page, the share card and the icons', async () => {
   const { drawMark, MARK_PIECES } = await import('../public/share.js');
   const ops = [];
   const g = {
@@ -201,19 +201,42 @@ test('brand mark: the share card draws the five-piece question mark, and no five
     scale: (x) => ops.push(['scale', x]), rotate: (a) => ops.push(['rotate', Math.round((a * 180) / Math.PI)]), beginPath() {},
     roundRect: (...a) => ops.push(['rect', ...a]), fill: () => ops.push(['fill', g.fillStyle]),
   };
-  const w = drawMark(g, 10, 20, 60, '#111827', '#2F5BFF');
-  assert.equal(w, 28);
+  const w = drawMark(g, 10, 20, 44, { back: '#2F5BFF', front: '#111827', hole: '#FBFAF7' });
+  assert.equal(w, 38);
+  // brand/README.md: back card centre (16.5, 20), 25 x 35, rx 5.5, -14°; front card centre (22.5, 24), +9°; pip 9.5 x 9.5,
+  // rx 1.6, centred on the front card and turned a further 45°. Drawn back, front, pip; the pip in the background colour.
+  assert.deepEqual(MARK_PIECES, [[4, 2.5, 25, 35, 5.5, -14, 16.5, 20], [10, 6.5, 25, 35, 5.5, 9, 22.5, 24], [17.75, 19.25, 9.5, 9.5, 1.6, 54, 22.5, 24]]);
   assert.deepEqual(ops.filter((o) => o[0] === 'rect').map((o) => o.slice(1)), MARK_PIECES.map(([x, y, pw, ph, r]) => [x, y, pw, ph, r]));
-  assert.deepEqual(MARK_PIECES.map((p) => p.slice(0, 5)), [[0, 0, 28, 10, 3], [18, 12.2, 10, 12, 3], [10.5, 24.5, 16, 10, 3], [9, 36.5, 10, 8, 3], [9.6, 48.5, 8.8, 8.8, 2.5]]);
-  assert.deepEqual(ops.filter((o) => o[0] === 'rotate').map((o) => o[1]), [-52, 45]); // the elbow and the dot
-  assert.deepEqual(ops.filter((o) => o[0] === 'fill').map((o) => o[1]), ['#111827', '#111827', '#111827', '#111827', '#2F5BFF']);
+  assert.deepEqual(ops.filter((o) => o[0] === 'rotate').map((o) => o[1]), [-14, 9, 54]);
+  assert.deepEqual(ops.filter((o) => o[0] === 'fill').map((o) => o[1]), ['#2F5BFF', '#111827', '#FBFAF7']);
   const share = read('share.js');
-  assert.doesNotMatch(share, /i < 5|COLORS\.(hit|miss)/, 'the old five-square drawing is gone');
+  assert.equal([...share.matchAll(/^ {2}\[[\d.]+, [\d.]+, [\d.]+, [\d.]+, [\d.]+, -?\d+, [\d.]+, [\d.]+\], \/\/ (.+)$/gm)].map((m) => m[1]).join(), 'back card,front card,pip');
+  // Pages and the challenge template: every mark is the cards mark (viewBox 38 x 44, classes back, front, pip).
+  const inline = readFileSync(new URL('../../brand/mark-inline.svg', import.meta.url), 'utf8').trim();
   const pages = readdirSync(PUBLIC, { recursive: true }).filter((f) => f.endsWith('.html')).map(read);
-  for (const h of pages) assert.doesNotMatch(h, /viewBox="0 0 76 12"|class="hero-mark anim" data-mark aria-hidden="true"><i>/, 'an old five-square mark');
-  for (const f of ['og.html', 'logo.html']) assert.doesNotMatch(readFileSync(new URL(`../design/${f}`, import.meta.url), 'utf8'), /class="squares"|viewBox="0 0 76 12"/, f);
-  assert.equal(read('favicon.svg').trim(), readFileSync(new URL('../../brand/icon.svg', import.meta.url), 'utf8').trim());
-  const challengeTemplate = JSON.parse(readFileSync(new URL('../functions/_page.json', import.meta.url), 'utf8')).html; // the challenge page's chrome
-  assert.ok(challengeTemplate.includes('<svg class="mark anim" data-mark viewBox="0 0 28 60"') && !challengeTemplate.includes('viewBox="0 0 76 12"'));
-  for (const h of pages.filter((x) => x.includes('<header class="nav">'))) assert.match(h, /<a class="brand" href="\/"><span>Who's Bluffing<span class="sr-only">\?<\/span><\/span><svg class="mark anim" data-mark viewBox="0 0 28 60"/);
+  const challengeTemplate = JSON.parse(readFileSync(new URL('../functions/_page.json', import.meta.url), 'utf8')).html;
+  const marks = [...pages, challengeTemplate].flatMap((h) => [...h.matchAll(/<svg class="mark[^"]*"[^>]*viewBox="([^"]+)"[^>]*>([\s\S]*?)<\/svg>/g)]);
+  assert.ok(marks.length >= 43, `${marks.length} marks`);
+  for (const [, viewBox, body] of marks) {
+    assert.equal(viewBox, '0 0 38 44');
+    assert.deepEqual([...body.matchAll(/<rect class="([a-z]+)"/g)].map((m) => m[1]), ['back', 'front', 'pip']);
+  }
+  for (const h of [...pages.filter((x) => x.includes('<header class="nav">')), challengeTemplate]) {
+    assert.ok(h.includes(`<a class="brand" href="/">${inline}<span>Who's Bluffing?</span></a>`), 'the lockup: mark, then the name with its question mark');
+  }
+  assert.doesNotMatch([...pages, challengeTemplate].join(''), /sr-only">\?</);
+  for (const f of ['og.html', 'logo.html']) {
+    const t = readFileSync(new URL(`../design/${f}`, import.meta.url), 'utf8');
+    assert.match(t, /<svg class="mark" viewBox="0 0 38 44"[^>]*><g transform="rotate\(-14 16\.5 20\)"><rect class="back"/, f);
+    assert.match(t, /<span>Who's Bluffing\?<\/span>/, f);
+    assert.doesNotMatch(t, /class="squares"/, f);
+  }
+  const brand = (f) => readFileSync(new URL(`../../brand/${f}`, import.meta.url));
+  assert.equal(read('favicon.svg').trim(), brand('icon.svg').toString().trim());
+  assert.equal(read('press/logo.svg').trim(), brand('mark.svg').toString().trim());
+  assert.ok(readFileSync(new URL('press/icon-512.png', PUBLIC)).equals(brand('png/icon-512.png')));
+  // The pip is cut out: the background colour on pages (the footer's surface there), never a colour of its own.
+  const css = read('styles.css');
+  assert.match(css, /\.mark \.pip \{ fill: var\(--mark-hole, var\(--bg\)\); \}/);
+  assert.match(css, /\.site-foot \{ --mark-hole: var\(--surface\);/);
 });

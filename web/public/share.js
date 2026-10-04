@@ -10,47 +10,43 @@ const SIZES = {
 const FONT = 'ui-sans-serif, -apple-system, "Segoe UI", Roboto, Helvetica, Arial, sans-serif, "Apple Color Emoji", "Segoe UI Emoji", "Noto Color Emoji"';
 const COLORS = { bg: '#FBFAF7', fg: '#111827', muted: '#5B6472', accent: '#2F5BFF' }; // light tokens (styles.css)
 
-// The mark (brand/mark.svg, viewBox 28 x 60): a question mark in five rounded pieces; the elbow is turned -52° about
-// (18.5, 29.5) and the dot, a square, 45° about (14, 52.9). [x, y, w, h, r, degrees, cx, cy] in mark units.
+// The mark (brand/mark.svg, viewBox 38 x 44): two fanned cards, drawn back to front, and the diamond pip cut out of the
+// front card (drawn in the background colour). [x, y, w, h, r, degrees, cx, cy] in mark units; the pip turns with the
+// front card (9°) and a further 45°.
 export const MARK_PIECES = [
-  [0, 0, 28, 10, 3],
-  [18, 12.2, 10, 12, 3],
-  [10.5, 24.5, 16, 10, 3, -52, 18.5, 29.5],
-  [9, 36.5, 10, 8, 3],
-  [9.6, 48.5, 8.8, 8.8, 2.5, 45, 14, 52.9],
+  [4, 2.5, 25, 35, 5.5, -14, 16.5, 20], // back card
+  [10, 6.5, 25, 35, 5.5, 9, 22.5, 24], // front card
+  [17.75, 19.25, 9.5, 9.5, 1.6, 54, 22.5, 24], // pip
 ];
-const MARK_BOTTOM = 59.1; // the dot's lowest point, in mark units
 
-// Draws the mark `h` px tall with its top-left corner at x, y: pieces in `ink`, the dot in `dot`. Returns its width.
-export function drawMark(g, x, y, h, ink = COLORS.fg, dot = COLORS.accent) {
-  const k = h / 60;
-  MARK_PIECES.forEach(([px, py, w, ph, r, deg, cx, cy], i) => {
+// Draws the mark `h` px tall with its top-left corner at x, y: the back card in `back`, the front card in `front`, the
+// pip in `hole` (the colour behind the mark). Returns its width.
+export function drawMark(g, x, y, h, { back = COLORS.accent, front = COLORS.fg, hole = COLORS.bg } = {}) {
+  const k = h / 44;
+  [back, front, hole].forEach((fill, i) => {
+    const [px, py, w, ph, r, deg, cx, cy] = MARK_PIECES[i];
     g.save();
     g.translate(x, y);
     g.scale(k, k);
-    if (deg) {
-      g.translate(cx, cy);
-      g.rotate((deg * Math.PI) / 180);
-      g.translate(-cx, -cy);
-    }
-    g.fillStyle = i === MARK_PIECES.length - 1 ? dot : ink;
+    g.translate(cx, cy);
+    g.rotate((deg * Math.PI) / 180);
+    g.translate(-cx, -cy);
+    g.fillStyle = fill;
     g.beginPath();
     if (g.roundRect) g.roundRect(px, py, w, ph, r); else g.rect(px, py, w, ph);
     g.fill();
     g.restore();
   });
-  return 28 * k;
+  return 38 * k;
 }
 
-// The lockup in the card's top-left corner: the name, then the mark as its question mark, the dot on the baseline.
+// The lockup in the card's top-left corner: the mark, about 1.2 times the cap height, then the name.
 function drawBrand(g, x, y, size) {
-  const name = "Who's Bluffing";
+  const h = Math.round(size * 0.86);
+  const w = drawMark(g, x, y + Math.round(size * 0.12), h);
   g.font = `700 ${size}px ${FONT}`;
   g.fillStyle = COLORS.fg;
-  g.fillText(name, x, y);
-  const baseline = y + Math.round(size * 0.94); // textBaseline is 'top'
-  const h = Math.round(size * 1.3);
-  drawMark(g, x + g.measureText(name).width + Math.round(size * 0.18), baseline - (h * MARK_BOTTOM) / 60, h);
+  g.fillText("Who's Bluffing?", x + w + Math.round(size * 0.3), y);
 }
 
 // Greedy word wrap. measure(str) returns the width of str.

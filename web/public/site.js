@@ -1,6 +1,6 @@
 // Site chrome for every page. A classic script loaded in <head> (not a module), so the stored theme applies before the
 // first paint. Then: theme toggle, mobile menu, current-page link, install and social links from the constants below,
-// tabs, list filters and the logo mark's pop. No dependencies.
+// tabs, list filters and the logo mark's fan. No dependencies.
 
 // Addresses that exist only once the owner has set them up. An empty string hides whatever depends on it.
 const SLACK_INSTALL_URL = 'https://whosbluffing-slack.rongaijun41.workers.dev/slack/oauth/start'; // the Slack Worker's install URL (slack/README.md, step 8)
@@ -116,7 +116,7 @@ const ACTIONS_URL = 'https://github.com/rongtnt/whos-bluffing/actions'; // the r
     }
   }
 
-  // The five-square mark pops square by square (the red one wobbles) on hover or tap; styles.css holds the motion and
+  // The mark's two cards fan apart and spring back, and its pip flips, on hover or tap; styles.css holds the motion and
   // its reduced-motion fallback. Links still navigate.
   function wireMarks() {
     for (const mark of all('[data-mark]')) {
@@ -128,7 +128,7 @@ const ACTIONS_URL = 'https://github.com/rongtnt/whos-bluffing/actions'; // the r
       };
       host.addEventListener('pointerenter', (e) => { if (e.pointerType === 'mouse') pop(); });
       host.addEventListener('pointerdown', pop);
-      mark.addEventListener('animationend', (e) => { if (e.animationName === 'mark-wobble') mark.classList.remove('pop'); }); // the hero's idle wobble resumes
+      mark.addEventListener('animationend', (e) => { if (e.animationName === 'pip-flip') mark.classList.remove('pop'); }); // the hero's idle flip resumes
     }
   }
 

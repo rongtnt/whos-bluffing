@@ -1,6 +1,6 @@
 <!doctype html>
 <!-- Template for public/og.png (1200x630). Rendered once by `node design/render.js assets`; the PNG is committed.
-     The lockup leads: the name with the mark as its own question mark, then the tagline and the address. -->
+     The lockup leads (the mark, then the name), then the tagline and the address. -->
 <html lang="en" data-theme="light">
 <head>
 <meta charset="utf-8">
@@ -8,14 +8,13 @@
 <style>
   html, body { width: 1200px; height: 630px; margin: 0; overflow: hidden; }
   body { display: flex; flex-direction: column; justify-content: center; padding: 0 96px; background: var(--bg); }
-  .lockup { display: flex; align-items: baseline; gap: 14px; margin: 0; font-size: 116px; font-weight: 800; line-height: 1; letter-spacing: -0.035em; color: var(--text); }
-  .lockup .mark { width: calc(1.3em * 28 / 60); height: 1.3em; }
-  .sub { max-width: 21em; margin: 40px 0 0; font-size: 40px; line-height: 1.3; color: var(--muted); }
-  .url { margin: 44px 0 0; font-family: var(--font); font-size: 38px; font-weight: 800; color: var(--accent); }
+  .lockup { display: flex; align-items: center; gap: 28px; margin: 0; font-size: 112px; font-weight: 800; line-height: 1; letter-spacing: -0.035em; color: var(--text); }
+  .sub { max-width: 21em; margin: 44px 0 0; font-size: 40px; line-height: 1.3; color: var(--muted); }
+  .url { margin: 40px 0 0; font-family: var(--font); font-size: 38px; font-weight: 800; color: var(--accent); }
 </style>
 </head>
 <body>
-  <p class="lockup"><span>Who's Bluffing</span><svg class="mark" viewBox="0 0 28 60" aria-hidden="true"><rect class="p" x="0" y="0" width="28" height="10" rx="3"/><rect class="p" x="18" y="12.2" width="10" height="12" rx="3"/><g transform="rotate(-52 18.5 29.5)"><rect class="p" x="10.5" y="24.5" width="16" height="10" rx="3"/></g><rect class="p" x="9" y="36.5" width="10" height="8" rx="3"/><g transform="rotate(45 14 52.9)"><rect class="p m" x="9.6" y="48.5" width="8.8" height="8.8" rx="2.5"/></g></svg></p>
+  <p class="lockup"><svg class="mark" viewBox="0 0 38 44" aria-hidden="true"><g transform="rotate(-14 16.5 20)"><rect class="back" x="4.00" y="2.50" width="25" height="35" rx="5.5"/></g><g transform="rotate(9 22.5 24)"><rect class="front" x="10.00" y="6.50" width="25" height="35" rx="5.5"/><g transform="rotate(45 22.5 24)"><rect class="pip" x="17.75" y="19.25" width="9.5" height="9.5" rx="1.6"/></g></g></svg><span>Who's Bluffing?</span></p>
   <p class="sub">Ten questions. Stake how sure you are. The scoring rule knows when you're bluffing.</p>
   <p class="url">whosbluffing.com</p>
 </body>

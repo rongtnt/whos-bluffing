@@ -108,18 +108,18 @@ figcaption, .small { font-size: var(--fs-6); }
 .i { width: 20px; height: 20px; flex: none; fill: none; stroke: currentColor; stroke-width: 2; stroke-linecap: round; stroke-linejoin: round; }
 .i-fill { fill: currentColor; stroke: none; }
 
-/* The mark (brand/mark-inline.svg, viewBox 28 x 60): a question mark in five pieces, the dot a square turned 45° in the
-   accent colour. In the lockup it is the name's own question mark, 1.3em tall, the dot on the text baseline. On hover or
-   tap (site.js adds .pop) the pieces pop in stroke order (top, right, elbow, stem), then the dot spins and wobbles; the
-   rotations sit on <g> wrappers, so each rect still scales around its own centre. */
-.mark { flex: none; width: calc(1.3em * 28 / 60); height: 1.3em; overflow: visible; }
-.mark .p { fill: var(--text); transform-box: fill-box; transform-origin: center; }
-.mark .m { fill: var(--accent); }
-.mark.anim.pop > rect:nth-of-type(1) { animation: mark-pop 0.42s cubic-bezier(0.2, 0.9, 0.3, 1.4) backwards; }
-.mark.anim.pop > rect:nth-of-type(2) { animation: mark-pop 0.42s 0.06s cubic-bezier(0.2, 0.9, 0.3, 1.4) backwards; }
-.mark.anim.pop > g:nth-of-type(1) > rect { animation: mark-pop 0.42s 0.12s cubic-bezier(0.2, 0.9, 0.3, 1.4) backwards; }
-.mark.anim.pop > rect:nth-of-type(3) { animation: mark-pop 0.42s 0.18s cubic-bezier(0.2, 0.9, 0.3, 1.4) backwards; }
-.mark.anim.pop > g:nth-of-type(2) > rect { animation: mark-spin 0.5s 0.32s ease-in backwards, mark-wobble 0.6s 0.82s ease-in-out backwards; }
+/* The mark (brand/mark-inline.svg, viewBox 38 x 44): two fanned cards, the back one in the accent colour, the front one
+   in ink, with a diamond pip cut out of it (the pip takes the background colour: --mark-hole). In the lockup it stands
+   about 1.2x the cap height. On hover or tap (site.js adds .pop) the cards fan apart and spring back and the pip flips
+   once; the transforms sit on the inner rects, so the <g> rotations of the fan stay intact. */
+.mark { flex: none; width: calc(0.86em * 38 / 44); height: 0.86em; overflow: visible; }
+.mark rect { transform-box: fill-box; transform-origin: center; }
+.mark .back { fill: var(--accent); }
+.mark .front { fill: var(--text); }
+.mark .pip { fill: var(--mark-hole, var(--bg)); }
+.mark.anim.pop .back { animation: fan-back 0.62s cubic-bezier(0.2, 0.9, 0.3, 1.4) backwards; }
+.mark.anim.pop .front { animation: fan-front 0.62s cubic-bezier(0.2, 0.9, 0.3, 1.4) backwards; }
+.mark.anim.pop .pip { animation: pip-flip 0.5s 0.16s ease-in-out backwards; }
 
 /* Navigation */
 .nav { position: sticky; top: 0; z-index: 50; background: var(--bg); border-bottom: 1px solid var(--border); }
@@ -128,7 +128,7 @@ figcaption, .small { font-size: var(--fs-6); }
 }
 .nav-bar { position: relative; display: flex; align-items: center; gap: 2px; max-width: 1072px; min-height: var(--nav-h); margin: 0 auto; padding: 0 12px 0 16px; }
 @media (min-width: 768px) { .nav-bar { max-width: 1088px; padding: 0 20px 0 24px; } }
-.brand { display: inline-flex; align-items: baseline; gap: 6px; min-height: 44px; padding-top: 6px; margin-right: auto; color: var(--text); font-size: 20px; font-weight: 800; letter-spacing: -0.02em; text-decoration: none; }
+.brand { display: inline-flex; align-items: center; gap: 8px; min-height: 44px; margin-right: auto; color: var(--text); font-size: 20px; font-weight: 800; letter-spacing: -0.02em; text-decoration: none; }
 .nav-links { display: flex; gap: 2px; margin-right: 8px; }
 .nav-links a { display: inline-flex; align-items: center; min-height: 40px; padding: 0 14px; border-radius: 999px; color: var(--text); font-weight: 600; text-decoration: none; }
 .nav-links a:hover, .nav-links a[aria-current="page"] { background: var(--accent-soft); color: var(--accent); }
@@ -312,7 +312,7 @@ label input, label select { font-weight: 400; }
 .prose .lead { margin-bottom: 24px; }
 
 /* Footer */
-.site-foot { margin-top: 32px; background: var(--surface); border-top: 1px solid var(--border); }
+.site-foot { --mark-hole: var(--surface); margin-top: 32px; background: var(--surface); border-top: 1px solid var(--border); }
 .foot-grid { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 28px 16px; max-width: 1072px; margin: 0 auto; padding: 40px 16px 24px; }
 .foot-brand { grid-column: 1 / -1; }
 .foot-brand p { max-width: 26em; color: var(--muted); font-size: var(--fs-6); }
@@ -504,9 +504,9 @@ button.pick:hover { border-color: var(--accent); }
 .site-foot .social a:hover { color: var(--text); text-decoration: none; }
 .foot-note a { color: inherit; }
 
-/* Home hero: the mark (it pops on hover or tap; every 8 s the dot gives a little wobble), pack and difficulty, CTAs */
-.hero-mark { display: block; width: calc(56px * 28 / 60); height: 56px; margin: 0 0 16px; }
-.hero-mark.anim > g:nth-of-type(2) > rect { animation: dot-idle 8s 3s infinite; }
+/* Home hero: the mark (it fans on hover or tap; every 8 s the pip flips once), pack and difficulty, CTAs */
+.hero-mark { display: block; width: calc(56px * 38 / 44); height: 56px; margin: 0 0 16px; }
+.hero-mark.anim .pip { animation: pip-idle 8s 3s infinite; }
 .picker { display: grid; gap: 10px; margin: 0 0 18px; }
 .picker-row { display: grid; gap: 6px; }
 .picker-label { margin: 0; color: var(--muted); font-size: var(--fs-6); font-weight: 800; letter-spacing: 0.06em; text-transform: uppercase; }
@@ -580,9 +580,9 @@ button.pick:hover { border-color: var(--accent); }
 .reveal .pts { min-width: 4.5ch; text-align: right; }
 .round-total b.anim.anim-tick { animation: tick 0.3s ease-out; }
 .confetti { position: absolute; top: 50%; left: 50%; width: 0; height: 0; pointer-events: none; z-index: 5; }
-.confetti i:nth-child(3n) { width: 6px; height: 6px; border-radius: 1.5px; }
-/* pieces of the mark in brand green: small rounded bars and, every third one, a dot turned on its corner */
-.confetti.anim i { position: absolute; width: 12px; height: 5px; border-radius: 2px; background: var(--hit); opacity: 0; animation: confetti 0.6s var(--d, 0ms) cubic-bezier(0.15, 0.7, 0.3, 1) backwards; }
+.confetti i:nth-child(3n) { --r0: 45deg; width: 6px; height: 6px; border-radius: 1px; background: var(--accent); }
+/* little cards in brand green and, every third one, a small diamond in the accent colour (the pip) */
+.confetti.anim i { position: absolute; width: 7px; height: 10px; border-radius: 2px; background: var(--hit); opacity: 0; animation: confetti 0.6s var(--d, 0ms) cubic-bezier(0.15, 0.7, 0.3, 1) backwards; }
 .round-kind { margin: 0 0 12px; color: var(--muted); font-weight: 700; }
 .result-grid { display: grid; grid-template-columns: repeat(10, minmax(0, 44px)); gap: 6px; margin: 4px 0 8px; }
 .sq { width: 100%; min-height: 0; aspect-ratio: 1; padding: 0; border: 0; border-radius: 22%; background: var(--hit); transition: transform 0.15s ease-out; }
@@ -623,16 +623,16 @@ button.pick:hover { border-color: var(--accent); }
 .tilt .card-img { transform: rotateX(var(--rx, 0deg)) rotateY(var(--ry, 0deg)); }
 
 /* Keyframes: transform and opacity only */
-@keyframes mark-pop { 0% { transform: scale(1); } 45% { transform: scale(1.45); } 100% { transform: scale(1); } }
-@keyframes mark-wobble { 0%, 100% { transform: rotate(0); } 20% { transform: rotate(-16deg); } 45% { transform: rotate(13deg); } 70% { transform: rotate(-7deg); } }
-@keyframes mark-spin { from { transform: rotate(0); } to { transform: rotate(360deg); } }
-@keyframes dot-idle { 0%, 90%, 100% { transform: rotate(0); } 92% { transform: rotate(-18deg); } 95% { transform: rotate(14deg); } 97.5% { transform: rotate(-6deg); } }
+@keyframes fan-back { 0%, 100% { transform: none; } 45% { transform: translate(-2.5px, -2px) rotate(-10deg); } }
+@keyframes fan-front { 0%, 100% { transform: none; } 45% { transform: rotate(5deg); } }
+@keyframes pip-flip { 0%, 100% { transform: scaleX(1); } 50% { transform: scaleX(-1); } }
+@keyframes pip-idle { 0%, 93%, 100% { transform: scaleX(1); } 96.5% { transform: scaleX(-1); } }
 @keyframes shake { 0%, 100% { transform: translateX(0); } 20% { transform: translateX(-6px); } 40% { transform: translateX(6px); } 60% { transform: translateX(-4px); } 80% { transform: translateX(3px); } }
 @keyframes sweep { from { transform: translateX(-110%); } to { transform: translateX(110%); } }
 @keyframes flash { 0% { opacity: 0.35; } 100% { opacity: 0; } }
 @keyframes stamp { from { opacity: 0; transform: translateY(-50%) rotate(-10deg) scale(calc(var(--s, 1) * 2.4)); } to { opacity: 1; transform: translateY(-50%) rotate(-10deg) scale(var(--s, 1)); } }
 @keyframes tick { 0%, 100% { transform: scale(1); } 40% { transform: scale(1.18); } }
-@keyframes confetti { 0% { opacity: 1; transform: translate(0, 0) rotate(0); } 80% { opacity: 1; } 100% { opacity: 0; transform: translate(var(--dx), var(--dy)) rotate(var(--r)); } }
+@keyframes confetti { 0% { opacity: 1; transform: translate(0, 0) rotate(var(--r0, 0deg)); } 80% { opacity: 1; } 100% { opacity: 0; transform: translate(var(--dx), var(--dy)) rotate(calc(var(--r0, 0deg) + var(--r))); } }
 @keyframes flip { from { opacity: 0; transform: perspective(700px) rotateY(-80deg); } to { opacity: 1; transform: perspective(700px) rotateY(0); } }
 @keyframes grow { from { transform: scaleY(0); } to { transform: scaleY(1); } }
 @keyframes slide { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: none; } }
