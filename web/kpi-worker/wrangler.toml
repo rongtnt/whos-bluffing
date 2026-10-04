@@ -7,7 +7,7 @@ compatibility_date = "2026-09-01"
 workers_dev = false
 
 [vars]
-RUN_URL = "https://whosbluffing.pages.dev/api/kpi/run" # replace with the deployed site's address
+RUN_URL = "https://whosbluffing.com/api/kpi/run" # replace with the deployed site's address
 
 [triggers]
 crons = ["10 0 * * *"] # 00:10 UTC every day

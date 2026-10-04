@@ -17,11 +17,7 @@
    ```bash
    gh repo edit rongtnt/whos-bluffing --visibility public --accept-visibility-change-consequences
    ```
-3. **Cloudflare — 大部分已做完（2026-10-04）**：D1 数据库 whosbluffing 已建并迁移、Pages 项目 whosbluffing 已部署（https://whosbluffing.pages.dev 在线）、KPI_KEY / BOT_KEY 已设（本机副本在 `web/.dev.vars`，已 git-ignore，别提交别外传）。还差 3 个控制台动作（约 5 分钟）：
-   - ~~Workers 子域名~~ 已有（KPI 定时任务已部署，每天 00:10 UTC 跑）。
-   - ~~绑定域名~~ 我已通过 API 把 whosbluffing.com 和 www 绑到 Pages 项目（证书签发需要几分钟）。
-   - **限流规则（只剩这一项）**：免费版的规则不能读请求头，所以机器人改走单独主机名 `bots.whosbluffing.com`（已绑到同一个 Pages 项目，代码里没密钥头就 403）。规则只套在主站：直达 https://dash.cloudflare.com/ad27edc5930c14440dc8c17b45e14107/whosbluffing.com/security/waf/rate-limiting-rules → Create rule：Rule name `api`；Edit expression 粘贴 `(http.host eq "whosbluffing.com" or http.host eq "www.whosbluffing.com") and (http.request.uri.path contains "/api/")`；Characteristics 保持 IP；Requests `20`，Period `10 seconds`；Action `Block`，Duration `10 seconds` → Deploy。
-   规模：免费层每天约 7,500 份完成局（写入是瓶颈）；超过就开 Workers Paid（5 美元/月）。
+3. **Cloudflare — 全部完成（2026-10-04）**：站点 https://whosbluffing.com （www 和 bots 子域也通），D1、密钥、KPI 定时任务、限流规则（20 次/10 秒/IP，机器人走 bots.whosbluffing.com）都已就位。本机密钥副本在 `web/.dev.vars`（含 Cloudflare 受限 token），已 git-ignore，别提交别外传。
 4. **校对题库**：`items/REVIEW.md` 逐条核对打勾（约 3–4 小时）。改错直接改 `items/items.json`，然后 `cd web && npm run sync-items`。这是你必须亲手做的部分：每道题的事实你要能当场说出来源。
    **每晚 2 分钟的仪式（上线后天天做）**：`cd ~/howsure/web && npm run tomorrow` 打印明天的 5 题和来源；有问题的题直接改 `daily/schedule.json` 里那一天的 id（从 `items/pool.json` 挑同类别、未排期的替换），提交。Wikidata 数据有脏的（已知例子：某些桥的长度、法国面积含海外省、某大学建校年份有争议），这一步就是质量门。上线前两周（10/17–10/31）的 75 题我已经替换过明显有问题的。
 5. **AnkiWeb 账号**（上传插件那天）：https://ankiweb.net/shared/addons/ → 上传 `anki/dist/whosbluffing.ankiaddon`。
