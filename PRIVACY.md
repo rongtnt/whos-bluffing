@@ -26,6 +26,8 @@ Who's Bluffing is an independent, unaffiliated, non-commercial project. No accou
 
 **Opting out:** do not press Submit, or close the page. Because sessions carry no identifier linked to you, we cannot locate a specific session afterwards to delete it.
 
+- **Home page panel.** The home page shows, for the current day, a calibration chart built from everyone's answers and up to three of the day's costliest confident misses (the question, the wrong pick, the stake and the points). These are aggregates: no name, id or link to any player is shown or stored for this purpose.
+
 ## Anki add-on (Who's Bluffing? for Anki)
 
 **v0.1 is local only.** Your ratings are stored in a SQLite file inside the add-on's `user_files` folder on your computer. Nothing is sent anywhere. You can export or delete the file at any time.
