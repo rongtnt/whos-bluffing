@@ -131,6 +131,7 @@ for f in press/logo.png:image/png press/logo-dark.png:image/png press/icon-512.p
   META=$(curl -s -o /dev/null -w '%{http_code} %{content_type}' "$BASE/${f%%:*}")
   [[ "$META" == "200 ${f#*:}"* ]] || fail "GET /${f%%:*} -> 200 ${f#*:}" "$META"; pass "GET /${f%%:*} -> 200 ${f#*:}"
 done
+req GET /press/intro-cards-raw.mp4; [ "$STATUS" = 404 ] || fail "GET /press/intro-cards-raw.mp4 should be 404 (status $STATUS)"; pass "GET /press/intro-cards-raw.mp4 -> 404 (the rejected intro clip is not deployed)"
 content /tests/overconfidence-test '<title>Overconfidence test' 'SEO page'
 content /tests/estimation-test '<title>Estimation test' 'SEO page'
 content /tests/calibration-test '<title>Calibration test' 'SEO page'

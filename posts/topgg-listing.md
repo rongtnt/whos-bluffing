@@ -5,7 +5,7 @@ Paste-ready. Replace `1556371051439587461` (Developer Portal → General Informa
 `/bluff reveal`): reviewers try the commands.
 Claims that must stay true: "source published" (the repo is public from Mon Oct 5 morning); the data "will be
 released", never "is published", until it is out. Never "open source", "first" or "largest"; no mention of AI.
-Media: put `![Who's Bluffing demo](https://whosbluffing.com/press/demo.gif)` (the file `web/public/press/demo.gif`, 640 × 640, 11 s loop; live once deployed) at the top of the long description.
+Media: put `![Who's Bluffing demo](https://whosbluffing.com/press/demo.gif)` (the file `web/public/press/demo.gif`, 640 × 640, 12 s loop; live once deployed) at the top of the long description.
 
 ## Fields
 

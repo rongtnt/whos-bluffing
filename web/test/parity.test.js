@@ -181,7 +181,7 @@ test('licence wording: the new footer line everywhere; no "open source" in web c
   for (const f of ['public/site.js', 'public/home.js', 'public/rounds.js', 'README.md', 'NOTES.md']) assert.doesNotMatch(read(f), /open[- ]source/i, f);
 });
 
-test('status page: verdicts for the server check and the KPI run; press images are sized from their PNGs', () => {
+test('status page: verdicts for the server check and the KPI run; press files exist and images are sized from their PNGs', () => {
   assert.deepEqual(apiVerdict({ ok: true, status: 200 }, 123.4), { state: 'up', text: 'Up · answered in 123 ms' });
   assert.equal(apiVerdict({ ok: true, status: 200 }, 2400).state, 'slow');
   assert.deepEqual(apiVerdict({ ok: false, status: 503 }, 10), { state: 'down', text: 'Not answering properly (HTTP 503)' });
@@ -191,6 +191,8 @@ test('status page: verdicts for the server check and the KPI run; press images a
   assert.equal(kpiVerdict(null).state, 'down');
   assert.deepEqual(pngSize(readFileSync(new URL('public/og.png', WEB))), [1200, 630]);
   const press = read('public/press.html');
+  const files = readdirSync(new URL('public/press/', WEB));
+  for (const [, file] of press.matchAll(/(?:src|href)="\/press\/([^"]+)"/g)) assert.ok(files.includes(file), `press.html lists a missing file: ${file}`);
   for (const [, file, w, h] of press.matchAll(/src="\/press\/([a-z0-9-]+\.png)" width="(\d+)" height="(\d+)"/g)) {
     assert.deepEqual(pngSize(readFileSync(new URL(`public/press/${file}`, WEB))), [Number(w), Number(h)], file);
   }

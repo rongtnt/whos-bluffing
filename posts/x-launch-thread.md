@@ -6,7 +6,7 @@ to tweet 1. Rewrite in your own words; keep the facts. Every tweet is under 280 
 (a link is 23, an emoji is 2, the minus sign is 2); each tweet is one paragraph per line, so paste as is. "Source
 published" in tweet 7 is true once the repo is public (Monday morning, before the posts).
 
-Video: attach `web/public/press/demo.mp4` (1080 × 1080, 25 s, no sound) to tweet 1, beside or instead of screen-question.png.
+Video: attach `web/public/press/demo.mp4` (1080 × 1080, 25 s, no sound) to tweet 1 in place of screen-question.png (a post takes a video or images, not both).
 
 **1/**
 You're not as smart as you think. Prove me wrong in 60 seconds.
