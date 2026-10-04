@@ -1,6 +1,6 @@
 # 明早 launch 清单（2026-10-04 周日，按先后做，每步 ≤ 5 分钟）
 
-今晚我已做完、你不用碰的：新 logo 全套素材在 `brand/`（五块切成的问号，第五块转 45° 变蓝）；预注册冻结为 v1（tag `prereg-v1`）；Slack 和 Discord 两个 Worker 已部署到你的 Cloudflare，数据库、`BOT_KEY`、`SALT` 都已设好，Slack 清单 `slack/manifest.yaml` 里的地址已填好；增长打法在 `docs/GROWTH_PLAYBOOK.md`，各平台上架文案在 `posts/`。
+今晚我已做完、你不用碰的：新 logo 全套素材在 `brand/`（两张扇开的牌，正面镂空一颗转 45° 的方块）；预注册冻结为 v1（tag `prereg-v1`）；Slack 和 Discord 两个 Worker 已部署到你的 Cloudflare，数据库、`BOT_KEY`、`SALT` 都已设好，Slack 清单 `slack/manifest.yaml` 里的地址已填好；增长打法在 `docs/GROWTH_PLAYBOOK.md`，各平台上架文案在 `posts/`。
 
 建议节奏：**周日**把账号类的事做完、装进自己的工作区和服务器试一局；**周一 09:00（纽约）**发帖。
 
@@ -18,7 +18,7 @@
 
 ## B. GitHub 形象（5 分钟）
 1. 用户名改成 `ethanrong`：https://github.com/settings/admin （旧链接会自动跳转）。
-2. 头像：https://github.com/settings/profile → 上传 `~/Documents/Claude/2026-10-03/github-rebrand/avatar.png`（新 logo，1024×1024）。
+2. 头像：https://github.com/settings/profile → 上传 `~/Documents/Claude/2026-10-03/github-rebrand/avatar.png`（新 logo：两张扇开的牌加镂空方块，1024×1024）。
 3. 个人主页 README 和项目名整理：`bash ~/Documents/Claude/2026-10-03/github-rebrand/rebrand.sh`（步骤说明在同目录 `STEPS.md`）。
 4. 仓库社交预览图：仓库 Settings → Social preview → 上传 `web/public/og.png`。
 
