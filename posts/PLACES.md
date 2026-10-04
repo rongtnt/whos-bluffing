@@ -9,9 +9,9 @@ each rewritten for that community (read the sidebar first; a few require account
 |---|---|---|
 | X thread (personal account, then @whosbluffing) | the hook question, the scoring twist, the demo clip | posts/x-launch-thread.md |
 | r/InternetIsBeautiful | "a one-minute game that scores your confidence, not your answers" | posts/reddit-samplesize.md (adapt) |
-| r/SideProject | what I built and why, numbers so far, ask for feedback | write from show-hn.md |
-| r/IMadeThis | same, shorter, with the GIF | write from show-hn.md |
-| r/WebGames | post the game itself, no study talk | 3 lines + link |
+| r/SideProject | what I built and why, numbers so far, ask for feedback | posts/reddit-sideproject.md |
+| r/IMadeThis | same, shorter, with the GIF | posts/reddit-imadethis.md |
+| r/WebGames | post the game itself, no study talk | posts/reddit-webgames.md |
 | r/samplesize | the study framing (pre-registered, anonymous), link to /test | posts/reddit-samplesize.md |
 | r/Discord_Bots | the bot, the Add link, the daily-question loop | posts/reddit-discordbots.md |
 | Show HN | the forecasting-rule angle, the stack, the pre-registration | posts/show-hn.md |

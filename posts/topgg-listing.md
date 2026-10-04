@@ -20,7 +20,7 @@ released", never "is published", until it is out. Never "open source", "first" o
 
 ## Short description (99 characters)
 
-One question a day. Pick A or B, say how sure you are, and find out who in your server is bluffing.
+Smarter than your server? One question a day: pick A or B, say how sure, and see who's bluffing.
 
 ## Long description (Markdown)
 

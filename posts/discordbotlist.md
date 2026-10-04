@@ -15,7 +15,7 @@ not split. Claims that must stay true: "source published" (repo public from Mon 
 
 ## Short description (99 characters)
 
-One question a day. Pick A or B, say how sure you are, and find out who in your server is bluffing.
+Smarter than your server? One question a day: pick A or B, say how sure, and see who's bluffing.
 
 ## Long description (Markdown)
 
