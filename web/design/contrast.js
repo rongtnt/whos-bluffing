@@ -37,6 +37,7 @@ const TEXT = [
   ['text', 'accent-soft', 'notes, code, selected options'], ['accent', 'accent-soft', 'badges, step numbers, current nav link'],
   ['hit-ink', 'bg', 'hit text'], ['hit-ink', 'surface', 'hit verdicts, sent messages'],
   ['miss-ink', 'bg', 'miss text, errors'], ['miss-ink', 'surface', 'miss verdicts, errors in cards'],
+  ['gold-ink', 'surface', 'the Called it stamp on a card'],
   ['surface', 'hit-ink', 'Play button in the Slack illustration; the right answer\'s letter in a round'],
   ['surface', 'miss-ink', 'the wrong pick\'s letter in a round'],
 ];

@@ -1,14 +1,20 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
   <url><loc>https://whosbluffing.com/</loc></url>
-  <url><loc>https://whosbluffing.com/test</loc></url>
+  <url><loc>https://whosbluffing.com/discord</loc></url>
   <url><loc>https://whosbluffing.com/slack</loc></url>
+  <url><loc>https://whosbluffing.com/commands</loc></url>
+  <url><loc>https://whosbluffing.com/test</loc></url>
   <url><loc>https://whosbluffing.com/teachers</loc></url>
   <url><loc>https://whosbluffing.com/research</loc></url>
   <url><loc>https://whosbluffing.com/stats</loc></url>
+  <url><loc>https://whosbluffing.com/status</loc></url>
   <url><loc>https://whosbluffing.com/class</loc></url>
   <url><loc>https://whosbluffing.com/support</loc></url>
+  <url><loc>https://whosbluffing.com/community</loc></url>
   <url><loc>https://whosbluffing.com/docs/api</loc></url>
+  <url><loc>https://whosbluffing.com/changelog</loc></url>
+  <url><loc>https://whosbluffing.com/press</loc></url>
   <url><loc>https://whosbluffing.com/privacy</loc></url>
   <url><loc>https://whosbluffing.com/terms</loc></url>
   <url><loc>https://whosbluffing.com/tests/overconfidence-test</loc></url>

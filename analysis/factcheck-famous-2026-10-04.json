@@ -1,0 +1,2227 @@
+{
+ "checked_at": "2026-10-04T04:47:33Z",
+ "summary": {
+  "OK": 230,
+  "CHECK": 34,
+  "WRONG": 13,
+  "UNVERIFIED": 0
+ },
+ "items": [
+  {
+   "id": "w0001",
+   "verdict": "CHECK",
+   "our_value": 643801,
+   "better_value": 643801,
+   "better_source": "https://web.archive.org/web/20251025151730/https://www.cia.gov/the-world-factbook/page-data/countries/france/page-data.json",
+   "note": "Low priority, definition: 643,801 incl. 5 overseas regions (CIA); metropolitan France 551,500 (CIA, UN DYB). Keep but say 'including overseas regions'."
+  },
+  {
+   "id": "w0005",
+   "verdict": "OK",
+   "our_value": 377972,
+   "better_value": null,
+   "better_source": null,
+   "note": "CIA WFB 377,915 km² (Δ+0.0%); UN DYB 2024 within 2%"
+  },
+  {
+   "id": "w0009",
+   "verdict": "OK",
+   "our_value": 3287263,
+   "better_value": null,
+   "better_source": null,
+   "note": "CIA WFB 3,287,263 km² (Δ+0.0%); UN DYB 2024 identical"
+  },
+  {
+   "id": "w0011",
+   "verdict": "OK",
+   "our_value": 9596961,
+   "better_value": null,
+   "better_source": null,
+   "note": "CIA WFB 9,596,960 km² (Δ+0.0%); UN DYB 2024 within 2%"
+  },
+  {
+   "id": "w0013",
+   "verdict": "OK",
+   "our_value": 9984670,
+   "better_value": null,
+   "better_source": null,
+   "note": "CIA WFB 9,984,670 km² (Δ+0.0%); UN DYB 2024 identical"
+  },
+  {
+   "id": "w0018",
+   "verdict": "OK",
+   "our_value": 1010408,
+   "better_value": null,
+   "better_source": null,
+   "note": "CIA 1,001,450, UN DYB 1,002,000; ours +0.9%."
+  },
+  {
+   "id": "w0024",
+   "verdict": "OK",
+   "our_value": 756102,
+   "better_value": null,
+   "better_source": null,
+   "note": "CIA WFB 756,102 km² (Δ+0.0%); UN DYB 2024 identical"
+  },
+  {
+   "id": "w0025",
+   "verdict": "CHECK",
+   "our_value": 20770,
+   "better_value": 22072,
+   "better_source": "https://unstats.un.org/unsd/demographic-social/products/dyb/documents/dyb2024/table03.pdf",
+   "note": "Definition: 20,770 = within 1949 armistice lines; CBS/UN DYB 22,072 (CIA 21,937, WB 22,070) include E. Jerusalem and Golan Heights. Pick one and state it."
+  },
+  {
+   "id": "w0026",
+   "verdict": "OK",
+   "our_value": 131957,
+   "better_value": null,
+   "better_source": null,
+   "note": "CIA WFB 131,957 km² (Δ+0.0%); UN DYB 2024 identical"
+  },
+  {
+   "id": "w0027",
+   "verdict": "OK",
+   "our_value": 1648195,
+   "better_value": null,
+   "better_source": null,
+   "note": "CIA WFB 1,648,195 km² (Δ+0.0%); UN DYB 2024 within 2%"
+  },
+  {
+   "id": "w0028",
+   "verdict": "OK",
+   "our_value": 2381741,
+   "better_value": null,
+   "better_source": null,
+   "note": "CIA WFB 2,381,740 km² (Δ+0.0%); UN DYB 2024 identical"
+  },
+  {
+   "id": "w0033",
+   "verdict": "OK",
+   "our_value": 42925,
+   "better_value": null,
+   "better_source": null,
+   "note": "CIA WFB 43,094 km² (Δ-0.4%); UN DYB 2024 within 2%"
+  },
+  {
+   "id": "w0034",
+   "verdict": "OK",
+   "our_value": 331690,
+   "better_value": null,
+   "better_source": null,
+   "note": "CIA WFB 331,210 km² (Δ+0.1%); UN DYB 2024 within 2%"
+  },
+  {
+   "id": "w0036",
+   "verdict": "OK",
+   "our_value": 1141748,
+   "better_value": null,
+   "better_source": null,
+   "note": "CIA WFB 1,138,910 km² (Δ+0.2%); UN DYB 2024 identical"
+  },
+  {
+   "id": "w0037",
+   "verdict": "OK",
+   "our_value": 1904570,
+   "better_value": null,
+   "better_source": null,
+   "note": "CIA WFB 1,904,569 km² (Δ+0.0%); UN DYB 2024 within 2%"
+  },
+  {
+   "id": "w0040",
+   "verdict": "OK",
+   "our_value": 86600,
+   "better_value": null,
+   "better_source": null,
+   "note": "CIA WFB 86,600 km² (Δ+0.0%); UN DYB 2024 identical"
+  },
+  {
+   "id": "w0044",
+   "verdict": "OK",
+   "our_value": 103004,
+   "better_value": null,
+   "better_source": null,
+   "note": "CIA WFB 103,000 km² (Δ+0.0%); UN DYB 2024 = CIA"
+  },
+  {
+   "id": "w0046",
+   "verdict": "CHECK",
+   "our_value": 881913,
+   "better_value": 796096,
+   "better_source": "https://unstats.un.org/unsd/demographic-social/products/dyb/documents/dyb2024/table03.pdf",
+   "note": "Definition: 881,913 includes Azad Kashmir and Gilgit-Baltistan; official/UN DYB 796,096 (CIA 796,095, WB 796,100) excludes them. State it in the prompt."
+  },
+  {
+   "id": "w0048",
+   "verdict": "OK",
+   "our_value": 100295,
+   "better_value": null,
+   "better_source": null,
+   "note": "CIA WFB 99,720 km² (Δ+0.6%); UN DYB 2024 within 2%"
+  },
+  {
+   "id": "w0050",
+   "verdict": "OK",
+   "our_value": 29743,
+   "better_value": null,
+   "better_source": null,
+   "note": "CIA WFB 29,743 km² (Δ+0.0%); UN DYB 2024 identical"
+  },
+  {
+   "id": "w0053",
+   "verdict": "OK",
+   "our_value": 2724900,
+   "better_value": null,
+   "better_source": null,
+   "note": "CIA WFB 2,724,900 km² (Δ+0.0%); UN DYB 2024 within 2%"
+  },
+  {
+   "id": "w0056",
+   "verdict": "OK",
+   "our_value": 923768,
+   "better_value": null,
+   "better_source": null,
+   "note": "CIA WFB 923,768 km² (Δ+0.0%); UN DYB 2024 identical"
+  },
+  {
+   "id": "w0057",
+   "verdict": "OK",
+   "our_value": 268021,
+   "better_value": null,
+   "better_source": null,
+   "note": "CIA WFB 268,838 km² (Δ-0.3%); UN DYB 2024 within 2%"
+  },
+  {
+   "id": "w0059",
+   "verdict": "OK",
+   "our_value": 69700,
+   "better_value": null,
+   "better_source": null,
+   "note": "CIA WFB 69,700 km² (Δ+0.0%); UN DYB 2024 identical"
+  },
+  {
+   "id": "w0060",
+   "verdict": "OK",
+   "our_value": 147570,
+   "better_value": null,
+   "better_source": null,
+   "note": "CIA WFB 148,460 km² (Δ-0.6%); UN DYB 2024 = CIA"
+  },
+  {
+   "id": "w0061",
+   "verdict": "OK",
+   "our_value": 1104300,
+   "better_value": null,
+   "better_source": null,
+   "note": "CIA WFB 1,104,300 km² (Δ+0.0%); UN DYB 2024 identical"
+  },
+  {
+   "id": "w0067",
+   "verdict": "OK",
+   "our_value": 581309,
+   "better_value": null,
+   "better_source": null,
+   "note": "CIA 580,367 (Δ0.2%); UN DYB 591,958 (Δ1.8%)."
+  },
+  {
+   "id": "w0068",
+   "verdict": "OK",
+   "our_value": 185180,
+   "better_value": null,
+   "better_source": null,
+   "note": "CIA WFB 187,437 km² (Δ-1.2%); UN DYB 2024 identical"
+  },
+  {
+   "id": "w0072",
+   "verdict": "OK",
+   "our_value": 2344858,
+   "better_value": null,
+   "better_source": null,
+   "note": "CIA WFB 2,344,858 km² (Δ+0.0%); UN DYB 2024 within 2%"
+  },
+  {
+   "id": "w0073",
+   "verdict": "OK",
+   "our_value": 1759541,
+   "better_value": null,
+   "better_source": null,
+   "note": "CIA 1,759,540 and WB 1,759,540 match; UN DYB 1,676,198."
+  },
+  {
+   "id": "w0079",
+   "verdict": "OK",
+   "our_value": 181035,
+   "better_value": null,
+   "better_source": null,
+   "note": "CIA WFB 181,035 km² (Δ+0.0%); UN DYB 2024 identical"
+  },
+  {
+   "id": "w0080",
+   "verdict": "OK",
+   "our_value": 10452,
+   "better_value": null,
+   "better_source": null,
+   "note": "CIA WFB 10,400 km² (Δ+0.5%); UN DYB 2024 identical"
+  },
+  {
+   "id": "w0082",
+   "verdict": "OK",
+   "our_value": 316,
+   "better_value": null,
+   "better_source": null,
+   "note": "CIA WFB 316 km² (Δ+0.0%); UN DYB 2024 within 2%"
+  },
+  {
+   "id": "w0083",
+   "verdict": "OK",
+   "our_value": 637657,
+   "better_value": null,
+   "better_source": null,
+   "note": "CIA WFB 637,657 km² (Δ+0.0%); UN DYB 2024 identical"
+  },
+  {
+   "id": "w0084",
+   "verdict": "OK",
+   "our_value": 25713,
+   "better_value": null,
+   "better_source": null,
+   "note": "CIA WFB 25,713 km² (Δ+0.0%); UN DYB 2024 identical"
+  },
+  {
+   "id": "w0085",
+   "verdict": "OK",
+   "our_value": 238535,
+   "better_value": null,
+   "better_source": null,
+   "note": "CIA WFB 238,533 km² (Δ+0.0%); UN DYB 2024 within 2%"
+  },
+  {
+   "id": "w0087",
+   "verdict": "OK",
+   "our_value": 176215,
+   "better_value": null,
+   "better_source": null,
+   "note": "CIA 176,215 exact; UN DYB 173,626 (Δ1.5%)."
+  },
+  {
+   "id": "w0088",
+   "verdict": "OK",
+   "our_value": 13883,
+   "better_value": null,
+   "better_source": null,
+   "note": "CIA WFB 13,812 km² (Δ+0.5%); UN DYB 2024 within 2%"
+  },
+  {
+   "id": "w0089",
+   "verdict": "OK",
+   "our_value": 147181,
+   "better_value": null,
+   "better_source": null,
+   "note": "CIA WFB 147,181 km² (Δ+0.0%); UN DYB 2024 identical"
+  },
+  {
+   "id": "w0090",
+   "verdict": "OK",
+   "our_value": 1246700,
+   "better_value": null,
+   "better_source": null,
+   "note": "CIA WFB 1,246,700 km² (Δ+0.0%); UN DYB 2024 identical"
+  },
+  {
+   "id": "w0092",
+   "verdict": "OK",
+   "our_value": 2.08,
+   "better_value": null,
+   "better_source": null,
+   "note": "IMSEE: 208 hectares (2.08 km²); CIA and UN DYB round to 2."
+  },
+  {
+   "id": "w0094",
+   "verdict": "OK",
+   "our_value": 947303,
+   "better_value": null,
+   "better_source": null,
+   "note": "CIA WFB 947,300 km² (Δ+0.0%); UN DYB 2024 identical"
+  },
+  {
+   "id": "w0096",
+   "verdict": "OK",
+   "our_value": 199951,
+   "better_value": null,
+   "better_source": null,
+   "note": "CIA WFB 199,951 km² (Δ+0.0%)"
+  },
+  {
+   "id": "w0097",
+   "verdict": "CHECK",
+   "our_value": 83600,
+   "better_value": 71024,
+   "better_source": "https://www.mofa.gov.ae/en/the-UAE/facts-and-figures",
+   "note": "Sources disagree: UAE MOFA 71,023.6 km² land incl. islands (UN DYB 71,024, WB land 71,020) vs CIA/ours 83,600. Recommend official 71,024."
+  },
+  {
+   "id": "w0098",
+   "verdict": "OK",
+   "our_value": 1284000,
+   "better_value": null,
+   "better_source": null,
+   "note": "CIA WFB 1,284,000 km² (Δ+0.0%); UN DYB 2024 identical"
+  },
+  {
+   "id": "w0099",
+   "verdict": "OK",
+   "our_value": 676577,
+   "better_value": null,
+   "better_source": null,
+   "note": "CIA WFB 676,578 km² (Δ-0.0%); UN DYB 2024 identical"
+  },
+  {
+   "id": "w0102",
+   "verdict": "OK",
+   "our_value": 825615,
+   "better_value": null,
+   "better_source": null,
+   "note": "CIA WFB 824,292 km² (Δ+0.2%); UN DYB 2024 within 2%"
+  },
+  {
+   "id": "w0105",
+   "verdict": "OK",
+   "our_value": 236800,
+   "better_value": null,
+   "better_source": null,
+   "note": "CIA WFB 236,800 km² (Δ+0.0%); UN DYB 2024 identical"
+  },
+  {
+   "id": "w0106",
+   "verdict": "OK",
+   "our_value": 475442,
+   "better_value": null,
+   "better_source": null,
+   "note": "CIA WFB 475,440 km² (Δ+0.0%); UN DYB 2024 within 2%"
+  },
+  {
+   "id": "w0107",
+   "verdict": "OK",
+   "our_value": 61.2,
+   "better_value": null,
+   "better_source": null,
+   "note": "CIA WFB 61 km² (Δ+0.3%); UN DYB 2024 = CIA"
+  },
+  {
+   "id": "w0108",
+   "verdict": "OK",
+   "our_value": 89341,
+   "better_value": null,
+   "better_source": null,
+   "note": "CIA WFB 89,342 km² (Δ-0.0%); UN DYB 2024 within 2%"
+  },
+  {
+   "id": "w0109",
+   "verdict": "OK",
+   "our_value": 36193,
+   "better_value": null,
+   "better_source": null,
+   "note": "CIA WFB 35,980 km² (Δ+0.6%)"
+  },
+  {
+   "id": "w0110",
+   "verdict": "OK",
+   "our_value": 581737,
+   "better_value": null,
+   "better_source": null,
+   "note": "CIA WFB 581,730 km² (Δ+0.0%); UN DYB 2024 = CIA"
+  },
+  {
+   "id": "w0111",
+   "verdict": "OK",
+   "our_value": 1098581,
+   "better_value": null,
+   "better_source": null,
+   "note": "CIA WFB 1,098,581 km² (Δ+0.0%); UN DYB 2024 identical"
+  },
+  {
+   "id": "w0112",
+   "verdict": "OK",
+   "our_value": 322463,
+   "better_value": null,
+   "better_source": null,
+   "note": "CIA WFB 322,463 km² (Δ+0.0%); UN DYB 2024 within 2%"
+  },
+  {
+   "id": "w0113",
+   "verdict": "OK",
+   "our_value": 241038,
+   "better_value": null,
+   "better_source": null,
+   "note": "CIA WFB 241,038 km² (Δ+0.0%); UN DYB 2024 within 2%"
+  },
+  {
+   "id": "w0114",
+   "verdict": "OK",
+   "our_value": 109884,
+   "better_value": null,
+   "better_source": null,
+   "note": "CIA WFB 110,860 km² (Δ-0.9%); UN DYB 2024 identical"
+  },
+  {
+   "id": "w0115",
+   "verdict": "OK",
+   "our_value": 1240192,
+   "better_value": null,
+   "better_source": null,
+   "note": "CIA WFB 1,240,192 km² (Δ+0.0%); UN DYB 2024 identical"
+  },
+  {
+   "id": "w0116",
+   "verdict": "OK",
+   "our_value": 120540,
+   "better_value": null,
+   "better_source": null,
+   "note": "CIA WFB 120,538 km² (Δ+0.0%); UN DYB 2024 = CIA"
+  },
+  {
+   "id": "w0117",
+   "verdict": "OK",
+   "our_value": 406756,
+   "better_value": null,
+   "better_source": null,
+   "note": "CIA WFB 406,752 km² (Δ+0.0%); UN DYB 2024 = CIA"
+  },
+  {
+   "id": "w0118",
+   "verdict": "OK",
+   "our_value": 448978,
+   "better_value": null,
+   "better_source": null,
+   "note": "CIA WFB 447,400 km² (Δ+0.3%); UN DYB 2024 within 2%"
+  },
+  {
+   "id": "w0120",
+   "verdict": "OK",
+   "our_value": 274200,
+   "better_value": null,
+   "better_source": null,
+   "note": "CIA WFB 274,200 km² (Δ+0.0%); UN DYB 2024 within 2%"
+  },
+  {
+   "id": "w0121",
+   "verdict": "OK",
+   "our_value": 196722,
+   "better_value": null,
+   "better_source": null,
+   "note": "CIA WFB 196,722 km² (Δ+0.0%); UN DYB 2024 within 2%"
+  },
+  {
+   "id": "w0122",
+   "verdict": "OK",
+   "our_value": 65610,
+   "better_value": null,
+   "better_source": null,
+   "note": "CIA WFB 65,610 km² (Δ+0.0%); UN DYB 2024 identical"
+  },
+  {
+   "id": "w0123",
+   "verdict": "OK",
+   "our_value": 114763,
+   "better_value": null,
+   "better_source": null,
+   "note": "CIA WFB 112,622 km² (Δ+1.9%); UN DYB 2024 identical"
+  },
+  {
+   "id": "w0124",
+   "verdict": "CHECK",
+   "our_value": 117600,
+   "better_value": 121144,
+   "better_source": "https://unstats.un.org/unsd/demographic-social/products/dyb/documents/dyb2024/table03.pdf",
+   "note": "Low priority, sources disagree: CIA 117,600 (= ours; land 101,000 + water 16,600) vs UN DYB 121,144 and WB 121,766."
+  },
+  {
+   "id": "w0125",
+   "verdict": "OK",
+   "our_value": 143100,
+   "better_value": null,
+   "better_source": null,
+   "note": "CIA WFB 144,100 km² (Δ-0.7%); UN DYB 2024 141,400 (Δ+1.2%)"
+  },
+  {
+   "id": "w0127",
+   "verdict": "OK",
+   "our_value": 17818,
+   "better_value": null,
+   "better_source": null,
+   "note": "CIA WFB 17,818 km² (Δ+0.0%); UN DYB 2024 identical"
+  },
+  {
+   "id": "w0128",
+   "verdict": "OK",
+   "our_value": 1030700,
+   "better_value": null,
+   "better_source": null,
+   "note": "CIA WFB 1,030,700 km² (Δ+0.0%); UN DYB 2024 identical"
+  },
+  {
+   "id": "w0129",
+   "verdict": "OK",
+   "our_value": 38394,
+   "better_value": null,
+   "better_source": null,
+   "note": "CIA WFB 38,394 km² (Δ+0.0%); UN DYB 2024 identical"
+  },
+  {
+   "id": "w0133",
+   "verdict": "OK",
+   "our_value": 74177,
+   "better_value": null,
+   "better_source": null,
+   "note": "CIA 75,420 (Δ-1.6%), UN DYB 75,320 (Δ-1.5%)."
+  },
+  {
+   "id": "w0134",
+   "verdict": "OK",
+   "our_value": 56785,
+   "better_value": null,
+   "better_source": null,
+   "note": "CIA WFB 56,785 km² (Δ+0.0%); UN DYB 2024 identical"
+  },
+  {
+   "id": "w0135",
+   "verdict": "OK",
+   "our_value": 27834,
+   "better_value": null,
+   "better_source": null,
+   "note": "CIA WFB 27,830 km² (Δ+0.0%); UN DYB 2024 identical"
+  },
+  {
+   "id": "w0136",
+   "verdict": "OK",
+   "our_value": 245857,
+   "better_value": null,
+   "better_source": null,
+   "note": "CIA WFB 245,857 km² (Δ+0.0%); UN DYB 2024 within 2%"
+  },
+  {
+   "id": "w0137",
+   "verdict": "OK",
+   "our_value": 801590,
+   "better_value": null,
+   "better_source": null,
+   "note": "CIA WFB 799,380 km² (Δ+0.3%); UN DYB 2024 = CIA"
+  },
+  {
+   "id": "w0138",
+   "verdict": "OK",
+   "our_value": 622984,
+   "better_value": null,
+   "better_source": null,
+   "note": "CIA WFB 622,984 km² (Δ+0.0%); UN DYB 2024 identical"
+  },
+  {
+   "id": "w0139",
+   "verdict": "OK",
+   "our_value": 11300,
+   "better_value": null,
+   "better_source": null,
+   "note": "CIA WFB 11,300 km² (Δ+0.0%); UN DYB 2024 within 2%"
+  },
+  {
+   "id": "w0140",
+   "verdict": "OK",
+   "our_value": 342000,
+   "better_value": null,
+   "better_source": null,
+   "note": "CIA WFB 342,000 km² (Δ+0.0%); UN DYB 2024 identical"
+  },
+  {
+   "id": "w0141",
+   "verdict": "OK",
+   "our_value": 23200,
+   "better_value": null,
+   "better_source": null,
+   "note": "CIA WFB 23,200 km² (Δ+0.0%); UN DYB 2024 identical"
+  },
+  {
+   "id": "w0142",
+   "verdict": "OK",
+   "our_value": 491210,
+   "better_value": null,
+   "better_source": null,
+   "note": "CIA WFB 488,100 km² (Δ+0.6%); UN DYB 2024 = CIA"
+  },
+  {
+   "id": "w0143",
+   "verdict": "OK",
+   "our_value": 36125,
+   "better_value": null,
+   "better_source": null,
+   "note": "CIA WFB 36,125 km² (Δ+0.0%); UN DYB 2024 identical"
+  },
+  {
+   "id": "w0145",
+   "verdict": "OK",
+   "our_value": 112492,
+   "better_value": null,
+   "better_source": null,
+   "note": "CIA WFB 112,090 km² (Δ+0.4%); UN DYB 2024 identical"
+  },
+  {
+   "id": "w0146",
+   "verdict": "OK",
+   "our_value": 5765,
+   "better_value": null,
+   "better_source": null,
+   "note": "CIA WFB 5,765 km² (Δ+0.0%); UN DYB 2024 identical"
+  },
+  {
+   "id": "w0147",
+   "verdict": "OK",
+   "our_value": 309500,
+   "better_value": null,
+   "better_source": null,
+   "note": "CIA WFB 309,500 km² (Δ+0.0%); UN DYB 2024 within 2%"
+  },
+  {
+   "id": "w0148",
+   "verdict": "OK",
+   "our_value": 267667,
+   "better_value": null,
+   "better_source": null,
+   "note": "CIA WFB 267,667 km² (Δ+0.0%); UN DYB 2024 within 2%"
+  },
+  {
+   "id": "w0149",
+   "verdict": "OK",
+   "our_value": 71740,
+   "better_value": null,
+   "better_source": null,
+   "note": "CIA WFB 71,740 km² (Δ+0.0%); UN DYB 2024 within 2%"
+  },
+  {
+   "id": "w0150",
+   "verdict": "OK",
+   "our_value": 111369,
+   "better_value": null,
+   "better_source": null,
+   "note": "CIA WFB 111,369 km² (Δ+0.0%); UN DYB 2024 identical"
+  },
+  {
+   "id": "w0151",
+   "verdict": "OK",
+   "our_value": 14919,
+   "better_value": null,
+   "better_source": null,
+   "note": "CIA WFB 14,874 km² (Δ+0.3%); UN DYB 2024 within 2%"
+  },
+  {
+   "id": "w0153",
+   "verdict": "OK",
+   "our_value": 4033,
+   "better_value": null,
+   "better_source": null,
+   "note": "CIA WFB 4,033 km² (Δ+0.0%); UN DYB 2024 identical"
+  },
+  {
+   "id": "w0154",
+   "verdict": "OK",
+   "our_value": 11437,
+   "better_value": null,
+   "better_source": null,
+   "note": "CIA WFB 11,586 km² (Δ-1.3%); UN DYB 2024 within 2%"
+  },
+  {
+   "id": "w0155",
+   "verdict": "OK",
+   "our_value": 298,
+   "better_value": null,
+   "better_source": null,
+   "note": "CIA WFB 298 km² (Δ+0.0%); UN DYB 2024 within 2%"
+  },
+  {
+   "id": "w0156",
+   "verdict": "OK",
+   "our_value": 163270,
+   "better_value": null,
+   "better_source": null,
+   "note": "CIA WFB 163,820 km² (Δ-0.3%); UN DYB 2024 = CIA"
+  },
+  {
+   "id": "w0157",
+   "verdict": "OK",
+   "our_value": 21041,
+   "better_value": null,
+   "better_source": null,
+   "note": "CIA WFB 21,041 km² (Δ+0.0%); UN DYB 2024 identical"
+  },
+  {
+   "id": "w0158",
+   "verdict": "OK",
+   "our_value": 17364,
+   "better_value": null,
+   "better_source": null,
+   "note": "CIA WFB 17,364 km² (Δ+0.0%); UN DYB 2024 within 2%"
+  },
+  {
+   "id": "w0159",
+   "verdict": "OK",
+   "our_value": 214970,
+   "better_value": null,
+   "better_source": null,
+   "note": "CIA WFB 214,969 km² (Δ+0.0%); UN DYB 2024 = CIA"
+  },
+  {
+   "id": "w0160",
+   "verdict": "OK",
+   "our_value": 462840,
+   "better_value": null,
+   "better_source": null,
+   "note": "CIA WFB 462,840 km² (Δ+0.0%); UN DYB 2024 identical"
+  },
+  {
+   "id": "w0161",
+   "verdict": "WRONG",
+   "our_value": 2034,
+   "better_value": 2235,
+   "better_source": "https://unstats.un.org/unsd/demographic-social/products/dyb/documents/dyb2024/table03.pdf",
+   "note": "UN DYB 2024 and CIA both 2,235 km² (includes French-administered Mayotte); World Bank 1,861 excl. Mayotte. 2,034 matches neither."
+  },
+  {
+   "id": "w0162",
+   "verdict": "OK",
+   "our_value": 28051,
+   "better_value": null,
+   "better_source": null,
+   "note": "CIA WFB 28,051 km² (Δ+0.0%); UN DYB 2024 identical"
+  },
+  {
+   "id": "w0163",
+   "verdict": "OK",
+   "our_value": 2040,
+   "better_value": null,
+   "better_source": null,
+   "note": "CIA 2,040 (incl. Agalega, St Brandon, Rodrigues); WB 2,010 (Δ1.5%); UN DYB 1,979."
+  },
+  {
+   "id": "w0164",
+   "verdict": "OK",
+   "our_value": 10909,
+   "better_value": null,
+   "better_source": null,
+   "note": "CIA WFB 10,887 km² (Δ+0.2%)"
+  },
+  {
+   "id": "w0165",
+   "verdict": "CHECK",
+   "our_value": 120340,
+   "better_value": 130370,
+   "better_source": "https://web.archive.org/web/20260103011616/https://www.cia.gov/the-world-factbook/page-data/countries/nicaragua/page-data.json",
+   "note": "Land-only figure (= World Bank land area 120,340). Total incl. lakes: CIA 130,370 (land 119,990 + water 10,380), UN DYB 130,374."
+  },
+  {
+   "id": "w0166",
+   "verdict": "OK",
+   "our_value": 22966,
+   "better_value": null,
+   "better_source": null,
+   "note": "CIA WFB 22,966 km² (Δ+0.0%); UN DYB 2024 identical"
+  },
+  {
+   "id": "w0167",
+   "verdict": "OK",
+   "our_value": 10992,
+   "better_value": null,
+   "better_source": null,
+   "note": "CIA WFB 10,991 km² (Δ+0.0%); UN DYB 2024 = CIA"
+  },
+  {
+   "id": "w0168",
+   "verdict": "OK",
+   "our_value": 108889,
+   "better_value": null,
+   "better_source": null,
+   "note": "CIA WFB 108,889 km² (Δ+0.0%); UN DYB 2024 identical"
+  },
+  {
+   "id": "w0170",
+   "verdict": "OK",
+   "our_value": 30355,
+   "better_value": null,
+   "better_source": null,
+   "note": "CIA WFB 30,355 km² (Δ+0.0%); UN DYB 2024 identical"
+  },
+  {
+   "id": "w0172",
+   "verdict": "OK",
+   "our_value": 13878,
+   "better_value": null,
+   "better_source": null,
+   "note": "CIA WFB 13,880 km² (Δ-0.0%); UN DYB 2024 within 2%"
+  },
+  {
+   "id": "w0174",
+   "verdict": "OK",
+   "our_value": 459,
+   "better_value": null,
+   "better_source": null,
+   "note": "CIA WFB 455 km² (Δ+0.9%); UN DYB 2024 within 2%"
+  },
+  {
+   "id": "w0175",
+   "verdict": "CHECK",
+   "our_value": 439,
+   "better_value": 431,
+   "better_source": "https://unstats.un.org/unsd/demographic-social/products/dyb/documents/dyb2024/table03.pdf",
+   "note": "Borderline: UN DYB 431, CIA 430, WB 430; ours 439 is +1.9% vs UN, +2.1% vs CIA. Recommend 431."
+  },
+  {
+   "id": "w0176",
+   "verdict": "CHECK",
+   "our_value": 1001,
+   "better_value": 964,
+   "better_source": "https://unstats.un.org/unsd/demographic-social/products/dyb/documents/dyb2024/table03.pdf",
+   "note": "Sources disagree: UN DYB 964, CIA 964, WB 960 vs 1,001 (French Senate country page, older refs; Wikipedia now 964). Recommend 964."
+  },
+  {
+   "id": "w0178",
+   "verdict": "OK",
+   "our_value": 21.0,
+   "better_value": null,
+   "better_source": null,
+   "note": "CIA WFB 21 km² (Δ+0.0%); UN DYB 2024 identical"
+  },
+  {
+   "id": "w0179",
+   "verdict": "OK",
+   "our_value": 12190,
+   "better_value": null,
+   "better_source": null,
+   "note": "CIA WFB 12,189 km² (Δ+0.0%); UN DYB 2024 = CIA"
+  },
+  {
+   "id": "w0180",
+   "verdict": "OK",
+   "our_value": 751,
+   "better_value": null,
+   "better_source": null,
+   "note": "CIA WFB 751 km² (Δ+0.0%); UN DYB 2024 within 2%"
+  },
+  {
+   "id": "w0181",
+   "verdict": "OK",
+   "our_value": 2842,
+   "better_value": null,
+   "better_source": null,
+   "note": "CIA WFB 2,831 km² (Δ+0.4%); UN DYB 2024 identical"
+  },
+  {
+   "id": "w0182",
+   "verdict": "OK",
+   "our_value": 749,
+   "better_value": null,
+   "better_source": null,
+   "note": "CIA WFB 747 km² (Δ+0.3%); UN DYB 2024 747"
+  },
+  {
+   "id": "w0183",
+   "verdict": "OK",
+   "our_value": 466,
+   "better_value": null,
+   "better_source": null,
+   "note": "CIA WFB 459 km² (Δ+1.5%); UN DYB 2024 = CIA"
+  },
+  {
+   "id": "w0184",
+   "verdict": "OK",
+   "our_value": 2166086,
+   "better_value": null,
+   "better_source": null,
+   "note": "CIA WFB 2,166,086 km² (Δ+0.0%); UN DYB 2024 identical"
+  },
+  {
+   "id": "w0185",
+   "verdict": "CHECK",
+   "our_value": 25.1,
+   "better_value": 26,
+   "better_source": "https://unstats.un.org/unsd/demographic-social/products/dyb/documents/dyb2024/table03.pdf",
+   "note": "Sources disagree: CIA 26 and UN DYB 26 (integers), WB 30; 25.14 appears only uncited in Wikipedia text. Recommend 26."
+  },
+  {
+   "id": "w0186",
+   "verdict": "OK",
+   "our_value": 5128,
+   "better_value": null,
+   "better_source": null,
+   "note": "CIA WFB 5,128 km² (Δ+0.0%); UN DYB 2024 5,127"
+  },
+  {
+   "id": "w0187",
+   "verdict": "OK",
+   "our_value": 348,
+   "better_value": null,
+   "better_source": null,
+   "note": "CIA WFB 344 km² (Δ+1.2%); UN DYB 2024 within 2%"
+  },
+  {
+   "id": "w0188",
+   "verdict": "OK",
+   "our_value": 811,
+   "better_value": null,
+   "better_source": null,
+   "note": "CIA 811 and World Bank 810 match; UN DYB 726."
+  },
+  {
+   "id": "w0189",
+   "verdict": "OK",
+   "our_value": 28400,
+   "better_value": null,
+   "better_source": null,
+   "note": "CIA WFB 28,896 km² (Δ-1.7%); UN DYB 2024 = CIA"
+  },
+  {
+   "id": "w0190",
+   "verdict": "CHECK",
+   "our_value": 269,
+   "better_value": 261,
+   "better_source": "https://unstats.un.org/unsd/demographic-social/products/dyb/documents/dyb2024/table03.pdf",
+   "note": "Sources disagree: UN DYB 261, CIA 261, WB 260 vs 269 (UWI page: St Kitts 176 + Nevis 93). Recommend 261."
+  },
+  {
+   "id": "w0192",
+   "verdict": "OK",
+   "our_value": 181,
+   "better_value": null,
+   "better_source": null,
+   "note": "CIA WFB 181 km² (Δ+0.0%); UN DYB 2024 identical"
+  },
+  {
+   "id": "w0193",
+   "verdict": "OK",
+   "our_value": 617,
+   "better_value": null,
+   "better_source": null,
+   "note": "CIA WFB 616 km² (Δ+0.2%); UN DYB 2024 = CIA"
+  },
+  {
+   "id": "w0194",
+   "verdict": "CHECK",
+   "our_value": 115,
+   "better_value": 33.3,
+   "better_source": "https://yearbook.gcs.gov.mo/yearbook_pdf/2025/myb2025ePA01CH22.pdf",
+   "note": "Definition: Macao Yearbook 2025 land area 33.3 km² (2024) plus 85 km² of waters; 115 counts the sea area. UN DYB 33, WB 33, CIA 28 (stale)."
+  },
+  {
+   "id": "w0196",
+   "verdict": "OK",
+   "our_value": 9104,
+   "better_value": null,
+   "better_source": null,
+   "note": "CIA total 9,104 incl. 145 km² water (= ours); land-only 8,868 (UN DYB) / 8,870 (WB)."
+  },
+  {
+   "id": "w0197",
+   "verdict": "OK",
+   "our_value": 6.84,
+   "better_value": null,
+   "better_source": null,
+   "note": "CIA total 7 (rounded; land 6.5); Wikipedia 6.8 km² citing gibraltar.gov.gi; UN DYB 6 (integer)."
+  },
+  {
+   "id": "w0198",
+   "verdict": "OK",
+   "our_value": 83534,
+   "better_value": null,
+   "better_source": null,
+   "note": "INSEE: 'la Guyane française s'étend sur 83 534 km²' (exact); UN DYB 83,534."
+  },
+  {
+   "id": "w0200",
+   "verdict": "OK",
+   "our_value": 1399,
+   "better_value": null,
+   "better_source": null,
+   "note": "CIA WFB 1,393 km² (Δ+0.4%); UN DYB 2024 = CIA"
+  },
+  {
+   "id": "w0201",
+   "verdict": "OK",
+   "our_value": 12200,
+   "better_value": null,
+   "better_source": null,
+   "note": "CIA WFB 12,173 km² (Δ+0.2%); UN DYB 2024 = CIA"
+  },
+  {
+   "id": "w0203",
+   "verdict": "OK",
+   "our_value": 179,
+   "better_value": null,
+   "better_source": null,
+   "note": "CIA WFB 180 km² (Δ-0.6%); UN DYB 2024 = CIA"
+  },
+  {
+   "id": "w0204",
+   "verdict": "OK",
+   "our_value": 544,
+   "better_value": null,
+   "better_source": null,
+   "note": "CIA WFB 544 km² (Δ+0.0%); UN DYB 2024 within 2%"
+  },
+  {
+   "id": "w0205",
+   "verdict": "OK",
+   "our_value": 53.0,
+   "better_value": null,
+   "better_source": null,
+   "note": "CIA 54, UN DYB 54 (integers); Δ-1.9%."
+  },
+  {
+   "id": "w0206",
+   "verdict": "OK",
+   "our_value": 18576,
+   "better_value": null,
+   "better_source": null,
+   "note": "CIA WFB 18,575 km² (Δ+0.0%); UN DYB 2024 identical"
+  },
+  {
+   "id": "w0207",
+   "verdict": "OK",
+   "our_value": 1128,
+   "better_value": null,
+   "better_source": null,
+   "note": "INSEE 2023 population/density → 1,128 km² (exact); UN DYB 1,090."
+  },
+  {
+   "id": "w0208",
+   "verdict": "OK",
+   "our_value": 240,
+   "better_value": null,
+   "better_source": null,
+   "note": "CIA WFB 236 km² (Δ+1.7%); UN DYB 2024 = CIA"
+  },
+  {
+   "id": "w0209",
+   "verdict": "OK",
+   "our_value": 2512,
+   "better_value": null,
+   "better_source": null,
+   "note": "UN DYB 2,510 (Δ0.1%); INSEE 2023 population/density → 2,504 km²."
+  },
+  {
+   "id": "w0210",
+   "verdict": "OK",
+   "our_value": 1628,
+   "better_value": null,
+   "better_source": null,
+   "note": "INSEE 2023 population/density → 1,628 km² (exact); UN DYB 1,639."
+  },
+  {
+   "id": "w0211",
+   "verdict": "OK",
+   "our_value": 199,
+   "better_value": null,
+   "better_source": null,
+   "note": "UN DYB 199, World Bank 200 match; CIA 224 (incl. Rose Atoll and Swains Island) is the outlier."
+  },
+  {
+   "id": "w0213",
+   "verdict": "OK",
+   "our_value": 572,
+   "better_value": null,
+   "better_source": null,
+   "note": "CIA WFB 572 km² (Δ+0.0%); UN DYB 2024 identical"
+  },
+  {
+   "id": "w0214",
+   "verdict": "OK",
+   "our_value": 264,
+   "better_value": null,
+   "better_source": null,
+   "note": "CIA WFB 264 km² (Δ+0.0%); UN DYB 2024 identical"
+  },
+  {
+   "id": "w0215",
+   "verdict": "CHECK",
+   "our_value": 4167,
+   "better_value": 4167,
+   "better_source": "https://web.archive.org/web/20251212200312/https://www.cia.gov/the-world-factbook/page-data/countries/french-polynesia/page-data.json",
+   "note": "Low priority, definition: CIA total 4,167 incl. 340 km² water (= ours); land-type figures differ: CIA land 3,827, UN DYB 3,687, WB 3,471."
+  },
+  {
+   "id": "w0217",
+   "verdict": "OK",
+   "our_value": 444,
+   "better_value": null,
+   "better_source": null,
+   "note": "CIA WFB 444 km² (Δ+0.0%); UN DYB 2024 identical"
+  },
+  {
+   "id": "w0222",
+   "verdict": "OK",
+   "our_value": 102,
+   "better_value": null,
+   "better_source": null,
+   "note": "CIA WFB 102 km² (Δ+0.0%); UN DYB 2024 within 2%"
+  },
+  {
+   "id": "w0223",
+   "verdict": "OK",
+   "our_value": 47.0,
+   "better_value": null,
+   "better_source": null,
+   "note": "CIA 47 km² for the island group (Henderson incl.); UN DYB 5 km² is Pitcairn Island only."
+  },
+  {
+   "id": "w0225",
+   "verdict": "CHECK",
+   "our_value": 346,
+   "better_value": 346,
+   "better_source": "https://web.archive.org/web/20251120011717/https://www.cia.gov/the-world-factbook/page-data/countries/virgin-islands/page-data.json",
+   "note": "Low priority, land-only figure (CIA land 346; UN DYB 347, WB 350). CIA total 1,910 adds 1,564 km² of mostly coastal water. Keep or say 'land area'."
+  },
+  {
+   "id": "w0226",
+   "verdict": "WRONG",
+   "our_value": 417,
+   "better_value": 948,
+   "better_source": "https://unstats.un.org/unsd/demographic-social/products/dyb/documents/dyb2024/table03.pdf",
+   "note": "UN DYB 2024 948 km², CIA 948, World Bank 950 agree; Wikipedia 948 total / 616.3 land. 417 matches no source."
+  },
+  {
+   "id": "w0230",
+   "verdict": "OK",
+   "our_value": 242,
+   "better_value": null,
+   "better_source": null,
+   "note": "CIA WFB 242 km² (Δ+0.0%); UN DYB 2024 identical"
+  },
+  {
+   "id": "w0238",
+   "verdict": "OK",
+   "our_value": 8611,
+   "better_value": null,
+   "better_source": null,
+   "note": "Britannica (Wayback): 28,251 ft (8,611 m)."
+  },
+  {
+   "id": "w0243",
+   "verdict": "OK",
+   "our_value": 1745,
+   "better_value": null,
+   "better_source": null,
+   "note": "NPS NRHP nomination: 5,725 ft = 1,745 m."
+  },
+  {
+   "id": "w0245",
+   "verdict": "OK",
+   "our_value": 6638,
+   "better_value": null,
+   "better_source": null,
+   "note": "Britannica (Wayback): 21,778 ft (6,638 m). Older 6,656/6,714 m within 1.2%."
+  },
+  {
+   "id": "w0264",
+   "verdict": "OK",
+   "our_value": 8051,
+   "better_value": null,
+   "better_source": null,
+   "note": "Guinness World Records: 8,051 m. Alternative 8,047 m within 0.1%."
+  },
+  {
+   "id": "w0278",
+   "verdict": "OK",
+   "our_value": 4389,
+   "better_value": null,
+   "better_source": null,
+   "note": "NPS 14,410 ft = 4,392 m (Δ-0.1%); ours equals 2024 resurvey 14,399.6 ft (4,388.8 m)."
+  },
+  {
+   "id": "w0297",
+   "verdict": "OK",
+   "our_value": 4421,
+   "better_value": null,
+   "better_source": null,
+   "note": "NPS: 14,505 ft (4,421 m), NAVD88."
+  },
+  {
+   "id": "w0631",
+   "verdict": "OK",
+   "our_value": 386400,
+   "better_value": null,
+   "better_source": null,
+   "note": "Britannica (Wayback): 386,400 km². Tehran Convention 392,600 (Δ-1.6%); Wikipedia's 371,000 excludes Garabogazköl."
+  },
+  {
+   "id": "w0632",
+   "verdict": "OK",
+   "our_value": 31722,
+   "better_value": null,
+   "better_source": null,
+   "note": "Britannica (Wayback): 31,500 km² (Δ+0.7%); Wikipedia 31,722 (cited)."
+  },
+  {
+   "id": "w0637",
+   "verdict": "WRONG",
+   "our_value": 18529,
+   "better_value": 18960,
+   "better_source": "https://web.archive.org/web/20241229235859/https://www.epa.gov/greatlakes/physical-features-great-lakes",
+   "note": "EPA 7,340 sq mi / 18,960 km²; NOAA GLERL 19,009; Britannica 19,011. Ours -2.3% (Wikidata value imported from French Wikipedia)."
+  },
+  {
+   "id": "w0748",
+   "verdict": "OK",
+   "our_value": 406,
+   "better_value": null,
+   "better_source": null,
+   "note": "EPA: 1,332 ft / 406 m; GLERL 406 m."
+  },
+  {
+   "id": "w0749",
+   "verdict": "OK",
+   "our_value": 244,
+   "better_value": null,
+   "better_source": null,
+   "note": "EPA: 802 ft / 244 m; Britannica agrees."
+  },
+  {
+   "id": "w1224",
+   "verdict": "OK",
+   "our_value": 150,
+   "better_value": null,
+   "better_source": null,
+   "note": "NASA Earth fact sheet: semimajor axis 149.598 million km (ours +0.3%)."
+  },
+  {
+   "id": "w1234",
+   "verdict": "OK",
+   "our_value": 384400,
+   "better_value": null,
+   "better_source": null,
+   "note": "NASA Moon fact sheet: semimajor axis 0.3844 million km (exact)."
+  },
+  {
+   "id": "w1235",
+   "verdict": "OK",
+   "our_value": 1221870,
+   "better_value": null,
+   "better_source": null,
+   "note": "NASA Saturnian satellite fact sheet: Titan 1,221.87 thousand km (exact)."
+  },
+  {
+   "id": "w1364",
+   "verdict": "CHECK",
+   "our_value": 14264798,
+   "better_value": 14040732,
+   "better_source": "https://www.toukei.metro.tokyo.lg.jp/jsuikei/2020-2025/js26dv0101.csv",
+   "note": "Within 2% (+1.6%) but wrong year: TMG 2022 monthly 13.97-14.04M (1 Oct 2022: 14,040,732); ours matches Aug-Sep 2025 (14.26M). Fix value or relabel year."
+  },
+  {
+   "id": "w1378",
+   "verdict": "WRONG",
+   "our_value": 14002598,
+   "better_value": 9521886,
+   "better_source": "https://www.nso.gov.vn/du-lieu-va-so-lieu-thong-ke/2025/01/thong-cao-bao-chi-ket-qua-dieu-tra-dan-so-va-nha-o-giua-ky-nam-2024/",
+   "note": "NSO 2024 mid-term census: HCMC 9,521,886 (avg 2024: 9.54M). 14,002,598 = city after 1 Jul 2025 merger with Binh Duong and Ba Ria-Vung Tau; reword if that is meant."
+  },
+  {
+   "id": "w1397",
+   "verdict": "WRONG",
+   "our_value": 3776313,
+   "better_value": 4678900,
+   "better_source": "http://web.archive.org/web/20240513135004id_/https://resource.capetown.gov.za/documentcentre/Documents/City%20research%20reports%20and%20review/SOCT_Report_Summary_2022.pdf",
+   "note": "City of Cape Town (2021 estimate) 4,678,900; Western Cape Treasury 4,758,433 (2021). Ours is near the 2011 census level (3,740,026)."
+  },
+  {
+   "id": "w1609",
+   "verdict": "OK",
+   "our_value": 1967,
+   "better_value": null,
+   "better_source": null,
+   "note": "Boeing history PDF: 737-100 first flight April 9, 1967."
+  },
+  {
+   "id": "w1612",
+   "verdict": "OK",
+   "our_value": 1974,
+   "better_value": null,
+   "better_source": null,
+   "note": "YF-16 prototype: unplanned hop Jan 20, 1974, official first flight Feb 2, 1974 (Lockheed Martin; Air & Space Forces)."
+  },
+  {
+   "id": "w1614",
+   "verdict": "OK",
+   "our_value": 1994,
+   "better_value": null,
+   "better_source": null,
+   "note": "Boeing history PDF: 777-200 first flight June 12, 1994."
+  },
+  {
+   "id": "w1615",
+   "verdict": "OK",
+   "our_value": 2006,
+   "better_value": null,
+   "better_source": null,
+   "note": "jsf.mil: F-35 (AA-1) first flew Dec 15, 2006. X-35A concept demonstrator (own designation) flew Oct 24, 2000."
+  },
+  {
+   "id": "w1617",
+   "verdict": "OK",
+   "our_value": 1989,
+   "better_value": null,
+   "better_source": null,
+   "note": "NMUSAF and Boeing: B-2 first flew July 17, 1989."
+  },
+  {
+   "id": "w1618",
+   "verdict": "OK",
+   "our_value": 1977,
+   "better_value": null,
+   "better_source": null,
+   "note": "NMUSAF: first MiG-29 prototype flew Oct 6, 1977."
+  },
+  {
+   "id": "w1619",
+   "verdict": "CHECK",
+   "our_value": 1957,
+   "better_value": 1954,
+   "better_source": "https://airandspace.si.edu/newsroom/press-releases/historic-boeing-dash-80-aircraft-makes-final-flight-dulles-display-national",
+   "note": "Prototype rule: 367-80 'Dash 80' prototype flew July 15, 1954 (NASM; Boeing PDF). 1957 = first production 707-120 (Boeing PDF). Pick one, state it."
+  },
+  {
+   "id": "w1620",
+   "verdict": "WRONG",
+   "our_value": 1956,
+   "better_value": 1955,
+   "better_source": "https://web.archive.org/web/20251121095553/https://www.nationalmuseum.af.mil/Visit/Museum-Exhibits/Fact-Sheets/Display/Article/195970/mikoyan-gurevich-mig-21pf-fishbed-d/",
+   "note": "NMUSAF: 'first flew in 1955'; Wikipedia (cited): Ye-2 prototype 14 Feb 1955, delta Ye-4 16 Jun 1955. Wikidata's 1956-02-14 looks like a year slip."
+  },
+  {
+   "id": "w1623",
+   "verdict": "CHECK",
+   "our_value": 1986,
+   "better_value": 1991,
+   "better_source": "https://web.archive.org/web/20250108175928/https://www.dassault-aviation.com/en/defense/customer-support/operational-aircraft/rafale/",
+   "note": "1986 = Rafale A technology demonstrator (Dassault timeline); Dassault Rafale page: 'First flight in 1991' (prototype C01). Commonly cited 1986."
+  },
+  {
+   "id": "w1625",
+   "verdict": "OK",
+   "our_value": 1975,
+   "better_value": null,
+   "better_source": null,
+   "note": "Boeing history PDF: YAH-64 prototype first flight Sept 30, 1975."
+  },
+  {
+   "id": "w1628",
+   "verdict": "OK",
+   "our_value": 1954,
+   "better_value": null,
+   "better_source": null,
+   "note": "Lockheed Martin: YC-130 first flight Aug 23, 1954."
+  },
+  {
+   "id": "w1630",
+   "verdict": "OK",
+   "our_value": 1972,
+   "better_value": null,
+   "better_source": null,
+   "note": "Boeing history PDF: F-15 first flight July 27, 1972."
+  },
+  {
+   "id": "w1631",
+   "verdict": "OK",
+   "our_value": 1994,
+   "better_value": null,
+   "better_source": null,
+   "note": "Eurofighter (Wayback) and Deutsches Museum: DA1 prototype first flight Mar 27, 1994. EAP demonstrator (1986) is a separate aircraft."
+  },
+  {
+   "id": "w1635",
+   "verdict": "OK",
+   "our_value": 1935,
+   "better_value": null,
+   "better_source": null,
+   "note": "Boeing history PDF: Model 299 prototype first flight July 28, 1935."
+  },
+  {
+   "id": "w1636",
+   "verdict": "OK",
+   "our_value": 1981,
+   "better_value": null,
+   "better_source": null,
+   "note": "Boeing history PDF: 767-200 first flight Sept 26, 1981."
+  },
+  {
+   "id": "w1640",
+   "verdict": "OK",
+   "our_value": 1978,
+   "better_value": null,
+   "better_source": null,
+   "note": "Boeing PDF and US Navy fact file: F/A-18 first flight Nov 18, 1978 (YF-17 is a separate type)."
+  },
+  {
+   "id": "w1642",
+   "verdict": "OK",
+   "our_value": 1970,
+   "better_value": null,
+   "better_source": null,
+   "note": "Naval History and Heritage Command: F-14A first flight Dec 21, 1970."
+  },
+  {
+   "id": "w1643",
+   "verdict": "CHECK",
+   "our_value": 1987,
+   "better_value": 1987,
+   "better_source": "https://en.wikipedia.org/w/index.php?title=Boeing_VC-25&action=raw",
+   "note": "Ill-posed: 'Air Force One' is a call sign (USAF fact sheet). 1987 = VC-25A first flight (16 May 1987, Wikipedia citing Jenkins); VC-137C flew 1959 (Boeing). Reword or drop."
+  },
+  {
+   "id": "w1644",
+   "verdict": "OK",
+   "our_value": 1952,
+   "better_value": null,
+   "better_source": null,
+   "note": "Tupolev (Wayback): prototype '95/1' first flight Nov 12, 1952."
+  },
+  {
+   "id": "w1648",
+   "verdict": "OK",
+   "our_value": 2013,
+   "better_value": null,
+   "better_source": null,
+   "note": "Airbus history (Wayback): A350 XWB MSN1 maiden flight June 14, 2013."
+  },
+  {
+   "id": "w1649",
+   "verdict": "OK",
+   "our_value": 1988,
+   "better_value": null,
+   "better_source": null,
+   "note": "Saab history: first test flight of JAS 39 Gripen Dec 9, 1988."
+  },
+  {
+   "id": "w1650",
+   "verdict": "OK",
+   "our_value": 1958,
+   "better_value": null,
+   "better_source": null,
+   "note": "Boeing history PDF: YF4H-1 prototype first flight May 27, 1958."
+  },
+  {
+   "id": "w1651",
+   "verdict": "OK",
+   "our_value": 1942,
+   "better_value": null,
+   "better_source": null,
+   "note": "Boeing history PDF: B-29 first flight Sept 21, 1942."
+  },
+  {
+   "id": "w1653",
+   "verdict": "CHECK",
+   "our_value": 2008,
+   "better_value": 1988,
+   "better_source": "https://en.wikipedia.org/w/index.php?title=Sukhoi_Su-35&action=raw",
+   "note": "UAC: modern Su-35 first flew Feb 19, 2008. Prototype rule: original Su-35 (Su-27M, T10M-1) flew June 28, 1988 (Wikipedia citing Gordon). State which Su-35."
+  },
+  {
+   "id": "w1665",
+   "verdict": "OK",
+   "our_value": 1940,
+   "better_value": null,
+   "better_source": null,
+   "note": "Boeing PDF and NMUSAF: NA-73X prototype first flew Oct 26, 1940."
+  },
+  {
+   "id": "w1666",
+   "verdict": "OK",
+   "our_value": 2010,
+   "better_value": null,
+   "better_source": null,
+   "note": "UAC (Wayback): Su-57 first flight Jan 29, 2010."
+  },
+  {
+   "id": "w1668",
+   "verdict": "CHECK",
+   "our_value": 2023,
+   "better_value": 2023,
+   "better_source": "https://www.faa.gov/sites/faa.gov/files/2022-April%202024%20Historical%20Chronology%20Update.pdf",
+   "note": "Keep 2023 but reword ('full Starship system'): FAA calls 20 Apr 2023 its inaugural flight; Q62833385 is the whole vehicle. Full-scale Starship prototypes flew in 2020 (SN5, SN8)."
+  },
+  {
+   "id": "w1679",
+   "verdict": "OK",
+   "our_value": 1972,
+   "better_value": null,
+   "better_source": null,
+   "note": "Edwards AFB history (Wayback): YA-10A first flight May 10, 1972."
+  },
+  {
+   "id": "w1691",
+   "verdict": "OK",
+   "our_value": 1995,
+   "better_value": null,
+   "better_source": null,
+   "note": "US Navy fact file and Boeing: Super Hornet first flight November 1995."
+  },
+  {
+   "id": "w1705",
+   "verdict": "OK",
+   "our_value": 1991,
+   "better_value": null,
+   "better_source": null,
+   "note": "Boeing history PDF: C-17 first flight Sept 15, 1991."
+  },
+  {
+   "id": "w1709",
+   "verdict": "OK",
+   "our_value": 2001,
+   "better_value": null,
+   "better_source": null,
+   "note": "GA-ASI: Predator B / MQ-9 first flight Feb 2, 2001."
+  },
+  {
+   "id": "w1710",
+   "verdict": "OK",
+   "our_value": 1968,
+   "better_value": null,
+   "better_source": null,
+   "note": "Lockheed Martin: first C-5 flight June 30, 1968."
+  },
+  {
+   "id": "w1713",
+   "verdict": "OK",
+   "our_value": 1961,
+   "better_value": null,
+   "better_source": null,
+   "note": "Boeing: YCH-1B prototype first flew Sept 21, 1961."
+  },
+  {
+   "id": "w1753",
+   "verdict": "OK",
+   "our_value": 2011,
+   "better_value": null,
+   "better_source": null,
+   "note": "RIA Novosti via GlobalSecurity: first J-20 test flight Jan 11, 2011 (Wikipedia cites WSJ). No Chinese official page."
+  },
+  {
+   "id": "w1775",
+   "verdict": "OK",
+   "our_value": 1959,
+   "better_value": null,
+   "better_source": null,
+   "note": "NMUSAF: F-5 (N-156F prototype) first flew July 1959."
+  },
+  {
+   "id": "w1786",
+   "verdict": "OK",
+   "our_value": 2016,
+   "better_value": null,
+   "better_source": null,
+   "note": "Boeing: 737 MAX first flight Jan 29, 2016."
+  },
+  {
+   "id": "w1816",
+   "verdict": "OK",
+   "our_value": 1865,
+   "better_value": null,
+   "better_source": null,
+   "note": "Cornell: charter signed April 27, 1865 (opened 1868)."
+  },
+  {
+   "id": "w1817",
+   "verdict": "OK",
+   "our_value": 1754,
+   "better_value": null,
+   "better_source": null,
+   "note": "Columbia College and Britannica: founded 1754 as King's College."
+  },
+  {
+   "id": "w1828",
+   "verdict": "OK",
+   "our_value": 1740,
+   "better_value": null,
+   "better_source": null,
+   "note": "Penn's official date 1740 (Britannica agrees), adopted retroactively in 1899; 1749 used earlier, academy opened 1751."
+  },
+  {
+   "id": "w1938",
+   "verdict": "OK",
+   "our_value": 1957,
+   "better_value": null,
+   "better_source": null,
+   "note": "Guinness: first ascent 9 June 1957 (Buhl, Diemberger, Schmuck, Wintersteller)."
+  },
+  {
+   "id": "w1947",
+   "verdict": "OK",
+   "our_value": 1870,
+   "better_value": null,
+   "better_source": null,
+   "note": "Britannica and USGS: Stevens and Van Trump, Aug 17, 1870."
+  },
+  {
+   "id": "w2365",
+   "verdict": "OK",
+   "our_value": 123802000,
+   "better_value": null,
+   "better_source": null,
+   "note": "Statistics Bureau of Japan: 123,802 thousand on 1 Oct 2024 (exact)."
+  },
+  {
+   "id": "w2371",
+   "verdict": "OK",
+   "our_value": 1404890000,
+   "better_value": null,
+   "better_source": null,
+   "note": "NBS 2025 communiqué: 1,404.89 million at end-2025 (exact)."
+  },
+  {
+   "id": "w2379",
+   "verdict": "OK",
+   "our_value": 41167335,
+   "better_value": null,
+   "better_source": null,
+   "note": "Ukrstat: present population 41,167,335 on 1 Jan 2022 (exact; excl. Crimea). Resident population 40,997.7k."
+  },
+  {
+   "id": "w2392",
+   "verdict": "OK",
+   "our_value": 10609460,
+   "better_value": null,
+   "better_source": null,
+   "note": "SCB: 10,609,460 at end-Sep 2025 (exact); 31 Dec 2025: 10,605,529."
+  },
+  {
+   "id": "w2393",
+   "verdict": "OK",
+   "our_value": 5822863,
+   "better_value": null,
+   "better_source": null,
+   "note": "Statistics Denmark: 5,822,763 on 1 Jan 2020; ours is +100 (likely digit slip), within tolerance."
+  },
+  {
+   "id": "w2399",
+   "verdict": "OK",
+   "our_value": 6423207,
+   "better_value": null,
+   "better_source": null,
+   "note": "NSI Bulgaria: 6,423,207 on 31 Dec 2025 (exact)."
+  },
+  {
+   "id": "w2415",
+   "verdict": "CHECK",
+   "our_value": 33000000,
+   "better_value": 30196281,
+   "better_source": "https://api.worldbank.org/v2/country/SAU/indicator/SP.POP.TOTL?format=json&date=2017:2025&per_page=20",
+   "note": "Ours fits GASTAT's pre-census 2018 estimate (33.41M, -1.2%); series revised to 2022 census gives 30,196,281 (WB/GASTAT backcast). Use revised or say 'estimated at the time'."
+  },
+  {
+   "id": "w2416",
+   "verdict": "CHECK",
+   "our_value": 211400708,
+   "better_value": 218529286,
+   "better_source": "https://api.worldbank.org/v2/country/NGA/indicator/SP.POP.TOTL?format=json&date=2017:2025&per_page=20",
+   "note": "Low priority: no census since 2006. Ours = WPP2019-era World Bank vintage; WPP2022 213.4M (-0.9%); current WPP2024/WB 218,529,286 (-3.3%)."
+  },
+  {
+   "id": "w2417",
+   "verdict": "OK",
+   "our_value": 5307800,
+   "better_value": null,
+   "better_source": null,
+   "note": "Stats NZ (via Scoop reprint): 5,311,100 at 31 Dec 2024 (ours -0.1%)."
+  },
+  {
+   "id": "w2486",
+   "verdict": "CHECK",
+   "our_value": 9504000,
+   "better_value": 9716800,
+   "better_source": "https://www.stat.tj/wp-content/uploads/2026/06/main_demographic_indicators-1.xlsx",
+   "note": "Ours = TajStat pre-census 1 Jan 2021 (9,506.3k). Current TajStat series (2020 census): end-2020 9,716.8k (+2.2%), end-2021 9,886.8k; UN mid-2021 9.97M."
+  },
+  {
+   "id": "w2488",
+   "verdict": "OK",
+   "our_value": 4464000,
+   "better_value": null,
+   "better_source": null,
+   "note": "UN DYB 2024: Kuwait mid-2020 estimate 4,464 thousand (exact); UN WPP 2024 4,400k (+1.5%). PACI register end-2020: 4,670,713."
+  },
+  {
+   "id": "w2489",
+   "verdict": "CHECK",
+   "our_value": 4736139,
+   "better_value": 4875637,
+   "better_source": "https://api.worldbank.org/v2/country/MRT/indicator/SP.POP.TOTL?format=json&date=2017:2025&per_page=20",
+   "note": "Ours = WPP2022-era World Bank vintage; current WPP2024/WB 4,875,637 (+2.9%). No ANSADE 2022 figure fetched."
+  },
+  {
+   "id": "w2491",
+   "verdict": "CHECK",
+   "our_value": 14569341,
+   "better_value": 14104965,
+   "better_source": "https://statistics.gov.rw/data-sources/censuses/Population-and-Housing-Census/fifth-population-and-housing-census-2022/rphc5-thematic-reports/rphc5-thematic-report-population-projection",
+   "note": "Ours = UN WPP 2024 value for 2025 (exact). NISR census-based projection 2025: 14,104,965 (medium; -3.2%)."
+  },
+  {
+   "id": "w2521",
+   "verdict": "CHECK",
+   "our_value": 8935000,
+   "better_value": 8935000,
+   "better_source": "https://theprif.org/sites/theprif.org/files/documents/Pacific_Islands_2020_Populations_poster.pdf",
+   "note": "Ours = SPC mid-2020 estimate (UN DYB 8,934k), but no NSO 2020 figure exists; UN WPP 2024 says 9,815,746 (+9.9%). Population highly uncertain: keep with caveat or drop."
+  },
+  {
+   "id": "w2532",
+   "verdict": "OK",
+   "our_value": 926276,
+   "better_value": null,
+   "better_source": null,
+   "note": "UN WPP 2024: 917,180 for 2018 (ours +1.0%). Census-based level is lower (2017 census 884,887; SPC mid-2020 895,000)."
+  },
+  {
+   "id": "w2542",
+   "verdict": "WRONG",
+   "our_value": 200010,
+   "better_value": 205557,
+   "better_source": "https://sbs.gov.ws/wp-content/uploads/2022/12/Factsheet_Samoa_-PHC2021.pdf",
+   "note": "2021 census count 205,557 (ours -2.7%); UN WPP 2021 213,779 (-6.4%). Ours looks like a pre-census projection."
+  },
+  {
+   "id": "w2546",
+   "verdict": "OK",
+   "our_value": 10643,
+   "better_value": null,
+   "better_source": null,
+   "note": "Tuvalu 2022 census: total population 10,643 on 12 Dec 2022 (exact). UN WPP 9,992 is a model estimate."
+  },
+  {
+   "id": "w2562",
+   "verdict": "WRONG",
+   "our_value": 4550,
+   "better_value": 3521,
+   "better_source": "https://population.un.org/wpp/assets/Excel%20Files/1_Indicator%20(Standard)/CSV_FILES/WPP2024_TotalPopulationBySex.csv.gz",
+   "note": "UN WPP 2018: 3,521. Censuses: 3,398 (Oct 2016) and 3,662 (Oct 2021, FIG). 4,550 appears in no fetched source."
+  },
+  {
+   "id": "w2608",
+   "verdict": "OK",
+   "our_value": 1940,
+   "better_value": null,
+   "better_source": null,
+   "note": "McDonald's corporate timeline (Wayback): '1940 - McDonald's Is Founded' (brothers' San Bernardino restaurant). Kroc's first restaurant 1955."
+  },
+  {
+   "id": "w2609",
+   "verdict": "OK",
+   "our_value": 1990,
+   "better_value": null,
+   "better_source": null,
+   "note": "IMDb help page: 'Launched online in 1990'. Website proper came later."
+  },
+  {
+   "id": "w2611",
+   "verdict": "OK",
+   "our_value": 1926,
+   "better_value": null,
+   "better_source": null,
+   "note": "Mercedes-Benz archive: DMG and Benz & Cie. merged into Daimler-Benz AG, 28/29 June 1926. Predecessors older."
+  },
+  {
+   "id": "w2612",
+   "verdict": "OK",
+   "our_value": 1916,
+   "better_value": null,
+   "better_source": null,
+   "note": "BMW Group: foundation of BFW on 7 March 1916 is BMW's official founding date."
+  },
+  {
+   "id": "w2617",
+   "verdict": "OK",
+   "our_value": 1903,
+   "better_value": null,
+   "better_source": null,
+   "note": "Ford corporate history: 'Since 1903, Ford Motor Company...'."
+  },
+  {
+   "id": "w2618",
+   "verdict": "OK",
+   "our_value": 1911,
+   "better_value": null,
+   "better_source": null,
+   "note": "IBM heritage: C-T-R incorporated June 16, 1911; renamed IBM 1924."
+  },
+  {
+   "id": "w2619",
+   "verdict": "OK",
+   "our_value": 1865,
+   "better_value": null,
+   "better_source": null,
+   "note": "Nokia history (Wayback): began in 1865 as a paper mill."
+  },
+  {
+   "id": "w2620",
+   "verdict": "OK",
+   "our_value": 2003,
+   "better_value": null,
+   "better_source": null,
+   "note": "Britannica (Wayback): Tesla founded in 2003 by Eberhard and Tarpenning."
+  },
+  {
+   "id": "w2625",
+   "verdict": "CHECK",
+   "our_value": 1930,
+   "better_value": 1952,
+   "better_source": "https://global.kfc.com/company",
+   "note": "1930 = Sanders starts serving chicken in Corbin (KFC timeline; Britannica says café 1929); 1952 = first KFC franchise, Salt Lake City (KFC). Wikipedia lists both."
+  },
+  {
+   "id": "w2627",
+   "verdict": "CHECK",
+   "our_value": 1947,
+   "better_value": 1947,
+   "better_source": "http://web.archive.org/web/20251229233457/https://www.ferrari.com/en-EN/history/garage/1947/125-s",
+   "note": "Keep or reword: Ferrari dates 'modern Ferrari' to 12 Mar 1947 (first car); Wikipedia infobox: founded 13 Sep 1939 as Auto Avio Costruzioni, name 1945."
+  },
+  {
+   "id": "w2629",
+   "verdict": "OK",
+   "our_value": 1600,
+   "better_value": null,
+   "better_source": null,
+   "note": "Britannica (Wayback): incorporated by royal charter Dec 31, 1600."
+  },
+  {
+   "id": "w2632",
+   "verdict": "OK",
+   "our_value": 1866,
+   "better_value": null,
+   "better_source": null,
+   "note": "Nestlé history: foundations laid in 1866 (Henri Nestlé and the Page brothers)."
+  },
+  {
+   "id": "w2633",
+   "verdict": "WRONG",
+   "our_value": 1952,
+   "better_value": 1953,
+   "better_source": "https://web.archive.org/web/20260921164928/https://www.britannica.com/money/TKO-Group-Holdings",
+   "note": "Britannica (TKO) and Wikipedia (cited: Hornbaker 2015) date Capitol Wrestling's founding/first show to Jan 7, 1953. Titan Sports (WWF) 1980. No source gives 1952."
+  },
+  {
+   "id": "w2634",
+   "verdict": "OK",
+   "our_value": 1931,
+   "better_value": null,
+   "better_source": null,
+   "note": "Porsche newsroom: Ferdinand Porsche founded his engineering office in 1931 (first Porsche car 1948)."
+  },
+  {
+   "id": "w2638",
+   "verdict": "OK",
+   "our_value": 1602,
+   "better_value": null,
+   "better_source": null,
+   "note": "Britannica (Wayback): founded in 1602."
+  },
+  {
+   "id": "w2640",
+   "verdict": "OK",
+   "our_value": 1964,
+   "better_value": null,
+   "better_source": null,
+   "note": "Nike: founded as Blue Ribbon Sports, Jan 25, 1964 (Nike name later)."
+  },
+  {
+   "id": "w2645",
+   "verdict": "WRONG",
+   "our_value": 1948,
+   "better_value": 1963,
+   "better_source": "https://www.lamborghini.com/en-en/history",
+   "note": "Lamborghini: 'Formed in 1963'; Britannica: founded 1963. 1948 is Ferruccio Lamborghini's earlier tractor business."
+  },
+  {
+   "id": "w2655",
+   "verdict": "OK",
+   "our_value": 1926,
+   "better_value": null,
+   "better_source": null,
+   "note": "United Airlines release: April 6, 1926 (Varney Air Lines) begins its history; 'United Air Lines' name 1931."
+  },
+  {
+   "id": "w2660",
+   "verdict": "OK",
+   "our_value": 1977,
+   "better_value": null,
+   "better_source": null,
+   "note": "Oracle: founded 1977 as Software Development Laboratories."
+  },
+  {
+   "id": "w2663",
+   "verdict": "OK",
+   "our_value": 1924,
+   "better_value": null,
+   "better_source": null,
+   "note": "Merger completed April 17, 1924 (Boston Globe centennial; Wikipedia cited). Britannica Students says 1925."
+  },
+  {
+   "id": "w2664",
+   "verdict": "OK",
+   "our_value": 1998,
+   "better_value": null,
+   "better_source": null,
+   "note": "Rotten Tomatoes oral history: went live Aug 18, 1998."
+  },
+  {
+   "id": "w2676",
+   "verdict": "OK",
+   "our_value": 2015,
+   "better_value": null,
+   "better_source": null,
+   "note": "Google blog, Aug 10, 2015: Alphabet Inc. to replace Google Inc."
+  },
+  {
+   "id": "w2684",
+   "verdict": "CHECK",
+   "our_value": 2000,
+   "better_value": 1997,
+   "better_source": "https://yandex.com/company/history",
+   "note": "Yandex timeline: search engine unveiled Sep 23, 1997; company 'Yandex' registered 2000. Commonly cited (Wikipedia infobox): 1997."
+  },
+  {
+   "id": "w2688",
+   "verdict": "OK",
+   "our_value": 1982,
+   "better_value": null,
+   "better_source": null,
+   "note": "EA About page: founded 1982."
+  },
+  {
+   "id": "w2698",
+   "verdict": "OK",
+   "our_value": 1995,
+   "better_value": null,
+   "better_source": null,
+   "note": "Lockheed Martin: merger completed March 15, 1995."
+  },
+  {
+   "id": "w2699",
+   "verdict": "OK",
+   "our_value": 1937,
+   "better_value": null,
+   "better_source": null,
+   "note": "VW Group chronicle: company established May 28, 1937."
+  },
+  {
+   "id": "w2714",
+   "verdict": "WRONG",
+   "our_value": 1961,
+   "better_value": 1965,
+   "better_source": "https://www.pepsico.com/en/newsroom/stories/2026/pepsi-history-brads-drink-iconic-american-brand",
+   "note": "PepsiCo and Britannica: PepsiCo formed 1965 (Pepsi-Cola Company + Frito-Lay). Pepsi brand 1893/1898. No source gives 1961."
+  },
+  {
+   "id": "w2726",
+   "verdict": "OK",
+   "our_value": 1993,
+   "better_value": null,
+   "better_source": null,
+   "note": "Britannica (TKO, Wayback): UFC launched 1993 (UFC 1, Nov 12, 1993)."
+  },
+  {
+   "id": "w2749",
+   "verdict": "CHECK",
+   "our_value": 1998,
+   "better_value": 1998,
+   "better_source": "http://web.archive.org/web/20260901214513/https://www.britannica.com/money/Bank-of-America-Corporation",
+   "note": "Keep or reword: current corporation formed 1998 (Britannica, Wikipedia); its history dates to the 1904 Bank of Italy (Britannica). State which."
+  },
+  {
+   "id": "w2756",
+   "verdict": "OK",
+   "our_value": 1985,
+   "better_value": null,
+   "better_source": null,
+   "note": "Microsoft TechNet archive: Windows 1.0 released Nov 20, 1985 (announced 1983)."
+  },
+  {
+   "id": "w2757",
+   "verdict": "OK",
+   "our_value": 2010,
+   "better_value": null,
+   "better_source": null,
+   "note": "Instagram timeline (Wayback): launched Oct 6, 2010."
+  },
+  {
+   "id": "w2758",
+   "verdict": "CHECK",
+   "our_value": 2011,
+   "better_value": 2011,
+   "better_source": "https://news.xbox.com/en-us/2024/05/17/minecraft-15-years-most-important-moments/",
+   "note": "Keep or reword 'officially released': Xbox Wire: Classic public May 16, 2009; 1.0 released Nov 18, 2011. 'First came out' could be read as 2009."
+  },
+  {
+   "id": "w2761",
+   "verdict": "CHECK",
+   "our_value": 2016,
+   "better_value": 2016,
+   "better_source": "https://www.bytedance.com/en/",
+   "note": "Keep or reword: ByteDance: Douyin launched Sept 2016; global TikTok app about a year later (2017)."
+  },
+  {
+   "id": "w2762",
+   "verdict": "OK",
+   "our_value": 2009,
+   "better_value": null,
+   "better_source": null,
+   "note": "WhatsApp blog: coding began Feb 2009; launched May 2009 (Wikipedia, cited)."
+  },
+  {
+   "id": "w2770",
+   "verdict": "WRONG",
+   "our_value": 2006,
+   "better_value": 2008,
+   "better_source": "https://newsroom.spotify.com/company-info/",
+   "note": "2006 is the company founding (Wikidata P571), not a release. Spotify: 'Since its launch in 2008'; Britannica: founded 2006, launched two years later."
+  },
+  {
+   "id": "w2779",
+   "verdict": "OK",
+   "our_value": 2005,
+   "better_value": null,
+   "better_source": null,
+   "note": "Microsoft: Xbox 360 on shelves Nov 22, 2005 (North America)."
+  },
+  {
+   "id": "w2780",
+   "verdict": "OK",
+   "our_value": 2013,
+   "better_value": null,
+   "better_source": null,
+   "note": "Sony Interactive: PS4 launched Nov 15, 2013 (US/Canada)."
+  },
+  {
+   "id": "w2782",
+   "verdict": "OK",
+   "our_value": 2006,
+   "better_value": null,
+   "better_source": null,
+   "note": "Sony Interactive: PS3 launched Nov 11, 2006 (Japan)."
+  },
+  {
+   "id": "w2791",
+   "verdict": "OK",
+   "our_value": 1994,
+   "better_value": null,
+   "better_source": null,
+   "note": "Sony Interactive / playstation.com: PlayStation launched in Japan in 1994 (Dec)."
+  },
+  {
+   "id": "w2807",
+   "verdict": "OK",
+   "our_value": 1987,
+   "better_value": null,
+   "better_source": null,
+   "note": "Red Bull: drink launched in Austria April 1, 1987 (company 1984). Year came from Wikidata inception but matches launch."
+  },
+  {
+   "id": "w2823",
+   "verdict": "OK",
+   "our_value": 1964,
+   "better_value": null,
+   "better_source": null,
+   "note": "Ford: Mustang debut April 17, 1964 (public). Year came from Wikidata inception but matches launch."
+  },
+  {
+   "id": "w2982",
+   "verdict": "OK",
+   "our_value": 73.0,
+   "better_value": null,
+   "better_source": null,
+   "note": "Britannica (Wayback): central dome 240 ft (73 m) to the tip of the finial."
+  },
+  {
+   "id": "w2984",
+   "verdict": "CHECK",
+   "our_value": 33.0,
+   "better_value": 32.0,
+   "better_source": "https://web.archive.org/web/20260801155644/https://www.britannica.com/topic/Colossus-of-Rhodes",
+   "note": "Both are conversions of '70 cubits': Britannica 105 ft (32 m); Wikipedia lead 33 m (uncited), body 32 m. Gap 3%."
+  },
+  {
+   "id": "w2985",
+   "verdict": "OK",
+   "our_value": 65.0,
+   "better_value": null,
+   "better_source": null,
+   "note": "Guinness: highest point rises 213 ft (65 m) above ground (north stair tower)."
+  },
+  {
+   "id": "w3077",
+   "verdict": "CHECK",
+   "our_value": 82,
+   "better_value": 80,
+   "better_source": "https://web.archive.org/web/20260901170446/https://www.britannica.com/topic/Colosseum",
+   "note": "Britannica: begun 70-72, dedicated 80 by Titus; Domitian added the fourth storey in 82 (our year). 'Built' usually means 80."
+  },
+  {
+   "id": "w3078",
+   "verdict": "OK",
+   "our_value": 1661,
+   "better_value": null,
+   "better_source": null,
+   "note": "Château de Versailles: Louis XIV began major works in 1661 (Louis XIII lodge 1623, court moved 1682)."
+  },
+  {
+   "id": "w3079",
+   "verdict": "OK",
+   "our_value": 1420,
+   "better_value": null,
+   "better_source": null,
+   "note": "Beijing government and Britannica: begun 1406, completed/occupied 1420."
+  },
+  {
+   "id": "w3083",
+   "verdict": "CHECK",
+   "our_value": -283,
+   "better_value": -282,
+   "better_source": "https://web.archive.org/web/20260801155644/https://www.britannica.com/topic/Colossus-of-Rhodes",
+   "note": "Britannica: built c. 294-282 BCE; Wikipedia 292-280 BC. Ours = Wikidata's 284 BCE in astronomical numbering (pipeline off-by-one). better_value is 282 BCE."
+  },
+  {
+   "id": "w3084",
+   "verdict": "WRONG",
+   "our_value": 1920,
+   "better_value": 1931,
+   "better_source": "https://web.archive.org/web/20260930042252/https://www.britannica.com/topic/Christ-the-Redeemer",
+   "note": "Britannica: construction 1926-1931; official sanctuary site: built 1926 to 1931 (dedicated 12 Oct 1931). No source gives 1920."
+  },
+  {
+   "id": "w3085",
+   "verdict": "OK",
+   "our_value": 1869,
+   "better_value": null,
+   "better_source": null,
+   "note": "Official site and Britannica: foundation stone laid 5 Sep 1869 (never completed)."
+  },
+  {
+   "id": "w3088",
+   "verdict": "OK",
+   "our_value": 1066,
+   "better_value": null,
+   "better_source": null,
+   "note": "Historic Royal Palaces: '1066 William the Conqueror establishes the Tower'; White Tower begun c. 1078."
+  },
+  {
+   "id": "w3096",
+   "verdict": "OK",
+   "our_value": 335,
+   "better_value": null,
+   "better_source": null,
+   "note": "Consecrated 13 Sep 335 (Wikipedia, cited); built from c. 326. Britannica says dedicated 'about 336'."
+  },
+  {
+   "id": "w3177",
+   "verdict": "OK",
+   "our_value": 2002,
+   "better_value": null,
+   "better_source": null,
+   "note": "Kraft Group: stadium opened in 2002 (groundbreaking 2000)."
+  }
+ ]
+}

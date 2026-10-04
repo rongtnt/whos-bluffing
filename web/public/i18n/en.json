@@ -175,7 +175,7 @@
     "kpi_detail": "As of {date} (UTC), updated once a day. Monthly players by surface: web {web}, Slack {slack}, Discord {discord}, rooms {room}, classroom {classroom}. Communities: {workspaces} Slack workspaces, {guilds} Discord servers, {rooms} rooms and {classrooms} classrooms.",
     "kpi_empty": "Player counts appear once the daily update has run.",
     "anki": "Anki add-on installations that shared ratings in the last 30 days: {n} (counted separately, not part of MAU).",
-    "mau_definition": "MAU: anonymous ids with ≥ 1 play — a completed round of 10 (ranked or quick), a completed full assessment, or an in-channel Slack or Discord answer to the daily question — in the trailing 30 days, summed across web and Slack without cross-surface deduplication (a person who plays on both counts twice). DAU likewise for one UTC day.",
+    "mau_definition": "MAU: anonymous ids with ≥ 1 play — a completed round of 10 (ranked or quick), a completed full assessment, or an in-channel Slack or Discord answer to the daily question — in the trailing 30 days, summed across web, Slack and Discord without cross-surface deduplication (a person who plays on two surfaces counts twice). DAU likewise for one UTC day.",
     "communities_definition": "Communities: Slack workspaces, Discord servers and rooms with ≥ 1 play in the trailing 30 days, plus classrooms with ≥ 5 finished assessments; reported per platform and summed.",
     "daily_title": "Today’s daily game",
     "daily_row": "{players} played · on average {avg} ranges caught",
@@ -240,7 +240,7 @@
     "full_link": "Take the full assessment (5 minutes)"
   },
   "rounds": {
-    "play": "Play",
+    "play": "Play now",
     "play_again": "Play again",
     "continue": "Continue ({done} of {n})",
     "ranked": "Today’s ranked round",
@@ -315,6 +315,13 @@
     "vs_right": "Right",
     "vs_sure": "Sure",
     "own_link": "This is your own challenge link. Send it to a friend: they play the same ten questions.",
-    "challenge_gone": "This challenge’s questions are no longer available. Play a new round instead."
+    "challenge_gone": "This challenge’s questions are no longer available. Play a new round instead.",
+    "sound": "Sound",
+    "stamp_bluff": "BLUFF",
+    "stamp_called": "Called it",
+    "grid_label": "Your answers, question by question",
+    "sq_label": "Question {i}: {verdict} at {conf}% sure, {points} points",
+    "detail_n": "Question {i} of {n}",
+    "detail_pick": "You picked {letter} · {name} at {conf}% sure."
   }
 }

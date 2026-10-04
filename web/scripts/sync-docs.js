@@ -1,6 +1,8 @@
 // Renders the repo's Markdown docs into pages of the site (git-ignored, like the other synced copies; sync-items.js
 // runs this, so `npm run sync-items` covers it):
-//   PRIVACY.md -> public/privacy.html    TERMS.md -> public/terms.html    docs/api-daily.md -> public/docs/api.html
+//   PRIVACY.md -> public/privacy.html    TERMS.md -> public/terms.html    CHANGELOG.md -> public/changelog.html
+//   web/docs/public-api.md + docs/api-rounds.md + docs/api-daily.md -> public/docs/api.html (the later files' headings
+//   move one level down, so the page keeps a single h1)
 // Markdown subset: # headings, paragraphs, - and 1. lists, **bold**, [links](url), `code`. Page chrome: scripts/page.html.
 import { readFileSync, writeFileSync, mkdirSync } from 'node:fs';
 import { fileURLToPath } from 'node:url';
@@ -10,12 +12,14 @@ const WEB = new URL('../', import.meta.url);
 const REPO = 'https://github.com/rongtnt/whos-bluffing/blob/main/';
 
 export const DOCS = [
-  { src: 'PRIVACY.md', out: 'public/privacy.html', path: '/privacy', title: "Privacy | Who's Bluffing?",
+  { src: ['PRIVACY.md'], out: 'public/privacy.html', path: '/privacy', title: "Privacy | Who's Bluffing?",
     description: "What Who's Bluffing stores, what it never stores, and how the anonymous answers are used." },
-  { src: 'TERMS.md', out: 'public/terms.html', path: '/terms', title: "Terms of use | Who's Bluffing?",
+  { src: ['TERMS.md'], out: 'public/terms.html', path: '/terms', title: "Terms of use | Who's Bluffing?",
     description: "Who's Bluffing is free, non-commercial and provided as is. No accounts; acceptable use; data use as in the privacy policy." },
-  { src: 'docs/api-daily.md', out: 'public/docs/api.html', path: '/docs/api', title: "Daily API | Who's Bluffing?",
-    description: "The JSON API behind the Who's Bluffing daily game: today’s questions, answers, completion, stats, flags and the KPI." },
+  { src: ['web/docs/public-api.md', 'docs/api-rounds.md', 'docs/api-daily.md'], out: 'public/docs/api.html', path: '/docs/api', title: "API | Who's Bluffing?",
+    description: "The JSON API behind Who's Bluffing: public reads with CORS, rate limits, the rounds contract and the daily game's endpoints." },
+  { src: ['CHANGELOG.md'], out: 'public/changelog.html', path: '/changelog', title: "Changelog | Who's Bluffing?",
+    description: "Dated changes to Who's Bluffing and to its pre-registered study, each with its reason." },
 ];
 
 const esc = (s) => s.replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/"/g, '&quot;');
@@ -59,8 +63,12 @@ export function markdown(md) {
   return out.join('\n');
 }
 
+// The page's Markdown: its sources joined, every source after the first one heading level down.
+export const assemble = (texts) => texts.map((md, i) => (i ? md.replace(/^(#{1,3}) /gm, '#$1 ') : md)).join('\n\n');
+
 export function renderPage(doc, md, template) {
-  const main = `<article class="wrap prose">\n${markdown(md)}\n<p class="muted small">Source: <a href="${REPO}${doc.src}">${doc.src}</a> on GitHub.</p>\n</article>`;
+  const sources = doc.src.map((f) => `<a href="${REPO}${f}">${f}</a>`).join(', ');
+  const main = `<article class="wrap prose">\n${markdown(md)}\n<p class="muted small">Source: ${sources} on GitHub.</p>\n</article>`;
   const fill = { title: esc(doc.title), description: esc(doc.description), path: doc.path, main };
   return template.replace(/\{\{(title|description|path|main)\}\}/g, (m, key) => fill[key]);
 }
@@ -70,7 +78,7 @@ export function syncDocs() {
   for (const doc of DOCS) {
     const dest = new URL(doc.out, WEB);
     mkdirSync(new URL('.', dest), { recursive: true });
-    writeFileSync(dest, renderPage(doc, readFileSync(new URL(doc.src, ROOT), 'utf8'), template));
+    writeFileSync(dest, renderPage(doc, assemble(doc.src.map((f) => readFileSync(new URL(f, ROOT), 'utf8'))), template));
   }
   return DOCS.map((d) => d.out);
 }

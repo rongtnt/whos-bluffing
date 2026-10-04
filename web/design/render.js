@@ -1,13 +1,18 @@
 // Renders the committed images and the review screenshots in headless Chrome over the DevTools protocol, and runs
 // the layout checks. No dependencies (Node 22's fetch and WebSocket). CHROME=/path/to/chrome picks another Chromium.
-//   node design/render.js assets           public/og.png, favicon-32.png, apple-touch-icon.png from design/*.html
-//   node design/render.js screens [BASE]   design/screens/<page>-<width>-<theme>.png for /, /slack, /research; BASE is a
-//                                          running `npm run dev` (default http://127.0.0.1:8788)
-//   node design/render.js checks [BASE]    overflow at 375 px and layout shift on every page, keyboard walk on / and
-//                                          /slack, theme toggle label and persistence
-//   node design/render.js rounds [BASE]    design/screens/rounds-{item,reveal,end,challenge}-<width>-<theme>.png at 375 and
-//                                          1280 px: plays today's ranked round in the page (after four API players for the
-//                                          leaderboard) and opens a challenge link from a fifth
+//   node design/render.js assets           public/og.png, favicon-32.png, apple-touch-icon.png (from favicon.svg =
+//                                          brand/icon.svg), press/logo.png and press/logo-dark.png from design/*.html
+//   node design/render.js screens [BASE]   design/screens/<page>-<width>-<theme>.png for /, /slack, /research (375, 768,
+//                                          1280) and /discord, /commands (375, 1280); BASE is a running `npm run dev`
+//                                          (default http://127.0.0.1:8788)
+//   node design/render.js checks [BASE]    overflow at 375 px and layout shift on every page, keyboard walk on /, /slack,
+//                                          /discord and /commands, theme toggle label and persistence
+//   node design/render.js rounds [BASE]    design/screens/rounds-{item,reveal-right,reveal-wrong,end,challenge}-<width>-
+//                                          <theme>.png at 375 and 1280 px, motion on: plays today's ranked round in the
+//                                          page (the first answer right at 100%, the second wrong at 100%) after four API
+//                                          players for the leaderboard, and opens a challenge link from a fifth
+//   node design/render.js results [BASE]   design/screens/results-<width>-<theme>.png at 375, 768 and 1280 px: the full
+//                                          assessment (/test) played through to its results page, whole page
 import { spawn } from 'node:child_process';
 import { mkdtempSync, writeFileSync, readFileSync, rmSync } from 'node:fs';
 import { tmpdir } from 'node:os';
@@ -18,9 +23,11 @@ const WEB = fileURLToPath(new URL('../', import.meta.url));
 const CHROME = process.env.CHROME ?? '/Applications/Google Chrome.app/Contents/MacOS/Google Chrome';
 const DEBUG_PORT = 9339;
 const READY_TIMEOUT_MS = 6000;
-const PAGES = ['/', '/slack', '/teachers', '/research', '/support', '/docs/api', '/privacy', '/terms', '/test', '/stats',
-  '/class', '/tests/overconfidence-test', '/tests/estimation-test', '/tests/calibration-test', '/no-such-page'];
+const PAGES = ['/', '/discord', '/slack', '/commands', '/teachers', '/research', '/support', '/community', '/status', '/press',
+  '/changelog', '/docs/api', '/privacy', '/terms', '/test', '/stats', '/class', '/tests/overconfidence-test',
+  '/tests/estimation-test', '/tests/calibration-test', '/no-such-page'];
 const sleep = (ms) => new Promise((r) => setTimeout(r, ms));
+const HERO_SHOTS = ['home', 'discord']; // also captured as one 1280x800 screen for /press
 
 async function launch() {
   const profile = mkdtempSync(join(tmpdir(), 'whosbluffing-render-'));
@@ -90,7 +97,8 @@ async function capture(cdp, file, width, height, y = 0) {
 async function assets(cdp) {
   await cdp.send('Emulation.setDefaultBackgroundColorOverride', { color: { r: 0, g: 0, b: 0, a: 0 } }); // transparent icon corners
   const jobs = [['design/og.html', 'public/og.png', 1200, 630], ['design/icon.html', 'public/favicon-32.png', 32, 32],
-    ['design/icon.html', 'public/apple-touch-icon.png', 180, 180, 'solid']];
+    ['design/icon.html', 'public/apple-touch-icon.png', 180, 180, 'solid'],
+    ['design/logo.html', 'public/press/logo.png', 1280, 320], ['design/logo.html', 'public/press/logo-dark.png', 1280, 320, 'dark']];
   for (const [src, out, w, h, bodyClass] of jobs) {
     await open(cdp, `file://${WEB}${src}`, { width: w, height: h, mobile: false, waitReady: false });
     if (bodyClass) await evaluate(cdp, `document.body.classList.add('${bodyClass}')`);
@@ -102,13 +110,15 @@ const post = (base, path, body) => fetch(`${base}${path}`, { method: 'POST', hea
   .then(async (r) => { if (!r.ok) throw new Error(`${path} -> ${r.status} ${await r.text()}`); return r.json(); });
 
 async function screens(cdp, base) {
-  const shots = [['home', '/'], ['slack', '/slack'], ['research', '/research']];
-  const sizes = [[375, 812], [768, 1024], [1280, 800]];
-  for (const [name, path] of shots) {
+  const all = [[375, 812], [768, 1024], [1280, 800]];
+  const shots = [['home', '/', all], ['slack', '/slack', all], ['research', '/research', all],
+    ['discord', '/discord', [all[0], all[2]]], ['commands', '/commands', [all[0], all[2]]]];
+  for (const [name, path, sizes] of shots) {
     for (const dark of [false, true]) {
       for (const [w, h] of sizes) {
         await open(cdp, `${base}${path}`, { width: w, height: h, dark });
         await capture(cdp, join(WEB, `design/screens/${name}-${w}-${dark ? 'dark' : 'light'}.png`), w);
+        if (HERO_SHOTS.includes(name) && w === 1280 && !dark) await capture(cdp, join(WEB, `design/screens/${name}-hero-1280-light.png`), w, h); // the press kit's view
       }
     }
   }
@@ -130,9 +140,21 @@ const waitFor = (sel) => `await new Promise((done, fail) => { const t0 = Date.no
   const el = document.querySelector(${JSON.stringify(sel)}); if (el && !el.disabled) done(el);
   else if (Date.now() - t0 > 8000) fail(new Error('timeout: ' + ${JSON.stringify(sel)})); else setTimeout(poll, 40); })(); })`;
 
+// The truth (0 = A, 1 = B) of every pair, from the synced compact pairs.
+const truthOf = () => new Map(JSON.parse(readFileSync(join(WEB, 'functions/_pairs.json'), 'utf8')).pairs.map(([n, , , t]) => [`p${String(n).padStart(5, '0')}`, t]));
+
+// In the page: answers the question on screen (right or wrong, at conf), using the saved round to know which pair it is.
+const answerInPage = (truth, right, conf) => `(async () => { ${waitFor('button.pick')};
+  const st = JSON.parse(localStorage.getItem('whosbluffing_round')); const k = st.items.findIndex((i) => !st.answers[i.id]);
+  const t = ${JSON.stringify(Object.fromEntries(truth))}[st.items[k].id]; const pick = ${right} ? t : 1 - t;
+  document.querySelectorAll('button.pick')[pick].click(); (${waitFor(`#conf:not([hidden]) [data-conf="${conf}"]`)}).click();
+  ${waitFor('.reveal')}; return true; })()`;
+
 async function roundScreens(cdp, base) {
   const get = (path) => fetch(`${base}${path}`).then((r) => r.json());
   const ranked = await get('/api/round?mode=ranked');
+  const all = truthOf();
+  const truth = new Map(ranked.items.map((i) => [i.id, all.get(i.id)])); // today's ten
   const players = [['1111111110', [90]], ['1101101101', [80, 70]], ['1010101010', [100, 60]], ['1111110000', [70]]];
   for (const [i, [pattern, confs]] of players.entries()) await playRoundApi(base, ranked, `shotRanked${i}`.padEnd(22, 'x'), pattern, confs);
   const host = await playRoundApi(base, await get('/api/round?mode=quick'), 'shotHostSam'.padEnd(22, 'x'), '1110111011', [90, 80, 70], { nickname: 'Sam' });
@@ -142,23 +164,56 @@ async function roundScreens(cdp, base) {
       const theme = dark ? 'dark' : 'light';
       const file = (name) => join(WEB, `design/screens/rounds-${name}-${w}-${theme}.png`);
       await open(cdp, `${base}/support`, { width: w, height: h, dark }); // a fresh player in this browser
-      await evaluate(cdp, `localStorage.clear(); localStorage.setItem('whosbluffing_anon', ${JSON.stringify(JSON.stringify(`shot${theme}${w}`.padEnd(22, 'y')))}); true`);
-      await open(cdp, `${base}/`, { width: w, height: h, dark });
+      await evaluate(cdp, `localStorage.clear(); localStorage.setItem('whosbluffing_anon', ${JSON.stringify(JSON.stringify(`shot${theme}${w}`.padEnd(22, 'y')))}); localStorage.setItem('whosbluffing_sound', 'off'); true`);
+      await open(cdp, `${base}/`, { width: w, height: h, dark, motion: 'no-preference' });
       await evaluate(cdp, `(async () => { document.getElementById('play').click(); (${waitFor('button.pick')}).click(); ${waitFor('#conf:not([hidden]) [data-conf="80"]')}; return true; })()`);
       await sleep(300);
       await capture(cdp, file('item'), w, h);
-      await evaluate(cdp, `(async () => { document.querySelector('[data-conf="80"]').click(); ${waitFor('.reveal')}; return true; })()`);
-      await sleep(300);
-      await capture(cdp, file('reveal'), w, h);
-      await evaluate(cdp, `(async () => { for (let k = 1; k < 10; k += 1) { (${waitFor('#next')}).click(); ${waitFor('button.pick')};
-        document.querySelectorAll('button.pick')[k % 2].click(); (${waitFor('[data-conf="70"]')}).click(); }
+      await evaluate(cdp, answerInPage(truth, true, 100)); // right at 100%: confetti, the gold stamp
+      await sleep(1300);
+      await capture(cdp, file('reveal-right'), w, h);
+      await evaluate(cdp, `(async () => { (${waitFor('#next')}).click(); return true; })()`);
+      await evaluate(cdp, answerInPage(truth, false, 100)); // wrong at 100%: shake, red flash, the biggest BLUFF stamp
+      await sleep(1300);
+      await capture(cdp, file('reveal-wrong'), w, h);
+      await evaluate(cdp, `(async () => { for (let k = 2; k < 10; k += 1) { (${waitFor('#next')}).click(); ${waitFor('button.pick')};
+        document.querySelectorAll('button.pick')[k % 2].click(); (${waitFor('[data-conf="70"]')}).click(); ${waitFor('.reveal')}; }
         (${waitFor('#next')}).click(); ${waitFor('.result-title')}; return true; })()`);
-      await sleep(900); // the ranked leaderboard loads after the end screen
+      await sleep(2200); // squares, the type card's flip, the counters and the ranked leaderboard
       const box = await evaluate(cdp, `(() => { window.scrollTo(0, 0); const r = document.getElementById('app').getBoundingClientRect();
         return { y: Math.max(0, Math.round(r.top - 72)), h: Math.round(r.height + 96) }; })()`);
       await capture(cdp, file('end'), w, box.h, box.y); // the result, from the nav's height above it
       await open(cdp, `${base}${challenge}`, { width: w, height: h, dark });
       await capture(cdp, file('challenge'), w, h);
+    }
+  }
+}
+
+// The full assessment at /test, answered through the page (two-choice: the first option at 80%; ranges: 10 to 1000,
+// sent again after a warning; no demographics), then its results page, whole.
+async function resultScreens(cdp, base) {
+  const play = `(async () => { document.getElementById('start').click();
+    for (let n = 0; n < 60; n += 1) {
+      await new Promise((r) => setTimeout(r, 60));
+      if (document.querySelector('#app h1') && document.querySelector('.headline')) return true;
+      const opt = document.querySelector('.opt');
+      if (opt) { opt.click(); (${waitFor('#conf:not([hidden]) [data-c="80"]')}).click(); continue; }
+      const range = document.querySelector('form.range');
+      if (range) { range.low.value = '10'; range.high.value = '1000'; range.requestSubmit(); await new Promise((r) => setTimeout(r, 60));
+        if (document.querySelector('form.range') === range && range.querySelector('.msg').textContent) range.requestSubmit(); continue; }
+      const skip = document.querySelector('form.demo .skip');
+      if (skip) skip.click();
+    }
+    throw new Error('the assessment did not reach its results'); })()`;
+  for (const dark of [false, true]) {
+    for (const [w, h] of [[375, 812], [768, 1024], [1280, 800]]) {
+      await open(cdp, `${base}/support`, { width: w, height: h, dark });
+      await evaluate(cdp, 'localStorage.clear(); true');
+      await open(cdp, `${base}/test`, { width: w, height: h, dark });
+      await evaluate(cdp, play);
+      await sleep(600);
+      await evaluate(cdp, 'window.scrollTo(0, 0)');
+      await capture(cdp, join(WEB, `design/screens/results-${w}-${dark ? 'dark' : 'light'}.png`), w);
     }
   }
 }
@@ -203,7 +258,7 @@ async function checks(cdp, base) {
       flag(r.cls === 0 && r.overflow <= 0, `${path} at ${width}px: layout shift ${r.cls}, horizontal overflow ${r.overflow}px`);
     }
   }
-  for (const path of ['/', '/slack']) {
+  for (const path of ['/', '/slack', '/discord', '/commands']) {
     for (const width of [1280, 375]) {
       await open(cdp, `${base}${path}`, { width });
       const w = await keyboardWalk(cdp);
@@ -232,7 +287,8 @@ try {
   else if (mode === 'screens') await screens(cdp, base);
   else if (mode === 'checks') failed = await checks(cdp, base);
   else if (mode === 'rounds') await roundScreens(cdp, base);
-  else throw new Error(`unknown mode ${mode} (assets | screens | checks | rounds)`);
+  else if (mode === 'results') await resultScreens(cdp, base);
+  else throw new Error(`unknown mode ${mode} (assets | screens | checks | rounds | results)`);
 } finally {
   cdp.close();
 }

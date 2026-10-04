@@ -115,6 +115,22 @@ content /support 'What to include in a bug report' 'support page'
 content /privacy '<h1 id="privacy">Privacy</h1>' 'privacy page (generated from PRIVACY.md)'
 content /terms '<h1 id="terms-of-use">Terms of use</h1>' 'terms page (generated from TERMS.md)'
 content /docs/api '<code>GET /api/daily?date=YYYY-MM-DD</code>' 'API docs (generated from docs/api-daily.md)'
+content /docs/api '<h2 id="public-api">Public API</h2>' 'API docs: the public reads, CORS and rate limits (web/docs/public-api.md)'
+content /docs/api '<h2 id="rounds-api-contract' 'API docs: the rounds contract (docs/api-rounds.md)'
+content /discord "<h1 id=\"discord-title\">Who's Bluffing? for Discord</h1>" 'Discord page'
+content /discord '<code>/bluff setup</code>' 'Discord page: command cards from commands.json'
+content /commands 'role="tablist" aria-label="Platform"' 'commands page with its tabs'
+content /commands '<code>/bluff setup roast on|off</code>' 'commands page: Slack cards'
+content /commands '<code>5 6 7 8 9 0</code>' 'commands page: web shortcuts'
+content /community 'data-community-soon>The server is opening soon.' 'community page (opening soon until COMMUNITY_INVITE_URL is set)'
+content /status '<script type="module" src="/status.js"></script>' 'status page and its script'
+content /press '<p class="boilerplate">' 'press kit'
+content /changelog '<h1 id="changelog">Changelog</h1>' 'changelog (generated from CHANGELOG.md)'
+content /commands.json '"label": "Web shortcuts"' 'commands.json'
+for f in press/logo.png:image/png press/logo-dark.png:image/png press/icon-512.png:image/png press/logo.svg:image/svg+xml press/screen-home.png:image/png press/screen-question.png:image/png press/screen-result.png:image/png press/screen-discord.png:image/png; do
+  META=$(curl -s -o /dev/null -w '%{http_code} %{content_type}' "$BASE/${f%%:*}")
+  [[ "$META" == "200 ${f#*:}"* ]] || fail "GET /${f%%:*} -> 200 ${f#*:}" "$META"; pass "GET /${f%%:*} -> 200 ${f#*:}"
+done
 content /tests/overconfidence-test '<title>Overconfidence test' 'SEO page'
 content /tests/estimation-test '<title>Estimation test' 'SEO page'
 content /tests/calibration-test '<title>Calibration test' 'SEO page'
@@ -487,6 +503,72 @@ node -e 'process.exit(process.argv[1].trim().split(/\s+/).every((x) => x[0] === 
 pass "difficulty=easy -> both items famous and the pair easy"
 req GET "/api/round?mode=quick&difficulty=nightmare"
 expect "unknown difficulty -> 400" 400 'r.error === "difficulty must be easy, normal or brutal"'
+
+echo "== rounds: packs (pack=, with difficulty; categories from items/pool.json)"
+# in_pack ROUND_JSON PACK -> exit 0 when every pair's items belong to the pack's categories (public/packs.js)
+in_pack() {
+  node --input-type=module -e '
+    import { readFileSync } from "node:fs";
+    import { PACKS } from "./public/packs.js";
+    const [file, pack] = process.argv.slice(1);
+    const cat = new Map(JSON.parse(readFileSync("functions/_pool.json", "utf8")).items.map((i) => [i.id, i.category]));
+    const pairs = new Map(JSON.parse(readFileSync("functions/_pairs.json", "utf8")).pairs.map((p) => ["p" + String(p[0]).padStart(5, "0"), "w" + String(p[1]).padStart(4, "0")]));
+    const r = JSON.parse(readFileSync(file, "utf8"));
+    process.exit(r.items.length === 10 && r.items.every((i) => PACKS[pack].categories.includes(cat.get(pairs.get(i.id)))) ? 0 : 1);
+  ' "$@"
+}
+for combo in history:easy geography:normal countries:brutal; do
+  req GET "/api/round?mode=quick&pack=${combo%%:*}&difficulty=${combo#*:}"
+  expect "GET quick pack=${combo%%:*} difficulty=${combo#*:} -> 10 pairs, both echoed" 200 "r.items.length === 10 && r.pack === '${combo%%:*}' && r.difficulty === '${combo#*:}'"
+  printf '%s' "$BODY" > "$STATE/pack.json"
+  in_pack "$STATE/pack.json" "${combo%%:*}" || fail "pack=${combo%%:*}: every pair from the pack's categories" "$BODY"
+  pass "pack=${combo%%:*}: every pair comes from the pack's categories"
+done
+# chips PICK: a pack from the home page's chips ("brutal" = the last chip offered at brutal; "missing" = a known pack
+# that normal cannot fill)
+chips() {
+  node --input-type=module -e '
+    import { readFileSync } from "node:fs";
+    import { PACKS } from "./public/packs.js";
+    const chips = [...readFileSync("public/index.html", "utf8").matchAll(/data-pack="([a-z]+)" data-difficulties="([a-z ]+)"/g)].map((m) => [m[1], m[2].split(" ")]);
+    const pick = process.argv[1] === "brutal" ? chips.filter(([, d]) => d.includes("brutal")).at(-1)[0]
+      : Object.keys(PACKS).find((k) => !chips.some(([p, d]) => p === k && d.includes("normal")));
+    process.stdout.write(pick);
+  ' "$1"
+}
+BRUTAL_PACK=$(chips brutal); MISSING_PACK=$(chips missing)
+req GET "/api/round?mode=quick&difficulty=brutal&pack=$BRUTAL_PACK"
+expect "pack=$BRUTAL_PACK (a home-page chip offered at brutal) plays a full round at brutal" 200 'r.items.length === 10'
+req GET "/api/round?mode=quick&difficulty=normal&pack=$MISSING_PACK"
+expect "pack=$MISSING_PACK at normal (normal cannot fill it) -> 400, not a short round" 400 'r.error === "not enough questions in this pack at this difficulty"'
+req GET "/api/round?mode=quick&pack=cheese"
+expect "unknown pack -> 400" 400 'r.error === "unknown pack"'
+req GET "/api/round?mode=quick"
+expect "no pack -> all" 200 'r.pack === "all" && r.items.length === 10'
+
+echo "== public reads: CORS on GET /api/round/stats and /api/kpi only"
+# Through another host name, so the 60 s stats cache that later checks read stays untouched; the stats are asked twice,
+# so the second answer comes from the cache and must carry the header too.
+for path in /api/round/stats /api/round/stats /api/kpi; do
+  H=$(curl -s -D - -o /dev/null -H 'Host: cors.localhost' "$BASE$path")
+  grep -qi '^access-control-allow-origin: \*' <<< "$H" || fail "GET $path carries Access-Control-Allow-Origin: *" "$H"
+  pass "GET $path -> Access-Control-Allow-Origin: *"
+done
+H=$(curl -s -D - -o /dev/null "$BASE/api/round?mode=ranked")
+! grep -qi '^access-control-allow-origin' <<< "$H" || fail "GET /api/round has no CORS header (not a public read)" "$H"
+pass "GET /api/round -> no CORS header (it can write a row)"
+
+echo "== bots host: only /api/* and only with x-bluff-bot (Host header emulated by wrangler pages dev)"
+STATUS=$(curl -s -o "$STATE/bots.json" -w '%{http_code}' -H 'Host: bots.whosbluffing.com' "$BASE/api/kpi"); BODY=$(cat "$STATE/bots.json")
+expect "bots host without the key -> 403" 403 'r.error === "bot host requires key"'
+STATUS=$(curl -s -o "$STATE/bots.json" -w '%{http_code}' -H 'Host: bots.whosbluffing.com' -H 'x-bluff-bot: wrong' "$BASE/api/kpi"); BODY=$(cat "$STATE/bots.json")
+expect "bots host with a wrong key -> 403" 403 'r.error === "bot host requires key"'
+STATUS=$(curl -s -o "$STATE/bots.json" -w '%{http_code}' -H 'Host: bots.whosbluffing.com' -H "x-bluff-bot: $BOT_KEY" "$BASE/api/kpi"); BODY=$(cat "$STATE/bots.json")
+expect "bots host with the key -> the API" 200 'typeof r.mau === "number"'
+STATUS=$(curl -s -o "$STATE/bots.json" -w '%{http_code}' -H 'Host: bots.whosbluffing.com' -H "x-bluff-bot: $BOT_KEY" "$BASE/discord"); BODY=$(cat "$STATE/bots.json")
+expect "bots host, a page -> 404 even with the key" 404 'r.error === "not found"'
+STATUS=$(curl -s -o /dev/null -w '%{http_code}' -H 'Host: whosbluffing.com' "$BASE/api/kpi")
+[ "$STATUS" = 200 ] || fail "normal host without a key -> unchanged (200)" "$STATUS"; pass "normal host without a key -> unchanged (200)"
 
 echo "== rounds: today's ranked round, rank, stats"
 req GET /api/round?mode=ranked

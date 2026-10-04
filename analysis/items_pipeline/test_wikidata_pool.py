@@ -82,7 +82,10 @@ class Filters(unittest.TestCase):
         self.assertEqual(w.select_value(CAT["first_flight"], fixture_rows("first_flight", "Boeing 747")), (1969, {}))
         when = lambda t, p="11": {"time": t, "precision": p, "rank": NORMAL}
         self.assertEqual(w.select_value(CAT["first_flight"], [when("1969-02-09T00:00:00Z"), when("1970-01-01T00:00:00Z", "9")]), (None, "conflict"))
-        self.assertEqual(w.year_of("-0500-01-01T00:00:00Z"), -500)
+        # The query service writes BCE years in astronomical numbering: '-0283' is 284 BCE (Wikidata's own JSON: -0284).
+        self.assertEqual(w.year_of("-0283-01-01T00:00:00Z"), -284)
+        self.assertEqual(w.year_of("0000-01-01T00:00:00Z"), -1)  # year 0 = 1 BCE
+        self.assertEqual(w.year_of("+0001-01-01T00:00:00Z"), 1)
         self.assertEqual(w.year_of("+1903-12-17T00:00:00Z"), 1903)
 
     def test_labels_bounds_and_volatility_drop_items_before_they_reach_the_pool(self):
@@ -133,14 +136,17 @@ class NewKinds(unittest.TestCase):
     def dated(self, prop, t, precision="11", rank=NORMAL, **kw):
         return {"prop": prop, "time": t, "precision": precision, "rank": rank, **kw}
 
-    def test_launch_year_is_the_first_release_anywhere_then_service_entry_then_one_inception(self):
+    def test_launch_year_comes_from_launch_properties_only_never_inception(self):
         rows = [self.dated("P577", "1989-04-21T00:00:00Z"), self.dated("P577", "1990-09-28T00:00:00Z"), self.dated("P571", "1987-01-01T00:00:00Z", "9")]
         answer, extra = w.select_release(rows)
-        self.assertEqual((answer, extra["source_prop"]), (1989, "P577"))  # publication date wins over inception
-        self.assertEqual(w.select_release([self.dated("P729", "1938-01-01T00:00:00Z", "9")])[0], 1938)  # car models
-        self.assertEqual(w.select_release([self.dated("P571", "1997-01-01T00:00:00Z", "9"), self.dated("P571", "1998-01-01T00:00:00Z", "9")]),
-                         (None, "conflict"))
+        self.assertEqual((answer, extra["source_prop"]), (1989, "P577"))  # the first release anywhere
+        self.assertEqual(w.select_release([self.dated("P729", "1938-01-01T00:00:00Z", "9")])[0], 1938)  # service entry (car models)
+        self.assertEqual(w.select_release([self.dated("P5204", "1987-04-01T00:00:00Z")])[0], 1987)  # date of commercialization
+        self.assertEqual(w.select_release([self.dated("P580", "1982-08-01T00:00:00Z")])[0], 1982)  # start time (production)
+        self.assertEqual(w.select_release([self.dated("P571", "2006-04-23T00:00:00Z")]), (None, "no_launch_date"))  # Spotify's founding
         self.assertEqual(w.select_release([self.dated("P577", "1990-01-01T00:00:00Z", "8")]), (None, "precision"))  # decade only
+        self.assertNotIn("P571", w.LAUNCH_PROPS)
+        self.assertNotIn("P571", CAT["product_released"]["query"])
         normal_and_preferred = [self.dated("P577", "2009-05-17T00:00:00Z"), self.dated("P577", "2011-11-18T00:00:00Z", rank=PREFERRED)]
         self.assertEqual(w.select_release(normal_and_preferred)[0], 2011)  # a preferred date hides the others
 
@@ -172,6 +178,35 @@ class NewKinds(unittest.TestCase):
         previous = [dict(it, enwiki="X", views_month=123) for it in first["items"]]
         second, _ = w.build_pool(RAW, previous, generated_at="2026-10-04")
         self.assertTrue(all((it["enwiki"], it["views_month"]) == ("X", 123) for it in second["items"]))
+
+
+class Curated(unittest.TestCase):
+    ENTRY = {"qid": "Q866", "name": "YouTube", "year": 2005, "event": "launched on 23 April 2005", "source": "https://en.wikipedia.org/wiki/YouTube"}
+
+    def test_curated_launch_years_are_merged_fact_checked_win_over_twins_and_keep_their_id(self):
+        twin = binding("Q866", "Q866", 300, prop="P577", time="2005-12-15T00:00:00Z", precision="11", rank=NORMAL, referenced="true", imported="false")
+        raw = dict(RAW, product_released={"results": {"bindings": [twin]}})
+        first, report = w.build_pool(raw, curated=[self.ENTRY], generated_at="2026-10-04")
+        yt = [it for it in first["items"] if it["category"] == "product_released"]
+        self.assertEqual(len(yt), 1)  # the generated twin of the same entity is dropped
+        it = yt[0]
+        self.assertEqual((it["answer"], it["source"], it["replaces"], it["fact_checked"], it["name"]),
+                         (2005, self.ENTRY["source"], "https://www.wikidata.org/wiki/Q866#P571", True, "YouTube"))
+        self.assertEqual(it["en"], {"prompt": "In what year did YouTube first come out?", "unit": "year"})
+        self.assertIn("launched on 23 April 2005", it["notes"])
+        self.assertEqual(report["_total"]["curated"], 1)
+        second, _ = w.build_pool(raw, first["items"], curated=[self.ENTRY], generated_at="2026-10-05")
+        again = [i for i in second["items"] if i["category"] == "product_released"]
+        self.assertEqual([(i["id"], i["answer"]) for i in again], [(it["id"], 2005)])  # same id, not pinned a second time
+
+    def test_the_curated_file_is_clean(self):
+        with open(os.path.join(HERE, "..", "..", "items", "launch_years.json")) as f:
+            entries = json.load(f)["items"]
+        self.assertEqual(len({e["qid"] for e in entries}), len(entries))
+        for e in entries:
+            self.assertRegex(e["source"], r"^https://")
+            self.assertTrue(1800 <= e["year"] <= w.CURRENT_YEAR and e["name"] and e["event"], e)
+            self.assertEqual(e["name"], w.PRODUCTS.get(e["qid"]), e)  # a famous product of the list, named the same way
 
 
 class References(unittest.TestCase):
@@ -270,6 +305,17 @@ class Pool(unittest.TestCase):
         self.assertEqual(items[nile["id"]]["generated_at"], "2026-10-03")  # kept verbatim, not regenerated
         self.assertFalse(any(it["source"] == finland["source"] for it in second["items"]))  # the generated twin is gone
         self.assertEqual(sum(it["fact_checked"] for it in second["items"]), 2)
+        # The twin is matched by category and entity, so a regenerated statement of another property is dropped too;
+        # an item checked but left ambiguous (ranked_ok: false) is pinned without fact_checked; retired_at is kept.
+        other_prop = {"category": "country_area", "en": {"unit": "km²"}, "source": finland["source"].replace("#P2046", "#P2047")}
+        self.assertEqual(w.twin_key(other_prop), w.twin_key(corrected[1]))
+        depth = {"category": "lake", "en": {"unit": "m"}, "source": f"{WD.replace('http://', 'https://')}Q35342#P4511".replace("/entity/", "/wiki/")}
+        area = dict(depth, en={"unit": "km²"}, source=depth["source"].replace("#P4511", "#P2046"))
+        self.assertNotEqual(w.twin_key(depth), w.twin_key(area))  # one lake, two questions: not twins
+        ambiguous = dict(nile, notes="definition unclear", ranked_ok=False, retired_at="2026-10-04")
+        third, _ = w.build_pool(RAW, [it for it in previous if it["id"] != nile["id"]] + [ambiguous], generated_at="2026-11-02")
+        kept = {it["id"]: it for it in third["items"]}[nile["id"]]
+        self.assertEqual((kept["fact_checked"], kept["ranked_ok"], kept["retired_at"]), (False, False, "2026-10-04"))
 
 
 class Cli(unittest.TestCase):
@@ -278,7 +324,8 @@ class Cli(unittest.TestCase):
             out = os.path.join(tmp, "pool.json")
             with redirect_stderr(io.StringIO()):
                 code = w.main(["--fixture", FIXTURE, "--out", out, "--schedule", os.path.join(tmp, "none.json"),
-                               "--rounds", os.path.join(tmp, "none.json"), "--pairs", os.path.join(tmp, "none.json")])
+                               "--rounds", os.path.join(tmp, "none.json"), "--pairs", os.path.join(tmp, "none.json"),
+                               "--curated", os.path.join(tmp, "none.json")])
             self.assertEqual(code, 0)
             with open(out) as f:
                 self.assertEqual(len(json.load(f)["items"]), 21)

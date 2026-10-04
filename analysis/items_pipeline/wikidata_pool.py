@@ -22,7 +22,8 @@ best-ranked statements: `referenced` = a reference with something other than "im
 P143 / Wikimedia import URL P4656 / retrieved P813; `imported` = only Wikipedia-imported references; `none`) and
 `fact_checked` (false for generated items). Items with `notes` in the previous pool were corrected by hand: they are
 pinned (kept verbatim with `fact_checked: true`), and the generated twin of the same Wikidata statement (their
-`replaces` URL, or their own source when it is a Wikidata link) is dropped.
+`replaces` URL, or their own source when it is a Wikidata link) is dropped. Curated launch years (items/launch_years.json:
+famous products whose Wikidata items have no launch date) are merged as fact-checked product_released items.
 """
 import argparse
 import datetime
@@ -41,6 +42,7 @@ ROOT = os.path.normpath(os.path.join(os.path.dirname(os.path.abspath(__file__)),
 WD = "http://www.wikidata.org/entity/"
 LABEL = 'SERVICE wikibase:label { bd:serviceParam wikibase:language "en". }'
 CONFLICT_TOLERANCE = 0.02  # best values more than 2% apart = conflicting
+LAUNCH_PROPS = ("P577", "P729", "P5204", "P580")  # publication date, service entry, date of commercialization, start time
 CURRENT_YEAR = datetime.date.today().year
 
 # Wikidata unit -> (dimension, factor to the base unit: metre, square metre; temperatures are converted separately)
@@ -156,11 +158,12 @@ def population_query(where, min_sitelinks, prop="P1082", extra=""):
 
 
 def release_query(where, min_sitelinks):
-    """Launch years: publication date (P577), service entry (P729, car models) and inception (P571), tagged by ?prop."""
+    """Launch years from the launch properties (LAUNCH_PROPS), tagged by ?prop."""
+    values = " ".join(f'(p:{p} psv:{p} "{p}")' for p in LAUNCH_PROPS)
     return f"""SELECT DISTINCT ?item ?itemLabel ?sitelinks ?prop ?time ?precision ?rank ?referenced ?imported WHERE {{
   {where}
   ?item wikibase:sitelinks ?sitelinks . FILTER(?sitelinks >= {min_sitelinks})
-  VALUES (?p ?psv ?prop) {{ (p:P577 psv:P577 "P577") (p:P729 psv:P729 "P729") (p:P571 psv:P571 "P571") }}
+  VALUES (?p ?psv ?prop) {{ {values} }}
   ?item ?p ?st . ?st wikibase:rank ?rank ; ?psv ?tv .
   ?tv wikibase:timeValue ?time ; wikibase:timePrecision ?precision .
   {REFS}
@@ -346,9 +349,11 @@ def conflicting(values):
 
 
 def year_of(time_value):
-    """'+1969-02-09T00:00:00Z' or '1969-02-09T00:00:00Z' -> 1969; BCE years are negative."""
+    """'+1969-02-09T00:00:00Z' or '1969-02-09T00:00:00Z' -> 1969; BCE years are negative, -284 = 284 BCE. The query
+    service writes years before 1 in astronomical numbering (year 0 = 1 BCE, '-0283' = 284 BCE), so those move one back."""
     sign = -1 if time_value.startswith("-") else 1
-    return sign * int(time_value.lstrip("+-").split("-", 1)[0])
+    year = sign * int(time_value.lstrip("+-").split("-", 1)[0])
+    return year if year > 0 else year - 1
 
 
 REF_ORDER = ("none", "imported", "referenced")
@@ -364,20 +369,17 @@ def ref_quality(rows):
 
 
 def select_release(rows):
-    """Launch year: the earliest best-ranked publication date (first release anywhere), else the earliest service entry,
-    else a single inception year."""
-    for prop in ("P577", "P729", "P571"):
+    """Launch year: the earliest best-ranked date of the first launch property present, in LAUNCH_PROPS order (first
+    release anywhere). Never inception (P571): for products it is often the invention or the company's founding."""
+    for prop in LAUNCH_PROPS:
         stated = best_rank([r for r in rows if r.get("prop") == prop])
         dated = [r for r in stated if int(r["precision"]) >= 9]
         if not stated:
             continue
         if not dated:
             return None, "precision"
-        years = sorted(set(year_of(r["time"]) for r in dated))
-        if prop == "P571" and len(years) > 1:
-            return None, "conflict"
-        return years[0], {"source_prop": prop, "_used": dated}
-    return None, "deprecated"
+        return min(year_of(r["time"]) for r in dated), {"source_prop": prop, "_used": dated}
+    return None, "no_launch_date"
 
 
 def select_speakers(rows):
@@ -525,36 +527,53 @@ def assign_ids(items, previous):
     return out
 
 
-WIKIDATA_SOURCE = re.compile(r"^https://www\.wikidata\.org/wiki/Q\d+#P\d+$")
+STATEMENT_QID = re.compile(r"^https://www\.wikidata\.org/wiki/(Q\d+)#P\d+$")
 
 
 def twin_key(item):
-    """The Wikidata statement a hand-corrected item stands for: its `replaces` URL, else its own Wikidata source."""
-    return item.get("replaces") or (item["source"] if WIKIDATA_SOURCE.match(item["source"]) else None)
+    """(category, unit, Wikidata entity) a hand-corrected item stands for: from its `replaces` URL, else its own Wikidata
+    source; None when it has neither. By entity, not statement: a regenerated twin may cite another property. The unit
+    keeps a lake's area and its depth apart (one category)."""
+    m = STATEMENT_QID.match(item.get("replaces") or "") or STATEMENT_QID.match(item.get("source", ""))
+    return (item["category"], item["en"]["unit"], m.group(1)) if m else None
 
 
 def pin(previous_items, generated):
-    """Hand-corrected items (with `notes`) win over their generated twins: the pinned item keeps its id, prompt, answer
-    and source, gains fact_checked, and takes name/ref_quality from the twin when it has none. Returns
+    """Hand-corrected or hand-checked items (with `notes`) win over their generated twins: the pinned item keeps its id,
+    prompt, answer, source and flags (`retired_at` stays), is fact_checked unless it is marked `ranked_ok: false` (checked,
+    but the definition or the figure is ambiguous), and takes name/ref_quality from the twin when it has none. Returns
     (pinned items, generated items without the twins)."""
     pinned = [dict(it) for it in previous_items if it.get("notes")]
     twins = {twin_key(it): it for it in pinned if twin_key(it)}
     kept = []
     for it in generated:
-        p = twins.get(it["source"])
+        p = twins.get(twin_key(it))
         if p is None:
             kept.append(it)
             continue
         for k in ("name", "ref_quality", "sitelinks"):
             p.setdefault(k, it[k])
     for p in pinned:
-        p["fact_checked"] = True
+        p["fact_checked"] = p.get("ranked_ok") is not False
         p.setdefault("ref_quality", "none")
     return pinned, kept
 
 
-def build_pool(responses, previous_items=(), scheduled_ids=(), generated_at=None):
-    """responses: {category name: SPARQL JSON}. Returns (pool dict, report dict)."""
+def curated_items(entries, generated_at):
+    """Launch-year items from items/launch_years.json (product_released): fact-checked, with the entity's inception
+    statement they stand in for as `replaces` (pageviews, the distinct-entity rule and twin matching read it), and the
+    launch event in `notes`."""
+    cat = next(c for c in CATEGORIES if c["name"] == "product_released")
+    return [{"type": "interval", "category": cat["name"], "domain": cat["domain"],
+             "en": {"prompt": f"In what year did {e['name']} first come out?", "unit": cat["unit"]}, "answer": e["year"],
+             "accept": list(cat["accept"]), "source": e["source"], "difficulty_hint": "unknown", "volatile": False,
+             "generated_at": generated_at, "name": e["name"], "ref_quality": "none", "fact_checked": True,
+             "replaces": f"https://www.wikidata.org/wiki/{e['qid']}#P571", "notes": f"curated launch year: {e['event']}"}
+            for e in entries]
+
+
+def build_pool(responses, previous_items=(), scheduled_ids=(), generated_at=None, curated=()):
+    """responses: {category name: SPARQL JSON}; curated: items/launch_years.json entries. Returns (pool dict, report)."""
     generated_at = generated_at or datetime.date.today().isoformat()
     previous_items = list(previous_items)
     all_items, report = [], {}
@@ -572,14 +591,20 @@ def build_pool(responses, previous_items=(), scheduled_ids=(), generated_at=None
                                     "skipped": dict(skipped, duplicate=dupes), "capped": len(items) - len(kept)}
         all_items.extend(kept)
     all_items, cross_dupes = dedupe(all_items)
-    pinned, all_items = pin(previous_items, all_items)
+    # Curated launch years are rebuilt from their file every time: they win over a generated or pinned twin, and their
+    # previous copies (which carry notes) are not pinned again. assign_ids keeps their ids by source.
+    cur = curated_items(curated, generated_at)
+    cur_sources, cur_keys = {it["source"] for it in cur}, {twin_key(it) for it in cur}
+    pinned, all_items = pin([it for it in previous_items if it["source"] not in cur_sources], all_items)
+    pinned = [p for p in pinned if twin_key(p) not in cur_keys]
+    all_items = [it for it in all_items if twin_key(it) not in cur_keys] + cur
     pool_items = assign_ids(all_items, previous_items) + pinned
     # Scheduled items must keep resolving even if a later run no longer returns them.
     present = {it["id"] for it in pool_items}
     carried = [it for it in previous_items if it["id"] in set(scheduled_ids) - present]
     pool_items = sorted(pool_items + carried, key=lambda it: it["id"])
     report["_total"] = {"kept": len(pool_items), "carried_scheduled": len(carried), "cross_category_duplicates": cross_dupes,
-                        "pinned": len(pinned)}
+                        "pinned": len(pinned), "curated": len(cur)}
     return {"version": 1, "generated_at": generated_at, "items": pool_items}, report
 
 
@@ -662,6 +687,7 @@ def main(argv=None):
     ap.add_argument("--schedule", default=os.path.join(ROOT, "daily", "schedule.json"))
     ap.add_argument("--rounds", default=os.path.join(ROOT, "daily", "rounds.json"), help="ranked rounds: their pairs' items are kept too")
     ap.add_argument("--pairs", default=os.path.join(ROOT, "items", "pairs.json"))
+    ap.add_argument("--curated", default=os.path.join(ROOT, "items", "launch_years.json"), help="curated launch years")
     args = ap.parse_args(argv)
 
     if args.fixture:
@@ -681,7 +707,7 @@ def main(argv=None):
     for day in read_json(args.rounds, {}).values():
         for pid in list(day["ranked"]) + [day["question"]]:
             scheduled.update(pair_items.get(pid, ()))
-    pool, report = build_pool(responses, previous, scheduled)
+    pool, report = build_pool(responses, previous, scheduled, curated=read_json(args.curated, {"items": []})["items"])
     with open(args.out, "w") as f:
         json.dump(pool, f, ensure_ascii=False, indent=1)
         f.write("\n")

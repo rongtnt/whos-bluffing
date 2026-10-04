@@ -1,0 +1,226 @@
+{
+  "about": "Every command of the Discord and Slack apps and the web shortcuts. scripts/sync-pages.js renders the cards on /commands, /discord and /slack from this file; test/parity.test.js checks the names against discord/src/commands.js and slack/src/game.js.",
+  "discord": {
+    "label": "Discord",
+    "intro": "Type `/bluff` in any server channel and pick a subcommand. Replies marked “only you” are private.",
+    "commands": [
+      {
+        "name": "/bluff question",
+        "does": "Posts today’s question in this channel now. If today’s question is already up, it links to it instead.",
+        "options": [],
+        "who": "Anyone"
+      },
+      {
+        "name": "/bluff play",
+        "does": "A private 10-question round (only you): pick A or B, say how sure you are, see the answer and your points, then Next. It ends with your score, your type and a Challenge button that posts your challenge link in the channel.",
+        "options": [],
+        "who": "Anyone"
+      },
+      {
+        "name": "/bluff stats",
+        "does": "Posts this server’s leaderboard for the last 30 days in the channel: the top 10 by points and how many members answered.",
+        "options": [],
+        "who": "Anyone"
+      },
+      {
+        "name": "/bluff setup",
+        "does": "Sets where and when the daily question goes, and roast mode. Every option is optional: a missing one keeps its value. A new channel gets a short hello, which also checks that Who's Bluffing may post there.",
+        "options": [
+          { "name": "channel", "does": "where the daily question goes (a text or announcement channel)" },
+          { "name": "hour", "does": "the posting hour in UTC, 0 to 23 (default 14); the answer is revealed 8 hours later" },
+          { "name": "roast", "does": "on or off (default off): on names the biggest bluffer in the reveal" }
+        ],
+        "who": "Manage Server"
+      },
+      {
+        "name": "/bluff reveal",
+        "does": "Reveals today’s answer now instead of waiting for the reveal 8 hours after the post.",
+        "options": [],
+        "who": "Manage Server"
+      },
+      {
+        "name": "/bluff help",
+        "does": "How Who's Bluffing works and the command list (only you).",
+        "options": [],
+        "who": "Anyone"
+      },
+      {
+        "name": "/bluff invite",
+        "does": "A link to add Who's Bluffing to another server (only you).",
+        "options": [],
+        "who": "Anyone"
+      }
+    ],
+    "trouble": [
+      {
+        "q": "`/bluff` doesn’t appear when I type /",
+        "a": "Who's Bluffing was added without its commands. Add it again with the [Add to Discord](/discord) link, which asks for both the bot and the `applications.commands` scope, then reload Discord (Ctrl+R or Cmd+R)."
+      },
+      {
+        "q": "“Only members with the Manage Server permission can do that”",
+        "a": "`/bluff setup` and `/bluff reveal` need the Manage Server or Administrator permission. Ask someone who has it, or have an admin give your role Manage Server."
+      },
+      {
+        "q": "The leaderboard says “a member” instead of names",
+        "a": "Names need the app’s Server Members Intent. If everyone shows as “a member”, the intent is off on our side: please [tell us on GitHub](https://github.com/rongtnt/whos-bluffing/issues). Only the first 1,000 members of a server can be named; others always show as “a member”."
+      },
+      {
+        "q": "“This interaction failed”",
+        "a": "Update your Discord app (or reload the browser tab) and try again: older versions can’t show the buttons. If it keeps happening, the game server may be down for a moment; the [status page](/status) shows whether it answers."
+      },
+      {
+        "q": "“I can’t post in that channel”",
+        "a": "Give Who's Bluffing the View Channel and Send Messages permissions in that channel, or pick another one with `/bluff setup channel:`."
+      },
+      {
+        "q": "The app shows as offline",
+        "a": "That is normal. Who's Bluffing answers through Discord’s interactions endpoint and never connects to the live gateway, so it always looks offline while it works."
+      }
+    ]
+  },
+  "slack": {
+    "label": "Slack",
+    "intro": "Type them in any channel. Anything else after `/bluff` shows the command list, only to you.",
+    "commands": [
+      {
+        "name": "/bluff",
+        "does": "Posts today’s question in this channel. In the chosen channel (or when none is chosen yet) it becomes the day’s post; elsewhere it posts a copy whose answers count the same. After today’s reveal it posts nothing and says so.",
+        "options": [],
+        "who": "Any member"
+      },
+      {
+        "name": "/bluff setup #channel [hour] [roast on|off]",
+        "does": "Posts the question in #channel every day at that hour. Type # and pick the channel so Slack links it.",
+        "options": [
+          { "name": "#channel", "does": "where the daily question goes; for a private channel, run `/invite @whosbluffing` in it first" },
+          { "name": "hour", "does": "UTC, 0 to 23 (default 14); the answer is revealed 8 hours later" },
+          { "name": "roast on|off", "does": "on names the biggest bluffer at the reveal and shows negative points (off by default)" }
+        ],
+        "who": "Any member"
+      },
+      {
+        "name": "/bluff setup roast on|off",
+        "does": "Changes roast mode only; the channel and the hour stay as they are.",
+        "options": [],
+        "who": "Any member"
+      },
+      {
+        "name": "/bluff reveal",
+        "does": "Reveals the open question now, for everyone.",
+        "options": [],
+        "who": "Any member"
+      },
+      {
+        "name": "/bluff stats",
+        "does": "Posts this workspace’s leaderboard for the last 30 days in the channel: the top 10 by total points (ties: more answers first) and how many members answered. Only revealed days count.",
+        "options": [],
+        "who": "Any member"
+      }
+    ],
+    "trouble": [
+      {
+        "q": "Slack says `/bluff` is not a valid command",
+        "a": "Who's Bluffing isn’t installed in this workspace, or was removed. Install it again from the [Add to Slack](/slack) link."
+      },
+      {
+        "q": "“I can’t post in that channel”",
+        "a": "The channel is private. Run `/invite @whosbluffing` in it, then `/bluff setup #channel` again. Public channels work without an invite."
+      },
+      {
+        "q": "The question didn’t post today",
+        "a": "The hour is in UTC. Who's Bluffing checks at the top of every hour and posts once a day, as soon as your hour has come; if you set it up after that hour, today’s question posts at the next full hour. Run `/bluff setup #channel HH` to check the channel and hour."
+      },
+      {
+        "q": "The confidence buttons stopped working",
+        "a": "The private picker uses a Slack link that lasts 30 minutes after you tap A or B. Tap A or B again."
+      },
+      {
+        "q": "“Who's Bluffing is taking a break”",
+        "a": "The game server didn’t answer. Try again in a minute; the [status page](/status) shows whether it is up."
+      }
+    ]
+  },
+  "web": {
+    "label": "Web shortcuts",
+    "intro": "Keys work while a question or its answer is on screen; addresses work in any browser.",
+    "commands": [
+      {
+        "name": "A or B",
+        "does": "Picks answer A or B.",
+        "options": [],
+        "who": "Anyone, while a question is on screen"
+      },
+      {
+        "name": "5 6 7 8 9 0",
+        "does": "Says how sure you are once you have picked an answer: 5 for 50%, 6 for 60% and so on, 0 for 100%.",
+        "options": [],
+        "who": "Anyone, while a question is on screen"
+      },
+      {
+        "name": "N or Enter",
+        "does": "Goes to the next question, or to your score after the last one.",
+        "options": [],
+        "who": "Anyone, while an answer is on screen"
+      },
+      {
+        "name": "whosbluffing.com",
+        "does": "Plays today’s ranked round, the same ten questions for everyone, then as many quick rounds as you like.",
+        "options": [],
+        "who": "Anyone"
+      },
+      {
+        "name": "whosbluffing.com/?pack=history&difficulty=brutal",
+        "does": "Opens the home page with that pack and difficulty picked for your quick rounds.",
+        "options": [
+          { "name": "pack", "does": "`all`, or a pack such as `geography`, `history` or `countries`" },
+          { "name": "difficulty", "does": "`easy`, `normal` or `brutal`" }
+        ],
+        "who": "Anyone"
+      },
+      {
+        "name": "whosbluffing.com/c/…",
+        "does": "A challenge link from “Challenge a friend”: plays the same ten questions, then shows both scores side by side.",
+        "options": [],
+        "who": "Anyone with the link"
+      },
+      {
+        "name": "whosbluffing.com/test",
+        "does": "The 5-minute full assessment: twelve two-choice questions with a confidence each and six 90% ranges.",
+        "options": [
+          { "name": "c", "does": "a class code: `/test?c=CODE` joins that class" }
+        ],
+        "who": "Anyone"
+      },
+      {
+        "name": "whosbluffing.com/class",
+        "does": "Creates a class code and a live dashboard of the class’s answers (aggregates only, from 5 students).",
+        "options": [],
+        "who": "Teachers"
+      },
+      {
+        "name": "whosbluffing.com/stats",
+        "does": "Live numbers: monthly players, communities and today’s ranked round.",
+        "options": [],
+        "who": "Anyone"
+      }
+    ],
+    "trouble": [
+      {
+        "q": "The game doesn’t load",
+        "a": "It needs JavaScript. Reload the page; if an extension blocks scripts, allow this site."
+      },
+      {
+        "q": "The keys don’t do anything",
+        "a": "Click the page first so it has the focus, and make sure the cursor isn’t in a text box. Keys work only while a question or its answer is on screen."
+      },
+      {
+        "q": "My streak or my round in progress disappeared",
+        "a": "Both live in your browser’s storage. A private window or clearing the site’s data starts fresh."
+      },
+      {
+        "q": "“We couldn’t reach the server”",
+        "a": "Your answer is still on screen: press Try again. If it keeps happening, the [status page](/status) shows whether the game server answers."
+      }
+    ]
+  }
+}

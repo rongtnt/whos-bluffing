@@ -1,6 +1,7 @@
 {
   "name": "whosbluffing-web",
   "private": true,
+  "license": "SEE LICENSE IN LICENSE",
   "type": "module",
   "scripts": {
     "sync-items": "node scripts/sync-items.js",

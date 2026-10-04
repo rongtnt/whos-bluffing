@@ -281,7 +281,7 @@ test('rounds UI: the newest 300 seen pairs, oldest first; signed points; a strin
   const stats = { score_hist: Array.from({ length: 41 }, (_, k) => (k === 30 ? 4 : k === 35 ? 1 : 0)), bin_from: -3000, bin_width: 100 };
   const svg = String(scoreChart(stats, 520, 'Scores'));
   assert.equal((svg.match(/<rect /g) ?? []).length, 9); // bins 29..36 with one empty bin each side, widened to 9 bins
-  assert.equal((svg.match(/class="bar mine"/g) ?? []).length, 1);
+  assert.equal((svg.match(/class="bar anim anim-grow mine"/g) ?? []).length, 1); // the bars grow in (motion.js)
   assert.match(svg, /<title>500 to 599: 1<\/title>/);
   assert.equal(String(scoreChart({ ...stats, score_hist: Array(41).fill(0) }, null, 'x')), '');
 });
@@ -298,6 +298,6 @@ test('stats page definitions match PREREG word for word', () => {
   const prereg = readFileSync(new URL('../../prereg/PREREG.md', import.meta.url), 'utf8').replace(/\*\*/g, '');
   const mau = prereg.match(/- MAU: (.*)/)[1].replace('; stated wherever MAU is reported', '');
   assert.equal(en.stats.mau_definition, `MAU: ${mau}`);
-  assert.ok(en.stats.mau_definition.includes('a person who plays on both counts twice'));
+  assert.ok(en.stats.mau_definition.includes('a person who plays on two surfaces counts twice')); // PREREG v1, frozen 2026-10-04
   assert.equal(en.stats.communities_definition, prereg.match(/- (Communities: .*)/)[1]);
 });

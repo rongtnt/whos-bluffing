@@ -9,6 +9,9 @@ export const json = (data, status = 200, headers = {}) =>
 
 export const fail = (status, error) => json({ error }, status);
 
+// Public reads (GET /api/round/stats, GET /api/kpi) may be fetched from any site: aggregates only, no ids.
+export const CORS = { 'access-control-allow-origin': '*' };
+
 // Does the request header equal the configured secret? Constant time (SHA-256 digests); no secret = nobody.
 export async function headerMatches(request, header, secret) {
   const given = request.headers.get(header);

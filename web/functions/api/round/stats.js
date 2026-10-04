@@ -1,11 +1,11 @@
-import { json, safe } from '../../_util.js';
+import { json, safe, CORS } from '../../_util.js';
 import { todayUTC } from '../../_daily.js';
 import { roundStats } from '../../_rounds.js';
 import { ROUNDS } from '../../_rounds_data.js';
 
-const CACHE_HEADERS = { 'cache-control': 'public, max-age=60' };
+const CACHE_HEADERS = { 'cache-control': 'public, max-age=60', ...CORS }; // the cached copy keeps the CORS header
 
-// The ranked round's stats; cached 60 s per data centre and date (the key ignores any other query parameters).
+// The ranked round's stats; cached 60 s per data centre and date (the key ignores any other query parameters). A public read.
 export const onRequestGet = safe(async ({ request, env, waitUntil }) => {
   const url = new URL(request.url);
   const date = url.searchParams.get('date') || todayUTC();
@@ -13,7 +13,7 @@ export const onRequestGet = safe(async ({ request, env, waitUntil }) => {
   const cached = await caches.default.match(key);
   if (cached) return cached;
   const r = await roundStats(env.DB, ROUNDS, date, new Date());
-  if (r.status !== 200) return json(r.body, r.status);
+  if (r.status !== 200) return json(r.body, r.status, CORS);
   const res = json(r.body, 200, CACHE_HEADERS);
   waitUntil(caches.default.put(key, res.clone()));
   return res;

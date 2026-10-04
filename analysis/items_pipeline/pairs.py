@@ -6,11 +6,15 @@
 
 Pairs: two items of items/pool.json with the same category and unit; the larger value is at least 1.3 times the
 smaller (melting points compared in kelvin), or, for years, at least 10 years apart ("Which came first?").
-Left out: city populations, volatile items, retired items (daily/runtime.json, an export of items_runtime), the
-disputed items in DISPUTED, and countries under 20,000 monthly views (famous countries only). Difficulty from the ratio:
+Left out: city populations, volatile items, retired items (`retired_at` in the pool, or daily/runtime.json, an export of
+items_runtime), the disputed items in DISPUTED, and countries under 20,000 monthly views (famous countries only). An item
+marked `ranked_ok: false` (fact-checked, but its definition or figure is ambiguous) is paired for quick rounds and its
+pairs carry `ranked_ok: false`: never in a ranked round or the chat question. Difficulty from the ratio:
 >= 3 easy, 1.6-3 medium, 1.3-1.6 hard; for years from the gap: >= 50 easy, 20-49 medium, 10-19 hard. No item is in more
-than 25 pairs. Ids are stable and a pair's a/b order never changes once generated (stored answers refer to it); a new
-pair's order is a coin flip seeded by its two ids, so the correct answer is A about half the time. `ref_quality` is the
+than 25 pairs. A pair's number (`p00042`) and a/b order never change once given: live answers, challenge links and ranked
+days store them. The number is persisted per (a_id, b_id, category, unit): a new pair gets `next_number`, a pair that
+drops out (retired, or no longer picked) keeps its number in `absent` and gets it back if it returns, and no number is
+ever reused. A new pair's order is a coin flip seeded by its two ids, so the correct answer is A about half the time. `ref_quality` is the
 weaker item's (a fact-checked item counts as referenced). `fame` = the lesser of the two items' English Wikipedia
 monthly views (`views_month`, pageviews.py): ranked rounds, the chat question and "easy" rounds need fame >= 50,000,
 "normal" rounds >= 20,000; "brutal" rounds take any referenced pair. Selection fills each item's 25 slots in that order:
@@ -43,9 +47,12 @@ ITEM_NO_REUSE_DAYS = 25  # see the module docstring: 30 cannot be met with the e
 RANKED_MIX = {"easy": 3, "medium": 4, "hard": 3}
 MAX_PER_CATEGORY = 2
 RETRIES = 40  # random orders tried for a day the weighted order cannot fill
-# (item gap in days, ranked pairs per category). A day is filled at the first rung that works: famous, referenced items
-# outside countries are few (about 110), and the strict rung alone fills about 6 days.
-RULE_LADDER = [(ITEM_NO_REUSE_DAYS, MAX_PER_CATEGORY), (14, 2), (14, 3), (7, 3), (7, 4), (5, 4)]
+COUNTRY_CATEGORIES = ("country_area", "country_population")
+# (item gap in days, ranked pairs per category, ranked pairs from both country categories together or None). A day is
+# filled at the first rung that works: countries at most 2 together while possible, then 2 per category; shorter item
+# gaps before larger caps. The rungs at 3 and 4 per category (the check.sh guard allows 4) are a last resort.
+RULE_LADDER = ([(gap, 2, 2) for gap in (ITEM_NO_REUSE_DAYS, 14, 7, 5)] + [(gap, 2, None) for gap in (ITEM_NO_REUSE_DAYS, 14, 7, 5)]
+               + [(7, 3, None), (5, 4, None)])
 EXCLUDED_CATEGORIES = {"city_population"}
 FAME_RANKED = 50000  # both items' monthly views, for ranked rounds, the chat question and "easy" rounds
 FAME_NORMAL = 20000  # both items, for the default ("normal") quick rounds
@@ -110,7 +117,8 @@ def band(fame):
 
 def usable(item, retired):
     """Items that may appear in a pair (see the module docstring)."""
-    if item["category"] in EXCLUDED_CATEGORIES or item.get("volatile") or item["id"] in retired or item["id"] in DISPUTED:
+    if (item["category"] in EXCLUDED_CATEGORIES or item.get("volatile") or item.get("retired_at") or item["id"] in retired
+            or item["id"] in DISPUTED):
         return False
     if views(item) < MIN_VIEWS.get(item["category"], 0):
         return False
@@ -130,6 +138,20 @@ def comparable(item):
 
 def pair_key(a_id, b_id):
     return (a_id, b_id) if a_id < b_id else (b_id, a_id)
+
+
+def number_key(a_id, b_id, category, unit):
+    return pair_key(a_id, b_id) + (category, unit)
+
+
+def numbering(doc):
+    """{number key: (n, a_id, b_id)} for every pair number ever given (the document's pairs and its `absent` list) and
+    the next free number. Live answers, challenge links and ranked days store pair ids, so a number is never reused: a
+    pair that drops out keeps its number in `absent` and gets it back, a/b order included, if it returns."""
+    rows = [(int(p["id"][1:]), p["a_id"], p["b_id"], p["category"], p["unit"]) for p in doc.get("pairs", ())]
+    rows += [tuple(r) for r in doc.get("absent", ())]
+    known = {number_key(a, b, c, u): (n, a, b) for n, a, b, c, u in rows}
+    return known, max([doc.get("next_number", 1)] + [n + 1 for n, *_ in rows])
 
 
 def measure(a, b):
@@ -207,31 +229,35 @@ def select(cands, preferred=frozenset(), cap=CAP, seed=20261003):
     return chosen
 
 
-def build_pairs(pool_items, previous=(), retired=(), scheduled=(), generated_at=None):
-    """Returns (pairs document, report). previous: the last items/pairs.json pairs (stable ids and a/b order);
-    scheduled: pair ids used in daily/rounds.json, carried over even when they no longer qualify."""
+def build_pairs(pool_items, previous=(), retired=(), scheduled=(), generated_at=None, numbers=None):
+    """Returns (pairs document, report). previous: the last items/pairs.json pairs (picked again first); scheduled: pair
+    ids used in daily/rounds.json, carried over even when they no longer qualify; numbers: the last items/pairs.json
+    document, whose pairs and `absent` list fix the number and a/b order of every pair ever made (default: previous).
+    New pairs get the next free number (`next_number`); numbers are never reused."""
     generated_at = generated_at or datetime.date.today().isoformat()
     by_id = {it["id"]: it for it in pool_items}
     retired = set(retired)
     items = [it for it in pool_items if usable(it, retired)]
-    old = {pair_key(p["a_id"], p["b_id"]): p for p in previous}
-    chosen = select(candidates(items), preferred=frozenset(old))
-    next_n = max([int(p["id"][1:]) for p in previous] + [0]) + 1
+    known, next_n = numbering(numbers if numbers is not None else {"pairs": list(previous)})
+    chosen = select(candidates(items), preferred=frozenset(pair_key(p["a_id"], p["b_id"]) for p in previous))
     pairs, seen = [], set()
     for key, ratio, gap, level, _ in chosen:
-        prev = old.get(key)
-        if prev:
-            pair_id, a_id, b_id = prev["id"], prev["a_id"], prev["b_id"]
+        first = by_id[key[0]]
+        mine = known.get(number_key(*key, first["category"], first["en"]["unit"]))
+        if mine:
+            n, a_id, b_id = mine
         else:
-            pair_id, next_n = f"p{next_n:05d}", next_n + 1
+            n, next_n = next_n, next_n + 1
             a_id, b_id = key if coin(*key) == 0 else key[::-1]
-        pairs.append(make_pair(pair_id, by_id[a_id], by_id[b_id], ratio, gap, level))
-        seen.add(pair_id)
+        pairs.append(make_pair(f"p{n:05d}", by_id[a_id], by_id[b_id], ratio, gap, level))
+        seen.add(f"p{n:05d}")
     carried = [p for p in previous if p["id"] in set(scheduled) - seen and p["a_id"] in by_id and p["b_id"] in by_id]
     pairs = sorted(pairs + carried, key=lambda p: p["id"])
-    doc = {"version": 1, "generated_at": generated_at,
+    present = {number_key(p["a_id"], p["b_id"], p["category"], p["unit"]) for p in pairs}
+    absent = sorted([n, a, b, k[2], k[3]] for k, (n, a, b) in known.items() if k not in present)
+    doc = {"version": 1, "generated_at": generated_at, "next_number": next_n,
            "templates": [{"category": c, "unit": u, "prompt": t[0], "more": t[1], "less": t[2]} for (c, u), t in TEMPLATES.items()],
-           "pairs": pairs}
+           "pairs": pairs, "absent": absent}
     return doc, report(pairs, items, carried)
 
 
@@ -243,6 +269,8 @@ def make_pair(pair_id, a, b, ratio, gap, level):
         pair["gap"] = gap
     pair.update({"prompt": prompt, "a": a["name"], "b": b["name"], "unit": a["en"]["unit"], "category": a["category"],
                  "difficulty_hint": level, "ref_quality": weaker, "fame": min(views(a), views(b))})
+    if a.get("ranked_ok") is False or b.get("ranked_ok") is False:
+        pair["ranked_ok"] = False
     return pair
 
 
@@ -269,8 +297,9 @@ def report(pairs, items, carried):
 
 
 def ranked_ok(pair):
-    """May be used in a ranked round or as the chat question: both items referenced (PREREG) and famous."""
-    return pair["ref_quality"] == "referenced" and pair.get("fame", 0) >= FAME_RANKED
+    """May be used in a ranked round or as the chat question: both items referenced or fact-checked (PREREG), famous,
+    and neither marked ranked_ok: false."""
+    return pair["ref_quality"] == "referenced" and pair.get("fame", 0) >= FAME_RANKED and pair.get("ranked_ok", True)
 
 
 # --- ranked rounds and chat questions --------------------------------------------------------------------------
@@ -296,8 +325,8 @@ def entity(item):
 def extend_rounds(pairs, rounds, today, days=DAYS_AHEAD, retired_pairs=(), popularity=None, entity_of=None, ladder=None, log=None):
     """Returns a new rounds dict: the existing days unchanged plus every missing day from today to today + days, in
     order, stopping at the first day the eligible pairs cannot fill at any rung of the ladder (the result then ends the
-    day before). ladder: [(item gap, pairs per category)], strictest first (default RULE_LADDER); log: a dict that gets
-    {date: [item gap, pairs per category]} for each new day.
+    day before). ladder: [(item gap, pairs per category[, pairs from both country categories together])], strictest
+    first (default RULE_LADDER); log: a dict that gets {date: [item gap, pairs per category, joint cap or None]}.
     popularity: item id -> monthly views; each day tries pairs in a random order weighted towards well-known items (a
     pair counts as known as its lesser-known item), so they come back first once the 25 days are over.
     entity_of: item id -> entity (default: the item id), for the distinct-entities rule within a day."""
@@ -336,17 +365,18 @@ def extend_rounds(pairs, rounds, today, days=DAYS_AHEAD, retired_pairs=(), popul
         entry = None
         # The weighted order first; a greedy dead end (the category limit and the 3/4/3 mix fight over the few famous
         # categories) gets up to RETRIES plain random orders, seeded by the date.
-        for gap, cap in ladder or RULE_LADDER:
+        for rung in ladder or RULE_LADDER:
+            gap, cap, joint = (tuple(rung) + (None,))[:3]
             for attempt in ["known first"] + [f"random {k}" for k in range(RETRIES)]:
                 rng = random.Random(f"{date}/{attempt}" if attempt != "known first" else date)
                 weight = known if attempt == "known first" else (lambda p: 1)
                 order = {level: sorted(xs, key=lambda p: -weight(p) * rng.uniform(0.5, 1)) for level, xs in eligible.items()}
-                entry = fill_day(date, order, pair_uses, freedom(gap), ent, cap)
+                entry = fill_day(date, order, pair_uses, freedom(gap), ent, cap, joint)
                 if entry:
                     break
             if entry:
                 if log is not None:
-                    log[date] = [gap, cap]
+                    log[date] = [gap, cap, joint]
                 break
         if entry is None:
             break  # supply exhausted: the file ends the day before
@@ -355,18 +385,21 @@ def extend_rounds(pairs, rounds, today, days=DAYS_AHEAD, retired_pairs=(), popul
     return dict(sorted(out.items()))
 
 
-def fill_day(date, order, pair_uses, free, ent, cap=MAX_PER_CATEGORY):
-    """One day from the given candidate order: {"ranked", "question"}, or None when a slot cannot be filled."""
+def fill_day(date, order, pair_uses, free, ent, cap=MAX_PER_CATEGORY, joint=None):
+    """One day from the given candidate order: {"ranked", "question"}, or None when a slot cannot be filled. joint: the
+    two country categories count as one group with this cap (None: each has `cap`)."""
     picked, entities, per_cat = [], set(), {}
+    group = (lambda c: "countries" if c in COUNTRY_CATEGORIES else c) if joint is not None else (lambda c: c)
+    limit = lambda g: joint if g == "countries" else cap
 
     def pick(level, limit_category):
-        ok = lambda p: (free(p, date, entities) and (not limit_category or per_cat.get(p["category"], 0) < cap))
+        ok = lambda p: (free(p, date, entities) and (not limit_category or per_cat.get(group(p["category"]), 0) < limit(group(p["category"]))))
         p = next((p for p in order[level] if p["id"] not in pair_uses and ok(p)), None)  # never used beats used long ago
         p = p or next((p for p in order[level] if ok(p)), None)
         if p is None:
             return None
         entities.update((ent(p["a_id"]), ent(p["b_id"])))
-        per_cat[p["category"]] = per_cat.get(p["category"], 0) + 1
+        per_cat[group(p["category"])] = per_cat.get(group(p["category"]), 0) + 1
         return p["id"]
 
     for level in ("hard", "easy", "medium"):  # scarcest first
@@ -387,10 +420,11 @@ def format_rounds(rounds):
 
 
 def format_pairs(doc):
-    """One pair per line (the file is long; this keeps diffs reviewable)."""
-    head = {k: v for k, v in doc.items() if k != "pairs"}
-    body = ",\n".join("  " + json.dumps(p, ensure_ascii=False) for p in doc["pairs"])
-    return json.dumps(head, ensure_ascii=False, indent=1)[:-2] + ',\n "pairs": [\n' + body + "\n ]\n}\n"
+    """One pair per line, then one retired number per line (the file is long; this keeps diffs reviewable)."""
+    head = {k: v for k, v in doc.items() if k not in ("pairs", "absent")}
+    lines = lambda rows: ",\n".join("  " + json.dumps(r, ensure_ascii=False) for r in rows)
+    return (json.dumps(head, ensure_ascii=False, indent=1)[:-2] + ',\n "pairs": [\n' + lines(doc["pairs"])
+            + '\n ],\n "absent": [\n' + lines(doc.get("absent", [])) + "\n ]\n}\n")
 
 
 def review_markdown(doc, rep, rounds, seed=20261003):
@@ -439,7 +473,8 @@ def main(argv=None):
     ap.add_argument("--runtime", default=os.path.join(ROOT, "daily", "runtime.json"), help="items_runtime export (retired items)")
     ap.add_argument("--pair-runtime", default=os.path.join(ROOT, "daily", "pair_runtime.json"), help="pair_runtime export (retired pairs)")
     ap.add_argument("--today", default=datetime.datetime.utcnow().date().isoformat())
-    ap.add_argument("--fresh", action="store_true", help="ignore the existing pairs and days (a rebuild before launch: nothing played yet)")
+    ap.add_argument("--fresh", action="store_true",
+                    help="ignore the existing days and pick pairs anew (pair numbers are kept either way: they never change)")
     args = ap.parse_args(argv)
 
     pool = read_json(args.pool, None)
@@ -449,14 +484,16 @@ def main(argv=None):
     retired = {r["item_id"] for r in runtime_rows(read_json(args.runtime, [])) if r.get("retired_at")}
     retired_pairs = {r["pair_id"] for r in runtime_rows(read_json(args.pair_runtime, [])) if r.get("retired_at")}
     rounds = {} if args.fresh else read_json(args.rounds, {})
-    previous = [] if args.fresh else read_json(args.out, {"pairs": []})["pairs"]
+    last = read_json(args.out, {"pairs": []})
+    previous = [] if args.fresh else last["pairs"]
     scheduled = {i for e in rounds.values() for i in day_pairs(e)}
-    doc, rep = build_pairs(pool["items"], previous, retired, scheduled)
+    doc, rep = build_pairs(pool["items"], previous, retired, scheduled, numbers=last)
     levels = {}
     rounds = extend_rounds(doc["pairs"], rounds, args.today, retired_pairs=retired_pairs, popularity={it["id"]: views(it) for it in pool["items"]},
                            entity_of={it["id"]: entity(it) for it in pool["items"]}, log=levels)
     ahead = [d for d in rounds if d >= args.today]
-    by_rung = {f"gap {g} days, {c} per category": sum(1 for v in levels.values() if v == [g, c]) for g, c in RULE_LADDER}
+    by_rung = {f"gap {g} days, {c} per category" + (f", countries {j} together" if j else ""): sum(1 for v in levels.values() if v == [g, c, j])
+               for g, c, j in RULE_LADDER}
     rep["ranked_days"] = {"total": len(rounds), "from_today": len(ahead), "last": max(rounds) if rounds else None, "new_days_by_rule": by_rung}
     with open(args.out, "w") as f:
         f.write(format_pairs(doc))

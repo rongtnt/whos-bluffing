@@ -6,11 +6,14 @@
 //   items/pairs.json    -> web/functions/_pairs.json (compact: [n, a, b, truth, level, band, ref] per pair) (rounds)
 //   daily/rounds.json   -> web/functions/_rounds.json                           (ranked rounds, daily questions)
 //   web/scripts/page.html -> web/functions/_page.json                          (template of the challenge page)
-//   PRIVACY.md, TERMS.md, docs/api-daily.md -> web/public/privacy.html, terms.html, docs/api.html (sync-docs.js)
+//   PRIVACY.md, TERMS.md, CHANGELOG.md, docs/api-*.md -> web/public/privacy.html, terms.html, changelog.html,
+//                          docs/api.html (sync-docs.js)
+//   the question count, pack chips and command cards inside committed pages, press screenshots (sync-pages.js)
 import { readFileSync, writeFileSync, existsSync } from 'node:fs';
 import { fileURLToPath } from 'node:url';
 import { isDate } from '../functions/_daily.js';
 import { syncDocs } from './sync-docs.js';
+import { syncPages } from './sync-pages.js';
 
 const ROOT = new URL('../../', import.meta.url);
 const TYPES = ['2afc', 'interval', 'attention'];
@@ -190,9 +193,11 @@ function main() {
   const out = JSON.stringify({ ...bank, items: bank.items.map(({ zh, ...it }) => it) });
   for (const dest of ['web/public/items.json', 'web/functions/_items.json']) writeFileSync(new URL(dest, ROOT), out);
   writeFileSync(new URL('web/public/pool.json', ROOT), JSON.stringify(publicPool(pool)));
-  writeFileSync(new URL('web/functions/_pool.json', ROOT), JSON.stringify(serverPool(pool)));
+  const server = serverPool(pool);
+  const compact = compactPairs(pairs);
+  writeFileSync(new URL('web/functions/_pool.json', ROOT), JSON.stringify(server));
   writeFileSync(new URL('web/functions/_schedule.json', ROOT), JSON.stringify(schedule));
-  writeFileSync(new URL('web/functions/_pairs.json', ROOT), JSON.stringify(compactPairs(pairs)));
+  writeFileSync(new URL('web/functions/_pairs.json', ROOT), JSON.stringify(compact));
   writeFileSync(new URL('web/functions/_rounds.json', ROOT), JSON.stringify(rounds));
   writeFileSync(new URL('web/functions/_page.json', ROOT), JSON.stringify({ html: readFileSync(new URL('web/scripts/page.html', ROOT), 'utf8') }));
   const n = (t) => bank.items.filter((i) => i.type === t).length;
@@ -201,6 +206,8 @@ function main() {
     + `pool ${pool.items.length} items; schedule ${days.length} days${days.length ? ` (${days[0]} to ${days.at(-1)})` : ''}; `
     + `${pairs.pairs.length} pairs; ranked rounds ${Object.keys(rounds).length} days`);
   console.log(`synced docs: ${syncDocs().join(', ')}`);
+  const pages = syncPages({ pool: server, compact, rounds });
+  console.log(`synced pages: ${pages.files.join(', ')} (${pages.count.toLocaleString('en-US')} servable pairs)`);
 }
 
 if (process.argv[1] === fileURLToPath(import.meta.url)) main();

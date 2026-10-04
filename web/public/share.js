@@ -1,6 +1,7 @@
 // Share card: drawn on a canvas in the browser (nothing uploaded), square 1080×1080 or wide 1200×630.
 import qrcode from './vendor/qrcode.js';
 import { html } from './ui.js';
+import { attachTilt } from './motion.js';
 
 const SIZES = {
   square: { w: 1080, h: 1080, pad: 80, qr: 260, brand: 46, h1: 84, h2: 52, foot: 36 },
@@ -8,6 +9,49 @@ const SIZES = {
 };
 const FONT = 'ui-sans-serif, -apple-system, "Segoe UI", Roboto, Helvetica, Arial, sans-serif, "Apple Color Emoji", "Segoe UI Emoji", "Noto Color Emoji"';
 const COLORS = { bg: '#FBFAF7', fg: '#111827', muted: '#5B6472', accent: '#2F5BFF' }; // light tokens (styles.css)
+
+// The mark (brand/mark.svg, viewBox 28 x 60): a question mark in five rounded pieces; the elbow is turned -52° about
+// (18.5, 29.5) and the dot, a square, 45° about (14, 52.9). [x, y, w, h, r, degrees, cx, cy] in mark units.
+export const MARK_PIECES = [
+  [0, 0, 28, 10, 3],
+  [18, 12.2, 10, 12, 3],
+  [10.5, 24.5, 16, 10, 3, -52, 18.5, 29.5],
+  [9, 36.5, 10, 8, 3],
+  [9.6, 48.5, 8.8, 8.8, 2.5, 45, 14, 52.9],
+];
+const MARK_BOTTOM = 59.1; // the dot's lowest point, in mark units
+
+// Draws the mark `h` px tall with its top-left corner at x, y: pieces in `ink`, the dot in `dot`. Returns its width.
+export function drawMark(g, x, y, h, ink = COLORS.fg, dot = COLORS.accent) {
+  const k = h / 60;
+  MARK_PIECES.forEach(([px, py, w, ph, r, deg, cx, cy], i) => {
+    g.save();
+    g.translate(x, y);
+    g.scale(k, k);
+    if (deg) {
+      g.translate(cx, cy);
+      g.rotate((deg * Math.PI) / 180);
+      g.translate(-cx, -cy);
+    }
+    g.fillStyle = i === MARK_PIECES.length - 1 ? dot : ink;
+    g.beginPath();
+    if (g.roundRect) g.roundRect(px, py, w, ph, r); else g.rect(px, py, w, ph);
+    g.fill();
+    g.restore();
+  });
+  return 28 * k;
+}
+
+// The lockup in the card's top-left corner: the name, then the mark as its question mark, the dot on the baseline.
+function drawBrand(g, x, y, size) {
+  const name = "Who's Bluffing";
+  g.font = `700 ${size}px ${FONT}`;
+  g.fillStyle = COLORS.fg;
+  g.fillText(name, x, y);
+  const baseline = y + Math.round(size * 0.94); // textBaseline is 'top'
+  const h = Math.round(size * 1.3);
+  drawMark(g, x + g.measureText(name).width + Math.round(size * 0.18), baseline - (h * MARK_BOTTOM) / 60, h);
+}
 
 // Greedy word wrap. measure(str) returns the width of str.
 export function wrap(text, maxWidth, measure) {
@@ -63,7 +107,7 @@ export function drawCard(kind, { t, lines, url }) {
   g.fillStyle = COLORS.bg;
   g.fillRect(0, 0, z.w, z.h);
   g.textBaseline = 'top';
-  drawLines(g, ["Who's Bluffing?"], z.pad, z.pad, z.brand, 700, COLORS.accent);
+  drawBrand(g, z.pad, z.pad, z.brand);
   drawQr(g, url, z.w - z.pad - z.qr, z.h - z.pad - z.qr, z.qr);
 
   // Footer, bottom-aligned left of the QR: call to action, then the site address on the last line.
@@ -161,7 +205,7 @@ export function drawRoundCard(kind, { lines, url }) {
   g.fillStyle = COLORS.bg;
   g.fillRect(0, 0, z.w, z.h);
   g.textBaseline = 'top';
-  drawLines(g, ["Who's Bluffing?"], z.pad, z.pad, z.brand, 700, COLORS.accent);
+  drawBrand(g, z.pad, z.pad, z.brand);
   drawQr(g, url, z.w - z.pad - z.qr, z.h - z.pad - z.qr, z.qr);
   const textW = z.w - 2 * z.pad - (kind === 'wide' ? z.qr + z.pad : 0);
   let y = z.pad + z.brand * 2;
@@ -185,7 +229,7 @@ export function renderRoundShare(ctx, el, { lines, copy, url, onShare }) {
   let canvas = null;
   const native = typeof navigator.share === 'function';
   el.innerHTML = html`<div class="seg" role="group" aria-label="${t('share.title')}"><button type="button" data-k="square" aria-pressed="true">${t('share.square')}</button><button type="button" data-k="wide" aria-pressed="false">${t('share.wide')}</button></div>
-<img class="card-img" alt="${lines.type} · ${lines.score} · ${lines.line}">
+<div class="card-tilt"><img class="card-img" alt="${lines.type} · ${lines.score} · ${lines.line}"></div>
 <p class="muted small">${t('share.long_press')}</p>
 <div class="row">
   <button type="button" class="primary" data-a="text">${t('share.copy_result')}</button>
@@ -195,6 +239,7 @@ export function renderRoundShare(ctx, el, { lines, copy, url, onShare }) {
 </div>
 <p class="msg ok" role="status"></p>`;
   const img = el.querySelector('img');
+  attachTilt(el.querySelector('.card-tilt')); // the preview leans towards the pointer
   const say = (s) => { el.querySelector('.msg').textContent = s; };
   const draw = () => {
     canvas = drawRoundCard(kind, { lines, url });

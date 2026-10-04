@@ -141,6 +141,24 @@ class Rules(unittest.TestCase):
         self.assertTrue(P.ranked_ok(dict(ps[0], fame=50000)))
         self.assertFalse(P.ranked_ok(dict(ps[0], fame=90000, ref_quality="imported")))  # famous, not referenced (PREREG)
 
+    def test_ranked_ok_false_items_stay_out_of_ranked_days_and_retired_items_out_of_everything(self):
+        nile, danube = item(1, "river_length", 6650), item(2, "river_length", 2850, ranked_ok=False, fact_checked=False)
+        p = pairs_of([nile, danube])[0]
+        self.assertEqual(p["ranked_ok"], False)
+        self.assertFalse(P.ranked_ok(p))  # referenced and famous, but marked
+        self.assertNotIn("ranked_ok", pairs_of([nile, item(2, "river_length", 2850)])[0])  # only written when false
+        self.assertEqual(pairs_of([nile, item(2, "river_length", 2850, retired_at="2026-10-04")]), [])
+        marked = spread_pool(Rounds.CATS, 120)
+        for it in marked[::2]:
+            it["ranked_ok"] = False
+        ps = pairs_of(marked)
+        days = P.extend_rounds(ps, {}, "2026-10-03", days=3)
+        by = {q["id"]: q for q in ps}
+        flagged = {it["id"] for it in marked[::2]}
+        for e in days.values():
+            for pid in P.day_pairs(e):
+                self.assertFalse({by[pid]["a_id"], by[pid]["b_id"]} & flagged)
+
     def test_famous_items_spend_their_slots_on_famous_partners_first(self):
         famous = [item(n, "river_length", 100 * 2 ** n) for n in range(1, 5)]
         obscure = [item(n, "river_length", 100 * 2 ** n + 7, views=900) for n in range(5, 12)]
@@ -190,6 +208,39 @@ class Stability(unittest.TestCase):
         self.assertTrue(set(old) <= {p["id"] for p in second})
         new = [p for p in second if p["id"] not in old]
         self.assertTrue(new and min(int(p["id"][1:]) for p in new) == max(int(i[1:]) for i in old) + 1)
+
+    def test_pair_numbers_persist_the_same_inputs_plus_one_new_item_leave_every_old_number_unchanged(self):
+        items = spread_pool(["river_length"], 12)  # well under the 25-pair cap: nothing is crowded out
+        first = json.loads(P.format_pairs(P.build_pairs(items, generated_at="2026-10-03")[0]))  # through the file format
+        key = lambda p: (p["a_id"], p["b_id"], p["category"], p["unit"])
+        before = {key(p): p["id"] for p in first["pairs"]}
+        doc = P.build_pairs(items + [item(100, "river_length", 1000)], first["pairs"], numbers=first, generated_at="2026-10-04")[0]
+        after = {key(p): p["id"] for p in doc["pairs"]}
+        self.assertEqual({k: after.get(k) for k in before}, before)  # same pair, same number, same a/b order
+        new = sorted(int(i[1:]) for k, i in after.items() if k not in before)
+        self.assertEqual(new, list(range(first["next_number"], first["next_number"] + 12)))  # the new item's 12 pairs
+        self.assertEqual((doc["next_number"], doc["absent"]), (first["next_number"] + 12, []))
+
+    def test_a_dropped_pair_keeps_its_number_it_is_never_reused_and_comes_back_with_it(self):
+        base = spread_pool(["river_length"], 12)
+        items = base + [item(100, "river_length", 1000)]
+        build = lambda its, last, **kw: json.loads(P.format_pairs(P.build_pairs(its, last["pairs"], numbers=last, generated_at="2026-10-04", **kw)[0]))
+        start = build(base, {"pairs": []})
+        first = build(items, start)
+        top = {p["id"]: p for p in first["pairs"] if "w0100" in (p["a_id"], p["b_id"])}
+        self.assertEqual(sorted(top), [f"p{n:05d}" for n in range(start["next_number"], first["next_number"])])  # the 12 highest
+        dropped = build(items, first, retired={"w0100"})
+        self.assertEqual(sorted(f"p{r[0]:05d}" for r in dropped["absent"]), sorted(top))
+        grown = build(items + [item(101, "river_length", 9000)], dropped, retired={"w0100"})
+        new = [p for p in grown["pairs"] if "w0101" in (p["a_id"], p["b_id"])]
+        self.assertTrue(new and min(int(p["id"][1:]) for p in new) == first["next_number"])  # not reused
+        back = build(items + [item(101, "river_length", 9000)], grown)
+        again = {p["id"]: p for p in back["pairs"] if "w0100" in (p["a_id"], p["b_id"]) and "w0101" not in (p["a_id"], p["b_id"])}
+        self.assertEqual({i: (p["a_id"], p["b_id"], p["truth"]) for i, p in again.items()},
+                         {i: (p["a_id"], p["b_id"], p["truth"]) for i, p in top.items()})
+        self.assertEqual(back["absent"], [])
+        fresh = P.build_pairs(items, [], numbers=first, generated_at="2026-10-05")[0]  # --fresh picks anew, keeps numbers
+        self.assertEqual({p["id"]: (p["a_id"], p["b_id"]) for p in fresh["pairs"]}, {p["id"]: (p["a_id"], p["b_id"]) for p in first["pairs"]})
 
     def test_scheduled_pairs_are_carried_when_they_no_longer_qualify(self):
         items = [item(1, "river_length", 100), item(2, "river_length", 1000)]
@@ -254,11 +305,22 @@ class Rounds(unittest.TestCase):
         log = {}
         laddered = P.extend_rounds(small, {}, "2026-10-03", days=40, ladder=[(25, 2), (5, 4)], log=log)
         self.assertGreater(len(laddered), len(strict))
-        first_relaxed = min(d for d, rung in log.items() if rung == [5, 4])
-        self.assertTrue(all(log[d] == [25, 2] for d in log if d < first_relaxed))  # strict while it works
+        first_relaxed = min(d for d, rung in log.items() if rung == [5, 4, None])
+        self.assertTrue(all(log[d] == [25, 2, None] for d in log if d < first_relaxed))  # strict while it works
         self.assertEqual(first_relaxed, P.add_days("2026-10-03", len(strict)))
-        self.assertEqual(P.RULE_LADDER[0], (25, 2))
-        self.assertEqual(P.RULE_LADDER[-1], (5, 4))
+        self.assertEqual((P.RULE_LADDER[0], P.RULE_LADDER[4], P.RULE_LADDER[-1]), ((25, 2, 2), (25, 2, None), (5, 4, None)))
+
+    def test_joint_country_cap_counts_both_country_categories_together(self):
+        cats = ["country_area", "country_population", "river_length", "mountain_elevation", "building_height", "first_flight", "bridge_length"]
+        ps = pairs_of(spread_pool(cats, 60))
+        by = {p["id"]: p for p in ps}
+        log = {}
+        days = P.extend_rounds(ps, {}, "2026-10-03", days=6, ladder=[(5, 2, 2), (5, 2)], log=log)
+        self.assertEqual(len(days), 7)
+        for date, e in days.items():
+            n = sum(by[i]["category"] in P.COUNTRY_CATEGORIES for i in e["ranked"])
+            self.assertLessEqual(n, 2 if log[date][2] == 2 else 4, date)
+        self.assertTrue(all(v == [5, 2, 2] for v in log.values()))  # enough other categories: the joint cap always holds
 
     def test_append_only_existing_days_are_kept_and_count_for_reuse(self):
         existing = {d: e for d, e in self.rounds.items() if d <= "2026-10-05"}
@@ -319,7 +381,9 @@ class Files(unittest.TestCase):
             with redirect_stderr(io.StringIO()):
                 self.assertEqual(P.main(args), 0)  # a re-run keeps every id and every day
             with open(out) as f:
-                self.assertEqual(json.load(f)["pairs"], doc["pairs"])
+                again = json.load(f)
+            self.assertEqual(again["pairs"], doc["pairs"])
+            self.assertEqual((again["next_number"], again["absent"]), (max(int(p["id"][1:]) for p in doc["pairs"]) + 1, []))
 
 
 if __name__ == "__main__":

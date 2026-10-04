@@ -26,5 +26,5 @@ export async function renderProof(el) {
   const tiles = proofTiles(kpi.data, stats.ok ? stats.data : null, ranked.ok ? ranked.data : null);
   // PREREG: the double count across surfaces is stated wherever MAU is reported.
   el.innerHTML = html`<div class="tiles">${tiles.map(([value, label]) => html`<div class="tile"><b>${value}</b><span>${label}</span></div>`)}</div>
-<p class="fine">Monthly players: anonymous ids with a finished round, full assessment or chat answer in the last 30 days; someone who plays on the web and in Slack counts twice. <a href="/research#numbers">Definitions</a></p>`;
+<p class="fine">Monthly players: anonymous ids with a finished round, full assessment or chat answer in the last 30 days; someone who plays on two surfaces, say the web and Discord, counts twice. <a href="/research#numbers">Definitions</a></p>`;
 }

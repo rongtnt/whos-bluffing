@@ -1,0 +1,241 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Who's Bluffing? for Discord: one question a day for your server</title>
+<meta name="description" content="Add it once and your server gets one question a day: tap A or B, say how sure you are, and see who was bluffing at the reveal. Free; no messages or usernames stored.">
+<link rel="canonical" href="https://whosbluffing.com/discord">
+<meta property="og:type" content="website">
+<meta property="og:site_name" content="Who's Bluffing?">
+<meta property="og:title" content="Who's Bluffing? for Discord: one question a day for your server">
+<meta property="og:description" content="Add it once and your server gets one question a day: tap A or B, say how sure you are, and see who was bluffing at the reveal. Free; no messages or usernames stored.">
+<meta property="og:url" content="https://whosbluffing.com/discord">
+<meta property="og:image" content="https://whosbluffing.com/og.png">
+<meta property="og:image:width" content="1200">
+<meta property="og:image:height" content="630">
+<meta property="og:image:alt" content="Who's Bluffing: find out who's bluffing.">
+<meta name="twitter:card" content="summary_large_image">
+<meta name="twitter:image" content="https://whosbluffing.com/og.png">
+<link rel="icon" href="/favicon.svg" type="image/svg+xml">
+<link rel="icon" href="/favicon-32.png" sizes="32x32" type="image/png">
+<link rel="apple-touch-icon" href="/apple-touch-icon.png">
+<meta name="theme-color" content="#FBFAF7" media="(prefers-color-scheme: light)">
+<meta name="theme-color" content="#0E1116" media="(prefers-color-scheme: dark)">
+<link rel="stylesheet" href="/styles.css">
+<script src="/site.js"></script>
+</head>
+<body>
+<a class="skip" href="#main">Skip to content</a>
+<header class="nav">
+  <div class="nav-bar">
+    <a class="brand" href="/"><span>Who's Bluffing<span class="sr-only">?</span></span><svg class="mark anim" data-mark viewBox="0 0 28 60" aria-hidden="true" focusable="false"><rect class="p" x="0" y="0" width="28" height="10" rx="3"/><rect class="p" x="18" y="12.2" width="10" height="12" rx="3"/><g transform="rotate(-52 18.5 29.5)"><rect class="p" x="10.5" y="24.5" width="16" height="10" rx="3"/></g><rect class="p" x="9" y="36.5" width="10" height="8" rx="3"/><g transform="rotate(45 14 52.9)"><rect class="p m" x="9.6" y="48.5" width="8.8" height="8.8" rx="2.5"/></g></svg></a>
+    <nav class="nav-links" id="nav-links" aria-label="Main">
+      <a href="/">Play</a>
+      <a href="/discord">Discord</a>
+      <a href="/slack">Slack</a>
+      <a href="/commands">Commands</a>
+      <a href="/research">Research</a>
+      <a href="/support">Support</a>
+    </nav>
+    <button class="icon-btn" type="button" data-sound-toggle aria-pressed="true" aria-label="Sound"><svg class="i i-snd-on" viewBox="0 0 24 24" aria-hidden="true" focusable="false"><path d="M4 9.5h3.5L12 5.5v13l-4.5-4H4z"/><path d="M15.5 9a4 4 0 0 1 0 6M18 6.5a7.5 7.5 0 0 1 0 11"/></svg><svg class="i i-snd-off" viewBox="0 0 24 24" aria-hidden="true" focusable="false"><path d="M4 9.5h3.5L12 5.5v13l-4.5-4H4z"/><path d="m16 9.5 5 5M21 9.5l-5 5"/></svg></button>
+    <button class="icon-btn" type="button" data-theme-toggle aria-pressed="false" aria-label="Dark theme"><svg class="i i-moon" viewBox="0 0 24 24" aria-hidden="true" focusable="false"><path d="M20 14.6A8.2 8.2 0 0 1 9.4 4a8.2 8.2 0 1 0 10.6 10.6z"/></svg><svg class="i i-sun" viewBox="0 0 24 24" aria-hidden="true" focusable="false"><circle cx="12" cy="12" r="4"/><path d="M12 2.5v2M12 19.5v2M4.6 4.6 6 6M18 18l1.4 1.4M2.5 12h2M19.5 12h2M4.6 19.4 6 18M18 6l1.4-1.4"/></svg></button>
+    <button class="icon-btn nav-menu" type="button" aria-controls="nav-links" aria-expanded="false" aria-label="Menu"><svg class="i" viewBox="0 0 24 24" aria-hidden="true" focusable="false"><path d="M4 7h16M4 12h16M4 17h16"/></svg></button>
+  </div>
+</header>
+<main id="main">
+<section class="hero" aria-labelledby="discord-title">
+  <div class="wrap hero-grid">
+    <div>
+      <p class="eyebrow">Discord app</p>
+      <h1 id="discord-title">Who's Bluffing? for Discord</h1>
+      <p class="hero-sub">Add it once and your server gets one question a day. Members tap A or B and say how sure they are; eight hours later the post turns into the answer, with your server’s top 5 and the bluff of the day.</p>
+      <div class="actions">
+        <a class="button primary" href="/discord" data-discord-install><svg class="i" viewBox="0 0 24 24" aria-hidden="true" focusable="false"><path d="M4 5.5h11a2 2 0 0 1 2 2V13a2 2 0 0 1-2 2H9l-4 3.5V15H4a2 2 0 0 1-2-2V7.5a2 2 0 0 1 2-2z"/><path d="M19.5 9.5H20a2 2 0 0 1 2 2V17a2 2 0 0 1-2 2h-1v3l-3.5-3H12"/></svg><span>Add to Discord</span></a>
+        <a class="button" href="#commands"><span>See the commands</span><svg class="i" viewBox="0 0 24 24" aria-hidden="true" focusable="false"><path d="M5 12h14M13 6l6 6-6 6"/></svg></a>
+      </div>
+      <p class="fine">Free. Adding it needs the Manage Server permission. No messages, usernames or Discord ids are stored with answers.</p>
+    </div>
+    <figure class="chat-demo">
+      <figcaption><span class="badge">Illustration</span></figcaption>
+      <div class="cd" role="img" aria-label="Illustration: the daily question in a Discord channel, with an A and a B button">
+        <div class="cd-head"># general</div>
+        <div class="cd-body cd-msg">
+          <span class="cd-avatar"><svg viewBox="0 0 64 64" aria-hidden="true" focusable="false"><rect width="64" height="64" rx="14" fill="#111827"/><g transform="translate(21.708 10.240) scale(0.7351)"><rect x="0" y="0" width="28" height="10" rx="3" fill="#F5F3EE"/><rect x="18" y="12.2" width="10" height="12" rx="3" fill="#F5F3EE"/><g transform="rotate(-52 18.5 29.5)"><rect x="10.5" y="24.5" width="16" height="10" rx="3" fill="#F5F3EE"/></g><rect x="9" y="36.5" width="10" height="8" rx="3" fill="#F5F3EE"/><g transform="rotate(45 14 52.9)"><rect x="9.6" y="48.5" width="8.8" height="8.8" rx="2.5" fill="#7A95FF"/></g></g></svg></span>
+          <div>
+            <p class="cd-name">Who's Bluffing?<span class="cd-tag">APP</span><small>Today at 14:00</small></p>
+            <p><b>Who's Bluffing?</b> · Which is longer: the Nile or the Danube?</p>
+            <p class="cd-sub">Tap A or B, then say how sure you are. Answer at 22:00 UTC.</p>
+            <p class="cd-buttons"><span class="cd-btn">A · the Nile</span><span class="cd-btn">B · the Danube</span></p>
+          </div>
+        </div>
+      </div>
+      <div class="cd cd-private" role="img" aria-label="Illustration: the private confidence picker, from 50%, a coin flip, to 100%, stake it all">
+        <div class="cd-body">
+          <p class="cd-only">Only you can see this</p>
+          <p>You picked <b>B</b>. Say how sure you are.</p>
+          <p class="cd-buttons cd-conf"><span>50% · coin flip</span><span>60%</span><span>70%</span><span class="on">80%</span><span>90%</span><span>100% · stake it all</span></p>
+        </div>
+      </div>
+      <div class="cd cd-reveal" role="img" aria-label="Illustration: the reveal edits the post: the Nile, 6,650 kilometres, is longer than the Danube, 2,850 kilometres; 12 answered, 75% A, 25% B; the top 3; and the bluff of the day">
+        <div class="cd-body">
+          <p><b>Who's Bluffing?</b> · Which is longer: the Nile or the Danube?</p>
+          <p><span class="cd-right">✓ <b>the Nile</b></span>: 6,650 km (<u>source</u>)<br>the Danube: 2,850 km (<u>source</u>)</p>
+          <p>12 answered · 75% A · 25% B</p>
+          <p><b>Top 3:</b> 1. Alex +84 · 2. Sam +64 · 3. Priya +36</p>
+          <p class="cd-bluff">Someone was 90% sure the Danube is longer. It isn't.</p>
+        </div>
+      </div>
+    </figure>
+  </div>
+</section>
+<section class="section" id="commands" aria-labelledby="commands-title">
+  <div class="wrap">
+    <div class="section-head"><p class="eyebrow">Commands</p><h2 id="commands-title">Slash commands</h2><p class="lead">One command, <code>/bluff</code>, with a subcommand for each job. The same list, with Slack’s and the web game’s, is on the <a href="/commands#discord">commands page</a>.</p></div>
+    <div class="search"><svg class="i" viewBox="0 0 24 24" aria-hidden="true" focusable="false"><circle cx="11" cy="11" r="6.5"/><path d="m16 16 4.5 4.5"/></svg><label class="sr-only" for="command-search">Search commands</label><input id="command-search" type="search" placeholder="Search commands" autocomplete="off" data-filter="cmd-discord"></div>
+    <div class="cmds" id="cmd-discord"><!-- commands:discord -->
+      <article class="cmd" data-item>
+        <h3><code>/bluff question</code></h3>
+        <p>Posts today’s question in this channel now. If today’s question is already up, it links to it instead.</p>
+        <dl>
+          <div><dt>Options</dt><dd>None</dd></div>
+          <div><dt>Who can run it</dt><dd>Anyone</dd></div>
+        </dl>
+      </article>
+      <article class="cmd" data-item>
+        <h3><code>/bluff play</code></h3>
+        <p>A private 10-question round (only you): pick A or B, say how sure you are, see the answer and your points, then Next. It ends with your score, your type and a Challenge button that posts your challenge link in the channel.</p>
+        <dl>
+          <div><dt>Options</dt><dd>None</dd></div>
+          <div><dt>Who can run it</dt><dd>Anyone</dd></div>
+        </dl>
+      </article>
+      <article class="cmd" data-item>
+        <h3><code>/bluff stats</code></h3>
+        <p>Posts this server’s leaderboard for the last 30 days in the channel: the top 10 by points and how many members answered.</p>
+        <dl>
+          <div><dt>Options</dt><dd>None</dd></div>
+          <div><dt>Who can run it</dt><dd>Anyone</dd></div>
+        </dl>
+      </article>
+      <article class="cmd" data-item>
+        <h3><code>/bluff setup</code></h3>
+        <p>Sets where and when the daily question goes, and roast mode. Every option is optional: a missing one keeps its value. A new channel gets a short hello, which also checks that Who's Bluffing may post there.</p>
+        <dl>
+          <div><dt>Options</dt><dd><ul><li><code>channel</code> where the daily question goes (a text or announcement channel)</li><li><code>hour</code> the posting hour in UTC, 0 to 23 (default 14); the answer is revealed 8 hours later</li><li><code>roast</code> on or off (default off): on names the biggest bluffer in the reveal</li></ul></dd></div>
+          <div><dt>Who can run it</dt><dd>Manage Server</dd></div>
+        </dl>
+      </article>
+      <article class="cmd" data-item>
+        <h3><code>/bluff reveal</code></h3>
+        <p>Reveals today’s answer now instead of waiting for the reveal 8 hours after the post.</p>
+        <dl>
+          <div><dt>Options</dt><dd>None</dd></div>
+          <div><dt>Who can run it</dt><dd>Manage Server</dd></div>
+        </dl>
+      </article>
+      <article class="cmd" data-item>
+        <h3><code>/bluff help</code></h3>
+        <p>How Who's Bluffing works and the command list (only you).</p>
+        <dl>
+          <div><dt>Options</dt><dd>None</dd></div>
+          <div><dt>Who can run it</dt><dd>Anyone</dd></div>
+        </dl>
+      </article>
+      <article class="cmd" data-item>
+        <h3><code>/bluff invite</code></h3>
+        <p>A link to add Who's Bluffing to another server (only you).</p>
+        <dl>
+          <div><dt>Options</dt><dd>None</dd></div>
+          <div><dt>Who can run it</dt><dd>Anyone</dd></div>
+        </dl>
+      </article>
+    <!-- /commands --></div>
+    <p class="muted" id="cmd-discord-none" hidden>No command matches that search.</p>
+    <p><a href="#troubleshooting">Commands not working?</a></p>
+  </div>
+</section>
+<section class="section" aria-labelledby="store-title">
+  <div class="wrap">
+    <div class="section-head"><p class="eyebrow">Privacy</p><h2 id="store-title">What we store</h2></div>
+    <ul class="links">
+      <li><div class="pt"><span class="ico"><svg class="i" viewBox="0 0 24 24" aria-hidden="true" focusable="false"><ellipse cx="12" cy="6" rx="7" ry="3"/><path d="M5 6v12c0 1.7 3.1 3 7 3s7-1.3 7-3V6M5 12c0 1.7 3.1 3 7 3s7-1.3 7-3"/></svg></span><span><b>Per server</b><span>The server id, the chosen channel, the posting hour, roast mode, and each day’s post with its question.</span></span></div></li>
+      <li><div class="pt"><span class="ico"><svg class="i" viewBox="0 0 24 24" aria-hidden="true" focusable="false"><path d="M12 3 5 6v5.5c0 4.4 3 7.9 7 9.5 4-1.6 7-5.1 7-9.5V6z"/><path d="m9 12 2.2 2.2L15.5 10"/></svg></span><span><b>Per member</b><span>A or B, the confidence and the points, keyed by a salted hash of the member id; a private round while it is being played. Never raw Discord ids.</span></span></div></li>
+      <li><div class="pt"><span class="ico"><svg class="i" viewBox="0 0 24 24" aria-hidden="true" focusable="false"><path d="M7 3h7l5 5v12a1 1 0 0 1-1 1H7a1 1 0 0 1-1-1V4a1 1 0 0 1 1-1z"/><path d="M14 3v5h5M9 13h6M9 17h6"/></svg></span><span><b>Never</b><span>Messages, usernames or emails. Display names are looked up only while a leaderboard is drawn.</span></span></div></li>
+    </ul>
+    <p class="fine">The game server receives only hashed member and server ids. Full details: <a href="/privacy">privacy policy</a>.</p>
+  </div>
+</section>
+<section class="section" id="troubleshooting" aria-labelledby="trouble-title">
+  <div class="wrap split">
+    <div class="section-head"><p class="eyebrow">Troubleshooting</p><h2 id="trouble-title">Commands not working?</h2></div>
+    <div class="faq"><!-- trouble:discord -->
+        <details><summary><span><code>/bluff</code> doesn’t appear when I type /</span></summary><p>Who's Bluffing was added without its commands. Add it again with the <a href="/discord">Add to Discord</a> link, which asks for both the bot and the <code>applications.commands</code> scope, then reload Discord (Ctrl+R or Cmd+R).</p></details>
+        <details><summary><span>“Only members with the Manage Server permission can do that”</span></summary><p><code>/bluff setup</code> and <code>/bluff reveal</code> need the Manage Server or Administrator permission. Ask someone who has it, or have an admin give your role Manage Server.</p></details>
+        <details><summary><span>The leaderboard says “a member” instead of names</span></summary><p>Names need the app’s Server Members Intent. If everyone shows as “a member”, the intent is off on our side: please <a href="https://github.com/rongtnt/whos-bluffing/issues">tell us on GitHub</a>. Only the first 1,000 members of a server can be named; others always show as “a member”.</p></details>
+        <details><summary><span>“This interaction failed”</span></summary><p>Update your Discord app (or reload the browser tab) and try again: older versions can’t show the buttons. If it keeps happening, the game server may be down for a moment; the <a href="/status">status page</a> shows whether it answers.</p></details>
+        <details><summary><span>“I can’t post in that channel”</span></summary><p>Give Who's Bluffing the View Channel and Send Messages permissions in that channel, or pick another one with <code>/bluff setup channel:</code>.</p></details>
+        <details><summary><span>The app shows as offline</span></summary><p>That is normal. Who's Bluffing answers through Discord’s interactions endpoint and never connects to the live gateway, so it always looks offline while it works.</p></details>
+      <!-- /trouble --></div>
+  </div>
+</section>
+<section class="section" id="faq" aria-labelledby="faq-title">
+  <div class="wrap split">
+    <div class="section-head"><p class="eyebrow">FAQ</p><h2 id="faq-title">Questions</h2></div>
+    <div class="faq">
+        <details><summary>What does it cost?</summary><p>Nothing. Who's Bluffing is free and non-commercial, with no ads and no paid plan.</p></details>
+        <details><summary>Who can change the channel or the hour?</summary><p>Members with the Manage Server or Administrator permission, with <code>/bluff setup</code>. Everyone else can post the question, play and see the leaderboard.</p></details>
+        <details><summary>How are points worked out?</summary><p>Each answer scores 100 − 400 × (confidence − outcome)², where the outcome is 1 if right and 0 if not: 50% scores 0, and 100% scores +100 when right and −300 when wrong. Honest confidence earns the most over time.</p></details>
+        <details><summary>What is roast mode?</summary><p>Off by default: the reveal says “Someone was 90% sure…”, and nobody is named next to a loss. <code>/bluff setup roast:on</code> names the biggest bluffer in the reveal.</p></details>
+        <details><summary>Is it on top.gg or in the App Directory?</summary><p>Not yet. Add it with the Add to Discord button on this page.</p></details>
+      </div>
+  </div>
+</section>
+</main>
+<footer class="site-foot">
+  <div class="foot-grid">
+    <div class="foot-brand">
+      <a class="brand" href="/"><span>Who's Bluffing<span class="sr-only">?</span></span><svg class="mark anim" data-mark viewBox="0 0 28 60" aria-hidden="true" focusable="false"><rect class="p" x="0" y="0" width="28" height="10" rx="3"/><rect class="p" x="18" y="12.2" width="10" height="12" rx="3"/><g transform="rotate(-52 18.5 29.5)"><rect class="p" x="10.5" y="24.5" width="16" height="10" rx="3"/></g><rect class="p" x="9" y="36.5" width="10" height="8" rx="3"/><g transform="rotate(45 14 52.9)"><rect class="p m" x="9.6" y="48.5" width="8.8" height="8.8" rx="2.5"/></g></svg></a>
+      <p>A daily game about how sure you are, and an open study built on the anonymous answers. Free, with no accounts and no ads.</p>
+      <ul class="social" aria-label="Who's Bluffing elsewhere">
+        <li><a class="icon-btn" data-social="github" href="https://github.com/rongtnt/whos-bluffing" aria-label="Who's Bluffing on GitHub" hidden><svg class="i i-fill" viewBox="0 0 16 16" aria-hidden="true" focusable="false"><path d="M6.766 11.328c-2.063-.25-3.516-1.734-3.516-3.656 0-.781.281-1.625.75-2.188-.203-.515-.172-1.609.063-2.062.625-.078 1.468.25 1.968.703.594-.187 1.219-.281 1.985-.281.765 0 1.39.094 1.953.265.484-.437 1.344-.765 1.969-.687.218.422.25 1.515.046 2.047.5.593.766 1.39.766 2.203 0 1.922-1.453 3.375-3.547 3.64.531.344.89 1.094.89 1.954v1.625c0 .468.391.734.86.547C13.781 14.359 16 11.53 16 8.03 16 3.61 12.406 0 7.984 0 3.563 0 0 3.61 0 8.031a7.88 7.88 0 0 0 5.172 7.422c.422.156.828-.125.828-.547v-1.25c-.219.094-.5.156-.75.156-1.031 0-1.64-.562-2.078-1.609-.172-.422-.36-.672-.719-.719-.187-.015-.25-.093-.25-.187 0-.188.313-.328.625-.328.453 0 .844.281 1.25.86.313.452.64.655 1.031.655s.641-.14 1-.5c.266-.265.47-.5.657-.656"/></svg></a></li>
+        <li><a class="icon-btn" data-social="community" href="/community" aria-label="Who's Bluffing community on Discord" hidden><svg class="i" viewBox="0 0 24 24" aria-hidden="true" focusable="false"><path d="M4 5.5h11a2 2 0 0 1 2 2V13a2 2 0 0 1-2 2H9l-4 3.5V15H4a2 2 0 0 1-2-2V7.5a2 2 0 0 1 2-2z"/><path d="M19.5 9.5H20a2 2 0 0 1 2 2V17a2 2 0 0 1-2 2h-1v3l-3.5-3H12"/></svg></a></li>
+        <li><a class="icon-btn" data-social="x" href="/community" aria-label="Who's Bluffing on X" hidden><svg class="i" viewBox="0 0 24 24" aria-hidden="true" focusable="false"><path d="M5 4.5 19 19.5M19 4.5 5 19.5"/></svg></a></li>
+        <li><a class="icon-btn" data-social="bluesky" href="/community" aria-label="Who's Bluffing on Bluesky" hidden><svg class="i" viewBox="0 0 24 24" aria-hidden="true" focusable="false"><path d="M12 11.5C10.5 8 7.5 5 4.5 4.5c-1.6-.3-2 .9-2 2.3 0 1.6.6 4.9 2.2 5.9 1.5 1 3.7.8 3.7.8s-3.6.9-2.6 3.3c1 2.3 3.6 2.7 6.2-1.3M12 11.5c1.5-3.5 4.5-6.5 7.5-7 1.6-.3 2 .9 2 2.3 0 1.6-.6 4.9-2.2 5.9-1.5 1-3.7.8-3.7.8s3.6.9 2.6 3.3c-1 2.3-3.6 2.7-6.2-1.3"/></svg></a></li>
+      </ul>
+    </div>
+    <nav aria-labelledby="foot-product">
+      <h2 id="foot-product">Product</h2>
+      <ul>
+        <li><a href="/">Play</a></li>
+        <li><a href="/discord">Discord</a></li>
+        <li><a href="/slack">Slack</a></li>
+        <li><a href="/teachers">Classroom</a></li>
+        <li><a href="/test">Full assessment</a></li>
+      </ul>
+    </nav>
+    <nav aria-labelledby="foot-resources">
+      <h2 id="foot-resources">Resources</h2>
+      <ul>
+        <li><a href="/commands">Commands</a></li>
+        <li><a href="/docs/api">API</a></li>
+        <li><a href="/research">Research</a></li>
+        <li><a href="/status">Status</a></li>
+        <li><a href="/changelog">Changelog</a></li>
+        <li><a href="/press">Press</a></li>
+        <li><a href="/support">Support</a></li>
+        <li><a href="/community">Community</a></li>
+      </ul>
+    </nav>
+    <nav aria-labelledby="foot-legal">
+      <h2 id="foot-legal">Legal</h2>
+      <ul>
+        <li><a href="/privacy">Privacy</a></li>
+        <li><a href="/terms">Terms</a></li>
+      </ul>
+    </nav>
+  </div>
+  <p class="foot-note">An independent, non-commercial project. Source published for transparency; all rights reserved (see <a href="https://github.com/rongtnt/whos-bluffing/blob/main/LICENSE">LICENSE on GitHub</a>).</p>
+</footer>
+</body>
+</html>

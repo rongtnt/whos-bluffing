@@ -6,6 +6,9 @@
 // in SQL from their answers (once per retired pair).
 import { ANON_RE, RETIRE_FLAGS, todayUTC, addDays, isDate } from './_daily.js';
 import { randomString, CODE_ALPHABET, SECRET_ALPHABET } from './_util.js';
+import { PACKS } from '../public/packs.js';
+
+export { PACKS };
 
 export const SURFACES = ['web', 'slack', 'discord', 'room'];
 export const CONFS = [50, 60, 70, 80, 90, 100];
@@ -19,8 +22,12 @@ export const DIFFICULTIES = {
   normal: { mix: MIX, ok: (p) => p.band >= 1, maxKnown: 1 },
   brutal: { mix: { easy: 0, medium: 4, hard: 6 }, ok: (p) => p.ref === 1 },
 };
+// A pack other than `all` is offered at a difficulty only when its pairs can fill that difficulty's mix: at least this
+// many pairs that may take a main slot (for normal: famous pairs; its one lesser-known slot comes on top) and at least
+// the mix's count at every level the mix uses. `all` is always offered.
+export const MIN_PACK_PAIRS = 200;
 export const MAX_SEEN = 300;
-export const TYPES = ['Bluffer', 'Hot-headed', 'Calibrated', 'Modest', 'Hedger'];
+export const TYPES =['Bluffer', 'Hot-headed', 'Calibrated', 'Modest', 'Hedger'];
 export const EVENT_TYPES = ['share', 'challenge_view', 'play_again'];
 export const TOKEN_RE = /^[A-Za-z0-9_-]{10}$/;
 export const PAIR_RE = /^p\d{5}$/;
@@ -49,16 +56,24 @@ const cap = (s) => s.charAt(0).toUpperCase() + s.slice(1);
 
 // pool: items/pool.json; compact: functions/_pairs.json ({templates, pairs: [[n, a, b, truth, level, band, ref]]},
 // written by sync-items); rounds: daily/rounds.json ({date: {ranked: [10 ids], question: id}}).
-export function loadRounds(pool, compact, rounds) {
+// packLists[pack][difficulty][level] = the pair ids that difficulty may draw for that pack (lists = packLists.all);
+// available[difficulty] = the set of packs offered there (minPackPairs: a lower bar for small test fixtures).
+export function loadRounds(pool, compact, rounds, { minPackPairs = MIN_PACK_PAIRS } = {}) {
   const items = new Map(pool.items.map((i) => [i.id, i]));
   const templates = new Map(compact.templates.map((t) => [`${t.category}|${t.unit}`, t]));
   const pairs = new Map();
-  const lists = Object.fromEntries(Object.keys(DIFFICULTIES).map((d) => [d, { easy: [], medium: [], hard: [] }]));
+  const packLists = Object.fromEntries(Object.keys(PACKS).map((k) => [k, Object.fromEntries(Object.keys(DIFFICULTIES).map((d) => [d, { easy: [], medium: [], hard: [] }]))]));
+  const packsOf = new Map(); // category -> the packs it belongs to, `all` first
+  for (const [k, pack] of Object.entries(PACKS)) for (const c of pack.categories ?? []) packsOf.set(c, [...(packsOf.get(c) ?? ['all']), k]);
   for (const [n, a, b, truth, level, band = 0, ref = 0] of compact.pairs) {
     const p = { id: pairId(n), a_id: itemId(a), b_id: itemId(b), truth, level: LEVELS[level], band, ref };
     pairs.set(p.id, p);
-    for (const [d, spec] of Object.entries(DIFFICULTIES)) if (spec.ok(p)) lists[d][p.level].push(p.id);
+    const packs = packsOf.get(items.get(p.a_id)?.category) ?? ['all'];
+    for (const [d, spec] of Object.entries(DIFFICULTIES)) if (spec.ok(p)) for (const k of packs) packLists[k][d][p.level].push(p.id);
   }
+  const lists = packLists.all;
+  const available = Object.fromEntries(Object.entries(DIFFICULTIES).map(([d, spec]) => [d, new Set(Object.keys(PACKS).filter((k) => k === 'all'
+    || fillable(spec, packLists[k][d], pairs, minPackPairs)))]));
   const entity = new Map([...items.values()].map((i) => [i.id, (i.replaces || i.source).match(/\/(Q\d+)#/)?.[1] ?? i.id]));
   const rankedDatesByItem = new Map(); // for the recompute after a retirement
   for (const [date, day] of Object.entries(rounds)) {
@@ -67,7 +82,32 @@ export function loadRounds(pool, compact, rounds) {
       for (const i of [p.a_id, p.b_id]) rankedDatesByItem.set(i, [...(rankedDatesByItem.get(i) ?? []), date]);
     }
   }
-  return { items, pairs, templates, lists, rounds, entity, rankedDatesByItem };
+  return { items, pairs, templates, lists, packLists, available, rounds, entity, rankedDatesByItem };
+}
+
+// Can a pack's lists for one difficulty fill its mix? Counts the pairs that may take a main slot at each level the mix
+// uses (normal's lesser-known pairs only ever fill one slot, so they do not count).
+function fillable(spec, lists, pairs, minPairs) {
+  let total = 0;
+  for (const level of LEVELS) {
+    if (!spec.mix[level]) continue;
+    const n = spec.maxKnown == null ? lists[level].length : lists[level].filter((id) => pairs.get(id).band === 2).length;
+    if (n < spec.mix[level]) return false;
+    total += n;
+  }
+  return total >= minPairs;
+}
+
+// {difficulty: [pack ids offered there]} in PACKS order (sync-pages writes the home page's chips from it).
+export const packAvailability = (data) => Object.fromEntries(Object.entries(data.available).map(([d, set]) => [d, Object.keys(PACKS).filter((k) => set.has(k))]));
+
+// The pair ids any round can serve: what each difficulty draws from at the levels its mix uses, plus the ranked days and
+// chat questions. The home page's "N+ questions" counts these.
+export function servablePairs(data) {
+  const ids = new Set();
+  for (const [d, spec] of Object.entries(DIFFICULTIES)) for (const level of LEVELS) if (spec.mix[level]) data.lists[d][level].forEach((id) => ids.add(id));
+  for (const day of Object.values(data.rounds)) [...day.ranked, day.question].forEach((id) => ids.add(id));
+  return ids;
 }
 
 // --- scoring ------------------------------------------------------------------------------------------------------
@@ -231,16 +271,16 @@ async function liveIds(db, data, ids) {
 
 // --- GET /api/round -----------------------------------------------------------------------------------------------
 
-// The difficulty's mix of pairs per level, then SPARE more of each level it uses, none in `avoid`, unseen first, no item
-// or entity twice in the round, and (normal) at most one pair under 50,000 views. [{id, level}] in pick order, so the
-// main slots come first.
-export function sampleQuick(data, avoid, seen, rand, difficulty = 'normal') {
+// The difficulty's mix of pairs per level from the pack, then SPARE more of each level it uses, none in `avoid`, unseen
+// first, no item or entity twice in the round, and (normal) at most one pair under 50,000 views. [{id, level}] in pick
+// order, so the main slots come first.
+export function sampleQuick(data, avoid, seen, rand, difficulty = 'normal', pack = 'all') {
   const spec = DIFFICULTIES[difficulty];
   const picked = [];
   const entities = new Set();
   let known = 0;
   for (const [level, count] of [...LEVELS.map((l) => [l, spec.mix[l]]), ...LEVELS.map((l) => [l, spec.mix[l] ? SPARE : 0])]) {
-    const ids = data.lists[difficulty][level];
+    const ids = data.packLists[pack][difficulty][level];
     let need = count;
     for (let tries = 0; need > 0 && tries < 600 && ids.length; tries += 1) {
       const id = ids[Math.floor(rand() * ids.length)];
@@ -269,8 +309,9 @@ const shuffle = (xs, rand) => {
 
 const parseSeen = (s) => new Set((typeof s === 'string' ? s.split(',') : []).filter((x) => PAIR_RE.test(x)).slice(-MAX_SEEN));
 
-// params: {mode, seen, round_id, difficulty}. round_id (an addition to the contract) loads an existing round, for
-// challenge links; difficulty applies to quick rounds (default normal).
+// params: {mode, seen, round_id, difficulty, pack}. round_id (an addition to the contract) loads an existing round, for
+// challenge links; difficulty and pack apply to quick rounds (default normal, all). A pack the difficulty cannot fill is
+// refused rather than served short.
 export async function getRound(db, data, params, now, rand = Math.random) {
   const today = todayUTC(now);
   if (params.round_id != null) {
@@ -290,16 +331,19 @@ export async function getRound(db, data, params, now, rand = Math.random) {
   if (params.mode !== 'quick') return err(400, 'mode must be ranked or quick');
   const difficulty = params.difficulty || 'normal';
   if (!Object.hasOwn(DIFFICULTIES, difficulty)) return err(400, 'difficulty must be easy, normal or brutal');
+  const pack = params.pack || 'all';
+  if (!Object.hasOwn(PACKS, pack)) return err(400, 'unknown pack');
+  if (!data.available[difficulty].has(pack)) return err(400, 'not enough questions in this pack at this difficulty');
   const day = data.rounds[today];
   const avoid = new Set(day ? [...day.ranked, day.question] : []); // never today's ranked pairs or chat question
-  const candidates = sampleQuick(data, avoid, parseSeen(params.seen), rand, difficulty);
+  const candidates = sampleQuick(data, avoid, parseSeen(params.seen), rand, difficulty, pack);
   const live = new Set(await liveIds(db, data, candidates.map((c) => c.id)));
   const mix = DIFFICULTIES[difficulty].mix;
   const ids = shuffle(LEVELS.flatMap((level) => candidates.filter((c) => c.level === level && live.has(c.id)).slice(0, mix[level]).map((c) => c.id)), rand);
   const roundId = randomString(12, CODE_ALPHABET);
   await db.prepare('INSERT INTO rounds (round_id, mode, date, items, created_at, difficulty) VALUES (?, ?, ?, ?, ?, ?)')
     .bind(roundId, 'quick', today, JSON.stringify(ids), now.toISOString(), difficulty).run();
-  return ok({ round_id: roundId, mode: 'quick', difficulty, date: today, items: ids.map((id) => pairView(data, id)) });
+  return ok({ round_id: roundId, mode: 'quick', difficulty, pack, date: today, items: ids.map((id) => pairView(data, id)) });
 }
 
 // --- POST /api/round/answer ---------------------------------------------------------------------------------------
