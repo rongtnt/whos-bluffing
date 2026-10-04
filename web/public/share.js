@@ -144,3 +144,91 @@ export function renderShare(ctx, el, lines) {
   }
   draw();
 }
+
+// --- rounds: the card is built around the type and the score; the QR opens the challenge link ----------------------
+const ROUND_SIZES = {
+  square: { w: 1080, h: 1080, pad: 80, qr: 240, brand: 46, kicker: 40, type: 132, score: 88, line: 46, foot: 34 },
+  wide: { w: 1200, h: 630, pad: 60, qr: 210, brand: 34, kicker: 28, type: 92, score: 60, line: 32, foot: 26 },
+};
+
+// lines: {type, score, line, cta}; url: the challenge link (QR), shown as the bare host.
+export function drawRoundCard(kind, { lines, url }) {
+  const z = ROUND_SIZES[kind];
+  const canvas = document.createElement('canvas');
+  canvas.width = z.w;
+  canvas.height = z.h;
+  const g = canvas.getContext('2d');
+  g.fillStyle = COLORS.bg;
+  g.fillRect(0, 0, z.w, z.h);
+  g.textBaseline = 'top';
+  drawLines(g, ['HowSure'], z.pad, z.pad, z.brand, 700, COLORS.accent);
+  drawQr(g, url, z.w - z.pad - z.qr, z.h - z.pad - z.qr, z.qr);
+  const textW = z.w - 2 * z.pad - (kind === 'wide' ? z.qr + z.pad : 0);
+  let y = z.pad + z.brand * 2;
+  y = drawLines(g, layout(g, lines.kicker, textW, z.kicker, 600), z.pad, y, z.kicker, 600, COLORS.muted) + z.kicker * 0.2;
+  y = drawLines(g, layout(g, lines.type, textW, z.type, 800), z.pad, y, z.type, 800, COLORS.fg);
+  y = drawLines(g, layout(g, lines.score, textW, z.score, 800), z.pad, y + z.score * 0.1, z.score, 800, COLORS.accent);
+  drawLines(g, layout(g, lines.line, textW, z.line, 400), z.pad, y + z.line * 0.3, z.line, 400, COLORS.fg);
+  const footW = z.w - 3 * z.pad - z.qr;
+  const hostY = z.h - z.pad - z.foot;
+  const cta = layout(g, lines.cta, footW, z.foot, 600);
+  drawLines(g, cta, z.pad, hostY - cta.length * lineHeight(z.foot) - z.foot * 0.3, z.foot, 600, COLORS.muted);
+  drawLines(g, [new URL(url).host], z.pad, hostY, z.foot, 700, COLORS.accent);
+  return canvas;
+}
+
+// The share panel of a finished round: card preview (square/wide), copy text, native share, download, copy image.
+// onShare(action) is called once per share action (the /api/event counter).
+export function renderRoundShare(ctx, el, { lines, copy, url, onShare }) {
+  const { t } = ctx;
+  let kind = 'square';
+  let canvas = null;
+  const native = typeof navigator.share === 'function';
+  el.innerHTML = html`<div class="seg" role="group" aria-label="${t('share.title')}"><button type="button" data-k="square" aria-pressed="true">${t('share.square')}</button><button type="button" data-k="wide" aria-pressed="false">${t('share.wide')}</button></div>
+<img class="card-img" alt="${lines.type} · ${lines.score} · ${lines.line}">
+<p class="muted small">${t('share.long_press')}</p>
+<div class="row">
+  <button type="button" class="primary" data-a="text">${t('share.copy_result')}</button>
+  ${native ? html`<button type="button" data-a="native">${t('rounds.share_native')}</button>` : ''}
+  <button type="button" data-a="download">${t('share.download')}</button>
+  ${canCopyImage() ? html`<button type="button" data-a="image">${t('share.copy_image')}</button>` : ''}
+</div>
+<p class="msg ok" role="status"></p>`;
+  const img = el.querySelector('img');
+  const say = (s) => { el.querySelector('.msg').textContent = s; };
+  const draw = () => {
+    canvas = drawRoundCard(kind, { lines, url });
+    img.src = canvas.toDataURL('image/png');
+  };
+  for (const b of el.querySelectorAll('.seg button')) {
+    b.onclick = () => {
+      kind = b.dataset.k;
+      for (const o of el.querySelectorAll('.seg button')) o.setAttribute('aria-pressed', String(o === b));
+      draw();
+    };
+  }
+  // Every action starts synchronously inside the click: Safari drops clipboard access after an await.
+  const actions = {
+    text: () => navigator.clipboard.writeText(copy).then(() => say(t('share.copied'))),
+    native: () => navigator.share({ text: copy }),
+    download() {
+      const a = document.createElement('a');
+      a.href = img.src;
+      a.download = `howsure-${kind}.png`;
+      document.body.append(a);
+      a.click();
+      a.remove();
+    },
+    image: () => navigator.clipboard.write([new ClipboardItem({ 'image/png': toBlob(canvas) })]).then(() => say(t('share.copied'))),
+  };
+  for (const b of el.querySelectorAll('[data-a]')) {
+    b.onclick = () => {
+      const failed = () => say(t('share.copy_failed'));
+      say('');
+      try {
+        Promise.resolve(actions[b.dataset.a]()).then(() => onShare?.(b.dataset.a), (e) => { if (e?.name !== 'AbortError') failed(); });
+      } catch { failed(); }
+    };
+  }
+  draw();
+}

@@ -9,6 +9,8 @@ import { validateSubmit, DEMOGRAPHICS } from '../functions/_util.js';
 import { wrap } from '../public/share.js';
 import { html } from '../public/ui.js';
 import { fmtValue, fmtNumber, noteKey, personalStats, hitsChart } from '../public/daily.js';
+import { addSeen, scoreChart, fmtPoints, typeKey } from '../public/rounds.js';
+import { TYPES } from '../functions/_rounds.js';
 import { classAggregate, toCsv } from '../functions/api/class/d/[secret].js';
 import { overconfBin, intHitBin, histPercentile, percentiles, aggregateWrites, MIN_PERCENTILE_N } from '../functions/_aggregates.js';
 
@@ -264,6 +266,31 @@ test('daily UI: years without separators, units elsewhere; calibration note; 30-
   assert.equal((svg.match(/<rect /g) ?? []).length, 6);
   assert.equal((svg.match(/class="bar mine"/g) ?? []).length, 1);
   assert.match(svg, /aria-label="Today"/);
+});
+
+test('rounds UI: the newest 300 seen pairs, oldest first; signed points; a string for every type; the chart marks your bin', () => {
+  const seen = Array.from({ length: 295 }, (_, k) => `p${String(k + 1).padStart(5, '0')}`);
+  const next = addSeen(seen, ['p00003', 'p90001', 'p90002', 'p90003', 'p90004', 'p90005', 'p90006']);
+  assert.equal(next.length, 300);
+  assert.deepEqual(next.slice(-7), ['p00003', 'p90001', 'p90002', 'p90003', 'p90004', 'p90005', 'p90006']); // replayed ids move to the end
+  assert.equal(next[0], 'p00002'); // the oldest fell off
+  assert.deepEqual([fmtPoints(84), fmtPoints(0), fmtPoints(-156)], ['+84', '0', '−156']);
+  for (const type of TYPES) assert.equal(typeof at(en, typeKey(type)), 'string', type);
+  assert.equal(new Set(TYPES.map(typeKey)).size, 5);
+  const stats = { score_hist: Array.from({ length: 41 }, (_, k) => (k === 30 ? 4 : k === 35 ? 1 : 0)), bin_from: -3000, bin_width: 100 };
+  const svg = String(scoreChart(stats, 520, 'Scores'));
+  assert.equal((svg.match(/<rect /g) ?? []).length, 9); // bins 29..36 with one empty bin each side, widened to 9 bins
+  assert.equal((svg.match(/class="bar mine"/g) ?? []).length, 1);
+  assert.match(svg, /<title>500 to 599: 1<\/title>/);
+  assert.equal(String(scoreChart({ ...stats, score_hist: Array(41).fill(0) }, null, 'x')), '');
+});
+
+test('stats page engagement definitions start with PREREG’s own words', () => {
+  const prereg = readFileSync(new URL('../../prereg/PREREG.md', import.meta.url), 'utf8').replace(/\*\*/g, '');
+  const parts = prereg.match(/^Engagement numbers \(reported, not hypotheses\)\. (.*)$/m)[1].replace(/\.$/, '').split('; ');
+  const defs = ['engagement_rounds_def', 'engagement_return_def', 'engagement_challenge_def', 'engagement_share_def'].map((k) => en.stats[k]);
+  assert.equal(parts.length, 4);
+  parts.forEach((part, i) => assert.ok(defs[i].toLowerCase().startsWith(`${part.toLowerCase()}:`), `${defs[i]} / ${part}`));
 });
 
 test('stats page definitions match PREREG word for word', () => {

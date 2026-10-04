@@ -1,7 +1,11 @@
 // Validates the item sources and writes the generated, git-ignored copies (never hand-edit them):
 //   items/items.json    -> web/public/items.json, web/functions/_items.json   (full assessment, English only)
 //   items/pool.json     -> web/public/pool.json (prompts only: no answers, no sources) and web/functions/_pool.json
-//   daily/schedule.json -> web/functions/_schedule.json                         (daily game)
+//                          (only the fields the API reads)
+//   daily/schedule.json -> web/functions/_schedule.json                         (daily range game)
+//   items/pairs.json    -> web/functions/_pairs.json (compact: [n, a, b, truth, level] per pair)   (rounds)
+//   daily/rounds.json   -> web/functions/_rounds.json                           (ranked rounds, daily questions)
+//   web/scripts/page.html -> web/functions/_page.json                          (template of the challenge page)
 //   PRIVACY.md, TERMS.md, docs/api-daily.md -> web/public/privacy.html, terms.html, docs/api.html (sync-docs.js)
 import { readFileSync, writeFileSync, existsSync } from 'node:fs';
 import { fileURLToPath } from 'node:url';
@@ -92,6 +96,65 @@ export const publicPool = (pool) => ({
   version: pool.version, items: pool.items.map((i) => ({ id: i.id, category: i.category, prompt: i.en.prompt, unit: i.en.unit })),
 });
 
+// The API's copy of the pool: the fields functions/_daily.js and functions/_rounds.js read (keeps the bundle small).
+export const serverPool = (pool) => ({
+  version: pool.version,
+  items: pool.items.map(({ id, category, en, answer, accept, source, name, replaces }) => ({ id, category, en, answer, accept, source, name, replaces })),
+});
+
+const LEVELS_R = ['easy', 'medium', 'hard'];
+const num = (id) => Number(id.slice(1));
+const rankedOk = (item) => item?.ref_quality === 'referenced' || item?.fact_checked === true; // PREREG Study A
+
+// Problems with items/pairs.json against the pool; empty means usable.
+export function validatePairs(doc, poolItems) {
+  if (!Array.isArray(doc?.pairs) || !Array.isArray(doc?.templates)) return ['pairs.json needs templates and pairs arrays'];
+  const items = new Map(poolItems.map((i) => [i.id, i]));
+  const templates = new Set(doc.templates.map((t) => `${t.category}|${t.unit}`));
+  const errs = [];
+  const ids = new Set();
+  for (const p of doc.pairs) {
+    const e = (msg) => errs.push(`${p.id ?? '?'}: ${msg}`);
+    if (!/^p\d{5}$/.test(p.id ?? '')) e('bad id');
+    else if (ids.has(p.id)) e('duplicate id');
+    ids.add(p.id);
+    const [a, b] = [items.get(p.a_id), items.get(p.b_id)];
+    if (!a || !b) { e('both items must be in items/pool.json'); continue; }
+    if (p.a_id === p.b_id) e('an item cannot be compared with itself');
+    if (!a.name || !b.name) e('both items need a name');
+    if (a.category !== b.category || a.en.unit !== b.en.unit) e('items must share category and unit');
+    if (!templates.has(`${a.category}|${a.en.unit}`)) e('no template for its category and unit');
+    if (p.truth !== 0 && p.truth !== 1) e('truth must be 0 or 1');
+    if (!LEVELS_R.includes(p.difficulty_hint)) e('bad difficulty_hint');
+  }
+  return errs;
+}
+
+// Problems with daily/rounds.json: its shape, and the PREREG rule that ranked rounds (and the chat question) use only
+// items with a Wikidata reference or a fact-check. The scheduling heuristics (at most 2 per category, the 3/4/3 mix,
+// reuse gaps, distinct entities) belong to pairs.py and scripts/check.sh, so a hand swap is not blocked by them.
+export function validateRounds(rounds, pairsById, poolItems) {
+  const items = new Map(poolItems.map((i) => [i.id, i]));
+  const errs = [];
+  for (const [date, day] of Object.entries(rounds)) {
+    if (!isDate(date)) errs.push(`${date}: bad date`);
+    const ranked = Array.isArray(day?.ranked) ? day.ranked : [];
+    if (ranked.length !== 10 || new Set(ranked).size !== 10) errs.push(`${date}: needs 10 different ranked pair ids`);
+    if (ranked.includes(day?.question)) errs.push(`${date}: the question must not be one of the ranked pairs`);
+    for (const id of [...ranked, day?.question]) {
+      const p = pairsById.get(id);
+      if (!p) errs.push(`${date}: ${id} is not in items/pairs.json`);
+      else if (!rankedOk(items.get(p.a_id)) || !rankedOk(items.get(p.b_id))) errs.push(`${date}: ${id} uses an item without a reference or fact-check`);
+    }
+  }
+  return errs;
+}
+
+export const compactPairs = (doc) => ({
+  templates: doc.templates,
+  pairs: doc.pairs.map((p) => [num(p.id), num(p.a_id), num(p.b_id), p.truth, LEVELS_R.indexOf(p.difficulty_hint)]),
+});
+
 function readOptional(path, fallback) {
   if (existsSync(new URL(path, ROOT))) return JSON.parse(readFileSync(new URL(path, ROOT), 'utf8'));
   console.warn(`warning: ${path} not found; the daily game has no items until it exists (see web/README.md)`);
@@ -113,17 +176,27 @@ function main() {
   const schedule = readOptional('daily/schedule.json', {});
   const scheduleErrs = validateSchedule(schedule, new Set(pool.items.map((i) => i.id)));
   if (scheduleErrs.length) fail('daily/schedule.json', scheduleErrs);
+  const pairs = readOptional('items/pairs.json', { templates: [], pairs: [] });
+  const pairErrs = validatePairs(pairs, pool.items);
+  if (pairErrs.length) fail('items/pairs.json', pairErrs);
+  const rounds = readOptional('daily/rounds.json', {});
+  const roundErrs = validateRounds(rounds, new Map(pairs.pairs.map((p) => [p.id, p])), pool.items);
+  if (roundErrs.length) fail('daily/rounds.json', roundErrs);
 
   // English only: the zh fields stay in items/items.json (repo checks read them) but are never shipped.
   const out = JSON.stringify({ ...bank, items: bank.items.map(({ zh, ...it }) => it) });
   for (const dest of ['web/public/items.json', 'web/functions/_items.json']) writeFileSync(new URL(dest, ROOT), out);
   writeFileSync(new URL('web/public/pool.json', ROOT), JSON.stringify(publicPool(pool)));
-  writeFileSync(new URL('web/functions/_pool.json', ROOT), JSON.stringify(pool));
+  writeFileSync(new URL('web/functions/_pool.json', ROOT), JSON.stringify(serverPool(pool)));
   writeFileSync(new URL('web/functions/_schedule.json', ROOT), JSON.stringify(schedule));
+  writeFileSync(new URL('web/functions/_pairs.json', ROOT), JSON.stringify(compactPairs(pairs)));
+  writeFileSync(new URL('web/functions/_rounds.json', ROOT), JSON.stringify(rounds));
+  writeFileSync(new URL('web/functions/_page.json', ROOT), JSON.stringify({ html: readFileSync(new URL('web/scripts/page.html', ROOT), 'utf8') }));
   const n = (t) => bank.items.filter((i) => i.type === t).length;
   const days = Object.keys(schedule).sort();
   console.log(`synced items v${bank.version}: ${n('2afc')} two-alternative, ${n('interval')} interval, ${n('attention')} attention; `
-    + `pool ${pool.items.length} items; schedule ${days.length} days${days.length ? ` (${days[0]} to ${days.at(-1)})` : ''}`);
+    + `pool ${pool.items.length} items; schedule ${days.length} days${days.length ? ` (${days[0]} to ${days.at(-1)})` : ''}; `
+    + `${pairs.pairs.length} pairs; ranked rounds ${Object.keys(rounds).length} days`);
   console.log(`synced docs: ${syncDocs().join(', ')}`);
 }
 

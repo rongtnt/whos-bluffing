@@ -116,6 +116,41 @@ class Filters(unittest.TestCase):
         self.assertEqual(CAT["solar_system_size"]["prompt"]("Moon", {"parentLabel": "Earth"}), "What is the diameter of the Moon?")
         self.assertEqual(CAT["university_founded"]["prompt"]("University of Oxford", {}), "In what year was the University of Oxford founded?")
 
+    def test_entity_names_read_as_they_would_in_a_comparison(self):
+        name = lambda cat, label, row=None: CAT[cat]["entity"](label, row or {})
+        self.assertEqual(name("river_length", "Nile"), "the Nile")
+        self.assertEqual(name("river_length", "River Thames"), "the River Thames")
+        self.assertEqual(name("country_area", "United States"), "the United States")
+        self.assertEqual(name("bridge_length", "Golden Gate Bridge"), "the Golden Gate Bridge")
+        self.assertEqual(name("bridge_length", "Øresund"), "the Øresund bridge")
+        self.assertEqual(name("lake_area", "Caspian Sea"), "the Caspian Sea")
+        self.assertEqual(name("university_founded", "Harvard University"), "Harvard University")
+        self.assertEqual(name("moon_distance", "Moon", {"parentLabel": "Earth"}), "the Moon")
+        self.assertNotIn("entity", CAT["mountain_elevation"])  # the label as it is: "Mont Blanc"
+
+
+class References(unittest.TestCase):
+    def row(self, referenced, imported, rank=NORMAL):
+        return {"referenced": referenced, "imported": imported, "rank": rank}
+
+    def test_best_reference_among_best_ranked_statements(self):
+        self.assertEqual(w.ref_quality([self.row("true", "false")]), "referenced")
+        self.assertEqual(w.ref_quality([self.row("false", "true"), self.row("true", "true")]), "referenced")
+        self.assertEqual(w.ref_quality([self.row("false", "true")]), "imported")  # only "imported from Wikimedia project"
+        self.assertEqual(w.ref_quality([self.row("false", "false")]), "none")
+        self.assertEqual(w.ref_quality([{"rank": NORMAL}]), "none")  # saved fixture: no reference columns
+        # A deprecated statement's reference does not count; a preferred statement hides normal ones.
+        self.assertEqual(w.ref_quality([self.row("false", "false"), self.row("true", "false", DEPRECATED)]), "none")
+        self.assertEqual(w.ref_quality([self.row("false", "true", PREFERRED), self.row("true", "false")]), "imported")
+
+    def test_items_carry_name_and_reference_quality(self):
+        items, _ = w.build_category(CAT["river_length"], [
+            binding("Q3392", "Nile", 300, amount="6650", unit=WD + "Q828224", rank=NORMAL, referenced="true", imported="false"),
+            binding("Q1653", "Danube", 200, amount="2850", unit=WD + "Q828224", rank=NORMAL, referenced="false", imported="true"),
+        ], "2026-10-03")
+        self.assertEqual([(it["name"], it["ref_quality"], it["fact_checked"]) for it in items],
+                         [("the Nile", "referenced", False), ("the Danube", "imported", False)])
+
 
 class Pool(unittest.TestCase):
     def test_fixture_builds_the_expected_items_with_category_ranges(self):
@@ -126,7 +161,9 @@ class Pool(unittest.TestCase):
         self.assertEqual(report["solar_system_distance"], {"kept": 0, "error": "no response"})
         for it in items:
             self.assertRegex(it["id"], r"^w\d{4}$")
-            self.assertEqual(set(it), {"id", "type", "category", "domain", "en", "answer", "accept", "source", "difficulty_hint", "volatile", "generated_at"})
+            self.assertEqual(set(it), {"id", "type", "category", "domain", "en", "answer", "accept", "source", "difficulty_hint", "volatile",
+                                       "generated_at", "name", "ref_quality", "fact_checked", "sitelinks"})
+            self.assertEqual((it["ref_quality"], it["fact_checked"]), ("none", False))  # the fixture has no reference columns
             ranges = {(c.get("category", c["name"]), c["unit"]): c["accept"] for c in w.CATEGORIES}
             self.assertEqual(it["accept"], ranges[(it["category"], it["en"]["unit"])])  # never derived from the answer
             self.assertTrue(it["accept"][0] <= it["answer"] <= it["accept"][1])
@@ -148,6 +185,14 @@ class Pool(unittest.TestCase):
             w.CATEGORIES[1] = CAT["mountain_elevation"]
         self.assertEqual([it["answer"] for it in pool["items"]], [1000, 1001])
         self.assertEqual(report["mountain_elevation"]["capped"], 3)
+        rows[4] = binding("Q4", "Peak E", 96, amount="1004", unit=WD + "Q11573", rank=NORMAL, referenced="true", imported="false")
+        w.CATEGORIES[1] = capped
+        try:
+            pool, report = w.build_pool({"mountain_elevation": {"results": {"bindings": rows}}}, generated_at="x")
+        finally:
+            w.CATEGORIES[1] = CAT["mountain_elevation"]
+        self.assertEqual([it["answer"] for it in pool["items"]], [1000, 1001, 1004])  # referenced: kept beyond the cap
+        self.assertEqual(report["mountain_elevation"]["capped"], 2)
 
     def test_ids_are_stable_across_runs_and_scheduled_items_survive(self):
         first, _ = w.build_pool(RAW, generated_at="2026-10-03")
@@ -163,13 +208,32 @@ class Pool(unittest.TestCase):
         new = w.assign_ids([{"source": "https://www.wikidata.org/wiki/Q9#P1", "en": {}}], first["items"])
         self.assertEqual(new[0]["id"], "w0022")
 
+    def test_hand_corrected_items_are_pinned_and_their_generated_twins_dropped(self):
+        first, _ = w.build_pool(RAW, generated_at="2026-10-03")
+        by_source = {it["source"]: it for it in first["items"]}
+        nile = by_source["https://www.wikidata.org/wiki/Q3392#P2043"]
+        finland = next(it for it in first["items"] if it["en"]["prompt"] == "What is the area of Finland?")
+        corrected = [dict(nile, answer=6650, notes="references disagree; value follows Britannica"),  # still a Wikidata source
+                     dict(finland, answer=338000, source="https://stat.fi/area", replaces=finland["source"], notes="fact-checked")]
+        previous = [it for it in first["items"] if it["id"] not in {nile["id"], finland["id"]}] + corrected
+        second, report = w.build_pool(RAW, previous, generated_at="2026-11-01")
+        items = {it["id"]: it for it in second["items"]}
+        self.assertEqual(len(second["items"]), len(first["items"]))  # no duplicate twins, no lost items
+        self.assertEqual(report["_total"]["pinned"], 2)
+        self.assertEqual((items[finland["id"]]["answer"], items[finland["id"]]["source"]), (338000, "https://stat.fi/area"))
+        self.assertTrue(items[finland["id"]]["fact_checked"] and items[nile["id"]]["fact_checked"])
+        self.assertEqual(items[nile["id"]]["generated_at"], "2026-10-03")  # kept verbatim, not regenerated
+        self.assertFalse(any(it["source"] == finland["source"] for it in second["items"]))  # the generated twin is gone
+        self.assertEqual(sum(it["fact_checked"] for it in second["items"]), 2)
+
 
 class Cli(unittest.TestCase):
     def test_fixture_run_writes_pool_and_review(self):
         with tempfile.TemporaryDirectory() as tmp:
             out = os.path.join(tmp, "pool.json")
             with redirect_stderr(io.StringIO()):
-                code = w.main(["--fixture", FIXTURE, "--out", out, "--schedule", os.path.join(tmp, "none.json")])
+                code = w.main(["--fixture", FIXTURE, "--out", out, "--schedule", os.path.join(tmp, "none.json"),
+                               "--rounds", os.path.join(tmp, "none.json"), "--pairs", os.path.join(tmp, "none.json")])
             self.assertEqual(code, 0)
             with open(out) as f:
                 self.assertEqual(len(json.load(f)["items"]), 21)

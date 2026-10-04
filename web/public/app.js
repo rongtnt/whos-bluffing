@@ -1,8 +1,9 @@
-// Entry point for the app pages: loads strings and items, routes by path. / = daily game (index.html), /test = full
-// assessment, /stats, /class and /class/d/<secret> (their own HTML shells; _redirects maps the dashboard to class.html).
+// Entry point for the app pages: loads strings and items, routes by path. / = rounds (index.html), /c/<round>/<token> =
+// a challenge (HTML from the Pages Function functions/c/[round_id]/[player].js), /test = full assessment, /stats,
+// /class and /class/d/<secret> (their own HTML shells; _redirects maps the dashboard to class.html).
 import { html, api } from './ui.js';
 import { startTest } from './test.js';
-import { renderDaily } from './daily.js';
+import { renderRounds, renderChallenge } from './rounds.js';
 import { renderStats } from './stats.js';
 import { renderClassCreate, renderDashboard } from './class.js';
 import { renderProof } from './home.js';
@@ -22,8 +23,8 @@ function chrome(visible) {
   document.body.classList.toggle('playing', !visible);
 }
 
-// The "Play today's game" buttons ([data-play]; the hero's is #play) run whatever the daily game says they do now:
-// start, resume, or scroll to today's result. A tap before the game has loaded runs as soon as it has.
+// The Play buttons ([data-play]; the hero's is #play) run whatever the game says they do now: today's ranked round, a
+// quick round, resume, or play again. A tap before the game has loaded runs as soon as it has.
 let playAction = null;
 let playPending = false;
 for (const b of document.querySelectorAll('[data-play]')) {
@@ -79,7 +80,9 @@ function renderTestLanding() {
 function route() {
   const p = location.pathname;
   const dash = p.match(/^\/class\/d\/([A-Za-z0-9_-]{24})\/?$/);
-  if (p === '/') return Promise.all([renderDaily(ctx), renderProof(document.getElementById('proof'))]);
+  const challenge = p.match(/^\/c\/((?:rk-\d{4}-\d{2}-\d{2})|[A-Z2-9]{12})\/([A-Za-z0-9_-]{10})\/?$/);
+  if (p === '/') return Promise.all([renderRounds(ctx), renderProof(document.getElementById('proof'))]);
+  if (challenge) return renderChallenge(ctx, challenge[1], challenge[2]);
   if (/^\/test\/?$/.test(p)) return renderTestLanding();
   if (/^\/stats\/?$/.test(p)) return renderStats(ctx);
   if (/^\/class\/?$/.test(p)) return renderClassCreate(ctx);

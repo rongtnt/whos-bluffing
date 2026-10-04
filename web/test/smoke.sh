@@ -85,7 +85,8 @@ pass "local D1 migrated"
 
 set -m # own process group, so cleanup can stop wrangler and its workerd children together
 KPI_KEY=smoke-kpi-key
-"${WRANGLER[@]}" pages dev --ip 127.0.0.1 --port "$PORT" --persist-to "$STATE" --binding "KPI_KEY=$KPI_KEY" > "$LOG" 2>&1 &
+BOT_KEY=smoke-bot-key
+"${WRANGLER[@]}" pages dev --ip 127.0.0.1 --port "$PORT" --persist-to "$STATE" --binding "KPI_KEY=$KPI_KEY" --binding "BOT_KEY=$BOT_KEY" > "$LOG" 2>&1 &
 DEV_PID=$!
 set +m
 for _ in $(seq 1 120); do
@@ -338,7 +339,22 @@ req POST /api/daily/answer "$(answer_body "$ANON_A" web 1 1 | node -e 'const b =
 expect "answer with low > high -> 400" 400 '/low <= high/.test(r.error)'
 
 echo "== flag -> retire -> recompute"
-FLAGGED=$(node -e 'process.stdout.write(JSON.parse(require("fs").readFileSync(process.env.DAILY, "utf8")).items[1].id)')
+# Retiring a pool item also retires every rounds pair that uses it, so flag a daily item that is not in today's ranked
+# round or question (index 1 unless it is), and derive the recomputed day from the three players' hit patterns.
+eval "$(node -e '
+  const fs = require("fs");
+  const day = JSON.parse(fs.readFileSync(process.env.DAILY, "utf8"));
+  const r = require("./functions/_rounds.json")[process.env.TODAY];
+  const pairs = new Map(require("./functions/_pairs.json").pairs.map((p) => ["p" + String(p[0]).padStart(5, "0"), p]));
+  const used = new Set((r ? [...r.ranked, r.question] : []).flatMap((id) => [pairs.get(id)[1], pairs.get(id)[2]].map((n) => "w" + String(n).padStart(4, "0"))));
+  const f = [1, 3, 4, 0, 2].find((i) => !used.has(day.items[i].id)) ?? 1;
+  const [A, B] = ["11011", "10010"];
+  const hits = [4 - (A[f] === "1"), 2 - (B[f] === "1"), 0];
+  const hist = [0, 0, 0, 0, 0, 0]; hits.forEach((h) => { hist[h] += 1; });
+  const grid = [...A].filter((_, i) => i !== f).map((c) => (c === "1" ? "🟩" : "🟥")).join("");
+  console.log(`FLAGGED=${day.items[f].id} EXP_HIST=${hist.join()} EXP_AVG=${Math.round((100 * (hits[0] + hits[1])) / 3) / 100} EXP_A=${hits[0]} EXP_GRID=${grid}`);
+')"
+export EXP_HIST EXP_AVG EXP_A EXP_GRID
 flag_body() { printf '{"item_id":"%s","anon_id":"%s","reason":"smoke test"}' "$FLAGGED" "$1"; }
 req POST /api/flag "$(flag_body smokeDDDDDDDDDDDDDDDDD)"
 expect "flag from someone who never answered it -> 403" 403 '/answer this question/.test(r.error)'
@@ -352,23 +368,202 @@ req GET /api/daily
 expect "retired item left out of today's game" 200 "r.items.length === 4 && !r.items.some((i) => i.id === '$FLAGGED')"
 # /api/daily/stats is cached for 60 s per URL; asking through another host name reads the recomputed aggregates.
 STATUS=$(curl -s -o "$STATE/stats2.json" -w '%{http_code}' "http://localhost:$PORT/api/daily/stats?date=$TODAY"); BODY=$(cat "$STATE/stats2.json")
-expect "stats recomputed without the retired item (4->3, 2->2, 0->0)" 200 'r.players === 3 && r.avg_hits === 1.67 && r.hist.join() === "1,0,1,1,0,0"'
+expect "stats recomputed without the retired item (A 4->$EXP_A, B, C 0; average $EXP_AVG)" 200 'r.players === 3 && r.avg_hits === Number(process.env.EXP_AVG) && r.hist.join() === process.env.EXP_HIST'
 req POST /api/daily/complete "$(complete_body "$ANON_A" web)"
-expect "A's result now counts 4 items" 200 'r.hits === 3 && r.n === 4 && /🟩🟥🟩🟩 3\/4 at 90%/.test(r.share_text)'
+expect "A's result now counts 4 items" 200 'r.hits === Number(process.env.EXP_A) && r.n === 4 && r.share_text.includes(`${process.env.EXP_GRID} ${process.env.EXP_A}/4 at 90%`)'
+
+# --- rounds (docs/api-rounds.md) -----------------------------------------------------------------------------------
+# rbody ROUND ITEM ANON SURFACE RIGHT(1|0) CONF [COMMUNITY] [EXTRA_JSON] -> an answer body; RIGHT picks the true or false option
+rbody() {
+  node -e '
+    const [round, item, anon, surface, right, conf, community, extra] = process.argv.slice(1);
+    const pair = JSON.parse(require("fs").readFileSync("functions/_pairs.json", "utf8")).pairs.find((p) => "p" + String(p[0]).padStart(5, "0") === item);
+    const body = { round_id: round, item_id: item, choice: right === "1" ? pair[3] : 1 - pair[3], conf: Number(conf), rt_ms: 2500, anon_id: anon, surface };
+    if (community) body.community = community;
+    process.stdout.write(JSON.stringify(Object.assign(body, extra ? JSON.parse(extra) : {})));
+  ' "$@"
+}
+# cbody ROUND ANON SURFACE [EXTRA_JSON] -> a complete body
+cbody() { node -e 'const [r, a, s, x] = process.argv.slice(1); process.stdout.write(JSON.stringify(Object.assign({ round_id: r, anon_id: a, surface: s }, x ? JSON.parse(x) : {})))' "$@"; }
+items_of() { node -e 'for (const i of JSON.parse(require("fs").readFileSync(process.argv[1], "utf8")).items) console.log(i.id)' "$1"; }
+# play_round FILE ANON SURFACE PATTERN(1|0 per pair) CONF [COMMUNITY]: answers every pair of the round saved in FILE
+play_round() {
+  local round id k=0
+  round=$(node -e 'process.stdout.write(JSON.parse(require("fs").readFileSync(process.argv[1], "utf8")).round_id)' "$1")
+  for id in $(items_of "$1"); do
+    req POST /api/round/answer "$(rbody "$round" "$id" "$2" "$3" "${4:$k:1}" "$5" "${6:-}")"
+    [ "$STATUS" = 200 ] || fail "round answer $k for $2" "$BODY"
+    k=$((k + 1))
+  done
+}
+HOST=smokeHostHHHHHHHHHHHHH
+FRIEND=smokeFriendFFFFFFFFFFF
+RANKER=smokeRankerGGGGGGGGGGG
+DISCORD=$(printf 'smoke-discord-member' | shasum -a 256 | cut -c1-64)
+GUILD="discord:$(printf 'smoke-guild' | shasum -a 256 | cut -c1-64)"
+export PORT
+
+echo "== rounds: quick round, answers, complete, challenge page, compare"
+req GET "/api/round?mode=quick&seen=p00001,p00002"
+expect "GET /api/round?mode=quick -> 10 pairs, prompts and names only, unseen" 200 \
+  'r.mode === "quick" && /^[A-Z2-9]{12}$/.test(r.round_id) && r.items.length === 10 && r.items.every((i) => Object.keys(i).sort().join() === "a,b,id,prompt") && !/wikidata|value|truth/.test(JSON.stringify(r)) && !r.items.some((i) => i.id === "p00001" || i.id === "p00002")'
+printf '%s' "$BODY" > "$STATE/quick.json"
+QROUND=$(field round_id)
+QFIRST=$(items_of "$STATE/quick.json" | head -1)
+req POST /api/round/answer "$(rbody "$QROUND" "$QFIRST" "$HOST" web 1 80)"
+expect "answer (right at 80%) -> correct, both values and sources, 84 points, total 84" 200 \
+  'r.correct === true && r.points === 84 && r.total === 84 && typeof r.truth.a_value === "number" && typeof r.truth.b_value === "number" && /^https:\/\//.test(r.truth.a_source) && /^https:\/\//.test(r.truth.b_source) && r.truth.unit'
+QFIRST_ANSWER=$BODY
+req POST /api/round/answer "$(rbody "$QROUND" "$QFIRST" "$HOST" web 0 100)"
+[ "$STATUS" = 200 ] && [ "$BODY" = "$QFIRST_ANSWER" ] || fail "repeat answer -> the first result" "$BODY"
+pass "repeat answer (other choice, other confidence) -> the first result, unchanged"
+req POST /api/round/answer "$(rbody "$QROUND" p00001 "$HOST" web 1 80)"
+expect "answer to a pair outside the round -> 404" 404 'r.error === "item is not in this round"'
+req POST /api/round/answer "$(rbody ZZZZZZZZZZZZ "$QFIRST" "$HOST" web 1 80)"
+expect "answer to an unknown round -> 404" 404 'r.error === "unknown round"'
+req POST /api/round/answer "$(rbody "$QROUND" "$QFIRST" "$HOST" web 1 55)"
+expect "answer with conf 55 -> 400" 400 '/conf must be/.test(r.error)'
+req POST /api/round/complete "$(cbody "$QROUND" "$HOST" web)"
+expect "complete before the last answer -> 400" 400 'r.error === "answer every question first"'
+play_round "$STATE/quick.json" "$HOST" web 1111111000 90 # the first pair keeps its stored answer (right at 80%)
+req POST /api/round/complete "$(cbody "$QROUND" "$HOST" web '{"nickname":"Smoke Host"}')"
+expect "complete -> -12 points, Bluffer, 70% right at 89% sure, streak 1, challenge link, share text, roast" 200 \
+  'r.score === -12 && r.type === "Bluffer" && r.accuracy === 70 && r.mean_conf === 89 && r.overconfidence === 19 && r.streak === 1 && r.challenge_url.startsWith(`http://127.0.0.1:${process.env.PORT}/c/`) && r.share_text === `HowSure · Bluffer · -12 pts · 70% right at 89% sure · ${r.challenge_url}` && typeof r.roast === "string" && r.roast.includes("90%") && !("rank_today" in r)'
+TOKEN=$(field challenge_url | sed 's#.*/##')
+[[ "$TOKEN" =~ ^[A-Za-z0-9_-]{10}$ ]] && [ "$TOKEN" != "$HOST" ] || fail "public token: 10 characters, never the anon_id" "$TOKEN"
+pass "challenge token is a 10-character public token, not the anon_id"
+req POST /api/round/complete "$(cbody "$QROUND" "$HOST" web)"
+expect "second complete -> the same play and token" 200 "r.score === -12 && r.challenge_url.endsWith('/$TOKEN')"
+curl -s -D "$STATE/c_headers.txt" -o "$STATE/c_page.html" -w '%{http_code}' "$BASE/c/$QROUND/$TOKEN" > "$STATE/c_status.txt"
+CPAGE=$(cat "$STATE/c_page.html")
+[ "$(cat "$STATE/c_status.txt")" = 200 ] && [[ "$CPAGE" == *'<meta property="og:title" content="Smoke Host scored -12. Can you beat them?">'* ]] \
+  && [[ "$CPAGE" == *'<meta property="og:description" content="Bluffer: 70% right at 89% sure.'* ]] && [[ "$CPAGE" == *'<meta property="og:image" content="https://howsure.me/og.png">'* ]] \
+  && [[ "$CPAGE" == *'<meta name="robots" content="noindex">'* ]] && [[ "$CPAGE" == *'<script type="module" src="/app.js"></script>'* ]] \
+  || fail "GET /c/<round>/<token> -> 200 with per-link Open Graph tags" "$(head -c 400 "$STATE/c_page.html")"
+pass "GET /c/<round>/<token> -> 200, per-link og:title \"Smoke Host scored -12. Can you beat them?\", og:description, og:image, noindex"
+grep -qi '^content-security-policy: default-src' "$STATE/c_headers.txt" && grep -qi '^x-content-type-options: nosniff' "$STATE/c_headers.txt" \
+  && grep -qi '^content-type: text/html' "$STATE/c_headers.txt" || fail "challenge page security headers" "$(cat "$STATE/c_headers.txt")"
+pass "challenge page carries the CSP, nosniff and text/html headers itself (a Function response)"
+for bad in "/c/$QROUND/AAAAAAAAAA" "/c/x/y"; do
+  req GET "$bad"
+  [ "$STATUS" = 404 ] && [[ "$BODY" == *'<h1>Page not found</h1>'* ]] || fail "GET $bad -> branded 404" "$BODY"
+  pass "GET $bad -> 404 with the branded page (not swallowed by _redirects)"
+done
+req GET "/api/round?round_id=$QROUND"
+expect "GET /api/round?round_id= -> the same ten pairs (what the challenge page plays)" 200 \
+  "r.round_id === '$QROUND' && r.items.map((i) => i.id).join() === '$(items_of "$STATE/quick.json" | paste -sd, -)'"
+play_round "$STATE/quick.json" "$FRIEND" web 1111111111 70
+req POST /api/round/complete "$(cbody "$QROUND" "$FRIEND" web "{\"challenge\":\"$TOKEN\"}")"
+expect "the friend's complete (from the challenge) -> 640, Hedger" 200 'r.score === 640 && r.type === "Hedger" && r.accuracy === 100 && r.mean_conf === 70'
+req GET "/api/round/$QROUND/compare?me=$FRIEND&them=$TOKEN"
+expect "compare -> side by side (me 640, them Smoke Host -12)" 200 \
+  'r.me.score === 640 && r.me.type === "Hedger" && r.them.nickname === "Smoke Host" && r.them.score === -12 && r.them.type === "Bluffer" && r.them.accuracy === 70'
+req GET "/api/round/$QROUND/compare?me=$FRIEND&them=BBBBBBBBBB"
+expect "compare with an unknown token -> 404" 404 'r.error'
+
+echo "== rounds: today's ranked round, rank, stats"
+req GET /api/round?mode=ranked
+expect "GET /api/round?mode=ranked -> today's 10, the same for everyone" 200 "r.round_id === 'rk-$TODAY' && r.mode === 'ranked' && r.items.length === 10"
+printf '%s' "$BODY" > "$STATE/ranked.json"
+play_round "$STATE/ranked.json" "$HOST" web 1111111111 100
+req POST /api/round/complete "$(cbody "rk-$TODAY" "$HOST" web)"
+expect "ranked complete (all right at 100%) -> 1000, Calibrated, rank 1 of 1" 200 'r.score === 1000 && r.type === "Calibrated" && r.rank_today === 1 && r.players_today === 1 && r.streak === 1'
+play_round "$STATE/ranked.json" "$DISCORD" discord 0000000000 60 "$GUILD"
+req POST /api/round/complete "$(cbody "rk-$TODAY" "$DISCORD" discord "{\"community\":\"$GUILD\"}")"
+expect "ranked complete in Discord (all wrong at 60%) -> -440, Bluffer, rank 2 of 2" 200 'r.score === -440 && r.type === "Bluffer" && r.rank_today === 2 && r.players_today === 2'
+play_round "$STATE/ranked.json" "$RANKER" web 1010101010 80
+req POST /api/round/complete "$(cbody "rk-$TODAY" "$RANKER" web)"
+expect "ranked complete (half right at 80%) -> -360, rank 2 of 3" 200 'r.score === -360 && r.rank_today === 2 && r.players_today === 3'
+req GET "/api/round/stats?date=$TODAY"
+expect "GET /api/round/stats -> 3 players, 41 bins of 100 points, mean overconfidence +30" 200 \
+  'r.players === 3 && r.score_hist.length === 41 && r.score_hist.reduce((s, c) => s + c, 0) === 3 && r.score_hist[40] === 1 && r.score_hist[26] === 1 && r.score_hist[25] === 1 && r.mean_overconfidence === 30 && r.bin_from === -3000 && r.bin_width === 100'
+
+echo "== rounds: flag -> retire the pair and its values -> ranked day recomputed"
+RFLAG=$(items_of "$STATE/ranked.json" | head -1)
+pflag() { node -e 'const [i, r, a] = process.argv.slice(1); const b = { item_id: i, anon_id: a, reason: "smoke test" }; if (r) b.round_id = r; process.stdout.write(JSON.stringify(b))' "$1" "$2" "$3"; }
+req POST /api/flag "$(pflag "$RFLAG" "rk-$TODAY" "$FRIEND")"
+expect "pair flag from someone who never answered it -> 403" 403 '/answer this question/.test(r.error)'
+req POST /api/flag "$(pflag "$RFLAG" '' "$HOST")"
+expect "pair flag without round_id -> 400" 400 '/round_id/.test(r.error)'
+req POST /api/flag "$(pflag "$RFLAG" "rk-$TODAY" "$HOST")"; expect "pair flag 1 (host)" 200 'r.ok === true'
+req POST /api/flag "$(pflag "$RFLAG" "rk-$TODAY" "$HOST")"; expect "the same id again counts once" 200 'r.ok === true'
+req POST /api/flag "$(pflag "$RFLAG" "rk-$TODAY" "$DISCORD")"; expect "pair flag 2 (Discord member)" 200 'r.ok === true'
+req GET /api/round?mode=ranked
+expect "two flags: the pair is still in today's ranked round" 200 'r.items.length === 10'
+req POST /api/flag "$(pflag "$RFLAG" "rk-$TODAY" "$RANKER")"; expect "pair flag 3 retires it" 200 'r.ok === true'
+req GET /api/round?mode=ranked
+expect "retired pair left out of today's ranked round" 200 "r.items.length === 9 && !r.items.some((i) => i.id === '$RFLAG')"
+# /api/round/stats is cached for 60 s per URL; asking through another host name reads the recomputed aggregates.
+STATUS=$(curl -s -o "$STATE/rstats2.json" -w '%{http_code}' "http://localhost:$PORT/api/round/stats?date=$TODAY"); BODY=$(cat "$STATE/rstats2.json")
+expect "ranked day recomputed without the pair (1000->900, -440->-396, -360->-444)" 200 \
+  'r.players === 3 && r.score_hist[39] === 1 && r.score_hist[26] === 1 && r.score_hist[25] === 1 && r.score_hist.reduce((s, c) => s + c, 0) === 3 && r.mean_overconfidence === 31.9'
+req POST /api/round/complete "$(cbody "rk-$TODAY" "$HOST" web)"
+expect "the host's result now counts 9 pairs" 200 'r.score === 900 && r.accuracy === 100'
+
+echo "== daily question (Slack, Discord): locked answers, revision, 409, reveal behind the bot header"
+YESTERDAY=$(node -e 'process.stdout.write(new Date(Date.now() - 864e5).toISOString().slice(0, 10))')
+TWO_AGO=$(node -e 'process.stdout.write(new Date(Date.now() - 2 * 864e5).toISOString().slice(0, 10))')
+SLACK1=$(printf 'smoke-slack-1' | shasum -a 256 | cut -c1-64)
+SLACK2=$(printf 'smoke-slack-2' | shasum -a 256 | cut -c1-64)
+TEAM="slack:$(printf 'smoke-team' | shasum -a 256 | cut -c1-64)"
+req GET /api/round/daily-question
+expect "GET /api/round/daily-question -> dq-today, one pair, no values" 200 "r.round_id === 'dq-$TODAY' && /^p\\d{5}\$/.test(r.item_id) && r.prompt && r.a && r.b && Object.keys(r).length === 5"
+DQ_ITEM=$(field item_id)
+req GET "/api/round/daily-question?date=$YESTERDAY"
+expect "daily question for yesterday -> 200" 200 "r.round_id === 'dq-$YESTERDAY'"
+req GET "/api/round/daily-question?date=$TWO_AGO"
+expect "daily question for two days ago -> 404 (today or yesterday only)" 404 'r.error'
+req POST /api/round/answer "$(rbody "dq-$TODAY" "$DQ_ITEM" "$SLACK1" slack 0 90 "$TEAM")"
+expect "chat answer -> {locked, points_pending} only: no truth, no points (no early peeking)" 200 \
+  'r.locked === true && r.points_pending === true && Object.keys(r).length === 2'
+req POST /api/round/answer "$(rbody "dq-$TODAY" "$DQ_ITEM" "$SLACK1" slack 1 70 "$TEAM")"
+expect "a second answer without revision -> unchanged, still pending" 200 'r.locked === true && Object.keys(r).length === 2'
+req POST /api/round/answer "$(rbody "dq-$TODAY" "$DQ_ITEM" "$SLACK1" slack 1 70 "$TEAM" '{"revision":true}')"
+expect "revision: true -> replaced (right at 70%), still pending" 200 'r.locked === true && r.points_pending === true'
+req POST /api/round/answer "$(rbody "dq-$TODAY" "$DQ_ITEM" "$SLACK2" slack 0 100 "$TEAM")"
+expect "second member (wrong at 100%) -> pending" 200 'r.points_pending === true'
+req POST /api/round/answer "$(rbody "dq-$TODAY" "$DQ_ITEM" "$DISCORD" discord 1 80 "$GUILD")"
+expect "a Discord member's answer -> pending" 200 'r.points_pending === true'
+DQ_OLD=$(node -e 'const d = require("./functions/_rounds.json")[process.argv[1]]; process.stdout.write(d ? d.question : "p00001")' "$TWO_AGO")
+req POST /api/round/answer "$(rbody "dq-$TWO_AGO" "$DQ_OLD" "$SLACK1" slack 1 70 "$TEAM")"
+expect "answer to the question of two days ago -> 409 locked" 409 'r.error === "locked"'
+req GET "/api/round/reveal?community=$TEAM"
+expect "today's reveal without the bot header -> 403" 403 'r.error'
+req GET "/api/round/reveal?community=$TEAM" '' "x-howsure-bot: wrong-key"
+expect "today's reveal with a wrong bot key -> 403" 403 'r.error'
+req GET "/api/round/reveal?community=$TEAM" '' "x-howsure-bot: $BOT_KEY"
+expect "reveal (bot header) -> 2 answers in the workspace, split, values, sources, biggest bluff = the 100% miss" 200 \
+  "r.n === 2 && r.pct_a + r.pct_b === 100 && (r.correct === 0 || r.correct === 1) && typeof r.a_value === 'number' && /^https:/.test(r.a_source) && /^https:/.test(r.b_source) && r.unit && r.biggest_bluff.anon_id === '$SLACK2' && r.biggest_bluff.conf === 100"
+req GET "/api/round/reveal?community=$GUILD" '' "x-howsure-bot: $BOT_KEY"
+expect "reveal per community (the Discord server) -> 1 answer, no bluff" 200 'r.n === 1 && r.biggest_bluff === null'
+req GET "/api/round/reveal?date=$YESTERDAY&community=$TEAM"
+expect "yesterday's reveal is public (no header) -> 200" 200 'r.n === 0'
+req GET "/api/round/reveal?date=$TODAY"
+expect "reveal without a community -> 400" 400 'r.error'
+
+echo "== events: anonymous counters"
+req POST /api/event "{\"type\":\"share\",\"round_id\":\"$QROUND\",\"anon_id\":\"$HOST\"}"
+expect "share event -> ok" 200 'r.ok === true'
+req POST /api/event '{"type":"play_again"}'
+expect "play_again event -> ok" 200 'r.ok === true'
+req POST /api/event '{"type":"click"}'
+expect "unknown event type -> 400" 400 'r.error'
 
 echo "== KPI job"
 req POST /api/submit "$(submission en ok '' "$ANON_A")"
-expect "full assessment with A's browser id (MAU must count A once)" 200 'r.session_id'
+expect "full assessment with A's browser id (a play under PREREG)" 200 'r.session_id'
 req POST /api/kpi/run
 expect "KPI run without the key -> 401" 401 'r.error === "unauthorized"'
 req POST /api/kpi/run '' 'x-kpi-key: wrong'
 expect "KPI run with a wrong key -> 401" 401 'r.error === "unauthorized"'
 req POST /api/kpi/run '' "x-kpi-key: $KPI_KEY"
-expect "KPI run with the key -> MAU 3 (web 2, slack 1), DAU 3, workspaces 1, classrooms 1" 200 \
-  'r.as_of === process.env.TODAY && r.mau === 3 && r.dau === 3 && r.mau_web === 2 && r.mau_slack === 1 && r.mau_classroom === 0 && r.workspaces === 1 && r.classrooms === 1'
+expect "KPI run -> MAU 7 (web 4: A, host, friend, ranker; Slack 2 chat answers; Discord 1), workspaces 1, guilds 1, classrooms 1" 200 \
+  'r.as_of === process.env.TODAY && r.mau === 7 && r.dau === 7 && r.mau_web === 4 && r.mau_slack === 2 && r.mau_discord === 1 && r.mau_room === 0 && r.mau_classroom === 0 && r.workspaces === 1 && r.guilds === 1 && r.rooms === 0 && r.classrooms === 1'
+expect "KPI run -> engagement: 1.25 rounds per player-day, challenge conversion 1, share rate 0.2, no return cohorts yet" 200 \
+  'r.rounds_per_player_day === 1.25 && r.challenge_conversion === 1 && r.share_rate === 0.2 && r.d1_return === null && r.d7_return === null'
 req GET /api/kpi
-expect "GET /api/kpi -> the stored row" 200 \
-  'r.as_of === process.env.TODAY && r.mau === 3 && r.dau === 3 && r.mau_by_surface.web === 2 && r.mau_by_surface.slack === 1 && r.communities.workspaces === 1 && r.communities.classrooms === 1'
+expect "GET /api/kpi -> the stored row with surfaces, platforms and engagement" 200 \
+  'r.as_of === process.env.TODAY && r.mau === 7 && r.mau_by_surface.web === 4 && r.mau_by_surface.discord === 1 && r.communities.workspaces === 1 && r.communities.guilds === 1 && r.communities.classrooms === 1 && r.rounds_per_player_day === 1.25 && r.share_rate === 0.2'
 
 echo "== daily tables: counts, idempotency, no IP or user agent, request queries use indexes"
 "${WRANGLER[@]}" d1 execute howsure --local --persist-to "$STATE" --json --command \
@@ -396,6 +591,37 @@ CHECK=$(node -e '
 ' "$STATE/daily_db.json") || fail "daily tables" "$CHECK"
 pass "daily tables ($CHECK)"
 
+echo "== rounds tables: stored once, points settled at reveal, request queries use indexes"
+"${WRANGLER[@]}" d1 execute howsure --local --persist-to "$STATE" --json --command \
+  "SELECT (SELECT COUNT(*) FROM round_answers WHERE round_id = '$QROUND') AS quick_answers, (SELECT COUNT(*) FROM round_plays) AS plays, (SELECT n FROM pair_runtime WHERE pair_id = '$QFIRST') AS first_pair_n, (SELECT points FROM round_answers WHERE anon_id = '$SLACK1') AS slack1_points, (SELECT points FROM round_answers WHERE anon_id = '$SLACK2') AS slack2_points, (SELECT COUNT(*) FROM items_runtime WHERE retired_at IS NOT NULL) AS retired_items, (SELECT COUNT(*) FROM rounds) AS quick_rounds;
+   EXPLAIN QUERY PLAN SELECT mode, date, items FROM rounds WHERE round_id = 'x';
+   EXPLAIN QUERY PLAN SELECT choice, conf, correct, points FROM round_answers WHERE anon_id = 'x' AND round_id = 'y' AND item_id = 'z';
+   EXPLAIN QUERY PLAN SELECT item_id, choice, conf, correct, points FROM round_answers WHERE anon_id = 'x' AND round_id = 'y';
+   EXPLAIN QUERY PLAN SELECT round_id, public_token, nickname, score, type, accuracy, mean_conf FROM round_plays WHERE public_token = 'x';
+   EXPLAIN QUERY PLAN SELECT score, nickname, public_token, day, surface FROM round_plays WHERE anon_id = 'x' AND round_id = 'y';
+   EXPLAIN QUERY PLAN SELECT surface, players, score_hist, sum_overconf FROM round_agg WHERE date = 'x';
+   EXPLAIN QUERY PLAN SELECT streak FROM player_days WHERE anon_id = 'x' AND day IN ('a', 'b') AND rounds > 0 ORDER BY day DESC LIMIT 1;
+   EXPLAIN QUERY PLAN SELECT COUNT(*) AS n, COALESCE(SUM(choice = 0), 0) AS a FROM round_answers WHERE round_id = 'dq-x' AND community = 'slack:x';
+   EXPLAIN QUERY PLAN SELECT anon_id, conf, choice FROM round_answers WHERE round_id = 'dq-x' AND community = 'slack:x' AND correct = 0 ORDER BY conf DESC, answered_at LIMIT 1;
+   EXPLAIN QUERY PLAN SELECT pair_id FROM pair_runtime WHERE retired_at IS NOT NULL AND pair_id IN ('a', 'b');
+   EXPLAIN QUERY PLAN SELECT p.surface, SUM(a.points) FROM round_plays p JOIN round_answers a ON a.anon_id = p.anon_id AND a.round_id = p.round_id WHERE p.round_id = 'rk-x' AND p.day IN ('a', 'b') AND a.item_id IN ('c', 'd') GROUP BY p.anon_id" \
+  > "$STATE/rounds_db.json" 2>/dev/null || fail "d1 execute (rounds tables)"
+CHECK=$(node -e '
+  const out = JSON.parse(require("fs").readFileSync(process.argv[1], "utf8"));
+  const [counts, ...plans] = out.map((x) => x.results);
+  const c = counts[0];
+  const problems = [];
+  if (c.quick_answers !== 20) problems.push(`quick round answers ${c.quick_answers} (2 players x 10, repeats not stored)`);
+  if (c.plays !== 5) problems.push(`round plays ${c.plays}`);
+  if (c.first_pair_n !== 2) problems.push(`pair_runtime counted ${c.first_pair_n} first answers for the first pair`);
+  if (c.slack1_points !== 64 || c.slack2_points !== -300) problems.push(`settled chat points ${c.slack1_points}, ${c.slack2_points} (want 64, -300)`);
+  if (c.retired_items !== 3) problems.push(`retired items ${c.retired_items} (the daily item + the pair\x27s two values)`);
+  plans.forEach((p, i) => { const d = p.map((x) => x.detail).join(" | "); if (!/SEARCH/.test(d) || /\bSCAN\b/.test(d)) problems.push(`plan ${i}: ${d}`); });
+  if (problems.length) { console.log(problems.join("; ")); process.exit(1); }
+  console.log(`${c.quick_answers} quick answers, ${c.plays} plays, chat points settled, ${plans.length} request queries use an index`);
+' "$STATE/rounds_db.json") || fail "rounds tables" "$CHECK"
+pass "rounds tables ($CHECK)"
+
 echo "== anki add-on sharing (v0.2): submit twice, stats, KPI, delete, 410"
 ANKI_ID=$(printf 'smoke-anki-install' | shasum -a 256 | cut -c1-64) # the add-on sends its salt hashed again: 64-char hex
 # anki_body INSTALL_ID [ROWS] [cardtext] -> a submit body with ROWS rows (row_id 1..ROWS) of whitelisted fields
@@ -420,9 +646,9 @@ expect "a row with an extra field (card text) -> 400" 400 'r.error === "row 0: u
 req GET /api/anki/stats
 expect "GET /api/anki/stats -> 1 install, 3 rows" 200 'r.installs_30d === 1 && r.rows_total === 3'
 req POST /api/kpi/run '' "x-kpi-key: $KPI_KEY"
-expect "KPI run -> anki_contributors_30d 1, MAU still 3 (Anki is not part of MAU)" 200 'r.anki_contributors_30d === 1 && r.mau === 3'
+expect "KPI run -> anki_contributors_30d 1, MAU still 7 (Anki is not part of MAU)" 200 'r.anki_contributors_30d === 1 && r.mau === 7'
 req GET /api/kpi
-expect "GET /api/kpi -> anki_contributors_30d as its own number" 200 'r.anki_contributors_30d === 1 && r.mau === 3 && r.mau_by_surface.web === 2'
+expect "GET /api/kpi -> anki_contributors_30d as its own number" 200 'r.anki_contributors_30d === 1 && r.mau === 7 && r.mau_by_surface.web === 4'
 anki_body "$(printf 'smoke-anki-big' | shasum -a 256 | cut -c1-64)" 2000 > "$STATE/anki_big.json"
 STATUS=$(curl -s -o "$STATE/anki_big_out.json" -w '%{http_code}' -H 'content-type: application/json' --data-binary "@$STATE/anki_big.json" "$BASE/api/anki/submit"); BODY=$(cat "$STATE/anki_big_out.json")
 expect "a full 2,000-row request ($(wc -c < "$STATE/anki_big.json" | tr -d ' ') bytes) -> 2000 accepted" 200 'r.accepted === 2000 && r.total_rows_for_install === 2000'

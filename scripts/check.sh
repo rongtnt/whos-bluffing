@@ -77,4 +77,43 @@ if bad: print("schedule problems:", bad[:10]); sys.exit(1)
 print("schedule OK")
 PY
 
+
+say "daily rounds: live-file guard (10 ranked + 1 question per date, referenced or fact-checked items, category and difficulty mix, reuse windows)"
+python3 - "$root" <<'PY' || fail=1
+import json, sys, datetime as dt, collections
+root = sys.argv[1]
+pool = json.load(open(f"{root}/items/pool.json")); items = pool["items"] if isinstance(pool, dict) else pool
+item = {i["id"]: i for i in items}
+pairs = json.load(open(f"{root}/items/pairs.json")); plist = pairs["pairs"] if isinstance(pairs, dict) else pairs
+pair = {p["id"]: p for p in plist}
+rounds = json.load(open(f"{root}/daily/rounds.json"))
+ok_item = lambda i: item[i].get("ref_quality") == "referenced" or item[i].get("fact_checked")
+entity = lambda i: item[i].get("replaces") or item[i].get("source")
+last_pair, last_item, bad = {}, {}, []
+for d in sorted(rounds):
+    day = dt.date.fromisoformat(d); r = rounds[d]
+    ranked, q = r.get("ranked", []), r.get("question")
+    if len(ranked) != 10 or len(set(ranked)) != 10 or not q or q in ranked: bad.append((d, "shape")); continue
+    ids = ranked + [q]
+    if any(i not in pair for i in ids): bad.append((d, "unknown pair")); continue
+    ents = []
+    for pid in ids:
+        a, b = pair[pid]["a_id"], pair[pid]["b_id"]
+        if not (ok_item(a) and ok_item(b)): bad.append((d, f"{pid} not referenced/fact-checked"))
+        ents += [entity(a), entity(b)]
+        for it in (a, b):
+            if it in last_item and (day - last_item[it]).days < 25: bad.append((d, f"item {it} reused <25d"))
+            last_item[it] = day
+        if pid in last_pair and (day - last_pair[pid]).days < 180: bad.append((d, f"pair {pid} reused <180d"))
+        last_pair[pid] = day
+    if len(set(ents)) != 22: bad.append((d, "entities not distinct"))
+    cats = collections.Counter(pair[pid]["category"] for pid in ranked)
+    if max(cats.values()) > 2: bad.append((d, "category >2"))
+    diff = collections.Counter(pair[pid]["difficulty_hint"] for pid in ranked)
+    if (diff.get("easy"), diff.get("medium"), diff.get("hard")) != (3, 4, 3): bad.append((d, f"difficulty mix {dict(diff)}"))
+print(len(rounds), "ranked days checked")
+if bad: print("rounds problems:", bad[:8]); sys.exit(1)
+print("rounds OK")
+PY
+
 say "result"; [ $fail -eq 0 ] && echo "ALL CHECKS PASSED" || { echo "FAILURES PRESENT"; exit 1; }

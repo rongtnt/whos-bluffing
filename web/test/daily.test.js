@@ -258,42 +258,38 @@ test('flag: three players who answered retire an item; the day is recomputed; la
   assert.equal(flags.n, 3);
 });
 
-test('KPI on a fixture DB: MAU/DAU per surface over 30 days, sessions with an anon_id count, communities', async () => {
+test('KPI on a fixture DB: full assessments count per surface, classrooms from 5 sessions; daily range-game plays no longer count', async () => {
   const db = openD1();
   const playRow = (id, date, surface) => db.sqlite.prepare(`INSERT INTO plays (anon_id, date, surface, hits, n, completed_at, streak)
     VALUES (?, ?, ?, 3, 5, ?, 1)`).run(id, date, surface, `${date}T09:00:00.000Z`);
-  const player = (id, surface, community = null) => db.sqlite.prepare(`INSERT INTO players (anon_id, surface, first_seen, last_seen, plays, community)
-    VALUES (?, ?, '2026-09-01', '2026-10-31', 1, ?)`).run(id, surface, community);
   const session = (id, created, anonId, classCode = null) => db.sqlite.prepare(`INSERT INTO sessions (id, created_at, lang, class_code, answers, anon_id)
     VALUES (?, ?, 'en', ?, '[]', ?)`).run(id, created, classCode, anonId);
 
-  playRow('a1', '2026-10-20', 'web'); playRow('a1', '2026-10-01', 'web'); playRow('a2', '2026-10-31', 'web');
-  for (const [id, date, team] of [['s1', '2026-10-15', 'T1'], ['s2', '2026-10-31', 'T1'], ['s3', '2026-10-30', 'T2'], ['s4', '2026-09-01', 'T3']]) {
-    player(id, 'slack', team);
-    playRow(id, date, 'slack');
-  }
-  playRow('c1', '2026-10-31', 'classroom');
-  session('x-a1', '2026-10-31T10:00:00.000Z', 'a1'); // same browser as a1's daily plays: counted once
+  playRow('a1', '2026-10-20', 'web'); playRow('s1', '2026-10-31', 'slack'); // the retired daily game: not a play under PREREG
+  session('x-a1', '2026-10-31T10:00:00.000Z', 'a1');
   session('x-w9', '2026-10-25T10:00:00.000Z', 'w9');
   session('x-none', '2026-10-25T10:00:00.000Z', null); // no anonymous id: not counted
   for (let i = 1; i <= 5; i += 1) session(`x-c${i}`, '2026-10-10T10:00:00.000Z', i === 1 ? 'x1' : null, 'ABC234');
   for (let i = 1; i <= 4; i += 1) session(`x-z${i}`, '2026-10-10T10:00:00.000Z', null, 'ZZZ999');
 
-  assert.deepEqual(await computeKpi(db, '2026-10-31'), {
-    as_of: '2026-10-31', mau: 8, dau: 4, mau_web: 3, mau_slack: 3, mau_classroom: 2, workspaces: 2, classrooms: 1,
+  const k = await computeKpi(db, '2026-10-31');
+  assert.deepEqual({ ...k, rounds_per_player_day: undefined, d1_return: undefined, d7_return: undefined, challenge_conversion: undefined, share_rate: undefined }, {
+    as_of: '2026-10-31', mau: 3, dau: 1, mau_web: 2, mau_slack: 0, mau_discord: 0, mau_room: 0, mau_classroom: 1,
+    workspaces: 0, guilds: 0, rooms: 0, classrooms: 1,
+    rounds_per_player_day: undefined, d1_return: undefined, d7_return: undefined, challenge_conversion: undefined, share_rate: undefined,
   });
-  assert.deepEqual(await computeKpi(db, '2026-10-01'), {
-    as_of: '2026-10-01', mau: 1, dau: 1, mau_web: 1, mau_slack: 0, mau_classroom: 0, workspaces: 0, classrooms: 0,
-  });
-  assert.deepEqual(await latestKpi(db), {
-    as_of: null, mau: 0, dau: 0, mau_by_surface: { web: 0, slack: 0, classroom: 0 }, communities: { workspaces: 0, classrooms: 0 },
-  });
+  assert.deepEqual((await computeKpi(db, '2026-10-01')).mau, 0);
+  const empty = {
+    as_of: null, mau: 0, dau: 0, mau_by_surface: { web: 0, slack: 0, discord: 0, room: 0, classroom: 0 },
+    communities: { workspaces: 0, guilds: 0, rooms: 0, classrooms: 0 },
+    rounds_per_player_day: null, d1_return: null, d7_return: null, challenge_conversion: null, share_rate: null,
+  };
+  assert.deepEqual(await latestKpi(db), empty);
   const now = new Date('2026-11-01T00:10:00Z');
   await runKpi(db, '2026-10-31', now);
   await runKpi(db, '2026-10-01', now);
-  assert.deepEqual(await latestKpi(db), {
-    as_of: '2026-10-31', mau: 8, dau: 4, mau_by_surface: { web: 3, slack: 3, classroom: 2 }, communities: { workspaces: 2, classrooms: 1 },
-  });
+  assert.deepEqual(await latestKpi(db), { ...empty, as_of: '2026-10-31', mau: 3, dau: 1,
+    mau_by_surface: { ...empty.mau_by_surface, web: 2, classroom: 1 }, communities: { ...empty.communities, classrooms: 1 }, d1_return: 0, d7_return: 0 });
   await runKpi(db, '2026-10-31', now); // re-running a day overwrites it
   assert.equal(db.sqlite.prepare('SELECT COUNT(*) AS n FROM kpi').get().n, 2);
 });

@@ -37,7 +37,8 @@ const TEXT = [
   ['text', 'accent-soft', 'notes, code, selected options'], ['accent', 'accent-soft', 'badges, step numbers, current nav link'],
   ['hit-ink', 'bg', 'hit text'], ['hit-ink', 'surface', 'hit verdicts, sent messages'],
   ['miss-ink', 'bg', 'miss text, errors'], ['miss-ink', 'surface', 'miss verdicts, errors in cards'],
-  ['surface', 'hit-ink', 'Play button in the Slack illustration'],
+  ['surface', 'hit-ink', 'Play button in the Slack illustration; the right answer\'s letter in a round'],
+  ['surface', 'miss-ink', 'the wrong pick\'s letter in a round'],
 ];
 // Display text of 24px bold or larger may use 3:1. None of the tokens needs this today.
 const LARGE = [];

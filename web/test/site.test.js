@@ -68,10 +68,10 @@ test('/research quotes the MAU and community definitions from PREREG word for wo
 });
 
 test('social proof: nothing below 100 monthly players; tiles leave out numbers that are missing', () => {
-  const kpi = { mau: MIN_PLAYERS, communities: { workspaces: 3, classrooms: 1 } };
+  const kpi = { mau: MIN_PLAYERS, communities: { workspaces: 3, guilds: 2, rooms: 0, classrooms: 1 } };
   assert.equal(proofTiles({ ...kpi, mau: MIN_PLAYERS - 1 }, null, null), null);
   assert.equal(proofTiles(null, null, null), null);
-  assert.deepEqual(proofTiles(kpi, { n_countries: 1234 }, { players: 40, avg_hits: 2.849 }),
-    [['100', 'monthly players'], ['1,234', 'countries'], ['3', 'Slack workspaces'], ['2.8', 'today’s average score']]);
-  assert.deepEqual(proofTiles({ ...kpi, mau: 2500 }, null, { players: 0, avg_hits: null }).map(([, label]) => label), ['monthly players', 'Slack workspaces']);
+  assert.deepEqual(proofTiles(kpi, { n_countries: 1234 }, { players: 4040 }),
+    [['100', 'monthly players'], ['1,234', 'countries'], ['6', 'communities'], ['4,040', 'played today’s ranked round']]);
+  assert.deepEqual(proofTiles({ ...kpi, mau: 2500 }, null, { players: 0 }).map(([, label]) => label), ['monthly players', 'communities']);
 });

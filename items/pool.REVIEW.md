@@ -5,23 +5,23 @@ their source links; fix or drop a bad item by editing `items/pool.json` (or swap
 
 | Category | Kept | Candidates | Skipped (reason: count) |
 |---|---|---|---|
-| country_area | 230 | 254 | conflict: 4, same_name: 1; capped 19 |
-| mountain_elevation | 200 | 671 | bounds: 2, conflict: 8, label: 2, same_name: 3; capped 456 |
-| river_length | 200 | 1335 | conflict: 18, duplicate: 5, same_name: 22; capped 1090 |
+| country_area | 233 | 254 | conflict: 4, same_name: 1; capped 16 |
+| mountain_elevation | 279 | 671 | bounds: 2, conflict: 8, label: 2, same_name: 3; capped 377 |
+| river_length | 276 | 1335 | conflict: 18, duplicate: 5, same_name: 22; capped 1014 |
 | lake_area | 115 | 120 | bounds: 1, conflict: 3, unit: 1 |
-| lake_depth | 100 | 201 | bounds: 1, conflict: 27; capped 73 |
-| building_height | 200 | 264 | bounds: 3, conflict: 10, same_name: 4, unit: 1; capped 46 |
+| lake_depth | 102 | 201 | bounds: 1, conflict: 27; capped 71 |
+| building_height | 209 | 264 | bounds: 3, conflict: 10, same_name: 4, unit: 1; capped 37 |
 | bridge_length | 159 | 161 | conflict: 1, same_name: 1 |
 | solar_system_size | 23 | 23 |  |
 | solar_system_distance | 10 | 10 |  |
 | moon_distance | 26 | 26 |  |
 | element_melting_point | 97 | 98 | conflict: 1 |
-| city_population | 250 | 288 | conflict: 2, volatile: 4; capped 32 |
-| first_flight | 200 | 1047 | bounds: 2, conflict: 3, label: 6, precision: 1; capped 835 |
+| city_population | 277 | 288 | conflict: 2, volatile: 4; capped 5 |
+| first_flight | 268 | 1047 | bounds: 2, conflict: 3, label: 6, precision: 1; capped 767 |
 | university_founded | 114 | 118 | conflict: 2, label: 1, precision: 1 |
-| first_ascent | 150 | 331 | bounds: 4, conflict: 1, label: 2, same_name: 1; capped 173 |
+| first_ascent | 171 | 331 | bounds: 4, conflict: 1, label: 2, same_name: 1; capped 152 |
 
-**Total: 2074 items** (0 cross-category duplicates dropped, 0 scheduled items carried over from the previous pool).
+**Total: 2359 items** (0 cross-category duplicates dropped, 0 scheduled items carried over from the previous pool).
 
 ## 30 random samples
 
@@ -32,7 +32,6 @@ their source links; fix or drop a bad item by editing `items/pool.json` (or swap
 - [ ] `w0269` How high is Table Mountain above sea level? → **1,085 m** · https://www.wikidata.org/wiki/Q213360#P2044
 - [ ] `w0336` How high is Devils Tower above sea level? → **1,558 m** · https://www.wikidata.org/wiki/Q306201#P2044
 - [ ] `w0370` How high is Avachinsky above sea level? → **2,741 m** · https://www.wikidata.org/wiki/Q791652#P2044
-- [ ] `w0372` How high is Rinjani above sea level? → **3,726 m** · https://www.wikidata.org/wiki/Q847323#P2044
 - [ ] `w0467` How long is the Orinoco River? → **2,140 km** · https://www.wikidata.org/wiki/Q131792#P2043
 - [ ] `w0607` How long is the Karun River? → **950 km** · https://www.wikidata.org/wiki/Q461557#P2043
 - [ ] `w0630` How long is the Ebola River? → **250 km** · https://www.wikidata.org/wiki/Q934455#P2043
@@ -46,14 +45,15 @@ their source links; fix or drop a bad item by editing `items/pool.json` (or swap
 - [ ] `w1105` How long is the Dragon Bridge? → **45.0 m** · https://www.wikidata.org/wiki/Q660029#P2043
 - [ ] `w1128` How long is the Glenfinnan Viaduct? → **380 m** · https://www.wikidata.org/wiki/Q1155735#P2043
 - [ ] `w1287` At what temperature does titanium melt? → **1,670 °C** · https://www.wikidata.org/wiki/Q716#P2101
-- [ ] `w1309` At what temperature does germanium melt? → **938 °C** · https://www.wikidata.org/wiki/Q867#P2101
 - [ ] `w1323` At what temperature does yttrium melt? → **1,500 °C** · https://www.wikidata.org/wiki/Q941#P2101
 - [ ] `w1669` In what year did the Ilyushin Il-76 first fly? → **1971** · https://www.wikidata.org/wiki/Q142549#P606
 - [ ] `w1751` In what year did the Tupolev Tu-204 first fly? → **1989** · https://www.wikidata.org/wiki/Q466590#P606
-- [ ] `w1823` In what year was the University of London founded? → **1836** · https://www.wikidata.org/wiki/Q170027#P571
 - [ ] `w1885` In what year was the University of Cape Town founded? → **1829** · https://www.wikidata.org/wiki/Q951305#P571
 - [ ] `w1908` In what year was the University of Belgrade founded? → **1808** · https://www.wikidata.org/wiki/Q240631#P571
 - [ ] `w1973` In what year was Devils Tower first climbed? → **1893** · https://www.wikidata.org/wiki/Q306201#P793
 - [ ] `w2030` In what year was Großvenediger first climbed? → **1841** · https://www.wikidata.org/wiki/Q697907#P793
+- [ ] `w2084` How high is Acotango above sea level? → **6,052 m** · https://www.wikidata.org/wiki/Q117822#P2044
+- [ ] `w2163` How long is the Great Morava river? → **185 km** · https://www.wikidata.org/wiki/Q211328#P2043
+- [ ] `w2281` In what year did the North American XB-70 Valkyrie first fly? → **1964** · https://www.wikidata.org/wiki/Q729056#P606
 
 Not generated: independence years. Wikidata has no consistent property for them ("inception" often records a different event, e.g. Mexico 1810, Nigeria 1963), so they were left out rather than guessed.

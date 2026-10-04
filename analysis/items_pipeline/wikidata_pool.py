@@ -13,7 +13,16 @@ and a source link to the Wikidata statement. Filters: deprecated statements are 
 an item is skipped when its best values conflict, a value lacks a unit, a population has no year, a date is less
 precise than a year, the answer falls outside the category's sanity range, or the English label is missing or not
 in Latin script. Near-identical prompts are dropped and each category is capped (best-known entities first, by
-Wikipedia sitelinks). Ids are stable: a statement that was already in the pool keeps its id.
+Wikipedia sitelinks; referenced items beyond the cap are kept as well). Ids are stable: a statement that was already
+in the pool keeps its id.
+
+Each item also gets `sitelinks` (Wikipedia editions with an article: how well known it is), `name` (the entity as it
+reads in a comparison: "the Nile", "Mont Blanc"), `ref_quality` (over the
+best-ranked statements: `referenced` = a reference with something other than "imported from Wikimedia project"
+P143 / Wikimedia import URL P4656 / retrieved P813; `imported` = only Wikipedia-imported references; `none`) and
+`fact_checked` (false for generated items). Items with `notes` in the previous pool were corrected by hand: they are
+pinned (kept verbatim with `fact_checked: true`), and the generated twin of the same Wikidata statement (their
+`replaces` URL, or their own source when it is a Wikidata link) is dropped.
 """
 import argparse
 import datetime
@@ -58,22 +67,31 @@ MOONS = (f"VALUES ?parent {{ {PLANETS} wd:Q339 }} VALUES ?name {{ {' '.join(f'{c
 DWARF_PLANETS = "wd:Q339 wd:Q596 wd:Q1471 wd:Q1765 wd:Q1770"
 
 
+# Reference quality of the statement ?st: a real reference (anything but P143 imported from / P4656 Wikimedia import
+# URL / P813 retrieved), or only a Wikipedia import. pr: predicates only (prv: value nodes are a different namespace).
+REFS = """BIND(EXISTS { ?st prov:wasDerivedFrom ?ref . ?ref ?rp ?rv .
+    FILTER(STRSTARTS(STR(?rp), "http://www.wikidata.org/prop/reference/P") && ?rp NOT IN (pr:P143, pr:P4656, pr:P813)) } AS ?referenced)
+  BIND(EXISTS { ?st prov:wasDerivedFrom/(pr:P143|pr:P4656) ?imp . } AS ?imported)"""
+
+
 def quantity_query(where, prop, min_sitelinks, extra=""):
-    return f"""SELECT DISTINCT ?item ?itemLabel ?sitelinks ?amount ?unit ?rank {extra} WHERE {{
+    return f"""SELECT DISTINCT ?item ?itemLabel ?sitelinks ?amount ?unit ?rank ?referenced ?imported {extra} WHERE {{
   {where}
   ?item wikibase:sitelinks ?sitelinks . FILTER(?sitelinks >= {min_sitelinks})
   ?item p:{prop} ?st . ?st wikibase:rank ?rank ; psv:{prop} ?v .
   ?v wikibase:quantityAmount ?amount ; wikibase:quantityUnit ?unit .
+  {REFS}
   {LABEL}
 }}"""
 
 
 def year_query(where, statement, min_sitelinks):
-    return f"""SELECT DISTINCT ?item ?itemLabel ?sitelinks ?time ?precision ?rank WHERE {{
+    return f"""SELECT DISTINCT ?item ?itemLabel ?sitelinks ?time ?precision ?rank ?referenced ?imported WHERE {{
   {where}
   ?item wikibase:sitelinks ?sitelinks . FILTER(?sitelinks >= {min_sitelinks})
   {statement}
   ?tv wikibase:timeValue ?time ; wikibase:timePrecision ?precision .
+  {REFS}
   {LABEL}
 }}"""
 
@@ -97,63 +115,83 @@ def moon_name(label):
     return "the Moon" if label == "Moon" else label
 
 
+def the(label):
+    return label if label.startswith("the ") else f"the {label}"
+
+
+def bridge_name(label):
+    return the(label) if label.split()[-1] in {"Bridge", "Viaduct", "Causeway"} else f"the {label} bridge"
+
+
+def university_name(label):
+    return f"the {label}" if " of " in label else label
+
+
 # name (one query), category (daily rotation group, default: name; at most one per day), domain, kind, display unit,
-# accept (sanity range for every item of the query), cap, query, prompt(label, row) -> text
+# accept (sanity range for every item of the query), cap, query, prompt(label, row) -> text,
+# entity(label, row) -> the entity as it reads in a comparison ("the Nile"; default: the label)
 CATEGORIES = [
     dict(name="country_area", domain="geography", kind="quantity", prop="P2046", unit="km²", accept=[0.1, 20000000], cap=230,
          query=quantity_query("?item wdt:P297 [] . FILTER NOT EXISTS { ?item wdt:P576 [] }", "P2046", 20),
-         prompt=lambda label, row: f"What is the area of {country_name(label)}?"),
+         prompt=lambda label, row: f"What is the area of {country_name(label)}?", entity=lambda label, row: country_name(label)),
     dict(name="mountain_elevation", domain="geography", kind="quantity", prop="P2044", unit="m", accept=[0, 9000], cap=200,
          query=quantity_query("VALUES ?cls { wd:Q8502 wd:Q8072 wd:Q169358 } ?item wdt:P31 ?cls .", "P2044", 25),
          prompt=lambda label, row: f"How high is {label} above sea level?"),
     dict(name="river_length", domain="geography", kind="quantity", prop="P2043", unit="km", accept=[1, 8000], cap=200,
          query=quantity_query("?item wdt:P31 wd:Q4022 .", "P2043", 25),
-         prompt=lambda label, row: f"How long is the {label}?" if "river" in label.lower() else f"How long is the {label} river?"),
+         prompt=lambda label, row: f"How long is the {label}?" if "river" in label.lower() else f"How long is the {label} river?",
+         entity=lambda label, row: the(label)),
     dict(name="lake_area", category="lake", domain="geography", kind="quantity", prop="P2046", unit="km²", accept=[0.1, 400000], cap=150,
          query=quantity_query("VALUES ?cls { wd:Q23397 wd:Q188025 } ?item wdt:P31 ?cls .", "P2046", 40),
-         prompt=lambda label, row: f"What is the surface area of {article(label, {'Sea'})}{label}?"),
+         prompt=lambda label, row: f"What is the surface area of {article(label, {'Sea'})}{label}?",
+         entity=lambda label, row: f"{article(label, {'Sea'})}{label}"),
     dict(name="lake_depth", category="lake", domain="geography", kind="quantity", prop="P4511", unit="m", accept=[1, 2000], cap=100,
          query=quantity_query("VALUES ?cls { wd:Q23397 wd:Q188025 } ?item wdt:P31 ?cls .", "P4511", 30),
-         prompt=lambda label, row: f"How deep is {article(label, {'Sea'})}{label} at its deepest point?"),
+         prompt=lambda label, row: f"How deep is {article(label, {'Sea'})}{label} at its deepest point?",
+         entity=lambda label, row: f"{article(label, {'Sea'})}{label}"),
     dict(name="building_height", domain="everyday", kind="quantity", prop="P2048", unit="m", accept=[1, 1000], cap=200,
          query=quantity_query("VALUES ?cls { wd:Q11303 wd:Q1440476 wd:Q11166728 wd:Q18142 } ?item wdt:P31 ?cls . "
                               "FILTER NOT EXISTS { ?item wdt:P5817 wd:Q12377751 } FILTER NOT EXISTS { ?item wdt:P576 [] }", "P2048", 20),
-         prompt=lambda label, row: f"How tall is {article(label, BUILDING_NOUNS)}{label}?"),
+         prompt=lambda label, row: f"How tall is {article(label, BUILDING_NOUNS)}{label}?",
+         entity=lambda label, row: f"{article(label, BUILDING_NOUNS)}{label}"),
     dict(name="bridge_length", domain="everyday", kind="quantity", prop="P2043", unit="m", accept=[1, 200000], cap=200,
          query=quantity_query("VALUES ?cls { wd:Q12280 wd:Q12570 wd:Q158218 wd:Q158438 wd:Q2129021 wd:Q1735209 } ?item wdt:P31 ?cls . "
                               "FILTER NOT EXISTS { ?item wdt:P576 [] }", "P2043", 15),
-         prompt=lambda label, row: f"How long is the {label}?" if label.split()[-1] in {"Bridge", "Viaduct", "Causeway"} else f"How long is the {label} bridge?"),
+         prompt=lambda label, row: f"How long is {bridge_name(label)}?", entity=lambda label, row: bridge_name(label)),
     dict(name="solar_system_size", domain="physics", kind="quantity", prop="P2386", unit="km", accept=[1, 200000], cap=60,
          query=quantity_query(f"{{ VALUES ?item {{ {PLANETS} {DWARF_PLANETS} }} }} UNION "
                               f"{{ {MOONS} }}", "P2386", 15, "?parentLabel"),
          prompt=lambda label, row: (f"What is the diameter of {moon_name(label)}?" if label == "Moon" or not row.get("parentLabel")
-                                    else f"What is the diameter of {label}, a moon of {row['parentLabel']}?")),
+                                    else f"What is the diameter of {label}, a moon of {row['parentLabel']}?"),
+         entity=lambda label, row: moon_name(label)),
     dict(name="solar_system_distance", domain="physics", kind="quantity", prop="P2233", unit="million km", accept=[1, 10000], cap=13,
          query=quantity_query(f"VALUES ?item {{ {PLANETS} {DWARF_PLANETS} }}", "P2233", 15),
          prompt=lambda label, row: f"On average, how far is {label} from the Sun?"),
     dict(name="moon_distance", category="solar_system_distance", domain="physics", kind="quantity", prop="P2233", unit="km", accept=[1000, 30000000], cap=40,
          query=quantity_query(MOONS, "P2233", 15, "?parentLabel"),
-         prompt=lambda label, row: f"On average, how far is {moon_name(label)} from {row['parentLabel']}?"),
+         prompt=lambda label, row: f"On average, how far is {moon_name(label)} from {row['parentLabel']}?",
+         entity=lambda label, row: moon_name(label)),
     dict(name="element_melting_point", domain="physics", kind="quantity", prop="P2101", unit="°C", accept=[-273, 4000], cap=110,
          query=quantity_query("?item wdt:P31 wd:Q11344 ; wdt:P1086 ?z . FILTER(?z <= 100)", "P2101", 30),
          prompt=lambda label, row: f"At what temperature does {label} melt?"),
     dict(name="city_population", domain="geography", kind="population", prop="P1082", unit="people", accept=[10000, 50000000], cap=250,
-         query=f"""SELECT DISTINCT ?item ?itemLabel ?sitelinks ?amount ?time ?precision ?rank WHERE {{
+         query=f"""SELECT DISTINCT ?item ?itemLabel ?sitelinks ?amount ?time ?precision ?rank ?referenced ?imported WHERE {{
   VALUES ?cls {{ wd:Q1637706 wd:Q1549591 wd:Q5119 }} ?item wdt:P31 ?cls ; wdt:P1082 ?best . FILTER(?best >= 1000000)
   ?item wikibase:sitelinks ?sitelinks . FILTER(?sitelinks >= 60)
   FILTER NOT EXISTS {{ ?item wdt:P576 [] }}
   ?item p:P1082 ?st . ?st wikibase:rank ?rank ; ps:P1082 ?amount .
   OPTIONAL {{ ?st pqv:P585 ?tv . ?tv wikibase:timeValue ?time ; wikibase:timePrecision ?precision . }}
+  {REFS}
   {LABEL}
 }}""",
          prompt=lambda label, row: f"What was the population of {label} in {row['year']}?"),
     dict(name="first_flight", domain="history", kind="year", prop="P606", unit="year", accept=[1890, CURRENT_YEAR], cap=200,
          query=year_query("?item wdt:P606 [] .", "?item p:P606 ?st . ?st wikibase:rank ?rank ; psv:P606 ?tv .", 20),
-         prompt=lambda label, row: f"In what year did the {label} first fly?"),
+         prompt=lambda label, row: f"In what year did the {label} first fly?", entity=lambda label, row: the(label)),
     dict(name="university_founded", domain="history", kind="year", prop="P571", unit="year", accept=[800, CURRENT_YEAR], cap=200,
          query=year_query("VALUES ?cls { wd:Q3918 wd:Q902104 wd:Q875538 } ?item wdt:P31 ?cls .",
                           "?item p:P571 ?st . ?st wikibase:rank ?rank ; psv:P571 ?tv .", 50),
-         prompt=lambda label, row: f"In what year was {'the ' if ' of ' in label else ''}{label} founded?"),
+         prompt=lambda label, row: f"In what year was {university_name(label)} founded?", entity=lambda label, row: university_name(label)),
     dict(name="first_ascent", domain="history", kind="year", prop="P793", unit="year", accept=[1500, CURRENT_YEAR], cap=150,
          query=year_query("?item p:P793/ps:P793 wd:Q1194369 ; wdt:P2044 [] .",
                           "?item p:P793 ?st . ?st ps:P793 wd:Q1194369 ; wikibase:rank ?rank ; pqv:P585 ?tv .", 15),
@@ -204,6 +242,18 @@ def year_of(time_value):
     """'+1969-02-09T00:00:00Z' or '1969-02-09T00:00:00Z' -> 1969; BCE years are negative."""
     sign = -1 if time_value.startswith("-") else 1
     return sign * int(time_value.lstrip("+-").split("-", 1)[0])
+
+
+REF_ORDER = ("none", "imported", "referenced")
+
+
+def ref_quality(rows):
+    """Best reference quality among an entity's best-ranked statement rows ('none' when the columns are absent)."""
+    best = "none"
+    for r in best_rank(rows):
+        q = "referenced" if r.get("referenced") == "true" else "imported" if r.get("imported") == "true" else "none"
+        best = max(best, q, key=REF_ORDER.index)
+    return best
 
 
 def select_value(category, rows):
@@ -276,10 +326,13 @@ def build_category(category, bindings, generated_at):
             "difficulty_hint": "unknown",
             "volatile": False,
             "generated_at": generated_at,
-            "_sitelinks": int(rows[0].get("sitelinks", 0)),
+            "name": category.get("entity", lambda label, row: label)(label, row),
+            "ref_quality": ref_quality(rows),
+            "fact_checked": False,
+            "sitelinks": int(rows[0].get("sitelinks", 0)),
             "_label": " ".join(normalize(label)),
         })
-    items.sort(key=lambda it: (-it["_sitelinks"], it["source"]))
+    items.sort(key=lambda it: (-it["sitelinks"], it["source"]))
     names, unique = set(), []
     for it in items:
         if it["_label"] in names:
@@ -319,9 +372,38 @@ def assign_ids(items, previous):
     return out
 
 
+WIKIDATA_SOURCE = re.compile(r"^https://www\.wikidata\.org/wiki/Q\d+#P\d+$")
+
+
+def twin_key(item):
+    """The Wikidata statement a hand-corrected item stands for: its `replaces` URL, else its own Wikidata source."""
+    return item.get("replaces") or (item["source"] if WIKIDATA_SOURCE.match(item["source"]) else None)
+
+
+def pin(previous_items, generated):
+    """Hand-corrected items (with `notes`) win over their generated twins: the pinned item keeps its id, prompt, answer
+    and source, gains fact_checked, and takes name/ref_quality from the twin when it has none. Returns
+    (pinned items, generated items without the twins)."""
+    pinned = [dict(it) for it in previous_items if it.get("notes")]
+    twins = {twin_key(it): it for it in pinned if twin_key(it)}
+    kept = []
+    for it in generated:
+        p = twins.get(it["source"])
+        if p is None:
+            kept.append(it)
+            continue
+        for k in ("name", "ref_quality", "sitelinks"):
+            p.setdefault(k, it[k])
+    for p in pinned:
+        p["fact_checked"] = True
+        p.setdefault("ref_quality", "none")
+    return pinned, kept
+
+
 def build_pool(responses, previous_items=(), scheduled_ids=(), generated_at=None):
     """responses: {category name: SPARQL JSON}. Returns (pool dict, report dict)."""
     generated_at = generated_at or datetime.date.today().isoformat()
+    previous_items = list(previous_items)
     all_items, report = [], {}
     for category in CATEGORIES:
         data = responses.get(category["name"])
@@ -330,17 +412,21 @@ def build_pool(responses, previous_items=(), scheduled_ids=(), generated_at=None
             continue
         items, skipped = build_category(category, data["results"]["bindings"], generated_at)
         items, dupes = dedupe(items)
-        kept = items[:category["cap"]]
+        # The cap keeps the best-known entities; referenced items beyond it are kept too (ranked rounds may only use
+        # referenced or fact-checked items, and the cap alone leaves too few of them).
+        kept = items[:category["cap"]] + [it for it in items[category["cap"]:] if it["ref_quality"] == "referenced"]
         report[category["name"]] = {"kept": len(kept), "candidates": len(items) + dupes + sum(skipped.values()),
                                     "skipped": dict(skipped, duplicate=dupes), "capped": len(items) - len(kept)}
         all_items.extend(kept)
     all_items, cross_dupes = dedupe(all_items)
-    pool_items = assign_ids(all_items, list(previous_items))
+    pinned, all_items = pin(previous_items, all_items)
+    pool_items = assign_ids(all_items, previous_items) + pinned
     # Scheduled items must keep resolving even if a later run no longer returns them.
     present = {it["id"] for it in pool_items}
     carried = [it for it in previous_items if it["id"] in set(scheduled_ids) - present]
     pool_items = sorted(pool_items + carried, key=lambda it: it["id"])
-    report["_total"] = {"kept": len(pool_items), "carried_scheduled": len(carried), "cross_category_duplicates": cross_dupes}
+    report["_total"] = {"kept": len(pool_items), "carried_scheduled": len(carried), "cross_category_duplicates": cross_dupes,
+                        "pinned": len(pinned)}
     return {"version": 1, "generated_at": generated_at, "items": pool_items}, report
 
 
@@ -421,6 +507,8 @@ def main(argv=None):
     ap.add_argument("--out", default=os.path.join(ROOT, "items", "pool.json"))
     ap.add_argument("--review", help="review file (default: next to --out, pool.REVIEW.md)")
     ap.add_argument("--schedule", default=os.path.join(ROOT, "daily", "schedule.json"))
+    ap.add_argument("--rounds", default=os.path.join(ROOT, "daily", "rounds.json"), help="ranked rounds: their pairs' items are kept too")
+    ap.add_argument("--pairs", default=os.path.join(ROOT, "items", "pairs.json"))
     args = ap.parse_args(argv)
 
     if args.fixture:
@@ -436,6 +524,10 @@ def main(argv=None):
             return 2
     previous = read_json(args.out, {"items": []})["items"]
     scheduled = {i for ids in read_json(args.schedule, {}).values() for i in ids}
+    pair_items = {p["id"]: (p["a_id"], p["b_id"]) for p in read_json(args.pairs, {"pairs": []})["pairs"]}
+    for day in read_json(args.rounds, {}).values():
+        for pid in list(day["ranked"]) + [day["question"]]:
+            scheduled.update(pair_items.get(pid, ()))
     pool, report = build_pool(responses, previous, scheduled)
     with open(args.out, "w") as f:
         json.dump(pool, f, ensure_ascii=False, indent=1)

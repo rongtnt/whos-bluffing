@@ -9,6 +9,18 @@ export const json = (data, status = 200, headers = {}) =>
 
 export const fail = (status, error) => json({ error }, status);
 
+// Does the request header equal the configured secret? Constant time (SHA-256 digests); no secret = nobody.
+export async function headerMatches(request, header, secret) {
+  const given = request.headers.get(header);
+  if (!secret || !given) return false;
+  const digest = async (s) => new Uint8Array(await crypto.subtle.digest('SHA-256', new TextEncoder().encode(s)));
+  const [a, b] = await Promise.all([digest(given), digest(secret)]);
+  return a.reduce((diff, x, i) => diff | (x ^ b[i]), 0) === 0;
+}
+
+// The Slack and Discord workers send x-howsure-bot: BOT_KEY (docs/api-rounds.md).
+export const isBot = (request, env) => headerMatches(request, 'x-howsure-bot', env.BOT_KEY);
+
 // Unexpected exceptions become a generic 500; details go to the log, never to the client.
 export const safe = (handler) => async (ctx) => {
   try {

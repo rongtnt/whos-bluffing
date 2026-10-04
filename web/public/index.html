@@ -4,12 +4,12 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <title>HowSure — How sure are you?</title>
-<meta name="description" content="A free daily game: five numbers a day. Give a range you are 90% sure about and find out whether your 90% is really 90%.">
+<meta name="description" content="A one-minute game: ten either-or questions. Say how sure you are and find out whether your confidence matches what you know.">
 <link rel="canonical" href="https://howsure.me/">
 <meta property="og:type" content="website">
 <meta property="og:site_name" content="HowSure">
 <meta property="og:title" content="HowSure — How sure are you?">
-<meta property="og:description" content="A free daily game: five numbers a day. Give a range you are 90% sure about and find out whether your 90% is really 90%.">
+<meta property="og:description" content="A one-minute game: ten either-or questions. Say how sure you are and find out whether your confidence matches what you know.">
 <meta property="og:url" content="https://howsure.me/">
 <meta property="og:image" content="https://howsure.me/og.png">
 <meta property="og:image:width" content="1200">
@@ -47,37 +47,36 @@
   <div class="wrap hero-grid">
     <div>
       <h1 id="hero-title">How sure are you?</h1>
-      <p class="hero-sub">Five numbers a day. Give a range you’re 90% sure about. Find out whether your 90% is really 90%.</p>
+      <p class="hero-sub">Ten quick questions: which is longer, higher, older? Pick one, say how sure you are, and see whether your confidence matches what you know.</p>
       <div class="actions">
-        <button class="primary" id="play" type="button" data-play><svg class="i i-fill" viewBox="0 0 24 24" aria-hidden="true" focusable="false"><path d="M8 5.6v12.8a.6.6 0 0 0 .92.5l10.08-6.4a.6.6 0 0 0 0-1L8.92 5.1a.6.6 0 0 0-.92.5z"/></svg><span>Play today’s game</span></button>
+        <button class="primary" id="play" type="button" data-play><svg class="i i-fill" viewBox="0 0 24 24" aria-hidden="true" focusable="false"><path d="M8 5.6v12.8a.6.6 0 0 0 .92.5l10.08-6.4a.6.6 0 0 0 0-1L8.92 5.1a.6.6 0 0 0-.92.5z"/></svg><span>Play</span></button>
         <a class="button" href="/slack"><svg class="i" viewBox="0 0 24 24" aria-hidden="true" focusable="false"><path d="M4.5 9h15M4.5 15h15M10 3.5 8 20.5M16 3.5l-2 17"/></svg><span>Add to Slack</span></a>
       </div>
       <p class="fine">About a minute. Anonymous — no account, no tracking. Your answers go into a public research dataset.</p>
-      <div class="proof" id="proof"><p class="proof-line">A new game every day at 00:00 UTC</p></div>
+      <div class="proof" id="proof"><p class="proof-line">A new ranked round every day at 00:00 UTC</p></div>
     </div>
     <figure class="hero-demo" aria-hidden="true">
       <div class="demo">
-        <div class="demo-top"><span class="demo-bar"><i></i></span><span>4 of 5</span></div>
-        <p class="demo-hint">Give a range you are 90% sure contains the answer.</p>
-        <p class="demo-q">How tall is Los Angeles City Hall?</p>
-        <div class="demo-fields"><span><small>From</small><b>100</b> m</span><span><small>To</small><b>200</b> m</span></div>
-        <p class="demo-verdict">✓ Inside your range · the answer is 138 m</p>
-        <div class="squares sm"><span></span><span></span><span class="miss"></span><span></span><span class="todo"></span></div>
+        <div class="demo-top"><span class="demo-bar"><i></i></span><span>4 of 10</span></div>
+        <p class="demo-q">Which is longer?</p>
+        <div class="demo-picks"><span class="is-true"><b>✓</b><span>The Nile<small>6,650 km</small></span></span><span><b>B</b><span>The Danube<small>2,850 km</small></span></span></div>
+        <div class="demo-conf"><span>50%</span><span>60%</span><span>70%</span><span class="on">80%</span><span>90%</span><span>100%</span></div>
+        <p class="demo-verdict">✓ Right at 80% sure · +84 points</p>
       </div>
       <figcaption>An example question</figcaption>
     </figure>
   </div>
 </section>
 <div id="app"></div>
-<noscript><p class="wrap">Today’s game needs JavaScript. The rest of this page works without it.</p></noscript>
+<noscript><p class="wrap">The game needs JavaScript. The rest of this page works without it.</p></noscript>
 <div class="after-app">
   <section class="section" id="how" aria-labelledby="how-title">
     <div class="wrap">
-      <div class="section-head"><p class="eyebrow">How it works</p><h2 id="how-title">Five numbers, about a minute</h2></div>
+      <div class="section-head"><p class="eyebrow">How it works</p><h2 id="how-title">Ten questions, about a minute</h2></div>
       <ol class="steps">
-        <li><h3>Read the question</h3><p>Five questions, the same for everyone today. Each one asks for a number: a height, a distance, a year.</p></li>
-        <li><h3>Give a 90% range</h3><p>Type a low and a high number so that you are 90% sure the answer is in between.</p></li>
-        <li><h3>See how you did</h3><p>The answer and its source come right after each question. At the end: your grid, today’s average and your streak.</p></li>
+        <li><h3>Pick one</h3><p>Each question compares two things: which river is longer, which mountain is higher, which plane flew earlier.</p></li>
+        <li><h3>Say how sure you are</h3><p>From 50% (a coin flip) to 100% (stake it all). Honest confidence scores best: a sure miss costs 300 points, a coin flip costs nothing.</p></li>
+        <li><h3>See how you did</h3><p>Both answers and their sources appear right away. At the end: your score, your type, and how sure you were against how often you were right.</p></li>
       </ol>
     </div>
   </section>
@@ -85,8 +84,8 @@
     <div class="wrap">
       <div class="section-head"><p class="eyebrow">Three ways to play</p><h2 id="ways-title">On your own, with your team, or in class</h2></div>
       <div class="cards">
-        <article class="feature"><span class="ico"><svg class="i" viewBox="0 0 24 24" aria-hidden="true" focusable="false"><rect x="3.5" y="5" width="17" height="15.5" rx="3"/><path d="M3.5 10h17M8 3v4M16 3v4"/></svg></span><h3>Daily game</h3><p>Five questions in about a minute, new every day at 00:00 UTC. Share your grid and keep a streak.</p><button class="primary" type="button" data-play><svg class="i i-fill" viewBox="0 0 24 24" aria-hidden="true" focusable="false"><path d="M8 5.6v12.8a.6.6 0 0 0 .92.5l10.08-6.4a.6.6 0 0 0 0-1L8.92 5.1a.6.6 0 0 0-.92.5z"/></svg><span>Play today’s game</span></button></article>
-        <article class="feature"><span class="ico"><svg class="i" viewBox="0 0 24 24" aria-hidden="true" focusable="false"><path d="M4.5 9h15M4.5 15h15M10 3.5 8 20.5M16 3.5l-2 17"/></svg></span><h3>Slack</h3><p>Install once. The game is posted in a channel every day, members play in a form, and the post shows the team’s leaderboard.</p><a class="button" href="/slack"><span>Add to Slack</span><svg class="i" viewBox="0 0 24 24" aria-hidden="true" focusable="false"><path d="M5 12h14M13 6l6 6-6 6"/></svg></a></article>
+        <article class="feature"><span class="ico"><svg class="i" viewBox="0 0 24 24" aria-hidden="true" focusable="false"><rect x="3.5" y="5" width="17" height="15.5" rx="3"/><path d="M3.5 10h17M8 3v4M16 3v4"/></svg></span><h3>Rounds</h3><p>Ten questions in about a minute. One ranked round a day, the same for everyone, with a leaderboard; then as many quick rounds as you like. Challenge a friend to the same ten.</p><button class="primary" type="button" data-play><svg class="i i-fill" viewBox="0 0 24 24" aria-hidden="true" focusable="false"><path d="M8 5.6v12.8a.6.6 0 0 0 .92.5l10.08-6.4a.6.6 0 0 0 0-1L8.92 5.1a.6.6 0 0 0-.92.5z"/></svg><span>Play</span></button></article>
+        <article class="feature"><span class="ico"><svg class="i" viewBox="0 0 24 24" aria-hidden="true" focusable="false"><path d="M4.5 9h15M4.5 15h15M10 3.5 8 20.5M16 3.5l-2 17"/></svg></span><h3>Slack</h3><p>Install once. One question a day in a channel: members pick an answer and say how sure they are, and the post later reveals the answer and the boldest bluff.</p><a class="button" href="/slack"><span>Add to Slack</span><svg class="i" viewBox="0 0 24 24" aria-hidden="true" focusable="false"><path d="M5 12h14M13 6l6 6-6 6"/></svg></a></article>
         <article class="feature"><span class="ico"><svg class="i" viewBox="0 0 24 24" aria-hidden="true" focusable="false"><circle cx="9" cy="8" r="3.5"/><path d="M2.5 20c.6-3.5 3.2-5.5 6.5-5.5s5.9 2 6.5 5.5M16 4.6a3.5 3.5 0 0 1 0 6.8M18.2 14.9c1.8.8 2.9 2.4 3.3 5.1"/></svg></span><h3>Classroom</h3><p>Run the overconfidence demo in class. Students play on their phones while your screen shows the class’s calibration curve.</p><a class="button" href="/teachers"><span>For teachers</span><svg class="i" viewBox="0 0 24 24" aria-hidden="true" focusable="false"><path d="M5 12h14M13 6l6 6-6 6"/></svg></a></article>
       </div>
     </div>
@@ -105,12 +104,13 @@
     <div class="wrap split">
       <div class="section-head"><p class="eyebrow">FAQ</p><h2 id="faq-title">Questions</h2></div>
       <div class="faq">
-        <details><summary>What does “90% sure” mean?</summary><p>If you give ten ranges you are truly 90% sure of, about nine of them should contain the answer. So a well-calibrated player catches 4 or 5 of the 5 on most days. In studies, most people’s 90% ranges catch the answer far less often than that.</p></details>
-        <details><summary>How is my score worked out?</summary><p>A range catches the answer when the answer lies between your low and high number, ends included. Your score is how many of the five you caught. A range so wide it can’t miss tells you nothing; the aim is ranges that are right about 9 times in 10.</p></details>
-        <details><summary>Do I need an account?</summary><p>No. There are no accounts and no tracking. Your browser keeps a random id so your streak survives a reload; we never store your IP address, your name or an email. Details are in the <a href="/privacy">privacy policy</a>.</p></details>
-        <details><summary>Where do the questions come from?</summary><p>From Wikidata and official sources. Every answer shows its source, each day’s questions are checked by hand the night before, and you can report a question that looks wrong right under its answer.</p></details>
-        <details><summary>When is the next game?</summary><p>Every day at 00:00 UTC. Everyone plays the same five questions that day, so you can compare grids.</p></details>
-        <details><summary>Is there a longer version?</summary><p>Yes. The <a href="/test">full assessment</a> takes 5 minutes: twelve two-choice questions with a confidence rating and six ranges, then a chart of how sure you were against how often you were right.</p></details>
+        <details><summary>What does “how sure” mean?</summary><p>Your confidence is your chance of being right. Say 70% on ten questions and you should get about seven of them right. Most people are surer than they are right; the game shows you by how much.</p></details>
+        <details><summary>How are points worked out?</summary><p>Each answer scores 100 − 400 × (confidence − outcome)², where the outcome is 1 if you were right and 0 if not. So 50% always scores 0, 100% scores +100 when right and −300 when wrong, and 80% scores +84 or −156. The best strategy is to say exactly how sure you are; the <a href="/research#scoring">research page</a> explains why.</p></details>
+        <details><summary>What do the types mean?</summary><p>Your type compares how sure you were with how often you were right: Bluffer (15 or more points surer than right), Hot-headed (5 to 15 points surer), Calibrated (within 5), Modest (5 to 15 points less sure) and Hedger (15 or more points less sure).</p></details>
+        <details><summary>What is the ranked round?</summary><p>The same ten questions for everyone, new every day at 00:00 UTC, with a leaderboard. After it, quick rounds pick questions you haven’t seen yet. Your streak counts the days you finish at least one round; missing a single day doesn’t break it.</p></details>
+        <details><summary>Do I need an account?</summary><p>No. There are no accounts and no tracking. Your browser keeps a random id so your streak survives a reload; we never store your IP address or an email. If you add a nickname to a challenge link, it is shown to the people who open that link. Details are in the <a href="/privacy">privacy policy</a>.</p></details>
+        <details><summary>Where do the questions come from?</summary><p>From Wikidata, with a source link for both answers. Two things are compared only when one is at least 1.3 times the other (for years, at least ten years apart). Ranked rounds use only facts with a reference or an independent check, and you can report a question that looks wrong right under its answer.</p></details>
+        <details><summary>Is there a longer version?</summary><p>Yes. The <a href="/test">full assessment</a> takes 5 minutes: twelve two-choice questions with a confidence rating and six 90% ranges, then a chart of how sure you were against how often you were right.</p></details>
       </div>
     </div>
   </section>

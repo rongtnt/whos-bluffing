@@ -65,7 +65,7 @@
 
 /* Base */
 *, *::before, *::after { box-sizing: border-box; }
-html { -webkit-text-size-adjust: 100%; text-size-adjust: 100%; }
+html { -webkit-text-size-adjust: 100%; text-size-adjust: 100%; scrollbar-gutter: stable; } /* no sideways jump when a page grows a scrollbar */
 /* Anchors and focused controls stop below the sticky nav (scroll-padding on html would also push the nav's own menu) */
 main *, .site-foot * { scroll-margin-top: calc(var(--nav-h) + 16px); }
 body {
@@ -204,7 +204,8 @@ label input, label select { font-weight: 400; }
 .hero { padding: 28px 0 32px; }
 @media (min-width: 900px) { .hero { padding: 72px 0 64px; } }
 .hero-grid { display: grid; gap: 40px; align-items: center; }
-@media (min-width: 900px) { .hero-grid { grid-template-columns: minmax(0, 1.1fr) minmax(0, 1fr); gap: 56px; } }
+/* top-aligned: when the social-proof tiles replace the one-line proof, the example card beside them does not move */
+@media (min-width: 900px) { .hero-grid { grid-template-columns: minmax(0, 1.1fr) minmax(0, 1fr); gap: 56px; align-items: start; } .hero-demo { margin-top: 8px; } }
 .hero h1 { margin-bottom: 14px; }
 .hero-sub { max-width: 34em; margin: 0 0 22px; color: var(--muted); font-size: var(--fs-4); }
 .actions { display: flex; flex-wrap: wrap; gap: 12px; }
@@ -227,18 +228,23 @@ label input, label select { font-weight: 400; }
 .demo-bar i { display: block; width: 80%; height: 100%; border-radius: inherit; background: var(--accent); }
 .demo-hint { margin: 18px 0 4px; color: var(--muted); font-size: var(--fs-6); font-weight: 600; }
 .demo-q { margin: 0 0 16px; font-size: var(--fs-3); font-weight: 700; line-height: 1.25; }
-.demo-fields { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
-.demo-fields span { padding: 8px 14px; border: 1px solid var(--muted); border-radius: 12px; color: var(--muted); }
-.demo-fields small { display: block; font-size: 12px; font-weight: 600; }
-.demo-fields b { color: var(--text); font-size: var(--fs-4); }
-.demo-verdict { margin: 16px 0 14px; padding: 10px 14px; border: 1px solid var(--border); border-left: 5px solid var(--hit); border-radius: 12px; color: var(--hit-ink); font-weight: 700; }
+.demo-top + .demo-q { margin: 18px 0 14px; }
+.demo-picks { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
+.demo-picks > span { display: flex; align-items: flex-start; gap: 10px; padding: 10px 12px; border: 1px solid var(--border); border-radius: 12px; font-weight: 700; }
+.demo-picks > span.is-true { border: 2px solid var(--hit); }
+.demo-picks b { display: grid; flex: none; place-items: center; width: 26px; height: 26px; border-radius: 8px; background: var(--accent-soft); color: var(--accent); font-size: 13px; }
+.demo-picks .is-true b { background: var(--hit-ink); color: var(--surface); }
+.demo-picks small { display: block; color: var(--muted); font-size: var(--fs-6); font-weight: 600; }
+.demo-conf { display: grid; grid-template-columns: repeat(6, minmax(0, 1fr)); gap: 6px; margin-top: 12px; }
+.demo-conf span { padding: 6px 0; border: 1px solid var(--border); border-radius: 10px; color: var(--muted); font-size: 13px; font-weight: 600; text-align: center; }
+.demo-conf .on { border: 2px solid var(--accent); background: var(--accent-soft); color: var(--accent); }
+.demo-verdict { margin: 14px 0 2px; padding: 10px 14px; border: 1px solid var(--border); border-left: 5px solid var(--hit); border-radius: 12px; color: var(--hit-ink); font-weight: 700; }
 
 /* The five squares of the logo, large (home example card, 404), popping in one by one */
 .squares { display: flex; gap: 8px; margin: 8px 0 4px; }
 .squares span { width: 44px; height: 44px; border-radius: 10px; background: var(--hit); animation: pop 0.4s cubic-bezier(0.2, 0.9, 0.3, 1.25) both; }
 .squares .miss { background: var(--miss); }
 .squares .todo { background: var(--border); }
-.squares.sm span { width: 30px; height: 30px; border-radius: 8px; }
 .squares span:nth-child(2) { animation-delay: 0.08s; }
 .squares span:nth-child(3) { animation-delay: 0.16s; }
 .squares span:nth-child(4) { animation-delay: 0.24s; }
@@ -396,6 +402,51 @@ h3 { margin-top: 20px; }
 .label { margin: 12px 0 0; color: var(--muted); font-size: var(--fs-6); }
 .code { margin: 0 0 4px; font-size: 2.4rem; font-weight: 800; letter-spacing: 0.12em; }
 .big { font-size: var(--fs-3); font-weight: 800; line-height: 1.3; }
+
+/* Rounds: the header, the two picks, the reveal, the end screen */
+.round-head { display: flex; align-items: center; justify-content: space-between; gap: 12px; margin-top: 4px; }
+.round-total { color: var(--muted); font-size: var(--fs-6); font-weight: 600; }
+.round-total b { color: var(--text); font-size: var(--fs-4); font-weight: 800; font-variant-numeric: tabular-nums; }
+.picks { display: grid; gap: 10px; margin: 4px 0 6px; }
+@media (min-width: 520px) { .picks { grid-template-columns: 1fr 1fr; } }
+.pick { display: flex; align-items: center; justify-content: flex-start; gap: 12px; min-height: 72px; padding: 12px 16px; border-radius: var(--radius); background: var(--surface); border: 1px solid var(--border); font-size: var(--fs-4); font-weight: 650; line-height: 1.3; text-align: left; }
+button.pick:hover { border-color: var(--accent); }
+.pick[aria-pressed="true"] { border: 2px solid var(--accent); background: var(--accent-soft); }
+.pick .letter { display: grid; flex: none; place-items: center; width: 34px; height: 34px; border-radius: 10px; background: var(--accent-soft); color: var(--accent); font-size: var(--fs-6); font-weight: 800; }
+.pick .name { min-width: 0; }
+.pick .name::first-letter { text-transform: uppercase; }
+.revealed .pick { align-items: flex-start; }
+.pick .value { display: block; margin-top: 4px; font-size: var(--fs-3); font-weight: 800; font-variant-numeric: tabular-nums; }
+.pick .src { display: inline-block; margin-top: 2px; font-size: var(--fs-6); font-weight: 600; }
+.pick.is-true { border: 2px solid var(--hit); }
+.pick.is-true .letter { background: var(--hit-ink); color: var(--surface); }
+.pick.is-chosen:not(.is-true) { border: 2px solid var(--miss); }
+.pick.is-chosen:not(.is-true) .letter { background: var(--miss-ink); color: var(--surface); }
+.reveal { display: flex; align-items: center; justify-content: space-between; gap: 12px; margin: 8px 0 16px; padding: 12px 18px; background: var(--surface); border: 1px solid var(--border); border-left: 6px solid var(--hit); border-radius: var(--radius); }
+.reveal.is-miss { border-left-color: var(--miss); }
+.reveal .verdict { margin: 0; }
+.reveal .verdict .muted { font-size: var(--fs-6); font-weight: 600; }
+.is-hit .verdict { color: var(--hit-ink); }
+.pts { margin: 0; font-size: var(--fs-2); font-weight: 800; font-variant-numeric: tabular-nums; animation: pop 0.45s cubic-bezier(0.2, 0.9, 0.3, 1.25) both; }
+.pts.up { color: var(--hit-ink); }
+.pts.down { color: var(--miss-ink); }
+.type-card { margin: 14px 0; padding: 18px 20px; border-radius: var(--radius); background: var(--accent-soft); }
+.type-card p { margin: 0; }
+.type-name { color: var(--accent); font-size: var(--fs-2); font-weight: 800; letter-spacing: -0.02em; line-height: 1.15; }
+.type-def { margin-top: 6px !important; font-size: var(--fs-4); }
+.type-line { margin-top: 10px !important; font-weight: 700; }
+.roast { margin: 14px 0; padding: 12px 16px; border-left: 4px solid var(--focus); border-radius: 0 12px 12px 0; background: var(--surface); font-style: italic; }
+.end-actions { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; margin: 18px 0; }
+.end-actions .primary { grid-column: 1 / -1; }
+.end-actions button[aria-expanded="true"] { border-color: var(--accent); background: var(--accent-soft); }
+.vs { width: 100%; border-collapse: collapse; font-variant-numeric: tabular-nums; }
+.vs th, .vs td { padding: 8px 6px; border-bottom: 1px solid var(--border); text-align: left; }
+.vs thead th { color: var(--muted); font-size: var(--fs-6); }
+.nick label { margin-top: 0; }
+.mini .chart, .mini .legend, .mini figcaption { max-width: 360px; }
+.tiles-5 { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+@media (min-width: 640px) { .tiles-5 { grid-template-columns: repeat(5, minmax(0, 1fr)); } }
+.defs { padding-left: 1.1em; }
 
 /* Charts (inline SVG) */
 .chart { display: block; width: 100%; height: auto; }

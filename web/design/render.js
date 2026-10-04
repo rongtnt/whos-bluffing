@@ -1,10 +1,13 @@
 // Renders the committed images and the review screenshots in headless Chrome over the DevTools protocol, and runs
 // the layout checks. No dependencies (Node 22's fetch and WebSocket). CHROME=/path/to/chrome picks another Chromium.
 //   node design/render.js assets           public/og.png, favicon-32.png, apple-touch-icon.png from design/*.html
-//   node design/render.js screens [BASE]   design/screens/<page>-<width>-<theme>.png; BASE is a running `npm run dev`
-//                                          (default http://127.0.0.1:8788); plays today's game for 4 local players
+//   node design/render.js screens [BASE]   design/screens/<page>-<width>-<theme>.png for /, /slack, /research; BASE is a
+//                                          running `npm run dev` (default http://127.0.0.1:8788)
 //   node design/render.js checks [BASE]    overflow at 375 px and layout shift on every page, keyboard walk on / and
 //                                          /slack, theme toggle label and persistence
+//   node design/render.js rounds [BASE]    design/screens/rounds-{item,reveal,end,challenge}-<width>-<theme>.png at 375 and
+//                                          1280 px: plays today's ranked round in the page (after four API players for the
+//                                          leaderboard) and opens a challenge link from a fifth
 import { spawn } from 'node:child_process';
 import { mkdtempSync, writeFileSync, readFileSync, rmSync } from 'node:fs';
 import { tmpdir } from 'node:os';
@@ -77,9 +80,9 @@ async function open(cdp, url, { width, height = 900, dark = false, mobile = widt
   await sleep(400);
 }
 
-async function capture(cdp, file, width, height) {
+async function capture(cdp, file, width, height, y = 0) {
   const h = height ?? await evaluate(cdp, 'Math.ceil(document.documentElement.scrollHeight)');
-  const { data } = await cdp.send('Page.captureScreenshot', { format: 'png', captureBeyondViewport: true, clip: { x: 0, y: 0, width, height: h, scale: 1 } });
+  const { data } = await cdp.send('Page.captureScreenshot', { format: 'png', captureBeyondViewport: true, clip: { x: 0, y, width, height: h, scale: 1 } });
   writeFileSync(file, Buffer.from(data, 'base64'));
   console.log(`wrote ${file.replace(WEB, 'web/')} (${width}x${h})`);
 }
@@ -98,42 +101,66 @@ async function assets(cdp) {
 const post = (base, path, body) => fetch(`${base}${path}`, { method: 'POST', headers: { 'content-type': 'application/json' }, body: JSON.stringify(body) })
   .then(async (r) => { if (!r.ok) throw new Error(`${path} -> ${r.status} ${await r.text()}`); return r.json(); });
 
-// Plays today's game for anon through the API (pattern '11011' = hit, hit, miss, ...); returns the browser's local play.
-async function playToday(base, anon, pattern) {
-  const day = await fetch(`${base}/api/daily`).then((r) => r.json());
-  const pool = new Map(JSON.parse(readFileSync(join(WEB, 'functions/_pool.json'), 'utf8')).items.map((i) => [i.id, i]));
-  const answers = {};
-  for (const [k, item] of day.items.entries()) {
-    const truth = pool.get(item.id).answer;
-    const w = Math.round(Math.abs(truth) * 0.25) + 1;
-    const [low, high] = pattern[k] === '1' ? [truth - w, truth + w] : [truth + w, truth + 3 * w];
-    const r = await post(base, '/api/daily/answer', { date: day.date, item_id: item.id, low, high, anon_id: anon, surface: 'web', rt_ms: 4000 });
-    answers[item.id] = { low, high, hit: r.hit, truth: r.truth, source: r.source };
-  }
-  const done = await post(base, '/api/daily/complete', { date: day.date, anon_id: anon, surface: 'web' });
-  return { date: day.date, play: { number: day.number, answers, result: { hits: done.hits, n: done.n, streak: done.streak, share_text: done.share_text } } };
-}
-
 async function screens(cdp, base) {
-  const me = 'screenshotPlayerAAAAAA'; // 22 characters, like a browser's own hs_anon
-  const mine = await playToday(base, me, '11011');
-  for (const [i, pattern] of ['10110', '11111', '00100', '11010'].entries()) await playToday(base, `screenshotPlayer${i}BBBBB`, pattern);
   const shots = [['home', '/'], ['slack', '/slack'], ['research', '/research']];
   const sizes = [[375, 812], [768, 1024], [1280, 800]];
-  const each = async (name, path) => {
+  for (const [name, path] of shots) {
     for (const dark of [false, true]) {
       for (const [w, h] of sizes) {
         await open(cdp, `${base}${path}`, { width: w, height: h, dark });
         await capture(cdp, join(WEB, `design/screens/${name}-${w}-${dark ? 'dark' : 'light'}.png`), w);
       }
     }
-  };
-  for (const [name, path] of shots) await each(name, path);
-  // Results screen: this browser becomes the player who just finished today's game.
-  await open(cdp, `${base}/support`, { width: 375 });
-  await evaluate(cdp, `localStorage.setItem('hs_anon', ${JSON.stringify(JSON.stringify(me))});
-    localStorage.setItem('hs_daily', ${JSON.stringify(JSON.stringify({ [mine.date]: mine.play }))}); true`);
-  await each('results', '/');
+  }
+}
+
+// Plays a round through the API: pattern of 1 (right) / 0 per pair, confidences cycled; returns complete's body.
+async function playRoundApi(base, round, anon, pattern, confs, extra = {}) {
+  const truth = new Map(JSON.parse(readFileSync(join(WEB, 'functions/_pairs.json'), 'utf8')).pairs.map(([n, , , t]) => [`p${String(n).padStart(5, '0')}`, t]));
+  for (const [k, item] of round.items.entries()) {
+    const right = pattern[k % pattern.length] === '1';
+    await post(base, '/api/round/answer', { round_id: round.round_id, item_id: item.id, choice: right ? truth.get(item.id) : 1 - truth.get(item.id),
+      conf: confs[k % confs.length], rt_ms: 4000, anon_id: anon, surface: 'web' });
+  }
+  return post(base, '/api/round/complete', { round_id: round.round_id, anon_id: anon, surface: 'web', ...extra });
+}
+
+// An expression that waits (in the page) for an enabled element matching sel.
+const waitFor = (sel) => `await new Promise((done, fail) => { const t0 = Date.now(); (function poll() {
+  const el = document.querySelector(${JSON.stringify(sel)}); if (el && !el.disabled) done(el);
+  else if (Date.now() - t0 > 8000) fail(new Error('timeout: ' + ${JSON.stringify(sel)})); else setTimeout(poll, 40); })(); })`;
+
+async function roundScreens(cdp, base) {
+  const get = (path) => fetch(`${base}${path}`).then((r) => r.json());
+  const ranked = await get('/api/round?mode=ranked');
+  const players = [['1111111110', [90]], ['1101101101', [80, 70]], ['1010101010', [100, 60]], ['1111110000', [70]]];
+  for (const [i, [pattern, confs]] of players.entries()) await playRoundApi(base, ranked, `shotRanked${i}`.padEnd(22, 'x'), pattern, confs);
+  const host = await playRoundApi(base, await get('/api/round?mode=quick'), 'shotHostSam'.padEnd(22, 'x'), '1110111011', [90, 80, 70], { nickname: 'Sam' });
+  const challenge = new URL(host.challenge_url).pathname;
+  for (const dark of [false, true]) {
+    for (const [w, h] of [[375, 812], [1280, 800]]) {
+      const theme = dark ? 'dark' : 'light';
+      const file = (name) => join(WEB, `design/screens/rounds-${name}-${w}-${theme}.png`);
+      await open(cdp, `${base}/support`, { width: w, height: h, dark }); // a fresh player in this browser
+      await evaluate(cdp, `localStorage.clear(); localStorage.setItem('hs_anon', ${JSON.stringify(JSON.stringify(`shot${theme}${w}`.padEnd(22, 'y')))}); true`);
+      await open(cdp, `${base}/`, { width: w, height: h, dark });
+      await evaluate(cdp, `(async () => { document.getElementById('play').click(); (${waitFor('button.pick')}).click(); ${waitFor('#conf:not([hidden]) [data-conf="80"]')}; return true; })()`);
+      await sleep(300);
+      await capture(cdp, file('item'), w, h);
+      await evaluate(cdp, `(async () => { document.querySelector('[data-conf="80"]').click(); ${waitFor('.reveal')}; return true; })()`);
+      await sleep(300);
+      await capture(cdp, file('reveal'), w, h);
+      await evaluate(cdp, `(async () => { for (let k = 1; k < 10; k += 1) { (${waitFor('#next')}).click(); ${waitFor('button.pick')};
+        document.querySelectorAll('button.pick')[k % 2].click(); (${waitFor('[data-conf="70"]')}).click(); }
+        (${waitFor('#next')}).click(); ${waitFor('.result-title')}; return true; })()`);
+      await sleep(900); // the ranked leaderboard loads after the end screen
+      const box = await evaluate(cdp, `(() => { window.scrollTo(0, 0); const r = document.getElementById('app').getBoundingClientRect();
+        return { y: Math.max(0, Math.round(r.top - 72)), h: Math.round(r.height + 96) }; })()`);
+      await capture(cdp, file('end'), w, box.h, box.y); // the result, from the nav's height above it
+      await open(cdp, `${base}${challenge}`, { width: w, height: h, dark });
+      await capture(cdp, file('challenge'), w, h);
+    }
+  }
 }
 
 const PRESS_TAB = [{ type: 'keyDown', key: 'Tab', code: 'Tab', windowsVirtualKeyCode: 9 }, { type: 'keyUp', key: 'Tab', code: 'Tab', windowsVirtualKeyCode: 9 }];
@@ -204,7 +231,8 @@ try {
   if (mode === 'assets') await assets(cdp);
   else if (mode === 'screens') await screens(cdp, base);
   else if (mode === 'checks') failed = await checks(cdp, base);
-  else throw new Error(`unknown mode ${mode} (assets | screens | checks)`);
+  else if (mode === 'rounds') await roundScreens(cdp, base);
+  else throw new Error(`unknown mode ${mode} (assets | screens | checks | rounds)`);
 } finally {
   cdp.close();
 }

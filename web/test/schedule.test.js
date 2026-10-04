@@ -4,7 +4,7 @@ import { test } from 'node:test';
 import assert from 'node:assert/strict';
 import { readFileSync } from 'node:fs';
 import { extendSchedule, formatSchedule, difficultyTiers, runtimeRows, NO_REUSE_DAYS } from '../scripts/schedule.js';
-import { review } from '../scripts/tomorrow.js';
+import { review, reviewRounds } from '../scripts/tomorrow.js';
 import { validatePool, validateSchedule, publicPool } from '../scripts/sync-items.js';
 import { addDays, EPOCH } from '../functions/_daily.js';
 
@@ -130,7 +130,26 @@ test('pool and schedule validators catch broken entries', () => {
   assert.match(validateSchedule({ '2026-02-30': [...ids] }, ids).join(), /bad date/);
 });
 
-test('nightly review print: number (#0 before launch), date, answers with units (years without separators), sources', () => {
+test('nightly review print (npm run tomorrow): the ranked ten and the chat question, both values and both sources', () => {
+  const pool = [
+    { id: 'w0001', category: 'river_length', name: 'the Nile', en: { prompt: 'x', unit: 'km' }, answer: 6650, source: 'https://www.wikidata.org/wiki/Q3392#P2043' },
+    { id: 'w0002', category: 'river_length', name: 'the Danube', en: { prompt: 'x', unit: 'km' }, answer: 2850, source: 'https://www.wikidata.org/wiki/Q1653#P2043' },
+    { id: 'w0003', category: 'first_flight', name: 'the Concorde', en: { prompt: 'x', unit: 'year' }, answer: 1969, source: 'https://www.wikidata.org/wiki/Q6482#P606' },
+    { id: 'w0004', category: 'first_flight', name: 'the Boeing 787', en: { prompt: 'x', unit: 'year' }, answer: 2009, source: 'https://www.wikidata.org/wiki/Q399#P606' },
+  ];
+  const pairs = [
+    { id: 'p00001', a_id: 'w0002', b_id: 'w0001', truth: 1, prompt: 'Which is longer?', category: 'river_length', difficulty_hint: 'medium' },
+    { id: 'p00002', a_id: 'w0003', b_id: 'w0004', truth: 0, prompt: 'Which came first?', category: 'first_flight', difficulty_hint: 'easy' },
+  ];
+  const text = reviewRounds(pool, pairs, { '2026-10-20': { ranked: ['p00001'], question: 'p00002' } }, '2026-10-20');
+  assert.ok(text.startsWith('HowSure ranked round · 2026-10-20 (UTC)\n'), text);
+  assert.match(text, /1\. p00001 \[river_length, medium\] Which is longer\?\n {3}A the Danube: 2,850 km · https:\/\/www\.wikidata\.org\/wiki\/Q1653#P2043\n {3}B the Nile: 6,650 km · https:\/\/www\.wikidata\.org\/wiki\/Q3392#P2043\n {3}answer: B \(the Nile\)/);
+  assert.match(text, /Slack and Discord question of the day:\nQ\. p00002 \[first_flight, easy\] Which came first\?\n {3}A the Concorde: 1969 · /);
+  assert.throws(() => reviewRounds(pool, pairs, {}, '2026-10-21'), /no ranked round for 2026-10-21/);
+  assert.throws(() => reviewRounds(pool, pairs, { '2026-10-20': { ranked: ['p00009'], question: 'p00002' } }, '2026-10-20'), /p00009/);
+});
+
+test('legacy daily review print: number (#0 before launch), date, answers with units (years without separators), sources', () => {
   const pool = [
     { id: 'w0001', category: 'bridge_length', en: { prompt: 'How long is the Mackinac Bridge?', unit: 'm' }, answer: 8038, source: 'https://www.wikidata.org/wiki/Q12568#P2043' },
     { id: 'w0002', category: 'first_ascent', en: { prompt: 'In what year was K2 first climbed?', unit: 'year' }, answer: 1954, source: 'https://www.wikidata.org/wiki/Q43512#P793' },
