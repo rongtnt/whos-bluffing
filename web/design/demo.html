@@ -1,0 +1,160 @@
+<!doctype html>
+<!-- The picture of the press clips (render.js demo): a hook on navy, the game in a phone, the end card. The size comes
+     from ?w=&h= (1080x1920 by default; 1080x1080 for the square cut, 1200x675 for the poster). render.js passes the
+     timeline (the game frames, taps, captions, word times) to setup(), then for each frame calls show(i): every
+     animation is seeked to frame i and the phone shows frame i of the game take. CSS animation only. -->
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<title>Demo</title>
+<style>
+  /* --font is the site's (public/styles.css), which is not linked: its class names would collide with these. */
+  :root { --font: ui-sans-serif, -apple-system, "Segoe UI", Roboto, Helvetica, Arial, sans-serif; --navy: #111827; --paper: #F5F3EE; --soft-blue: #7A95FF; --tap: #2F5BFF;
+    --spring: cubic-bezier(0.2, 0.9, 0.3, 1.4); --smooth: cubic-bezier(0.45, 0, 0.55, 1); }
+  html, body { width: var(--w); height: var(--h); margin: 0; overflow: hidden; background: var(--navy); }
+  body { position: relative; color: var(--paper); font: 800 16px/1 var(--font); letter-spacing: -0.035em; }
+  p { margin: 0; }
+  b { font-weight: inherit; color: var(--soft-blue); }
+  .scene { position: absolute; inset: 0; transform-origin: 50% 50%; }
+
+  /* The hook: left-aligned, word by word. */
+  .hook { position: absolute; left: var(--m); right: var(--m); top: 46%; transform: translateY(-50%); font-size: var(--hook); line-height: 1.02; }
+  .hook span { display: inline-block; transform-origin: 0 80%; animation: pop 0.24s var(--spring) both; }
+  .hook .prove { margin-top: 0.42em; color: var(--soft-blue); }
+
+  /* The game in a phone, captions in the clear space beside it. */
+  .caps { position: absolute; left: var(--cx); top: var(--cy); width: var(--cw); height: var(--ch); display: flex; flex-direction: column; justify-content: var(--cj); }
+  .cap { grid-area: 1 / 1; font-size: var(--cap); line-height: 1.04; text-wrap: balance; animation: fade-out 0.18s var(--smooth) both; }
+  .cap > span { display: block; transform-origin: 0 80%; animation: pop 0.24s var(--spring) both; }
+  .caps-grid { display: grid; }
+  .phone { position: absolute; left: var(--px); top: var(--py); width: var(--pw); height: var(--ph); border-radius: var(--r);
+    box-shadow: 0 0 0 1px rgba(245, 243, 238, 0.16), 0 44px 90px -12px rgba(0, 0, 0, 0.6), 0 12px 32px rgba(0, 0, 0, 0.35);
+    animation: settle 0.6s var(--spring) both; }
+  .screen { position: absolute; inset: 0; overflow: hidden; border-radius: inherit; background: #FBFAF7; }
+  .screen img { position: absolute; inset: 0; width: 100%; height: 100%; object-fit: cover; object-position: top; visibility: hidden; }
+  .screen .a { animation: push 0.3s var(--smooth) both; }
+  .screen .b { animation: fade-in 0.3s var(--smooth) both; }
+  .ring { position: absolute; width: calc(var(--s) * 20px); height: calc(var(--s) * 20px); margin: calc(var(--s) * -10px); box-sizing: border-box;
+    border: calc(var(--s) * 1.5px) solid var(--tap); border-radius: 50%; animation: ring 0.5s cubic-bezier(0.2, 0.7, 0.3, 1) both; }
+
+  /* The end card: the lockup, the address, the small print. */
+  .card { position: absolute; left: var(--m); right: var(--m); top: 50%; transform: translateY(-50%); }
+  .lockup { display: flex; align-items: center; gap: 0.3em; font-size: var(--lock); letter-spacing: -0.035em; }
+  .lockup svg { width: calc(0.86em * 38 / 44); height: 0.86em; flex: none; overflow: visible; }
+  .url { margin-top: 0.7em; font-size: var(--url); letter-spacing: -0.02em; color: var(--soft-blue); }
+  .small { margin-top: 0.9em; font-size: var(--small); font-weight: 600; letter-spacing: -0.01em; color: rgba(245, 243, 238, 0.62); }
+
+  @keyframes pop { from { opacity: 0; transform: translateY(0.14em) scale(0.92); } to { opacity: 1; transform: none; } }
+  @keyframes out { to { opacity: 0; transform: scale(1.04); } }
+  @keyframes push { to { transform: scale(1.04); } }
+  @keyframes fade-in { from { opacity: 0; } to { opacity: 1; } }
+  @keyframes fade-out { to { opacity: 0; } }
+  @keyframes settle { from { transform: rotate(2deg); } to { transform: none; } }
+  @keyframes ring { 0% { opacity: 0; transform: scale(0.35); } 8% { opacity: 0.9; } 100% { opacity: 0; transform: scale(2.2); } }
+</style>
+<script>
+  const q = new URLSearchParams(location.search);
+  const W = Number(q.get('w')) || 1080;
+  const H = Number(q.get('h')) || 1920;
+  const GAME = { w: 375, h: 667 }; // the game's viewport in CSS px
+  const FPS = 30;
+  const ms = (frame) => (frame * 1000) / FPS;
+
+  // Sizes for this frame: tall (the phone under the captions), square (captions left, phone right) or wide (hook only).
+  const tall = H > W * 1.2;
+  const square = !tall && H > W * 0.75;
+  const m = Math.round(W * 0.089);
+  const s = tall ? 2.16 : 1.32; // the phone's screen scale
+  const pw = GAME.w * s;
+  const ph = GAME.h * s;
+  const px = tall ? (W - pw) / 2 : W - m - pw;
+  const py = tall ? H - ph - 80 : (H - ph) / 2;
+  const vars = { w: W, h: H, m, s, pw, ph, px, py, r: 48 * (s / 2.16),
+    hook: tall ? 132 : square ? 104 : 76,
+    cap: tall ? 84 : 56,
+    cx: tall ? px : m, cy: tall ? 0 : py, cw: tall ? pw : px - m - 56, ch: tall ? py - 64 : ph,
+    lock: tall ? 92 : 76, url: tall ? 60 : 50, small: tall ? 38 : 32 };
+  document.documentElement.style.cssText = Object.entries(vars).map(([k, v]) => `--${k}: ${v}${k === 's' ? '' : 'px'}`).join('; ')
+    + `; --cj: ${tall ? 'flex-end' : 'center'}`;
+
+  const delay = (el, ...frames) => { el.style.animationDelay = frames.map((f) => `${ms(f)}ms`).join(', '); };
+  let T = null;
+
+  // t: { hookEnd, endStart, words: [frame...], a: { start, frames, dir }, b: {...}, tapA, taps: [{ frame, x, y }],
+  // captions: [{ html, from, to }] }, frames at FPS; x, y in the game's CSS px.
+  window.setup = (t) => {
+    T = t;
+    document.querySelectorAll('.hook span').forEach((el, i) => delay(el, t.words[i]));
+    delay(document.getElementById('hook'), t.hookEnd);
+    delay(document.querySelector('#play .in'), t.hookEnd);
+    delay(document.getElementById('play'), t.endStart);
+    delay(document.getElementById('card'), t.endStart);
+    if (t.a) {
+      delay(document.querySelector('.phone'), t.tapA);
+      for (const img of document.querySelectorAll('.screen img')) delay(img, t.b.start);
+      for (const tap of t.taps) {
+        const ring = Object.assign(document.createElement('i'), { className: 'ring' });
+        Object.assign(ring.style, { left: `${tap.x * s}px`, top: `${tap.y * s}px` });
+        delay(ring, tap.frame);
+        document.querySelector('.screen').append(ring);
+      }
+      const caps = document.querySelector('.caps-grid');
+      for (const c of t.captions) {
+        const outer = Object.assign(document.createElement('p'), { className: 'cap' });
+        const inner = document.createElement('span');
+        inner.innerHTML = c.html;
+        outer.append(inner);
+        delay(outer, c.to);
+        delay(inner, c.from);
+        caps.append(outer);
+      }
+    }
+    return true;
+  };
+
+  // Resolves once img has loaded and decoded; a decode that never settles must not stall the take, so 1.5 s at most.
+  const ready = (img) => new Promise((done) => {
+    const fallback = setTimeout(done, 1500);
+    const decoded = () => img.decode().catch(() => {}).then(() => { clearTimeout(fallback); done(); });
+    if (img.complete && img.naturalWidth) decoded(); else { img.onload = decoded; img.onerror = done; }
+  });
+
+  // Frame i: every animation at its time, the phone on frame i of the take.
+  window.show = async (i) => {
+    for (const a of document.getAnimations()) { a.pause(); a.currentTime = ms(i); }
+    const shown = [];
+    for (const [seg, img] of [[T.a, document.querySelector('.screen .a')], [T.b, document.querySelector('.screen .b')]]) {
+      const k = seg ? i - seg.start : -1;
+      const on = seg && k >= 0 && k < seg.frames;
+      img.style.visibility = on ? 'visible' : 'hidden';
+      if (on) { img.src = `file://${seg.dir}/f${String(k).padStart(5, '0')}.jpg`; shown.push(ready(img)); }
+    }
+    await Promise.all(shown);
+    return true;
+  };
+</script>
+</head>
+<body>
+  <div id="hook" class="scene" style="animation: out 0.3s var(--smooth) both">
+    <div class="hook">
+      <p><span>You’re</span> <span>not</span></p>
+      <p><span>as</span> <span>smart</span> <span>as</span></p>
+      <p><span>you</span> <span>think.</span></p>
+      <p class="prove"><span>Prove</span> <span>it.</span></p>
+    </div>
+  </div>
+  <div id="play" class="scene" style="animation: out 0.3s var(--smooth) both">
+    <div class="in scene" style="animation: fade-in 0.3s var(--smooth) both">
+      <div class="caps"><div class="caps-grid"></div></div>
+      <div class="phone"><div class="screen"><img class="a" alt=""><img class="b" alt=""></div></div>
+    </div>
+  </div>
+  <div id="card" class="scene" style="animation: fade-in 0.3s var(--smooth) both">
+    <div class="card">
+      <p class="lockup"><svg viewBox="0 0 38 44" aria-hidden="true"><g transform="rotate(-14 16.5 20)"><rect x="4.00" y="2.50" width="25" height="35" rx="5.5" fill="#7A95FF"/></g><g transform="rotate(9 22.5 24)"><rect x="10.00" y="6.50" width="25" height="35" rx="5.5" fill="#F5F3EE"/><g transform="rotate(45 22.5 24)"><rect x="17.75" y="19.25" width="9.5" height="9.5" rx="1.6" fill="#111827"/></g></g></svg><span>Who's Bluffing?</span></p>
+      <p class="url">whosbluffing.com</p>
+      <p class="small">Free. No account. Discord and Slack too.</p>
+    </div>
+  </div>
+</body>
+</html>

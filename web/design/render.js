@@ -13,18 +13,19 @@
 //                                          players for the leaderboard, and opens a challenge link from a fifth
 //   node design/render.js results [BASE]   design/screens/results-<width>-<theme>.png at 375, 768 and 1280 px: the full
 //                                          assessment (/test) played through to its results page, whole page
-//   node design/render.js demo [BASE] [square|poster|vertical]
-//                                          public/press/demo.mp4 (1080x1080), demo.gif (640 px, loops), demo-poster.png
-//                                          (1200x675), demo-vertical.mp4 (1080x1920), demo-vertical-poster.png and
-//                                          design/screens/demo-vertical-frames.png (or one part): design/intro.html seeked
-//                                          frame by frame, then today's ranked round played in the page on a stand-in
-//                                          clock, so every 1/30 s frame is exact; cut with eased crossfades by ffmpeg
-//                                          (FFMPEG=/path/to/ffmpeg picks another one)
+//   node design/render.js demo [BASE] [vertical|square] [--music FILE]
+//                                          public/press/demo-vertical.mp4 (1080x1920) and demo.mp4 (1080x1080), one
+//                                          20 s edit with sound; demo.gif, demo-poster.png, demo-vertical-poster.png and
+//                                          design/screens/demo-vertical-frames.png: today's ranked round played in the
+//                                          page on a stand-in clock, composed by design/demo.html, sound from
+//                                          design/soundtrack.js (FILE: the music instead of the synthesised bed; see
+//                                          design/MEDIA_NOTES.md), cut by ffmpeg (FFMPEG=/path/to/ffmpeg picks another)
 import { spawn, spawnSync } from 'node:child_process';
 import { mkdtempSync, mkdirSync, writeFileSync, readFileSync, rmSync, copyFileSync, existsSync } from 'node:fs';
 import { tmpdir } from 'node:os';
 import { join } from 'node:path';
 import { fileURLToPath } from 'node:url';
+import { SR, bed, effects, mix, wav, fromPcm } from './soundtrack.js';
 
 const WEB = fileURLToPath(new URL('../', import.meta.url));
 const CHROME = process.env.CHROME ?? '/Applications/Google Chrome.app/Contents/MacOS/Google Chrome';
@@ -291,21 +292,25 @@ async function checks(cdp, base) {
 const FFMPEG = process.env.FFMPEG ?? 'ffmpeg';
 const PRESS = join(WEB, 'public/press');
 const FPS = 30;
-const INTRO_S = 4.6; // design/intro.html: 4.0 s of motion, then a 0.6 s hold
-const FADE_S = 0.4; // every cut is an eased crossfade this long
-const END_S = 3; // the end card, after its crossfade
-const CUT_S = 25;
-const ROUND_S = CUT_S - INTRO_S - END_S; // the round's segments, crossfades included
-const PUSH = 0.04; // the round's slow push-in, scale 1.00 to 1.04
-// Smoothstep on xfade's progress P (1 to 0), so a crossfade starts and ends gently.
-const EASED = "xfade=transition=custom:expr='A*(P*P*(3-2*P))+B*(1-P*P*(3-2*P))'";
-// Ten answers per take, [right, conf]; a take films the leading ones and plays the rest off camera. Both end
-// Hot-headed (7 of 10 right at 81 to 82% sure), the 100% miss giving the roast line.
-const SQUARE_PLAN = [[1, 80], [0, 100], [1, 90], [1, 80], [0, 70], [1, 80], [1, 80], [0, 80], [1, 80], [1, 80]];
-const VERTICAL_PLAN = [[0, 100], [1, 80], [0, 70], [1, 80], [1, 80], [0, 80], [1, 80], [1, 80], [1, 80], [1, 80]];
-// Chrome's JPEG shots are full-range BT.601; the videos are limited-range BT.709, tagged so.
+const DISSOLVE = 9; // frames: every cut is a 0.3 s dissolve, the outgoing shot pushing in 4% (design/demo.html)
+// The edit, shared by both cuts, in frames: the hook until 36; the game from 36 (the wrong option tapped at 117, 100%
+// tapped at 177, the reveal at 185); the end screen from 296; the end card from 516 to the end at 600 (20 s).
+const CUT = { hookEnd: 36, a: 36, tapA: 117, tap100: 177, reveal: 185, b: 296, end: 516, total: 600 };
+const WORDS = [2, 5, 8, 11, 14, 17, 20, 25, 28]; // "You're not as smart as you think." word by word, then "Prove it."
+const STAMP_S = 0.26; // the BLUFF stamp lands this long after the reveal (styles.css: a 0.15 s delay, then the overshoot)
+const CAPTIONS = [
+  { html: 'Pick one.', from: 46, to: CUT.tap100 },
+  { html: '100% sure. <b>100% wrong.</b>', from: CUT.reveal + Math.round(STAMP_S * FPS), to: CUT.b },
+  { html: 'And yes, <b>it roasts you.</b>', from: CUT.b + 15, to: CUT.total },
+];
+// Ten answers, [right, conf]: the leading 100% miss on camera, the rest off camera, ending Hot-headed (7 of 10 right at
+// 81% sure) with the roast line from that miss.
+const PLAN = [[0, 100], [1, 80], [0, 70], [1, 80], [1, 80], [0, 80], [1, 80], [1, 80], [1, 80], [1, 80]];
+const GAME_SCALE = 2.16; // the tall cut shows the 375x667 game at this scale, so the take is shot at it
+// Chrome's shots are full-range BT.601 (JPEG) or RGB (PNG); the videos are limited-range BT.709, tagged so.
 const TO_709 = 'scale=out_color_matrix=bt709:out_range=tv,setsar=1,format=yuv420p';
 const TAGS_709 = ['-colorspace', 'bt709', '-color_primaries', 'bt709', '-color_trc', 'bt709', '-color_range', 'tv'];
+const pad5 = (k) => String(k).padStart(5, '0');
 
 function ffmpeg(...args) {
   const r = spawnSync(FFMPEG, ['-y', '-loglevel', 'error', ...args.map(String)], { stdio: 'inherit' });
@@ -316,19 +321,6 @@ const shoot = async (cdp, file, format = 'jpeg') => {
   const { data } = await cdp.send('Page.captureScreenshot', format === 'png' ? { format } : { format, quality: 92, optimizeForSpeed: true });
   writeFileSync(file, Buffer.from(data, 'base64'));
 };
-
-// The intro at w x h, one PNG per frame from 0 to INTRO_S, each seeked to its exact time; returns the files.
-async function introFrames(cdp, dir, w, h) {
-  mkdirSync(dir, { recursive: true });
-  await open(cdp, `file://${WEB}design/intro.html?w=${w}&h=${h}`, { width: w, height: h, mobile: false, motion: 'no-preference', waitReady: false });
-  const files = [];
-  for (let i = 0; i < Math.round(INTRO_S * FPS); i += 1) {
-    await evaluate(cdp, `seek(${(i * 1000) / FPS})`);
-    files.push(join(dir, `i${String(i).padStart(4, '0')}.png`));
-    await shoot(cdp, files.at(-1), 'png');
-  }
-  return files;
-}
 
 // Installed before the page's scripts: performance.now, requestAnimationFrame and setTimeout only move on __tick(ms),
 // and so does every CSS and scripted animation (paused, then set to the time since it began). A frame shot after each
@@ -355,30 +347,6 @@ const VIRTUAL_CLOCK = `(() => {
   };
 })();`;
 
-// In the page: no nav, the round `top` px down, and in that clear band the captions (800 weight, ink, fading in and
-// out); __push(s) scales the page about the middle of the screen.
-const stageSetup = (top, px) => `(() => {
-  document.querySelector('.nav').style.display = 'none';
-  Object.assign(document.getElementById('app').style, { paddingTop: '${top}px', scrollMarginTop: '0' });
-  const band = document.createElement('div');
-  Object.assign(band.style, { position: 'fixed', inset: '0 0 auto', height: '${top}px', display: 'grid', placeItems: 'center', pointerEvents: 'none', zIndex: '60' });
-  document.documentElement.append(band);
-  const ease = { duration: 450, easing: 'cubic-bezier(0.22, 1, 0.36, 1)', fill: 'both' };
-  window.__caption = (text) => {
-    for (const old of band.querySelectorAll('p:not(.out)')) { old.classList.add('out'); old.animate([{ opacity: 1 }, { opacity: 0 }], ease); }
-    if (!text) return true;
-    const p = document.createElement('p');
-    p.textContent = text;
-    Object.assign(p.style, { gridArea: '1 / 1', margin: '0', padding: '0 ${Math.round(px * 0.6)}px', font: '800 ${px}px/1.12 var(--font)',
-      letterSpacing: '-0.02em', color: 'var(--text)', textAlign: 'center', textWrap: 'balance' });
-    band.append(p);
-    p.animate([{ opacity: 0, transform: 'translateY(6px)' }, { opacity: 1, transform: 'none' }], { ...ease, delay: 150 });
-    return true;
-  };
-  window.__clear = () => { band.replaceChildren(); return true; };
-  window.__push = (s) => { const b = document.body; b.style.transformOrigin = innerWidth / 2 + 'px ' + (scrollY + innerHeight / 2) + 'px'; b.style.transform = 'scale(' + s + ')'; return true; };
-  return true; })()`;
-
 // A fresh player in this browser (sound off).
 async function freshPlayer(cdp, base, view) {
   await open(cdp, `${base}/support`, view);
@@ -386,16 +354,23 @@ async function freshPlayer(cdp, base, view) {
     localStorage.setItem('whosbluffing_sound', 'off'); true`);
 }
 
-// In the page: taps the right (or wrong) option of the question on screen.
-const pickExpr = (truth, right) => `(() => { const st = JSON.parse(localStorage.getItem('whosbluffing_round'));
-  const k = st.items.findIndex((i) => !st.answers[i.id]); const t = ${JSON.stringify(Object.fromEntries(truth))}[st.items[k].id];
-  document.querySelectorAll('button.pick')[${right ? 't' : '1 - t'}].click(); return true; })()`;
+// In the page: the right (or wrong) option of the question on screen; a tap on an element, returning its centre (the
+// confidence button is only pressed: render.js sends it on the reveal's frame).
+const optionExpr = (truth, right) => `document.querySelectorAll('button.pick')[(() => { const st = JSON.parse(localStorage.getItem('whosbluffing_round'));
+  const k = st.items.findIndex((i) => !st.answers[i.id]); const t = ${JSON.stringify(Object.fromEntries(truth))}[st.items[k].id]; return ${right ? 't' : '1 - t'}; })()]`;
 const confButton = (conf) => `document.querySelector('#conf:not([hidden]) [data-conf="${conf}"]')`;
+const tapExpr = (el, press = false) => `(() => { const el = ${el}; const r = el.getBoundingClientRect();
+  ${press ? "el.setAttribute('aria-pressed', 'true')" : 'el.click()'}; return { x: r.left + r.width / 2, y: r.top + r.height / 2 }; })()`;
+// The end screen's type card and roast line slide in (in place of the card's flip), for the cut to land on them.
+const SLIDE_IN = `(() => { for (const [sel, delay] of [['.type-card', 150], ['.roast', 450]]) { const el = document.querySelector(sel); if (!el) continue;
+  for (const a of el.getAnimations()) a.cancel();
+  el.animate([{ opacity: 0, transform: 'translateY(28px)' }, { opacity: 1, transform: 'none' }], { duration: 500, delay, easing: 'cubic-bezier(0.2, 0.9, 0.3, 1.1)', fill: 'both' }); }
+  return true; })()`;
 
-// A take of today's ranked round on the page's virtual clock (a fresh player, motion on). Segments of frames go to
-// <dir>/<name>/f00000.jpg...; each one will start under the crossfade from the one before, and the push-in runs over
-// the ROUND_S seconds they fill.
-async function clockTake(cdp, base, dir, truth, view, { top, px }) {
+// The game take: today's ranked round on the page's virtual clock (a fresh player, motion on, no nav), one exact frame
+// per 1/FPS. Segment a: the question, the two taps, the reveal; segment b: the end screen. Returns { a, b, taps }.
+async function gameTake(cdp, base, dir, truth) {
+  const view = { width: 375, height: 667, scale: GAME_SCALE };
   await freshPlayer(cdp, base, view);
   const { identifier } = await cdp.send('Page.addScriptToEvaluateOnNewDocument', { source: VIRTUAL_CLOCK });
   await open(cdp, `${base}/`, { ...view, motion: 'no-preference', waitReady: false });
@@ -405,153 +380,97 @@ async function clockTake(cdp, base, dir, truth, view, { top, px }) {
     for (let i = 0; i < 500; i += 1) { if (await js(expr)) return; await sleep(20); }
     throw new Error(`timeout: ${expr}`);
   };
-  await js(stageSetup(top, px));
-  await js('__tick(1500)');
+  await js(`document.querySelector('.nav').style.display = 'none', document.getElementById('app').style.scrollMarginTop = '0', __tick(1500), true`);
   await js(`document.getElementById('play').click(), true`);
   await until(`!!document.querySelector('button.pick')`);
-  let seg = null;
-  const take = {
-    js, until,
-    segment(name) {
-      seg = { dir: join(dir, name), n: 0, at: seg ? seg.at + seg.n / FPS - FADE_S : 0 };
-      mkdirSync(seg.dir, { recursive: true });
-      return seg;
-    },
-    async film(seconds) { // frames, one clock tick each
-      for (let i = 0; i < Math.round(seconds * FPS); i += 1) {
-        await js(`__tick(${1000 / FPS}), __push(${1 + (PUSH * (seg.at + seg.n / FPS)) / ROUND_S})`);
-        await shoot(cdp, join(seg.dir, `f${String(seg.n).padStart(5, '0')}.jpg`));
-        seg.n += 1;
-      }
-    },
-    async stake(conf, beatS) { // the button pressed for a beat, as under a finger, then the answer and its reveal
-      await js(`${confButton(conf)}.setAttribute('aria-pressed', 'true'), true`);
-      await take.film(beatS);
-      await js(`${confButton(conf)}.click(), true`);
-      await until(`!!document.querySelector('.reveal')`);
-    },
-    async next() { await js(`document.getElementById('next').click(), true`); await until(`!!document.querySelector('button.pick')`); },
-    async offCamera(plan) { // the remaining answers, then the end screen at the top of the screen
-      for (const [right, conf] of plan) {
-        await take.next();
-        await js(pickExpr(truth, right));
-        await js('__tick(1500)'); // a believable answer time (rt_ms) and settled motion
-        await js(`${confButton(conf)}.click(), true`);
-        await until(`!!document.querySelector('.reveal')`);
-      }
-      await js(`__clear(), __push(1), document.getElementById('next').click(), true`);
-      await until(`!!document.querySelector('.result-title')`);
-      await js(`document.getElementById('app').scrollIntoView({ behavior: 'instant' }), true`);
-    },
+  await js('__tick(600)');
+  const film = async (seg) => {
+    mkdirSync(seg.dir, { recursive: true });
+    for (let k = 0; k < seg.frames; k += 1) {
+      await seg.before?.(seg.start + k);
+      await js(`__tick(${1000 / FPS})`);
+      await shoot(cdp, join(seg.dir, `f${pad5(k)}.jpg`));
+    }
   };
-  return take;
-}
-
-// One cut: the intro, the round's segments and the end card, each joined to the next by an eased crossfade.
-function cut(out, { intro, segments, end, crop = '' }) {
-  const round = segments.reduce((s, g) => s + g.n / FPS, 0) - (segments.length - 1) * FADE_S;
-  if (Math.abs(round - ROUND_S) > 0.5 / FPS) throw new Error(`the round's segments fill ${round.toFixed(3)} s, not ${ROUND_S} s`);
-  const inputs = [['-framerate', FPS, '-i', join(intro, 'i%04d.png')], ...segments.map((g) => ['-framerate', FPS, '-i', join(g.dir, 'f%05d.jpg')]),
-    ['-loop', 1, '-framerate', FPS, '-t', END_S + FADE_S, '-i', end]];
-  const lens = [INTRO_S + FADE_S, ...segments.map((g) => g.n / FPS), END_S + FADE_S];
-  const graph = [`[0:v]${TO_709},tpad=stop_mode=clone:stop_duration=${FADE_S}[s0]`,
-    ...segments.map((g, k) => `[${k + 1}:v]${crop}${TO_709}[s${k + 1}]`), `[${lens.length - 1}:v]${TO_709}[s${lens.length - 1}]`];
-  let length = lens[0];
-  for (let k = 1; k < lens.length; k += 1) {
-    const offset = length - FADE_S;
-    graph.push(`[${k === 1 ? 's0' : `x${k - 1}`}][s${k}]${EASED}:duration=${FADE_S}:offset=${offset.toFixed(4)}[x${k}]`);
-    length = offset + lens[k];
+  const taps = [];
+  const a = { dir: join(dir, 'a'), start: CUT.a, frames: CUT.b + DISSOLVE - CUT.a };
+  await film({ ...a, async before(f) {
+    if (f === CUT.tapA) taps.push({ frame: f, ...(await js(tapExpr(optionExpr(truth, PLAN[0][0])))) });
+    if (f === CUT.tap100) taps.push({ frame: f, ...(await js(tapExpr(confButton(PLAN[0][1]), true))) });
+    if (f === CUT.reveal) { await js(`${confButton(PLAN[0][1])}.click(), true`); await until(`!!document.querySelector('.reveal')`); }
+  } });
+  for (const [right, conf] of PLAN.slice(1)) { // off camera
+    await js(`document.getElementById('next').click(), true`);
+    await until(`!!document.querySelector('button.pick')`);
+    await js(tapExpr(optionExpr(truth, right)));
+    await js('__tick(1500)'); // a believable answer time (rt_ms) and settled motion
+    await js(`${confButton(conf)}.click(), true`);
+    await until(`!!document.querySelector('.reveal')`);
   }
-  ffmpeg(...inputs.flat(), '-filter_complex', graph.join(';'), '-map', `[x${lens.length - 1}]`, '-an', '-c:v', 'libx264', '-preset', 'slow', '-crf', 20, '-pix_fmt', 'yuv420p', ...TAGS_709,
-    '-movflags', '+faststart', out);
+  await js(`document.getElementById('next').click(), true`);
+  await until(`!!document.querySelector('.result-title')`);
+  await js(`document.getElementById('app').scrollIntoView({ behavior: 'instant' }), true`);
+  await js(SLIDE_IN);
+  const b = { dir: join(dir, 'b'), start: CUT.b, frames: CUT.end + DISSOLVE - CUT.b };
+  await film(b);
+  return { a, b, taps };
 }
 
-// A still from an HTML string, width x height at 1x.
-async function still(cdp, file, html, width, height) {
-  const page = `${file}.html`;
-  writeFileSync(page, html);
-  await open(cdp, `file://${page}`, { width, height, mobile: false, waitReady: false });
-  await capture(cdp, file, width, height);
+// The picture: design/demo.html at w x h, one PNG per frame, with the game take in its phone.
+async function stageFrames(cdp, dir, w, h, timeline) {
+  mkdirSync(dir, { recursive: true });
+  await open(cdp, `file://${WEB}design/demo.html?w=${w}&h=${h}`, { width: w, height: h, mobile: false, motion: 'no-preference', waitReady: false });
+  await evaluate(cdp, `setup(${JSON.stringify(timeline)})`);
+  for (let i = 0; i < CUT.total; i += 1) {
+    for (let attempt = 1; ; attempt += 1) { // a screenshot that never returns is retried, not waited on
+      try {
+        await within(20000, (async () => { await evaluate(cdp, `show(${i})`); await shoot(cdp, join(dir, `s${pad5(i)}.png`), 'png'); })());
+        break;
+      } catch (e) {
+        if (attempt === 3) throw new Error(`frame ${i} of ${dir}: ${e.message}`);
+        console.log(`  frame ${i}: ${e.message}, again`);
+      }
+    }
+  }
+}
+const within = (ms, promise) => Promise.race([promise, new Promise((_, fail) => setTimeout(() => fail(new Error(`no answer in ${ms} ms`)), ms))]);
+
+// The sound (design/soundtrack.js): the bed (synthesised, or the --music file) brought to -20 LUFS, the effects on the
+// edit's frames, the bed ducked 4 dB under them; returns the mix and the second loudnorm pass that puts it at -16 LUFS.
+function soundtrack(dir, music) {
+  const s = (frame) => frame / FPS;
+  const total = s(CUT.total);
+  const bedWav = join(dir, 'bed.wav');
+  if (!music) writeFileSync(bedWav, wav(bed({ total, hookEnd: s(CUT.hookEnd), tapA: s(CUT.tapA), tap100: s(CUT.tap100), reveal: s(CUT.reveal), b: s(CUT.b), end: s(CUT.end) })));
+  const raw = spawnSync(FFMPEG, ['-loglevel', 'error', '-i', music ?? bedWav, '-t', String(total), '-af',
+    `loudnorm=I=-20:TP=-3,afade=t=out:st=${total - 1.2}:d=1.2`, '-ar', String(SR), '-ac', '2', '-f', 'f32le', '-'], { maxBuffer: 1 << 28 });
+  if (raw.status !== 0) throw new Error(`could not read the music: ${raw.stderr}`);
+  const sfx = effects({ total, words: WORDS.map(s), taps: [s(CUT.tapA), s(CUT.tap100)], reveal: s(CUT.reveal), stamp: s(CUT.reveal) + STAMP_S, endCard: s(CUT.end) + 0.1 });
+  const mixWav = join(dir, 'mix.wav');
+  writeFileSync(mixWav, wav(mix(fromPcm(raw.stdout, total), sfx, -4)));
+  const m = spawnSync(FFMPEG, ['-hide_banner', '-i', mixWav, '-af', 'loudnorm=I=-16:TP=-1.5:LRA=11:print_format=json', '-f', 'null', '-'], { encoding: 'utf8' });
+  const j = JSON.parse(m.stderr.match(/\{[^{}]*"input_i"[^{}]*\}/)[0]);
+  return { mixWav, af: `loudnorm=I=-16:TP=-1.5:LRA=11:measured_I=${j.input_i}:measured_TP=${j.input_tp}:measured_LRA=${j.input_lra}:measured_thresh=${j.input_thresh}:offset=${j.target_offset}:linear=true` };
 }
 
-// The end card: the lockup and the address on the paper background.
-const endCardPage = (w, h) => `<!doctype html><html lang="en" data-theme="light"><head><meta charset="utf-8">
-<link rel="stylesheet" href="file://${WEB}public/styles.css"><style>html { scrollbar-gutter: auto; } html, body { width: ${w}px; height: ${h}px; margin: 0; overflow: hidden; }
-body { display: flex; flex-direction: column; align-items: center; justify-content: center; background: var(--bg); }
-img { width: 960px; height: auto; } p { margin: 28px 0 0; font: 800 56px/1.2 var(--font); letter-spacing: -0.02em; color: var(--accent); }</style></head>
-<body><img src="file://${PRESS}/logo.png" alt=""><p>whosbluffing.com</p></body></html>`;
-
-// demo.mp4 (1080x1080, 25 s): the square intro, then a 600 px page at 1.8x playing question 1 right at 80% and
-// question 2 wrong at 100% under three captions, the end screen under a fourth, and the end card. demo.gif: the two
-// questions (from the end of the intro's crossfade to the start of the next one), 640 px, looping.
-async function squareDemo(cdp, base, truth, dir) {
-  console.log('square');
-  const intro = join(dir, 'square-intro');
-  await introFrames(cdp, intro, 1080, 1080);
-  const t = await clockTake(cdp, base, join(dir, 'square'), truth, { width: 600, height: 600, scale: 1.8 }, { top: 84, px: 30 });
-  const q1 = t.segment('q1');
-  await t.film(0.5);
-  await t.js(`__caption('Easy question. Pick one.')`); await t.film(1.4);
-  await t.js(pickExpr(truth, true)); await t.js(`__caption('How sure are you?')`); await t.film(1.4);
-  await t.stake(80, 0.3); await t.js(`__caption('')`); await t.film(2.7);
-  await t.next();
-  const q2 = t.segment('q2');
-  await t.film(1.7);
-  await t.js(pickExpr(truth, false)); await t.film(1.2);
-  await t.stake(100, 0.3); await t.js(`__caption('100% sure. 100% wrong.')`); await t.film(3.5);
-  await t.offCamera(SQUARE_PLAN.slice(2));
-  const end = t.segment('end');
-  await t.film(0.4);
-  await t.js(`__caption('And yes, it roasts you.')`); await t.film(4.8);
-  const card = join(dir, 'square-end.png');
-  await still(cdp, card, endCardPage(1080, 1080), 1080, 1080);
-  const mp4 = join(dir, 'demo.mp4');
-  cut(mp4, { intro, segments: [q1, q2, end], end: card });
-  const from = INTRO_S + FADE_S;
-  ffmpeg('-ss', from, '-t', (q2.at + q2.n / FPS - 2 * FADE_S).toFixed(3), '-i', mp4, '-vf',
-    'fps=15,scale=640:-1:flags=lanczos,split[a][b];[a]palettegen=stats_mode=diff[p];[b][p]paletteuse=dither=bayer:bayer_scale=5:diff_mode=rectangle',
-    '-loop', 0, join(dir, 'demo.gif'));
+function encode(out, frames, sound) {
+  ffmpeg('-framerate', FPS, '-i', join(frames, 's%05d.png'), '-i', sound.mixWav, '-filter_complex', `[0:v]${TO_709}[v];[1:a]${sound.af},aresample=${SR}[a]`,
+    '-map', '[v]', '-map', '[a]', '-c:v', 'libx264', '-preset', 'slow', '-crf', 20, '-pix_fmt', 'yuv420p', ...TAGS_709,
+    '-c:a', 'aac', '-b:a', '192k', '-ar', SR, '-ac', 2, '-movflags', '+faststart', out);
 }
 
-// demo-vertical.mp4 (1080x1920, 25 s): the intro, then a 375 px page at 2.88 answering question 1 wrong at 100% under
-// three captions, the end screen under a fourth, and the end card. demo-vertical-poster.png: the intro's closing
-// frame. design/screens/demo-vertical-frames.png: six frames of the cut, for review.
-async function verticalDemo(cdp, base, truth, dir) {
-  console.log('vertical');
-  const intro = join(dir, 'vertical-intro');
-  const frames = await introFrames(cdp, intro, 1080, 1920);
-  copyFileSync(frames.at(-1), join(dir, 'demo-vertical-poster.png'));
-  const t = await clockTake(cdp, base, join(dir, 'vertical'), truth, { width: 375, height: 667, scale: 2.88 }, { top: 140, px: 27 });
-  const q1 = t.segment('q1');
-  await t.film(0.5);
-  await t.js(`__caption('Easy question. Pick one.')`); await t.film(2.1);
-  await t.js(pickExpr(truth, false)); await t.js(`__caption('How sure are you?')`); await t.film(2.0);
-  await t.stake(100, 0.3); await t.js(`__caption('100% sure. 100% wrong.')`); await t.film(5.5);
-  await t.offCamera(VERTICAL_PLAN.slice(1));
-  const end = t.segment('end');
-  await t.film(0.5);
-  await t.js(`__caption('And yes, it roasts you.')`); await t.film(6.9);
-  const card = join(dir, 'vertical-end.png');
-  await still(cdp, card, endCardPage(1080, 1920), 1080, 1920);
-  const mp4 = join(dir, 'demo-vertical.mp4');
-  cut(mp4, { intro, segments: [q1, end], end: card, crop: 'crop=1080:1920:0:0,' });
-  const sheet = [1.6, 4.4, 9.0, 12.5, 18.5, 23.5].map((s, i) => {
-    const f = join(dir, `sheet${i}.png`);
-    ffmpeg('-ss', s, '-i', mp4, '-frames:v', 1, '-vf', 'scale=360:-1:flags=lanczos', f);
-    return f;
-  });
-  ffmpeg(...sheet.flatMap((f) => ['-i', f]), '-filter_complex', `hstack=inputs=${sheet.length}`, join(WEB, 'design/screens/demo-vertical-frames.png'));
+// A poster: the hook's closing frame at w x h.
+async function hookPoster(cdp, file, w, h) {
+  await open(cdp, `file://${WEB}design/demo.html?w=${w}&h=${h}`, { width: w, height: h, mobile: false, motion: 'no-preference', waitReady: false });
+  await evaluate(cdp, `setup(${JSON.stringify({ hookEnd: CUT.total, endStart: CUT.total, words: WORDS })})`);
+  await evaluate(cdp, `show(${CUT.hookEnd})`);
+  await capture(cdp, file, w, h);
 }
 
-// demo-poster.png (1200x675): the intro's closing frame at that size.
-async function demoPoster(cdp, dir) {
-  console.log('poster');
-  await open(cdp, `file://${WEB}design/intro.html?w=1200&h=675`, { width: 1200, height: 675, mobile: false, motion: 'no-preference', waitReady: false });
-  await evaluate(cdp, `seek(${INTRO_S * 1000})`);
-  await capture(cdp, join(dir, 'demo-poster.png'), 1200, 675);
-}
-
-async function demo(cdp, base, only) {
+// demo-vertical.mp4 (1080x1920) and demo.mp4 (1080x1080): the same 20 s edit and sound, the game in a phone over navy
+// (design/demo.html). demo.gif: the square cut's opening 12 s, 640 px, silent. The posters: the hook's closing frame.
+// design/screens/demo-vertical-frames.png: six frames of the tall cut, for review. part: vertical | square (one cut).
+async function demo(cdp, base, part, music) {
   const ranked = await fetch(`${base}/api/round?mode=ranked`).then((r) => r.json());
   const all = truthOf();
   const truth = new Map(ranked.items.map((i) => [i.id, all.get(i.id)]));
@@ -560,9 +479,32 @@ async function demo(cdp, base, only) {
     await playRoundApi(base, ranked, `demoApi${Date.now().toString(36)}${i}`.padEnd(22, 'x'), pattern, confs); // for the rank tile
   }
   const dir = mkdtempSync(join(tmpdir(), 'whosbluffing-demo-'));
-  if (!only || only === 'square') await squareDemo(cdp, base, truth, dir);
-  if (!only || only === 'poster') await demoPoster(cdp, dir);
-  if (!only || only === 'vertical') await verticalDemo(cdp, base, truth, dir);
+  console.log('game take');
+  const take = await gameTake(cdp, base, join(dir, 'game'), truth);
+  const timeline = { hookEnd: CUT.hookEnd, endStart: CUT.end, words: WORDS, a: take.a, b: take.b, tapA: CUT.tapA, taps: take.taps, captions: CAPTIONS };
+  console.log('sound');
+  const sound = soundtrack(dir, music);
+  for (const [name, w, h] of [['demo-vertical', 1080, 1920], ['demo', 1080, 1080]]) {
+    if (part && part !== (h > w ? 'vertical' : 'square')) continue;
+    console.log(name);
+    await stageFrames(cdp, join(dir, name), w, h, timeline);
+    encode(join(dir, `${name}.mp4`), join(dir, name), sound);
+  }
+  if (existsSync(join(dir, 'demo.mp4'))) {
+    ffmpeg('-t', 12, '-i', join(dir, 'demo.mp4'), '-vf',
+      'fps=15,scale=640:-1:flags=lanczos,split[a][b];[a]palettegen=stats_mode=diff[p];[b][p]paletteuse=dither=bayer:bayer_scale=5:diff_mode=rectangle',
+      '-loop', 0, join(dir, 'demo.gif'));
+  }
+  if (existsSync(join(dir, 'demo-vertical.mp4'))) {
+    const sheet = [1.1, 2.5, 3.97, 6.7, 11, 18.6].map((t, i) => {
+      const f = join(dir, `sheet${i}.png`);
+      ffmpeg('-ss', t, '-i', join(dir, 'demo-vertical.mp4'), '-frames:v', 1, '-vf', 'scale=360:-1:flags=lanczos', f);
+      return f;
+    });
+    ffmpeg(...sheet.flatMap((f) => ['-i', f]), '-filter_complex', `hstack=inputs=${sheet.length}`, join(WEB, 'design/screens/demo-vertical-frames.png'));
+  }
+  await hookPoster(cdp, join(dir, 'demo-poster.png'), 1200, 675);
+  await hookPoster(cdp, join(dir, 'demo-vertical-poster.png'), 1080, 1920);
   // Copied in at the end: a write under public/ makes `wrangler pages dev` reload, which would break a take.
   for (const f of ['demo.mp4', 'demo.gif', 'demo-poster.png', 'demo-vertical.mp4', 'demo-vertical-poster.png']) {
     if (existsSync(join(dir, f))) { copyFileSync(join(dir, f), join(PRESS, f)); console.log(`wrote web/public/press/${f}`); }
@@ -570,7 +512,9 @@ async function demo(cdp, base, only) {
   rmSync(dir, { recursive: true, force: true });
 }
 
-const [mode = 'assets', base = 'http://127.0.0.1:8788', part] = process.argv.slice(2);
+const args = process.argv.slice(2);
+const music = args.includes('--music') ? args.splice(args.indexOf('--music'), 2)[1] : undefined;
+const [mode = 'assets', base = 'http://127.0.0.1:8788', part] = args;
 const cdp = await launch();
 let failed = 0;
 try {
@@ -579,7 +523,7 @@ try {
   else if (mode === 'checks') failed = await checks(cdp, base);
   else if (mode === 'rounds') await roundScreens(cdp, base);
   else if (mode === 'results') await resultScreens(cdp, base);
-  else if (mode === 'demo') await demo(cdp, base, part);
+  else if (mode === 'demo') await demo(cdp, base, part, music);
   else throw new Error(`unknown mode ${mode} (assets | screens | checks | rounds | results | demo)`);
 } finally {
   cdp.close();
