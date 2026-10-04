@@ -2,8 +2,8 @@ import { test } from 'node:test';
 import assert from 'node:assert/strict';
 import { COMMANDS } from '../src/commands.js';
 import {
-  APP_ID, CHANNEL, GUILD, MANAGER, addAnswer, channelOfPost, channelPosts, commandPayload, install, makeEnv, mockFetch,
-  originalEdits, send, signedRequest, today,
+  APP_ID, CHANNEL, GUILD, MANAGER, addAnswer, channelOfPost, channelPosts, commandPayload, freeze, install, makeEnv, mockFetch,
+  originalEdits, revealAt, send, signedRequest, stampAt, today,
 } from './helpers.js';
 
 const C2 = '660000000000000002';
@@ -32,11 +32,17 @@ test('one guild-only /bluff command with the brief\'s subcommands', () => {
   assert.deepEqual([cmd.name, cmd.integration_types, cmd.contexts], ['bluff', [0], [0]]);
   assert.deepEqual(cmd.options.map((o) => o.name), ['question', 'play', 'stats', 'setup', 'reveal', 'help', 'invite']);
   const setup = cmd.options.find((o) => o.name === 'setup');
-  assert.deepEqual(setup.options.map((o) => [o.name, o.type, o.required ?? false]), [['channel', 7, false], ['hour', 4, false], ['roast', 3, false]]);
+  assert.deepEqual(setup.options.map((o) => [o.name, o.type, o.required ?? false]),
+    [['channel', 7, false], ['hour', 4, false], ['reveal', 4, false], ['roast', 3, false]]);
+  // Discord enforces the range. 23 at most keeps a reveal inside the API's answer window (the question's day or the next).
+  const reveal = setup.options.find((o) => o.name === 'reveal');
+  assert.deepEqual([reveal.min_value, reveal.max_value], [2, 23]);
   for (const o of [cmd, ...cmd.options, ...setup.options]) assert.ok(o.description.length <= 100, o.name);
 });
 
-test('setup: Manage Server only; sets channel, hour and roast; a new channel gets a hello; missing options keep their value', async () => {
+test('setup: Manage Server only; sets channel, hour, reveal and roast; a new channel gets a hello; missing options keep their value', async (t) => {
+  freeze(t, '2026-10-06T10:30:00Z');
+  const nine = stampAt('2026-10-06T09:00:00Z'); // the hour, shown in each reader's own time zone
   const env = makeEnv();
   let calls = mockFetch();
   const denied = await setupAs(env, [], '0');
@@ -47,31 +53,51 @@ test('setup: Manage Server only; sets channel, hour and roast; a new channel get
   assert.deepEqual(await res.json(), { type: 5, data: { flags: 64 } });
   const [hello] = channelPosts(calls);
   assert.equal(channelOfPost(hello), C2);
-  assert.equal(hello.body.content, "Who's Bluffing will post a question here every day at 09:00 UTC. Tap A or B, then say how sure you are.");
+  assert.equal(hello.body.content, `Who's Bluffing will post a question here every day at ${nine}. Tap A or B, then say how sure you are.`);
+  // A new server: the reveal comes 20 hours after the post.
   assert.equal(lastReply(calls),
-    `Done. Who's Bluffing posts a question in <#${C2}> every day at 09:00 UTC and reveals the answer 8 hours later. Roast mode is on: the reveal names the biggest bluffer.`);
+    `Done. Who's Bluffing posts a question in <#${C2}> every day at ${nine} (09:00 UTC) and reveals the answer 20 hours later. Roast mode is on: the reveal names the biggest bluffer.`);
   const row = () => env.DB.rows('SELECT channel_id, post_hour_utc, reveal_delay_h, roast FROM installs')[0];
-  assert.deepEqual(row(), { channel_id: C2, post_hour_utc: 9, reveal_delay_h: 8, roast: 1 });
+  assert.deepEqual(row(), { channel_id: C2, post_hour_utc: 9, reveal_delay_h: 20, roast: 1 });
 
   await setupAs(env, [{ name: 'roast', type: 3, value: 'off' }]);
   assert.equal(channelPosts(calls).length, 1); // same channel: no second hello
-  assert.deepEqual(row(), { channel_id: C2, post_hour_utc: 9, reveal_delay_h: 8, roast: 0 });
+  assert.deepEqual(row(), { channel_id: C2, post_hour_utc: 9, reveal_delay_h: 20, roast: 0 });
   assert.match(lastReply(calls), /Roast mode is off: the bluffer stays anonymous\.$/);
+
+  await setupAs(env, [{ name: 'reveal', type: 4, value: 12 }]);
+  assert.deepEqual(row(), { channel_id: C2, post_hour_utc: 9, reveal_delay_h: 12, roast: 0 });
+  assert.match(lastReply(calls), /\(09:00 UTC\) and reveals the answer 12 hours later\./);
 
   // A channel Who's Bluffing cannot post in is refused and nothing changes.
   calls = mockFetch({ discord: (c) => (c.method === 'POST' ? { status: 403, body: { code: 50013 } } : undefined) });
   await setupAs(env, [{ name: 'channel', type: 7, value: C3 }]);
   assert.match(lastReply(calls), /^I can't post in that channel\./);
-  assert.deepEqual(row(), { channel_id: C2, post_hour_utc: 9, reveal_delay_h: 8, roast: 0 });
+  assert.deepEqual(row(), { channel_id: C2, post_hour_utc: 9, reveal_delay_h: 12, roast: 0 });
 });
 
-test('setup with no options in a fresh server picks the current channel and the defaults (14:00 UTC, roast off)', async () => {
+test('a server stored before the 20-hour default keeps its 8-hour reveal through setup; reveal changes it', async (t) => {
+  freeze(t, '2026-10-06T10:30:00Z');
+  const env = makeEnv();
+  await install(env, GUILD, { channel: CHANNEL });
+  const calls = mockFetch();
+  await setupAs(env, [{ name: 'hour', type: 4, value: 20 }, { name: 'roast', type: 3, value: 'on' }]);
+  assert.equal(channelPosts(calls).length, 0); // same channel: no hello
+  assert.equal(lastReply(calls),
+    `Done. Who's Bluffing posts a question in <#${CHANNEL}> every day at ${stampAt('2026-10-06T20:00:00Z')} (20:00 UTC) and reveals the answer 8 hours later. Roast mode is on: the reveal names the biggest bluffer.`);
+  assert.deepEqual(env.DB.rows('SELECT post_hour_utc, reveal_delay_h, roast FROM installs'), [{ post_hour_utc: 20, reveal_delay_h: 8, roast: 1 }]);
+  await setupAs(env, [{ name: 'reveal', type: 4, value: 2 }]);
+  assert.deepEqual(env.DB.rows('SELECT post_hour_utc, reveal_delay_h, roast FROM installs'), [{ post_hour_utc: 20, reveal_delay_h: 2, roast: 1 }]);
+  assert.match(lastReply(calls), /reveals the answer 2 hours later/);
+});
+
+test('setup with no options in a fresh server picks the current channel and the defaults (14:00 UTC, reveal 20 h, roast off)', async () => {
   const env = makeEnv();
   const calls = mockFetch();
   await setupAs(env, []);
   assert.equal(channelOfPost(channelPosts(calls)[0]), CHANNEL);
-  assert.deepEqual(env.DB.rows('SELECT guild_id, channel_id, post_hour_utc, roast FROM installs'), [
-    { guild_id: GUILD, channel_id: CHANNEL, post_hour_utc: 14, roast: 0 },
+  assert.deepEqual(env.DB.rows('SELECT guild_id, channel_id, post_hour_utc, reveal_delay_h, roast FROM installs'), [
+    { guild_id: GUILD, channel_id: CHANNEL, post_hour_utc: 14, reveal_delay_h: 20, roast: 0 },
   ]);
 });
 
@@ -86,9 +112,11 @@ test("/bluff question posts today's question here with the bot token, once; late
   assert.match(post.body.content, /^\*\*Who's Bluffing\?\*\* · Which is longer: the Nile or the Danube\?\n/);
   const [row] = env.DB.rows('SELECT date, channel_id, message_id, reveal_at, revealed FROM posts');
   assert.deepEqual({ ...row, reveal_at: undefined }, { date: today(), channel_id: CHANNEL, message_id: '9001', reveal_at: undefined, revealed: 0 });
+  // A new server's reveal: the hourly tick at or after post time + 20 hours.
   const hours = (Date.parse(row.reveal_at) - Date.now()) / 3_600_000;
-  assert.ok(hours > 7 && hours <= 9 && row.reveal_at.endsWith(':00:00.000Z'), row.reveal_at);
-  assert.equal(lastReply(calls), `Posted. The answer comes out at ${row.reveal_at.slice(11, 16)} UTC.`);
+  assert.ok(hours > 19 && hours <= 21 && row.reveal_at.endsWith(':00:00.000Z'), row.reveal_at);
+  assert.equal(lastReply(calls), `Posted. The answer comes out at ${revealAt(row.reveal_at)}.`);
+  assert.match(lastReply(calls), /^Posted\. The answer comes out at <t:\d+:t> \(<t:\d+:R>\)\.$/);
 
   await run(env, 'question', [], { channel: C2 });
   assert.equal(channelPosts(calls).length, 1);
@@ -140,6 +168,34 @@ test("help and invite answer at once; a DM is told Who's Bluffing lives in serve
   const dm = await (await send(env, signedRequest({ ...commandPayload('help'), guild_id: undefined, member: undefined, user: { id: '1' } }))).json();
   assert.equal(dm.data.content, "Who's Bluffing works inside a server. Use /bluff invite to add it to one.");
   assert.equal(calls.length, 0);
+});
+
+test("help gives this server's hour in each reader's own time and its own reveal delay", async (t) => {
+  freeze(t, '2026-10-06T10:30:00Z');
+  const help = async (env) => (await (await run(env, 'help')).json()).data.content.split('\n');
+  const commands = [
+    'Points reward honest confidence: 50% scores 0; 100% scores +100 if right and -300 if wrong.',
+    '',
+    "`/bluff question` post today's question in this channel now",
+    '`/bluff play` play a private 10-question round',
+    "`/bluff stats` this server's leaderboard for the last 30 days",
+    "`/bluff invite` get a link to add Who's Bluffing to another server",
+    '`/bluff setup` set the daily channel, hour (UTC), reveal (hours until the answer) and roast mode (Manage Server)',
+    "`/bluff reveal` reveal today's answer now (Manage Server)",
+  ];
+  mockFetch();
+  // Before any setup: no hour to show yet, and a new server's reveal delay.
+  assert.deepEqual(await help(makeEnv()), [
+    "**Who's Bluffing** posts one question a day. Tap A or B, then say how sure you are. The answer and this server's top 5 come out 20 hours later. Every Monday brings last week's recap.",
+    ...commands,
+  ]);
+  const env = makeEnv();
+  await install(env, GUILD, { channel: CHANNEL, hour: 14 });
+  assert.deepEqual(await help(env), [
+    `**Who's Bluffing** posts one question a day, here in <#${CHANNEL}> at <t:1791295200:t>. Tap A or B, then say how sure you are. The answer and this server's top 5 come out 8 hours later. Every Monday brings last week's recap.`,
+    ...commands,
+  ]);
+  assert.equal(stampAt('2026-10-06T14:00:00Z'), '<t:1791295200:t>');
 });
 
 test('register-commands.mjs PUTs COMMANDS to the global commands endpoint with the bot token', async () => {

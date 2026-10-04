@@ -9,22 +9,14 @@ export const TOO_LATE = 'Too late: answers for this question are closed.';
 export const NOTHING_TO_REVEAL = "There is no question waiting for its answer. Type /bluff question to post today's.";
 export const REVEALED = 'Revealed. The answer is on the question post.';
 export const PLAY_ENDED = 'This round has ended. Type /bluff play for a new one.';
-export const HELP = [
-  "**Who's Bluffing** posts one question a day. Tap A or B, then say how sure you are. The answer and this server's top 5 come out 8 hours later. Every Monday brings last week's recap.",
-  'Points reward honest confidence: 50% scores 0; 100% scores +100 if right and -300 if wrong.',
-  '',
-  "`/bluff question` post today's question in this channel now",
-  '`/bluff play` play a private 10-question round',
-  "`/bluff stats` this server's leaderboard for the last 30 days",
-  "`/bluff invite` get a link to add Who's Bluffing to another server",
-  '`/bluff setup` set the daily channel, hour (UTC) and roast mode (Manage Server)',
-  "`/bluff reveal` reveal today's answer now (Manage Server)",
-].join('\n');
 
 export const BLUFF_CONF = 80; // a wrong answer at this confidence or more counts as a bluff
 export const NO_PINGS = { parse: [] }; // sent with every message: names render, nobody is pinged
+// Hours from the post to the reveal for servers added from now on. Rows stored earlier keep the 8 they were given.
+export const NEW_REVEAL_DELAY_H = 20;
 
 const DAY_MS = 86_400_000;
+const HOUR_MS = 3_600_000;
 export const isoDate = (d) => d.toISOString().slice(0, 10);
 export const addDays = (date, n) => isoDate(new Date(Date.parse(date) + n * DAY_MS));
 
@@ -49,8 +41,13 @@ const plural = (n, word) => `${n} ${word}${n === 1 ? '' : 's'}`;
 const signed = (n) => (n > 0 ? `+${n}` : String(n));
 const pct = (k, n) => Math.round((100 * k) / n);
 const label = (s) => (s.length > MAX_LABEL ? `${s.slice(0, MAX_LABEL - 1)}…` : s);
-const utc = (iso) => `${iso.slice(11, 16)} UTC`;
 const hourText = (h) => `${String(h).padStart(2, '0')}:00 UTC`;
+// Discord timestamps render in each reader's own time zone: style t is the clock time, R is "in 3 hours".
+const stamp = (ms, style) => `<t:${Math.floor(ms / 1000)}:${style}>`;
+const clock = (ms) => stamp(ms, 't');
+const revealText = (iso) => `${stamp(Date.parse(iso), 't')} (${stamp(Date.parse(iso), 'R')})`;
+// Today's `hour` o'clock UTC: a real date, so each reader's clock shows the zone's current offset (DST included).
+const todayAt = (hour, now) => Math.floor(now / DAY_MS) * DAY_MS + hour * HOUR_MS;
 const nameOf = (names, anonId) => esc(names.get(anonId) ?? 'a member');
 const button = (customId, text, style = 2) => ({ type: 2, style, custom_id: customId, label: label(text) });
 const row = (...components) => ({ type: 1, components });
@@ -79,7 +76,7 @@ function side(q, truth, i) {
 // The day's question in the channel. Button ids carry what an answer needs: date, round, item, choice.
 export function questionPost(q, date, revealAt) {
   return {
-    content: `**Who's Bluffing?** · ${esc(q.prompt)}\n-# Tap A or B, then say how sure you are. Answer at ${utc(revealAt)}.`,
+    content: `**Who's Bluffing?** · ${esc(q.prompt)}\n-# Tap A or B, then say how sure you are. Answer at ${revealText(revealAt)}.`,
     components: abButtons(q, (choice) => `q:${date}:${q.round_id}:${q.item_id}:${choice}`),
     allowed_mentions: NO_PINGS,
   };
@@ -92,7 +89,7 @@ export const confidencePicker = (date, roundId, itemId, choice) => ({
 
 // `already`: the API no longer takes changes for that day (409), so the earlier answer stands.
 export const lockedIn = (choice, conf, revealAt, already = false) => ({
-  content: `${already ? 'Already locked in' : 'Locked in'}: ${LETTERS[choice]} at ${conf}%. Reveal at ${utc(revealAt)}.`,
+  content: `${already ? 'Already locked in' : 'Locked in'}: ${LETTERS[choice]} at ${conf}%. Reveal at ${revealText(revealAt)}.`,
   components: [],
 });
 
@@ -121,7 +118,7 @@ export function revealMessage({ q, r, top, names, bluff, roast }) {
   return { content: lines.join('\n'), components: [], allowed_mentions: NO_PINGS };
 }
 
-export const posted = (revealAt) => `Posted. The answer comes out at ${utc(revealAt)}.`;
+export const posted = (revealAt) => `Posted. The answer comes out at ${revealText(revealAt)}.`;
 
 export const alreadyPosted = (guildId, post) =>
   post.message_id
@@ -137,14 +134,35 @@ export const WELCOME = {
   allowed_mentions: NO_PINGS,
 };
 
-export const channelHello = (hour) => ({
-  content: `Who's Bluffing will post a question here every day at ${hourText(hour)}. Tap A or B, then say how sure you are.`,
+export const channelHello = (hour, now) => ({
+  content: `Who's Bluffing will post a question here every day at ${clock(todayAt(hour, now))}. Tap A or B, then say how sure you are.`,
   allowed_mentions: NO_PINGS,
 });
 
-export const setupDone = (s) =>
-  `Done. Who's Bluffing posts a question in <#${s.channel_id}> every day at ${hourText(s.post_hour_utc)} and reveals the answer ` +
-  `${plural(s.reveal_delay_h, 'hour')} later. Roast mode is ${s.roast ? 'on: the reveal names the biggest bluffer' : 'off: the bluffer stays anonymous'}.`;
+// The admin set the hour in UTC, so the UTC hour follows the local one.
+export const setupDone = (s, now) =>
+  `Done. Who's Bluffing posts a question in <#${s.channel_id}> every day at ${clock(todayAt(s.post_hour_utc, now))} ` +
+  `(${hourText(s.post_hour_utc)}) and reveals the answer ${plural(s.reveal_delay_h, 'hour')} later. ` +
+  `Roast mode is ${s.roast ? 'on: the reveal names the biggest bluffer' : 'off: the bluffer stays anonymous'}.`;
+
+// `install` = this server's row, or null before it used any command: its reveal delay and, once it has a channel,
+// where and when the question goes up.
+export function help(install, now) {
+  const where = install?.channel_id ? `, here in <#${install.channel_id}> at ${clock(todayAt(install.post_hour_utc, now))}` : '';
+  const delay = install?.reveal_delay_h ?? NEW_REVEAL_DELAY_H;
+  return [
+    `**Who's Bluffing** posts one question a day${where}. Tap A or B, then say how sure you are. ` +
+      `The answer and this server's top 5 come out ${plural(delay, 'hour')} later. Every Monday brings last week's recap.`,
+    'Points reward honest confidence: 50% scores 0; 100% scores +100 if right and -300 if wrong.',
+    '',
+    "`/bluff question` post today's question in this channel now",
+    '`/bluff play` play a private 10-question round',
+    "`/bluff stats` this server's leaderboard for the last 30 days",
+    "`/bluff invite` get a link to add Who's Bluffing to another server",
+    '`/bluff setup` set the daily channel, hour (UTC), reveal (hours until the answer) and roast mode (Manage Server)',
+    "`/bluff reveal` reveal today's answer now (Manage Server)",
+  ].join('\n');
+}
 
 export const invite = (url) => `Add Who's Bluffing to a server: ${url}`;
 

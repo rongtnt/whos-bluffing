@@ -2,8 +2,11 @@ import { test } from 'node:test';
 import assert from 'node:assert/strict';
 import {
   CHANNEL, DATE, GUILD, QUESTION, USER, addPost, anon, apiCalls, buttonPayload, community, followUps, install,
-  makeEnv, mockFetch, originalEdits, send, signedRequest, snowflake,
+  makeEnv, mockFetch, originalEdits, revealAt, send, signedRequest, snowflake,
 } from './helpers.js';
+
+// The post's reveal time (22:00 UTC) as Discord timestamps: each member sees their own clock time and "in N hours".
+const REVEAL = revealAt(`${DATE}T22:00:00Z`);
 
 const qId = (choice) => `q:${DATE}:${QUESTION.round_id}:${QUESTION.item_id}:${choice}`;
 const cId = (choice, conf) => `c:${DATE}:${QUESTION.round_id}:${QUESTION.item_id}:${choice}:${conf}`;
@@ -50,7 +53,8 @@ test('a confidence tap defers, sends the hashed answer with the bot key, stores 
 
   const [edit] = originalEdits(calls);
   assert.match(edit.path, /^\/api\/v10\/webhooks\/424242\/token-\d+\/messages\/@original$/);
-  assert.deepEqual(edit.body, { allowed_mentions: { parse: [] }, content: 'Locked in: B at 80%. Reveal at 22:00 UTC.', components: [] });
+  assert.deepEqual(edit.body, { allowed_mentions: { parse: [] }, content: `Locked in: B at 80%. Reveal at ${REVEAL}.`, components: [] });
+  assert.equal(REVEAL, '<t:1791324000:t> (<t:1791324000:R>)');
 
   assert.deepEqual(env.DB.rows('SELECT guild_id, anon_id, date, choice, conf, points, correct FROM answers'), [
     { guild_id: GUILD, anon_id: anon(GUILD, USER), date: DATE, choice: 1, conf: 80, points: null, correct: null },
@@ -69,7 +73,7 @@ test('changing your mind before the reveal sends revision: true and replaces the
   assert.equal(second.body.revision, true);
   assert.deepEqual([second.body.choice, second.body.conf], [0, 60]);
   assert.deepEqual(env.DB.rows('SELECT choice, conf, points, correct FROM answers'), [{ choice: 0, conf: 60, points: null, correct: null }]);
-  assert.equal(originalEdits(calls).at(-1).body.content, 'Locked in: A at 60%. Reveal at 22:00 UTC.');
+  assert.equal(originalEdits(calls).at(-1).body.content, `Locked in: A at 60%. Reveal at ${REVEAL}.`);
 });
 
 test('after the reveal a confidence tap is refused without calling the API', async () => {
@@ -92,7 +96,7 @@ test('409 locked from the API: the earlier answer stands ("Already locked in"); 
   calls = mockFetch({ api: { '/api/round/answer': locked } });
   await send(env, signedRequest(tapAfter(cId(0, 100), 1000)));
   assert.equal(apiCalls(calls, '/api/round/answer')[0].body.revision, true);
-  assert.equal(originalEdits(calls)[0].body.content, 'Already locked in: B at 80%. Reveal at 22:00 UTC.');
+  assert.equal(originalEdits(calls)[0].body.content, `Already locked in: B at 80%. Reveal at ${REVEAL}.`);
   assert.deepEqual(env.DB.rows('SELECT choice, conf FROM answers'), [{ choice: 1, conf: 80 }]);
 
   await send(env, signedRequest(buttonPayload(cId(0, 100), { user: '880000000000000002' })));

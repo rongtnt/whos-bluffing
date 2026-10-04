@@ -1,13 +1,15 @@
 import { test } from 'node:test';
 import assert from 'node:assert/strict';
 import {
-  BOT_KEY, DATE, QUESTION, SALT, anon, apiCalls, at, install, makeEnv, mockFetch, payloadBody, replies, send, sha256, signedRequest, tsAt,
+  BOT_KEY, DATE, QUESTION, SALT, anon, apiCalls, at, install, makeEnv, mockFetch, payloadBody, replies, revealToken, send, sha256,
+  signedRequest, tsAt,
 } from './helpers.js';
 
 const POST_URL = 'https://hooks.slack.com/actions/T1/1/post';
 const PICKER_URL = 'https://hooks.slack.com/actions/T1/2/picker';
 const VALUE = JSON.stringify({ r: QUESTION.round_id, i: QUESTION.item_id, d: DATE });
 const NOW = `${DATE}T15:00:00Z`;
+const REVEAL = revealToken(`${DATE}T22:00:00Z`, 'Oct 31');
 
 const tapAB = (choice, user = 'U1', value = VALUE) =>
   payloadBody({
@@ -83,7 +85,8 @@ test('confidence tap: contract payload to /api/round/answer, answer stored witho
   assert.equal(locked.url.href, PICKER_URL);
   assert.equal(locked.body.replace_original, true);
   assert.equal(locked.body.response_type, 'ephemeral');
-  assert.equal(locked.body.text, 'Locked in: B at 80%. Reveal at 22:00 UTC.');
+  // The reveal time is a Slack date token: each member sees it in their own time zone; the fallback is UTC.
+  assert.equal(locked.body.text, 'Locked in: B at 80%. Reveal: <!date^1793484000^{date_short_pretty} {time}|Oct 31 22:00 UTC>.');
   assert.equal(locked.body.blocks, undefined);
 
   // The API answers {locked, points_pending}: right or wrong and points wait for the reveal.
@@ -105,7 +108,7 @@ test('changing your mind before the reveal sends revision: true and the last ans
   const [, second] = apiCalls(calls, '/api/round/answer');
   assert.equal(second.body.revision, true);
   assert.deepEqual([second.body.choice, second.body.conf], [0, 90]);
-  assert.equal(replies(calls).at(-1).body.text, 'Locked in: A at 90%. Reveal at 22:00 UTC.');
+  assert.equal(replies(calls).at(-1).body.text, `Locked in: A at 90%. Reveal: ${REVEAL}.`);
   assert.deepEqual(answers(env).map((a) => [a.choice, a.conf, a.correct, a.points]), [[0, 90, null, null]]);
 });
 
@@ -121,7 +124,7 @@ test('the API refusing a revision (409 locked) shows "already locked in" and kee
   await answer(t, env, calls, 1, 80);
   refuse = true;
   const reply = await answer(t, env, calls, 0, 100);
-  assert.equal(reply.body.text, "You're already locked in: B at 80%. Reveal at 22:00 UTC.");
+  assert.equal(reply.body.text, `You're already locked in: B at 80%. Reveal: ${REVEAL}.`);
   assert.equal(reply.body.replace_original, true);
   assert.deepEqual(answers(env).map((a) => [a.choice, a.conf]), [[1, 80]]);
 });

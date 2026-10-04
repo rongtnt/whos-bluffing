@@ -24,17 +24,18 @@
       },
       {
         "name": "/bluff setup",
-        "does": "Sets where and when the daily question goes, and roast mode. Every option is optional: a missing one keeps its value. A new channel gets a short hello, which also checks that Who's Bluffing may post there.",
+        "does": "Sets where and when the daily question goes, how many hours later the answer is revealed, and roast mode. Every option is optional: a missing one keeps its value. A new channel gets a short hello, which also checks that Who's Bluffing may post there.",
         "options": [
           { "name": "channel", "does": "where the daily question goes (a text or announcement channel)" },
-          { "name": "hour", "does": "the posting hour in UTC, 0 to 23 (default 14); the answer is revealed 8 hours later" },
+          { "name": "hour", "does": "the posting hour in UTC, 0 to 23 (default 14); members see the post and reveal times in their own time zone" },
+          { "name": "reveal", "does": "hours from the post to the reveal, 2 to 23 (new servers start at 20)" },
           { "name": "roast", "does": "on or off (default off): on names the biggest bluffer in the reveal" }
         ],
         "who": "Manage Server"
       },
       {
         "name": "/bluff reveal",
-        "does": "Reveals today’s answer now instead of waiting for the reveal 8 hours after the post.",
+        "does": "Reveals today’s answer now instead of waiting for the scheduled reveal.",
         "options": [],
         "who": "Manage Server"
       },
@@ -89,18 +90,19 @@
         "who": "Any member"
       },
       {
-        "name": "/bluff setup #channel [hour] [roast on|off]",
-        "does": "Posts the question in #channel every day at that hour. Type # and pick the channel so Slack links it.",
+        "name": "/bluff setup #channel [hour] [roast on|off] [reveal N]",
+        "does": "Posts the question in #channel every day at that hour in your time zone, and reveals the answer N hours later. Type # and pick the channel so Slack links it. Everyone sees the times in their own time zone.",
         "options": [
           { "name": "#channel", "does": "where the daily question goes; for a private channel, run `/invite @whosbluffing` in it first" },
-          { "name": "hour", "does": "UTC, 0 to 23 (default 14); the answer is revealed 8 hours later" },
-          { "name": "roast on|off", "does": "on names the biggest bluffer at the reveal and shows negative points (off by default)" }
+          { "name": "hour", "does": "0 to 23 in your Slack time zone; add `utc` after it for UTC (left out: 14:00 UTC)" },
+          { "name": "roast on|off", "does": "on names the biggest bluffer at the reveal and shows negative points (off by default)" },
+          { "name": "reveal N", "does": "hours from the post to the reveal, 2 to 23 (default 8)" }
         ],
         "who": "Any member"
       },
       {
         "name": "/bluff setup roast on|off",
-        "does": "Changes roast mode only; the channel and the hour stay as they are.",
+        "does": "Changes roast mode only; the channel and the hour stay as they are. `/bluff setup reveal N` changes only the hours to the reveal.",
         "options": [],
         "who": "Any member"
       },
@@ -128,7 +130,7 @@
       },
       {
         "q": "The question didn’t post today",
-        "a": "The hour is in UTC. Who's Bluffing checks at the top of every hour and posts once a day, as soon as your hour has come; if you set it up after that hour, today’s question posts at the next full hour. Run `/bluff setup #channel HH` to check the channel and hour."
+        "a": "The hour you type is read in your Slack time zone (or in UTC with `utc` after it) and kept in UTC; the setup reply shows both. Who's Bluffing checks at the top of every hour and posts once a day, as soon as your hour has come; if you set it up after that hour, today’s question posts at the next full hour. Run `/bluff setup #channel HH` to check the channel and hour."
       },
       {
         "q": "The confidence buttons stopped working",

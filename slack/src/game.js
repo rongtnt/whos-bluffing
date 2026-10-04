@@ -10,7 +10,8 @@ export const NOTHING_TO_REVEAL = "There is no open question to reveal. Type /blu
 export const USAGE = [
   "*Who's Bluffing? commands*",
   "`/bluff` post today's question in this channel",
-  '`/bluff setup #channel [hour] [roast on|off]` post the question in #channel every day at that hour, in UTC (default 14)',
+  '`/bluff setup #channel [hour] [roast on|off] [reveal N]` post the question in #channel every day at that hour in your time zone ' +
+    '(14:00 UTC if left out; add utc after the hour for UTC) and reveal the answer N hours later (2 to 23, default 8)',
   '`/bluff setup roast on|off` roast on: the reveal names the biggest bluffer (off by default)',
   '`/bluff reveal` reveal the answer now',
   "`/bluff stats` this workspace's points for the last 30 days",
@@ -21,19 +22,37 @@ export const CONF = 'conf'; // action ids conf:50 … conf:100
 export const LETTERS = ['A', 'B'];
 export const CONFS = [50, 60, 70, 80, 90, 100];
 const CONF_LABELS = { 50: 'coin flip', 100: 'stake it all' };
-export const REVEAL_DELAY_H = 8;
+export const REVEAL_DELAY_H = 8; // when the workspace never set `reveal N`
+// `reveal N` bounds. 23 at most keeps every reveal inside the API's answer window (the question's day or the next).
+export const MIN_REVEAL_H = 2;
+export const MAX_REVEAL_H = 23;
 export const BLUFF_CONF = 80; // a bluff = a wrong answer at this confidence or more (reveal line and weekly recap)
 export const MIN_CALIBRATED_ANSWERS = 3; // answers in the week needed to be "most calibrated"
 
 const HOUR_MS = 3_600_000;
+const DAY_MS = 86_400_000;
+const DAY_S = 86_400;
 const BUTTON_TEXT_MAX = 75;
 
-// The reveal is due REVEAL_DELAY_H after the post hour, or after the post itself when it went up later, so a late
-// post still gets the full delay. Always on the hour, so the hourly cron meets it exactly.
-export function revealAt(date, postHour, postedMs) {
+// The reveal is due `delayH` hours (REVEAL_DELAY_H when null) after the post hour, or after the post itself when it
+// went up later, so a late post still gets the full delay. Always on the hour, so the hourly cron meets it exactly.
+export function revealAt(date, postHour, postedMs, delayH) {
   const scheduled = Date.parse(`${date}T00:00:00Z`) + postHour * HOUR_MS;
   const posted = Math.floor(postedMs / HOUR_MS) * HOUR_MS;
-  return Math.max(scheduled, posted) + REVEAL_DELAY_H * HOUR_MS;
+  return Math.max(scheduled, posted) + (delayH ?? REVEAL_DELAY_H) * HOUR_MS;
+}
+
+const mod = (n, m) => ((n % m) + m) % m;
+const pad = (n) => String(n).padStart(2, '0');
+
+// The UTC hour for `hour` o'clock at `tzOffset` seconds east of UTC (users.info's tz_offset). Zones a half or quarter
+// hour off round down to the full UTC hour, since the cron runs on the hour.
+export const toUtcHour = (hour, tzOffset) => Math.floor(mod(hour * 3600 - tzOffset, DAY_S) / 3600);
+
+// The member's own clock time (HH:MM) for the UTC hour `utcHour`.
+export function localClock(utcHour, tzOffset) {
+  const s = mod(utcHour * 3600 + tzOffset, DAY_S);
+  return `${pad(Math.floor(s / 3600))}:${pad(Math.floor((s % 3600) / 60))}`;
 }
 
 // Slack mrkdwn needs only these three escaped.
@@ -44,11 +63,19 @@ const section = (text) => ({ type: 'section', text: { type: 'mrkdwn', text } });
 const context = (text) => ({ type: 'context', elements: [{ type: 'mrkdwn', text }] });
 const button = (actionId, text, value) => ({ type: 'button', action_id: actionId, text: { type: 'plain_text', text: text.slice(0, BUTTON_TEXT_MAX) }, value });
 const nameOf = (names, anonId) => esc(names.get(anonId) ?? 'a teammate');
-const hour = (ms) => `${String(new Date(ms).getUTCHours()).padStart(2, '0')}:00 UTC`;
 const signed = (p) => (p > 0 ? `+${p}` : String(p));
 const percent = (part, whole) => Math.round((100 * part) / whole);
 const dayLabel = (iso) => new Date(`${iso}T00:00:00Z`).toLocaleDateString('en-US', { month: 'short', day: 'numeric', timeZone: 'UTC' });
 const option = (q, choice) => (choice === 0 ? q.a : q.b);
+
+// Slack date tokens render in each reader's own time zone; the UTC fallback shows where a client cannot render them.
+const slackDate = (ms, format, fallback) => `<!date^${Math.floor(ms / 1000)}^${format}|${fallback}>`;
+const utcClock = (ms) => new Date(ms).toISOString().slice(11, 16);
+const clock = (ms) => slackDate(ms, '{time}', `${utcClock(ms)} UTC`);
+// For the reveal, which is often on the next day: "today 10:00 PM", "tomorrow 4:00 AM".
+const when = (ms) => slackDate(ms, '{date_short_pretty} {time}', `${dayLabel(new Date(ms).toISOString().slice(0, 10))} ${utcClock(ms)} UTC`);
+// Today's `hour` o'clock UTC: a real date, so each reader's clock shows the zone's current offset (DST included).
+const todayAt = (hour, now) => Math.floor(now / DAY_MS) * DAY_MS + hour * HOUR_MS;
 
 // The API's prompt may or may not name the two options already.
 export function questionText(q) {
@@ -64,7 +91,7 @@ export function questionMessage(q, date, revealMs) {
     blocks: [
       section(`*Who's Bluffing?* · ${esc(questionText(q))}`),
       { type: 'actions', elements: [0, 1].map((c) => button(`${PICK}:${c}`, `${LETTERS[c]} · ${option(q, c)}`, value)) },
-      context(`Tap A or B, then say how sure you are. Nobody sees your answer before the reveal at ${hour(revealMs)}.`),
+      context(`Tap A or B, then say how sure you are. Nobody sees your answer before the reveal: ${when(revealMs)}.`),
     ],
   };
 }
@@ -82,15 +109,30 @@ export function pickerMessage(pick, label, existing) {
   };
 }
 
-export const lockedIn = (choice, conf, revealMs) => `Locked in: ${LETTERS[choice]} at ${conf}%. Reveal at ${hour(revealMs)}.`;
-export const alreadyLockedIn = (a, revealMs) => `You're already locked in: ${LETTERS[a.choice]} at ${a.conf}%. Reveal at ${hour(revealMs)}.`;
+export const lockedIn = (choice, conf, revealMs) => `Locked in: ${LETTERS[choice]} at ${conf}%. Reveal: ${when(revealMs)}.`;
+export const alreadyLockedIn = (a, revealMs) => `You're already locked in: ${LETTERS[a.choice]} at ${a.conf}%. Reveal: ${when(revealMs)}.`;
 
-export function setupDone({ channel_id: channel, post_hour_utc: postHour, roast }) {
+// `tzOffset`: the member's zone (seconds east of UTC) when the hour they typed was read in it, else null.
+// `noZone`: they typed an hour, but Slack did not say their zone, so it was read as UTC.
+export function setupDone(install, { tzOffset = null, noZone = false, now }) {
+  const { channel_id: channel, post_hour_utc: postHour, reveal_delay_h: delay, roast } = install;
+  const utc = `${pad(postHour)}:00 UTC`;
+  const at = tzOffset === null
+    ? `${utc} (${clock(todayAt(postHour, now))} your time)`
+    : `${localClock(postHour, tzOffset)} your time (${utc})`;
   const where = channel
-    ? `Who's Bluffing will post the daily question in <#${channel}> every day at ${hour(postHour * HOUR_MS)} and reveal the answer ${REVEAL_DELAY_H} hours later.`
+    ? `Who's Bluffing will post the daily question in <#${channel}> every day at ${at} and reveal the answer ` +
+      `${plural(delay ?? REVEAL_DELAY_H, 'hour')} later (change it with reveal N, ${MIN_REVEAL_H} to ${MAX_REVEAL_H}).`
     : 'Choose the channel with /bluff setup #channel.';
-  return `Done. ${where} Roast mode is ${roast ? 'on: the reveal names the biggest bluffer' : 'off'}.`;
+  const zone = noZone ? " I couldn't read your time zone from Slack, so the hour is in UTC." : '';
+  return `Done.${zone} ${where} Roast mode is ${roast ? 'on: the reveal names the biggest bluffer' : 'off'}.`;
 }
+
+// The command list, plus this workspace's schedule (in each reader's own time) once it has a channel.
+export const usage = (install, now) => (install?.channel_id
+  ? `${USAGE}\nThis workspace: a question in <#${install.channel_id}> every day at ${clock(todayAt(install.post_hour_utc, now))}, ` +
+    `the answer ${plural(install.reveal_delay_h ?? REVEAL_DELAY_H, 'hour')} later.`
+  : USAGE);
 
 const valueText = (v, unit) => {
   if (typeof v !== 'number') return esc(v ?? '?');

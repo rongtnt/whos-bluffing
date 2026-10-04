@@ -1,7 +1,7 @@
 import { test } from 'node:test';
 import assert from 'node:assert/strict';
 import {
-  addAnswer, apiCalls, channelOfPost, channelPosts, install, makeEnv, messageEdits, mockFetch, runCron,
+  addAnswer, apiCalls, channelOfPost, channelPosts, install, makeEnv, messageEdits, mockFetch, revealAt, runCron,
 } from './helpers.js';
 
 const [G1, G2, G3, G4] = ['770000000000000011', '770000000000000012', '770000000000000013', '770000000000000014'];
@@ -24,7 +24,8 @@ test('posts the daily question once per server per day, as soon as its UTC hour 
   const [post] = questionPosts(calls);
   assert.equal(post.headers.authorization, 'Bot bot-token');
   assert.match(post.headers['user-agent'], /^DiscordBot \(https:\/\/api\.test, 0\.1\)$/);
-  assert.equal(post.body.content, "**Who's Bluffing?** · Which is longer: the Nile or the Danube?\n-# Tap A or B, then say how sure you are. Answer at 22:00 UTC.");
+  assert.equal(post.body.content,
+    "**Who's Bluffing?** · Which is longer: the Nile or the Danube?\n-# Tap A or B, then say how sure you are. Answer at <t:1791324000:t> (<t:1791324000:R>).");
   assert.deepEqual(post.body.components[0].components.map((b) => [b.label, b.custom_id]), [
     ['A · the Nile', 'q:2026-10-06:dq-2026-10-06:p00042:0'],
     ['B · the Danube', 'q:2026-10-06:dq-2026-10-06:p00042:1'],
@@ -60,6 +61,20 @@ test('reveals each post once, at the first tick after post time + 8 hours', asyn
   ]);
   // The reveal draws on the question stored with the post: daily-question only serves today and yesterday.
   assert.equal(apiCalls(calls, '/api/round/daily-question').length, 1);
+});
+
+test("a server's own reveal delay: 20 hours after a 14:00 post means the next day's 10:00 tick", async () => {
+  const env = makeEnv();
+  await install(env, G1, { channel: C1, hour: 14, reveal: 20 });
+  const calls = mockFetch();
+  await runCron(env, '2026-10-06T14:00:00Z');
+  assert.ok(questionPosts(calls)[0].body.content.endsWith(`Answer at ${revealAt('2026-10-07T10:00:00Z')}.`));
+  assert.deepEqual(env.DB.rows('SELECT reveal_at FROM posts'), [{ reveal_at: '2026-10-07T10:00:00.000Z' }]);
+  await runCron(env, '2026-10-06T22:00:00Z');
+  await runCron(env, '2026-10-07T09:00:00Z');
+  assert.equal(messageEdits(calls).length, 0);
+  await runCron(env, '2026-10-07T10:00:00Z');
+  assert.equal(messageEdits(calls).length, 1);
 });
 
 test('API down claims nothing; a failed post retries next hour; a lost channel stops posting', async () => {

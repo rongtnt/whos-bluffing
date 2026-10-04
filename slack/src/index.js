@@ -16,7 +16,7 @@ const REVEAL_WINDOW_DAYS = 7; // a reveal that keeps failing is retried hourly f
 const MAX_MEMBERS = 1000;
 const MONDAY = 1;
 const DEAD_TOKEN = new Set(['token_revoked', 'account_inactive', 'invalid_auth']);
-const SETUP_RE = /^setup(?:\s+<#([CG][A-Z0-9]+)(?:\|[^>]*)?>(?:\s+(\d{1,2}))?)?(?:\s+roast\s+(on|off))?$/i;
+const SETUP_RE = /^setup(?:\s+<#([CG][A-Z0-9]+)(?:\|[^>]*)?>(?:\s+(\d{1,2})(\s+utc)?)?)?(?:\s+roast\s+(on|off))?(?:\s+reveal\s+(\d{1,2}))?$/i;
 const DATE_RE = /^\d{4}-\d{2}-\d{2}$/;
 
 const isoDate = (ms) => new Date(ms).toISOString().slice(0, 10);
@@ -62,9 +62,9 @@ function background(ctx, env, teamId, url, work) {
 }
 
 // One rule for the reveal time, used by the post, the locked-in reply and the cron: from the day's post if there is
-// one, else as if posted now.
+// one, else as if posted now, with the workspace's reveal window.
 const revealTime = (install, date, post, now) =>
-  game.revealAt(date, install.post_hour_utc, post?.ts ? Number(post.ts) * 1000 : now);
+  game.revealAt(date, install.post_hour_utc, post?.ts ? Number(post.ts) * 1000 : now, install.reveal_delay_h);
 
 // Answers are taken until the day is revealed, for today's and yesterday's question only.
 const isOpen = (post, date, now) => !post?.revealed && date >= isoDate(now - DAY_MS);
@@ -105,13 +105,17 @@ async function oauthCallback(request, env) {
 
 // ---- Slash command ------------------------------------------------------------------------------------------
 
-// `setup #channel [HH] [roast on|off]` or `setup roast on|off`. Null fields stay as they are. Null for anything else.
+// `setup #channel [HH [utc]] [roast on|off] [reveal N]`, or `setup` with roast and/or reveal alone. Null fields stay
+// as they are. `local`: an hour was typed without utc, so it is in the member's own time zone; no hour means
+// DEFAULT_HOUR UTC. Null for anything else, including an hour over 23 or a reveal outside 2 to 23.
 function parseSetup(args) {
   const m = SETUP_RE.exec(args);
-  if (!m || !(m[1] || m[3])) return null;
+  if (!m || !(m[1] || m[4] || m[5])) return null;
   const hour = m[1] ? Number(m[2] ?? store.DEFAULT_HOUR) : null;
-  if (hour > 23) return null;
-  return { channel: m[1] ?? null, hour, roast: m[3] ? Number(m[3].toLowerCase() === 'on') : null };
+  const reveal = m[5] ? Number(m[5]) : null;
+  if (hour > 23 || (reveal !== null && (reveal < game.MIN_REVEAL_H || reveal > game.MAX_REVEAL_H))) return null;
+  const roast = m[4] ? Number(m[4].toLowerCase() === 'on') : null;
+  return { channel: m[1] ?? null, hour, local: Boolean(m[2] && !m[3]), roast, reveal };
 }
 
 function command(f, env, ctx) {
@@ -125,8 +129,17 @@ function command(f, env, ctx) {
   if (sub === 'stats') return later((install) => showStats(env, install, f.channel_id, f.response_url));
   if (sub === 'reveal') return later((install) => revealNow(env, install, f.response_url));
   const change = parseSetup(args);
-  if (change) return later((install) => setup(env, install, change, f.response_url));
-  return Response.json({ response_type: 'ephemeral', text: game.USAGE });
+  if (change) return later((install) => setup(env, install, change, f.user_id, f.response_url));
+  return usage(env, f.team_id);
+}
+
+// Anything else: the command list, answered at once, with the workspace's schedule when it has one (one D1 read).
+async function usage(env, teamId) {
+  const install = await store.getInstall(env.DB, teamId).catch((err) => {
+    logError('usage', err);
+    return null;
+  });
+  return Response.json({ response_type: 'ephemeral', text: game.usage(install, Date.now()) });
 }
 
 async function postQuestion(env, install, channel, url) {
@@ -147,13 +160,27 @@ async function postQuestion(env, install, channel, url) {
   if (!install.channel_id || channel === install.channel_id) await store.claimPost(env.DB, install.team_id, date, channel, q, res.ts);
 }
 
-async function setup(env, install, change, url) {
+// A typed hour is read in the member's own time zone (users.info's tz_offset) and stored as the UTC hour. With utc,
+// or when Slack does not say the zone, it is UTC, and the reply says which.
+async function setup(env, install, change, userId, url) {
   if (change.channel) {
     const info = await slack(install.bot_token, 'conversations.info', { channel: change.channel });
     if (!info.ok || info.channel?.is_archived) return reply(url, { text: game.CANT_POST });
   }
-  await store.setup(env.DB, install.team_id, change);
-  return reply(url, { text: game.setupDone(await store.getInstall(env.DB, install.team_id)) });
+  const tzOffset = change.local ? await memberTzOffset(install, userId) : null;
+  const hour = tzOffset === null ? change.hour : game.toUtcHour(change.hour, tzOffset);
+  await store.setup(env.DB, install.team_id, { ...change, hour });
+  const saved = await store.getInstall(env.DB, install.team_id);
+  return reply(url, { text: game.setupDone(saved, { tzOffset, noZone: change.local && tzOffset === null, now: Date.now() }) });
+}
+
+// Seconds east of UTC from the member's Slack profile, or null when Slack does not say (an error, or no zone).
+async function memberTzOffset(install, user) {
+  const info = await slack(install.bot_token, 'users.info', { user }).catch((err) => {
+    logError('users.info', err);
+    return {};
+  });
+  return info.ok && Number.isFinite(info.user?.tz_offset) ? info.user.tz_offset : null;
 }
 
 async function showStats(env, install, channel, url) {

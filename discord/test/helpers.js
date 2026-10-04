@@ -179,10 +179,18 @@ export async function runCron(env, iso) {
   await ctx.settle();
 }
 
-export async function install(env, guild = GUILD, { channel = null, hour = 14, roast = 0 } = {}) {
-  await env.DB.prepare('INSERT INTO installs (guild_id, channel_id, post_hour_utc, roast, installed_at) VALUES (?, ?, ?, ?, ?)')
-    .bind(guild, channel, hour, roast, '2026-10-01T00:00:00Z').run();
+// A server as stored before new servers started at a 20-hour reveal: 8 unless `reveal` says otherwise.
+export async function install(env, guild = GUILD, { channel = null, hour = 14, roast = 0, reveal = 8 } = {}) {
+  await env.DB.prepare('INSERT INTO installs (guild_id, channel_id, post_hour_utc, reveal_delay_h, roast, installed_at) VALUES (?, ?, ?, ?, ?, ?)')
+    .bind(guild, channel, hour, reveal, roast, '2026-10-01T00:00:00Z').run();
 }
+
+// Discord timestamp tokens for an ISO time: the clock time, and the clock time with "in N hours".
+export const stampAt = (iso, style = 't') => `<t:${Date.parse(iso) / 1000}:${style}>`;
+export const revealAt = (iso) => `${stampAt(iso)} (${stampAt(iso, 'R')})`;
+
+// Freezes Date at `iso` for one test (node:test mock timers).
+export const freeze = (t, iso) => t.mock.timers.enable({ apis: ['Date'], now: Date.parse(iso) });
 
 export async function addPost(env, { guild = GUILD, date = DATE, channel = CHANNEL, message = '9001', revealAt = `${DATE}T22:00:00.000Z`, revealed = 0 } = {}) {
   await env.DB.prepare('INSERT INTO posts (guild_id, date, channel_id, message_id, reveal_at, revealed, prompt, a, b) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)')

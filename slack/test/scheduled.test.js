@@ -1,7 +1,7 @@
 import { test } from 'node:test';
 import assert from 'node:assert/strict';
 import * as store from '../src/store.js';
-import { BOT_KEY, DATE, QUESTION, apiCalls, install, makeCtx, makeEnv, mockFetch, slackCalls, tsAt, worker } from './helpers.js';
+import { BOT_KEY, DATE, QUESTION, apiCalls, install, makeCtx, makeEnv, mockFetch, revealToken, slackCalls, tsAt, worker } from './helpers.js';
 
 // Runs the hourly cron at `iso`. Slack's mock stamps posts with that moment, like the real ts.
 async function runCron(env, iso, clock) {
@@ -30,7 +30,8 @@ test('scheduled() posts the question once per day to every install whose UTC hou
   const buttons = blocks.find((b) => b.type === 'actions').elements;
   assert.deepEqual(buttons.map((b) => [b.action_id, b.text.text]), [['pick:0', 'A · the Nile'], ['pick:1', 'B · the Danube']]);
   assert.deepEqual(JSON.parse(buttons[0].value), { r: QUESTION.round_id, i: QUESTION.item_id, d: DATE });
-  assert.match(blocks.at(-1).elements[0].text, /before the reveal at 22:00 UTC\.$/);
+  assert.equal(blocks.at(-1).elements[0].text,
+    'Tap A or B, then say how sure you are. Nobody sees your answer before the reveal: <!date^1793484000^{date_short_pretty} {time}|Oct 31 22:00 UTC>.');
   const [question] = apiCalls(calls, '/api/round/daily-question');
   assert.equal(question.query.date, DATE);
   assert.equal(question.headers['x-bluff-bot'], BOT_KEY);
@@ -86,7 +87,7 @@ test('scheduled() reveals each post once, at the hour it promised: post hour + 8
   await install(env, 'T2', { channel: 'C2', hour: 9 });
   await runCron(env, `${DATE}T20:00:00Z`, clock);
   const late = slackCalls(calls, 'chat.postMessage').find((c) => c.body.channel === 'C2');
-  assert.match(JSON.parse(late.body.blocks).at(-1).elements[0].text, /before the reveal at 04:00 UTC\.$/);
+  assert.ok(JSON.parse(late.body.blocks).at(-1).elements[0].text.endsWith(`before the reveal: ${revealToken('2026-11-01T04:00:00Z', 'Nov 1')}.`));
 
   await runCron(env, `${DATE}T21:00:00Z`, clock);
   assert.equal(updates('C1'), 0);
@@ -103,6 +104,21 @@ test('scheduled() reveals each post once, at the hour it promised: post hour + 8
   assert.equal(updates('C2'), 1);
   assert.deepEqual(env.DB.rows(`SELECT team_id, revealed FROM posts WHERE date = '${DATE}' ORDER BY team_id`),
     [{ team_id: 'T1', revealed: 1 }, { team_id: 'T2', revealed: 1 }]);
+});
+
+test("scheduled() reveals at the workspace's own window: reveal 20 after a 14:00 post is 10:00 the next day", async () => {
+  const env = makeEnv();
+  await install(env, 'T1', { channel: 'C1', hour: 14, reveal: 20 });
+  const clock = { now: '' };
+  const calls = mockFetch({ slack: { 'chat.postMessage': () => ({ ts: tsAt(clock.now) }) } });
+  await runCron(env, `${DATE}T14:00:00Z`, clock);
+  const [post] = slackCalls(calls, 'chat.postMessage');
+  assert.ok(JSON.parse(post.body.blocks).at(-1).elements[0].text.endsWith(`before the reveal: ${revealToken('2026-11-01T10:00:00Z', 'Nov 1')}.`));
+  await runCron(env, `${DATE}T22:00:00Z`, clock); // the default 8 hours would reveal here
+  await runCron(env, '2026-11-01T09:00:00Z', clock);
+  assert.equal(slackCalls(calls, 'chat.update').length, 0);
+  await runCron(env, '2026-11-01T10:00:00Z', clock);
+  assert.equal(slackCalls(calls, 'chat.update').length, 1);
 });
 
 test('scheduled(): a reveal that fails (API down) is retried at the next tick', async () => {

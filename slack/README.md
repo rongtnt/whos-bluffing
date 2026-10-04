@@ -6,7 +6,8 @@ A Cloudflare Worker that posts one Who's Bluffing question a day in a Slack chan
 
 - **The daily post**, at the workspace's hour: "Who's Bluffing? · Which is longer: the Nile or the Danube?" with two buttons, **A · the Nile** and **B · the Danube**.
 - **Tap A or B:** a private confidence picker appears, only for you: 50% (coin flip), 60%, 70%, 80%, 90%, 100% (stake it all).
-- **Tap a confidence:** the picker turns into "Locked in: B at 80%. Reveal at 22:00 UTC." Nobody else sees your pick, and you get no hint whether you were right.
+- **Tap a confidence:** the picker turns into "Locked in: B at 80%. Reveal: today 10:00 PM." Nobody else sees your pick, and you get no hint whether you were right.
+- **Times are in your own time zone.** The reveal time on the post and in "Locked in" is a Slack date, so every member reads it in the time zone of their Slack profile ("today 10:00 PM", "tomorrow 4:00 AM"). Slack clients that cannot show it fall back to UTC ("Oct 31 22:00 UTC").
 - **Change your mind** before the reveal: tap A or B again and pick a new confidence. The picker shows your current answer; the last answer counts.
 - **The reveal** edits the original post (the buttons go away):
   - the correct answer with both values and their sources;
@@ -34,17 +35,17 @@ Off by default. With roast mode off:
 
 ### Reveal timing
 
-The answer is revealed 8 hours after the post hour, at the top of the hour (post hour 14 → reveal 22:00 UTC). If the day's post went up later than the post hour (for example, the channel was set up in the evening), the reveal is 8 hours after the hour it went up, so everyone still gets the full 8 hours. The post and the "Locked in" reply both show the reveal time. Anyone can reveal early with `/bluff reveal`.
+The answer is revealed 8 hours after the post hour, at the top of the hour (post hour 14:00 UTC → reveal 22:00 UTC). `reveal N` in `/bluff setup` changes the 8 to anything from 2 to 23 hours, for example `reveal 20` so a community spread over many time zones has a full day to answer. If the day's post went up later than the post hour (for example, the channel was set up in the evening), the reveal is that many hours after the hour it went up, so everyone still gets the full time. The post and the "Locked in" reply both show the reveal time, in each member's own time zone. Anyone can reveal early with `/bluff reveal`.
 
-A question can be answered until its reveal, and only on its day or the day after (a post at 20:00 is revealed at 04:00 the next day).
+A question can be answered until its reveal, and only on its day or the day after (a post at 20:00 UTC is revealed at 04:00 UTC the next day). 23 hours is the longest window, so every reveal stays inside that limit.
 
 ## Commands
 
 | Command | What it does |
 |---|---|
 | `/bluff` | Posts today's question in this channel. In the chosen channel (or when none is chosen yet) it becomes the day's post, and the hourly post skips that day; if the day's post is already in this channel, it says so instead of posting twice. Elsewhere it posts a copy: answers count the same, and the reveal happens on the day's post. After today's reveal it posts nothing and says so. |
-| `/bluff setup #channel [hour] [roast on\|off]` | Posts the question in #channel every day at that hour, in UTC (0–23, default 14). Without an hour the hour is set to 14. |
-| `/bluff setup roast on\|off` | Changes roast mode only; channel and hour stay. |
+| `/bluff setup #channel [hour] [roast on\|off] [reveal N]` | Posts the question in #channel every day at that hour in your Slack time zone (0–23; add `utc` after the hour for UTC), and reveals the answer N hours later (2–23, default 8). Without an hour the hour is set to 14:00 UTC. |
+| `/bluff setup roast on\|off` | Changes roast mode only; channel and hour stay. `/bluff setup reveal N` changes only the reveal window, and both can go together (`/bluff setup roast on reveal 20`). |
 | `/bluff reveal` | Reveals the open question now, for everyone. |
 | `/bluff stats` | Posts this workspace's 30-day leaderboard in the channel: top 10 by total points (ties: more answers first) and how many members answered. Only revealed days count. |
 
@@ -64,7 +65,7 @@ You need a Cloudflare account (free plan is fine), a Slack workspace where you m
    ```bash
    npx wrangler d1 create whosbluffing-slack
    ```
-   Paste the printed `database_id` into `wrangler.toml` (replace the zeros), then apply both migrations:
+   Paste the printed `database_id` into `wrangler.toml` (replace the zeros), then apply the migrations:
    ```bash
    npx wrangler d1 migrations apply whosbluffing-slack --remote
    ```
@@ -90,11 +91,14 @@ You need a Cloudflare account (free plan is fine), a Slack workspace where you m
 8. **Install.** Open `https://WORKER_HOST/slack/oauth/start` and press **Allow**. That URL is the **Add to Slack** link: share it, or link Slack's official Add to Slack button image to it.
 9. **In Slack:**
    ```
-   /bluff setup #general 14
+   /bluff setup #general 9 reveal 20
    /bluff
    ```
+   `9` is 09:00 in your own Slack time zone; the reply shows it in UTC too ("every day at 09:00 your time (13:00 UTC)").
 
 Already set up v0.1? Run step 2's `migrations apply` again (it adds `0002_daily_question.sql`), update the app from the new `manifest.yaml` (Slack app page → **App Manifest**), and deploy.
+
+Updating a live install to the version with local times and `reveal N`: run step 2's `migrations apply` (it adds `0003_reveal_delay.sql`) **before** `npx wrangler deploy`. The new code reads `installs.reveal_delay_h` in every hourly run, so a deploy without the migration stops the reveals until it is applied. No new Slack scope is needed: reading a member's time zone uses `users:read`, which the app already has.
 
 ## Secrets and vars (exact names)
 
@@ -109,9 +113,15 @@ Already set up v0.1? Run step 2's `migrations apply` again (it adds `0002_daily_
 
 ## Picking the channel
 
-`/bluff setup #channel [hour]`. Type `#` and pick the channel so Slack links it. The hour is UTC, 0–23, default 14.
+`/bluff setup #channel [hour]`. Type `#` and pick the channel so Slack links it.
 
-The Worker runs at the top of every hour. Each run, in this order: reveals the questions that are due, posts Monday recaps, then posts today's question to each workspace once, as soon as its hour has come. If you set it up after that hour, today's question posts at the next full hour (and is revealed 8 hours after that).
+- **The hour (0–23) is in your own time zone**, the one in your Slack profile. It is stored as the matching UTC hour: in New York in summer, `/bluff setup #general 9` is stored as 13:00 UTC, and the reply says "every day at 09:00 your time (13:00 UTC)".
+- **`utc` after the hour gives it in UTC:** `/bluff setup #general 9 utc`. Without an hour, the hour is 14:00 UTC.
+- **Zones a half or quarter hour off UTC** round down to the full UTC hour, because the Worker runs on the hour. In India, `9` is stored as 03:00 UTC, and the reply says 08:30 your time.
+- **If Slack does not return your time zone**, the hour is taken as UTC and the reply says so.
+- **Daylight saving:** the stored hour is UTC, so when your clocks change the post moves an hour on your clock. Run setup again to move it back.
+
+The Worker runs at the top of every hour. Each run, in this order: reveals the questions that are due, posts Monday recaps, then posts today's question to each workspace once, as soon as its hour has come. If you set it up after that hour, today's question posts at the next full hour (and is revealed the reveal window after that).
 
 Public channels work without inviting the app. For a private channel, run `/invite @whosbluffing` in it before setup.
 
@@ -128,7 +138,7 @@ npx wrangler tail                              # live logs (short error codes on
 
 Stored in D1, and nothing else:
 
-- per workspace: team id, bot token, channel id, post hour, roast setting, the Monday of the last recap;
+- per workspace: team id, bot token, channel id, post hour (UTC), reveal window, roast setting, the Monday of the last recap;
 - per workspace per day: the day's post (channel id and message timestamp), whether it was revealed, and the day's question as the API served it (item id, prompt and both options: the app's own text, kept so a late reveal can still be drawn);
 - per answer: `sha256(team_id:user_id:SALT)`, the date, A or B, the confidence, and, from the reveal on, whether it was right and its points.
 
@@ -148,6 +158,8 @@ No member messages, names or emails. Display names are fetched from Slack only w
 - Any member can run `/bluff setup` and `/bluff reveal`.
 - The confidence picker uses Slack's response link, which lasts 30 minutes after tapping A or B. After that, tap A or B again.
 - Copies posted with `/bluff` outside the chosen channel are not edited at the reveal; tapping them afterwards says the question is closed.
+- Changing the hour or the reveal window also moves the reveal of a question already posted that day, since the reveal time comes from the current settings. Its post and earlier "Locked in" replies keep the time they showed.
+- A member's time zone is read only from their Slack profile, once, at setup. It is not stored.
 - If a reveal fails (web API down, Slack error), it is retried every hour for up to a week, drawn from the question stored with the post; `/bluff reveal` also retries.
 - Workers free plan allows 10 ms CPU per request. Name lookups hash up to 1000 member ids, so big channels, or hundreds of workspaces in one hourly run, may need Workers Paid ($5/month).
 - Workspace installs only; Enterprise Grid org-wide installs are not supported.

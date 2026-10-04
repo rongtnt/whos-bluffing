@@ -58,7 +58,8 @@ test('server install: registers the server without a channel and posts one hello
   const res = await send(env, toEvents(authorized()));
   assert.equal(res.status, 204);
   const [{ installed_at: installedAt, ...row }] = env.DB.rows('SELECT * FROM installs');
-  assert.deepEqual(row, { guild_id: GUILD, channel_id: null, post_hour_utc: 14, reveal_delay_h: 8, roast: 0, last_recap: null, welcomed: TS });
+  // A new server reveals 20 hours after the post.
+  assert.deepEqual(row, { guild_id: GUILD, channel_id: null, post_hour_utc: 14, reveal_delay_h: 20, roast: 0, last_recap: null, welcomed: TS });
   assert.match(installedAt, /^\d{4}-\d\d-\d\dT\d\d:\d\d:\d\d\.\d{3}Z$/);
   // The system channel takes the post, so the channel list is never fetched.
   assert.deepEqual(calls.map((c) => `${c.method} ${c.path}`), [`GET /api/v10/guilds/${GUILD}`, `POST /api/v10/channels/${SYSTEM}/messages`]);
@@ -152,6 +153,17 @@ test('a retried install event posts nothing more; a later install says hello aga
   assert.deepEqual(posted(calls), [SYSTEM, SYSTEM]);
   assert.deepEqual(env.DB.rows('SELECT channel_id, post_hour_utc, roast, welcomed FROM installs'), [
     { channel_id: CHANNEL, post_hour_utc: 9, roast: 1, welcomed: '2026-10-09T08:00:00.000000' },
+  ]);
+});
+
+test('an install event for a server stored before the 20-hour default keeps its 8-hour reveal and settings', async () => {
+  const env = makeEnv();
+  await install(env, GUILD, { channel: CHANNEL, hour: 9 });
+  const calls = mockFetch({ discord: server() });
+  await send(env, toEvents(authorized()));
+  assert.deepEqual(posted(calls), [SYSTEM]);
+  assert.deepEqual(env.DB.rows('SELECT channel_id, post_hour_utc, reveal_delay_h, welcomed FROM installs'), [
+    { channel_id: CHANNEL, post_hour_utc: 9, reveal_delay_h: 8, welcomed: TS },
   ]);
 });
 

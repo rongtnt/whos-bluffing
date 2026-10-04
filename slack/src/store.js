@@ -1,6 +1,6 @@
-// D1 access. Stored: team id, bot token, channel id, post hour, roast setting, the last recap week, per-day posts
-// (channel, ts, revealed, the day's question as served) and per-day answers (choice, conf; correct and points from
-// the reveal) keyed by the salted member hash. Never member messages, names, emails or raw member ids.
+// D1 access. Stored: team id, bot token, channel id, post hour, reveal window, roast setting, the last recap week,
+// per-day posts (channel, ts, revealed, the day's question as served) and per-day answers (choice, conf; correct and
+// points from the reveal) keyed by the salted member hash. Never member messages, names, emails or raw member ids.
 
 import { BLUFF_CONF, MIN_CALIBRATED_ANSWERS } from './game.js';
 
@@ -16,12 +16,12 @@ export const saveInstall = (db, teamId, botToken, now) =>
      ON CONFLICT(team_id) DO UPDATE SET bot_token = excluded.bot_token, installed_at = excluded.installed_at`,
   ).bind(teamId, botToken, DEFAULT_HOUR, now).run();
 
-// Null fields keep their stored value.
-export const setup = (db, teamId, { channel = null, hour = null, roast = null }) =>
+// Null fields keep their stored value. `hour` is the UTC hour.
+export const setup = (db, teamId, { channel = null, hour = null, roast = null, reveal = null }) =>
   db.prepare(
     `UPDATE installs SET channel_id = COALESCE(?, channel_id), post_hour_utc = COALESCE(?, post_hour_utc),
-     roast = COALESCE(?, roast) WHERE team_id = ?`,
-  ).bind(channel, hour, roast, teamId).run();
+     roast = COALESCE(?, roast), reveal_delay_h = COALESCE(?, reveal_delay_h) WHERE team_id = ?`,
+  ).bind(channel, hour, roast, reveal, teamId).run();
 
 export const deleteInstall = (db, teamId) => db.prepare('DELETE FROM installs WHERE team_id = ?').bind(teamId).run();
 
@@ -58,7 +58,7 @@ export const dropClaim = (db, teamId, date) =>
 // reveal needs from the install.
 export async function openPosts(db, since, teamId = null) {
   const { results } = await db.prepare(
-    `SELECT p.team_id, p.date, p.channel_id, p.ts, p.prompt, p.a, p.b, i.bot_token, i.post_hour_utc, i.roast
+    `SELECT p.team_id, p.date, p.channel_id, p.ts, p.prompt, p.a, p.b, i.bot_token, i.post_hour_utc, i.reveal_delay_h, i.roast
      FROM posts p JOIN installs i ON i.team_id = p.team_id
      WHERE p.revealed = 0 AND p.ts IS NOT NULL AND p.channel_id IS NOT NULL AND p.date >= ?
      AND p.team_id = COALESCE(?, p.team_id) ORDER BY p.date DESC`,

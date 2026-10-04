@@ -40,10 +40,11 @@ export const COMMANDS = [{
     {
       type: SUB,
       name: 'setup',
-      description: 'Daily channel, hour and roast mode (Manage Server)',
+      description: 'Daily channel, hour, reveal delay and roast mode (Manage Server)',
       options: [
         { type: CHANNEL, name: 'channel', description: 'Where the daily question goes', channel_types: GUILD_TEXT_CHANNELS },
         { type: INTEGER, name: 'hour', description: 'Posting hour in UTC, 0 to 23 (default 14)', min_value: 0, max_value: 23 },
+        { type: INTEGER, name: 'reveal', description: 'Hours from the post to the reveal, 2 to 23', min_value: 2, max_value: 23 },
         {
           type: STRING,
           name: 'roast',
@@ -152,7 +153,7 @@ export function handleInteraction(i, env, ctx) {
   return new Response('Unsupported interaction', { status: 400 });
 }
 
-function command(i, env, ctx) {
+async function command(i, env, ctx) {
   const sub = i.data?.options?.[0];
   const opts = Object.fromEntries((sub?.options ?? []).map((o) => [o.name, o.value]));
   const later = (work, options) => defer(ctx, env, i, work, options);
@@ -163,7 +164,8 @@ function command(i, env, ctx) {
     case 'setup': return canManage(i) ? later(() => setup(env, i, opts)) : say({ content: game.NEED_MANAGE });
     case 'reveal': return canManage(i) ? later(() => revealNow(env, i)) : say({ content: game.NEED_MANAGE });
     case 'invite': return say({ content: game.invite(installUrl(env)) });
-    default: return say({ content: game.HELP });
+    // One D1 read, no Discord call: still answered at once.
+    default: return say({ content: game.help(await store.getInstall(env.DB, i.guild_id), Date.now()) });
   }
 }
 
@@ -308,20 +310,23 @@ export async function welcomeGuild(env, guildId) {
 }
 
 // Every option is optional: a missing one keeps its current value. A server without a channel gets this channel.
+// Discord enforces each option's range (hour 0-23, reveal 2-23) from the registered command definition.
 async function setup(env, i, opts) {
-  const install = await store.ensureInstall(env.DB, i.guild_id, new Date().toISOString());
+  const now = Date.now();
+  const install = await store.ensureInstall(env.DB, i.guild_id, new Date(now).toISOString());
   const next = {
     channel_id: opts.channel ?? install.channel_id ?? channelOf(i),
     post_hour_utc: opts.hour ?? install.post_hour_utc,
+    reveal_delay_h: opts.reveal ?? install.reveal_delay_h,
     roast: opts.roast === undefined ? install.roast : Number(opts.roast === 'on'),
   };
   // A new channel gets a short hello, which is also the check that Who's Bluffing may post there.
   if (next.channel_id !== install.channel_id) {
-    const res = await discord(env, 'POST', `/channels/${next.channel_id}/messages`, game.channelHello(next.post_hour_utc));
+    const res = await discord(env, 'POST', `/channels/${next.channel_id}/messages`, game.channelHello(next.post_hour_utc, now));
     if (!res.ok) return { content: GONE.has(res.status) ? game.CANT_POST : game.FAIL_TEXT };
   }
   await store.saveSetup(env.DB, i.guild_id, next);
-  return { content: game.setupDone({ ...install, ...next }) };
+  return { content: game.setupDone({ ...install, ...next }, now) };
 }
 
 async function stats(env, i) {

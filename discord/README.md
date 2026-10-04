@@ -1,14 +1,17 @@
 # Who's Bluffing? for Discord
 
 A Cloudflare Worker that brings Who's Bluffing to Discord. A server adds it once. Every day it posts one question in a chosen
-channel. Members tap A or B and say how sure they are. Eight hours later the post turns into the answer, with this
-server's top 5 and the bluff of the day.
+channel. Members tap A or B and say how sure they are. Hours later (20 by default) the post turns into the answer, with
+this server's top 5 and the bluff of the day.
 
 ## What members see
 
 - **The daily post:** "Who's Bluffing? · Which is longer: the Nile or the Danube?" with buttons **A · the Nile** and **B · the Danube**.
 - **Tapping A or B** opens a private confidence picker: 50% (coin flip), 60, 70, 80, 90, 100% (stake it all). Then a
-  private "Locked in: B at 80%. Reveal at 22:00 UTC." Changing your mind before the reveal is allowed; the last answer counts.
+  private "Locked in: B at 80%. Reveal at 10:00 AM (in 20 hours)." Changing your mind before the reveal is allowed; the
+  last answer counts.
+- **Every time is in your own time zone.** The post, "Locked in", the reply to `/bluff question`, the setup reply and
+  `/bluff help` write times as Discord timestamps, which each member's app shows in their own zone.
 - **The reveal** edits the post. It shows both true values with their sources, "12 answered · 75% A · 25% B", the top 5
   by points, and the bluff line. With roast mode off: "Someone was 90% sure the Danube is longer. It isn't." With
   roast mode on, the bluffer is named.
@@ -28,7 +31,7 @@ server's top 5 and the bluff of the day.
 | `/bluff question` | anyone | Post today's question in this channel now. If today's is already up, it links to it. |
 | `/bluff play` | anyone | A private 10-question round: A/B, then confidence, then the answer with points, then Next. Ends with score, type and roast line, plus a **Challenge** button that posts your challenge link in the channel. |
 | `/bluff stats` | anyone | This server's 30-day leaderboard (top 10 by points) and participation, posted in the channel. |
-| `/bluff setup` | Manage Server | `channel`, `hour` (UTC, 0–23, default 14), `roast` (on/off, default off). Every option is optional; a missing one keeps its value. |
+| `/bluff setup` | Manage Server | `channel`, `hour` (UTC, 0–23, default 14), `reveal` (hours from the post to the reveal, 2–23; new servers start at 20, servers added before this option keep 8), `roast` (on/off, default off). Every option is optional; a missing one keeps its value. The reply shows the hour in your time and in UTC. |
 | `/bluff reveal` | Manage Server | Reveal today's answer now instead of waiting. |
 | `/bluff help` | anyone | How it works and the command list. |
 | `/bluff invite` | anyone | The link to add Who's Bluffing to another server. |
@@ -37,8 +40,11 @@ Discord cannot run a command that has subcommands without one, so "post today's 
 `/bluff question`, not a bare `/bluff`.
 
 **Reveal timing.** The Worker runs at the top of every hour. It posts to each server once a day, as soon as the
-server's hour has come. It reveals each post at the first hourly run at least 8 hours after posting (posted 14:00 →
-revealed 22:00 UTC). Answers close at the reveal.
+server's hour has come. It reveals each post at the hourly run at or after post time plus the server's `reveal` hours
+(posted 14:00 UTC with 20 → revealed 10:00 UTC the next day; with 8 → 22:00 UTC). Answers close at the reveal. The
+`hour` option is in UTC; members see every time in their own zone. A changed `reveal` applies from the next post: each
+post keeps the reveal time it showed. 23 hours is the most, because the API takes answers to a daily question only on its
+day and the next.
 
 ## Set up (about 20 minutes)
 
@@ -135,6 +141,8 @@ DISCORD_APP_ID=<application id> DISCORD_BOT_TOKEN=<bot token> npm run register  
 ```
 
 Run it again whenever `COMMANDS` in `src/commands.js` changes. It replaces the whole list, so repeats are harmless.
+**Updating to the version with the `reveal` option: run it once more**, or Discord keeps offering `/bluff setup` without
+`reveal`. Everything else works before you do.
 
 **9. Add it to your server (1 min).** Open `WORKER_URL/install` → pick your server → **Authorize**. That URL is the
 invite link. Share it, or use the Add App button that Discord shows on the app's profile. With step 7 done, the welcome
@@ -143,7 +151,7 @@ message follows shortly (Discord does not promise webhook events in real time).
 **10. In Discord (2 min):**
 
 ```
-/bluff setup channel:#general hour:14
+/bluff setup channel:#general hour:14 reveal:20
 /bluff question
 ```
 
@@ -204,6 +212,7 @@ npx wrangler tail                              # live logs (short error codes on
 
 Apply migrations before deploying code that needs them. `0002_install_events.sql` adds the column the install events
 use; without it every install event fails, Discord retries it, and in the end Discord turns the Webhook Events URL off.
+The `reveal` option needs no migration: the column was there from the start, and the code writes 20 for new servers.
 
 ## Data
 

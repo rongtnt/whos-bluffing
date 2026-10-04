@@ -103,16 +103,16 @@
         </dl>
       </article>
       <article class="cmd" data-item>
-        <h3><code>/bluff setup #channel [hour] [roast on|off]</code></h3>
-        <p>Posts the question in #channel every day at that hour. Type # and pick the channel so Slack links it.</p>
+        <h3><code>/bluff setup #channel [hour] [roast on|off] [reveal N]</code></h3>
+        <p>Posts the question in #channel every day at that hour in your time zone, and reveals the answer N hours later. Type # and pick the channel so Slack links it. Everyone sees the times in their own time zone.</p>
         <dl>
-          <div><dt>Options</dt><dd><ul><li><code>#channel</code> where the daily question goes; for a private channel, run <code>/invite @whosbluffing</code> in it first</li><li><code>hour</code> UTC, 0 to 23 (default 14); the answer is revealed 8 hours later</li><li><code>roast on|off</code> on names the biggest bluffer at the reveal and shows negative points (off by default)</li></ul></dd></div>
+          <div><dt>Options</dt><dd><ul><li><code>#channel</code> where the daily question goes; for a private channel, run <code>/invite @whosbluffing</code> in it first</li><li><code>hour</code> 0 to 23 in your Slack time zone; add <code>utc</code> after it for UTC (left out: 14:00 UTC)</li><li><code>roast on|off</code> on names the biggest bluffer at the reveal and shows negative points (off by default)</li><li><code>reveal N</code> hours from the post to the reveal, 2 to 23 (default 8)</li></ul></dd></div>
           <div><dt>Who can run it</dt><dd>Any member</dd></div>
         </dl>
       </article>
       <article class="cmd" data-item>
         <h3><code>/bluff setup roast on|off</code></h3>
-        <p>Changes roast mode only; the channel and the hour stay as they are.</p>
+        <p>Changes roast mode only; the channel and the hour stay as they are. <code>/bluff setup reveal N</code> changes only the hours to the reveal.</p>
         <dl>
           <div><dt>Options</dt><dd>None</dd></div>
           <div><dt>Who can run it</dt><dd>Any member</dd></div>
@@ -156,7 +156,7 @@
     <div class="faq"><!-- trouble:slack -->
         <details><summary><span>Slack says <code>/bluff</code> is not a valid command</span></summary><p>Who's Bluffing isn’t installed in this workspace, or was removed. Install it again from the <a href="/slack">Add to Slack</a> link.</p></details>
         <details><summary><span>“I can’t post in that channel”</span></summary><p>The channel is private. Run <code>/invite @whosbluffing</code> in it, then <code>/bluff setup #channel</code> again. Public channels work without an invite.</p></details>
-        <details><summary><span>The question didn’t post today</span></summary><p>The hour is in UTC. Who's Bluffing checks at the top of every hour and posts once a day, as soon as your hour has come; if you set it up after that hour, today’s question posts at the next full hour. Run <code>/bluff setup #channel HH</code> to check the channel and hour.</p></details>
+        <details><summary><span>The question didn’t post today</span></summary><p>The hour you type is read in your Slack time zone (or in UTC with <code>utc</code> after it) and kept in UTC; the setup reply shows both. Who's Bluffing checks at the top of every hour and posts once a day, as soon as your hour has come; if you set it up after that hour, today’s question posts at the next full hour. Run <code>/bluff setup #channel HH</code> to check the channel and hour.</p></details>
         <details><summary><span>The confidence buttons stopped working</span></summary><p>The private picker uses a Slack link that lasts 30 minutes after you tap A or B. Tap A or B again.</p></details>
         <details><summary><span>“Who's Bluffing is taking a break”</span></summary><p>The game server didn’t answer. Try again in a minute; the <a href="/status">status page</a> shows whether it is up.</p></details>
       <!-- /trouble --></div>

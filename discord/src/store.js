@@ -2,13 +2,18 @@
 // the day's question as the API served it), and per-day answers keyed by the salted member hash.
 // Never member messages, names or raw member ids.
 
+import { NEW_REVEAL_DELAY_H } from './game.js';
+
 const changedOne = (res) => res.meta.changes === 1;
 
 export const getInstall = (db, guildId) => db.prepare('SELECT * FROM installs WHERE guild_id = ?').bind(guildId).first();
 
 // A server's row comes from its install event (POST /events) or, when webhook events are off, its earliest command.
+// Both inserts write the reveal delay for new servers: SQLite cannot change the column's DEFAULT (8) without
+// rebuilding the table, and existing rows keep the 8 they hold.
 export async function ensureInstall(db, guildId, now) {
-  await db.prepare('INSERT OR IGNORE INTO installs (guild_id, installed_at) VALUES (?, ?)').bind(guildId, now).run();
+  await db.prepare('INSERT OR IGNORE INTO installs (guild_id, installed_at, reveal_delay_h) VALUES (?, ?, ?)')
+    .bind(guildId, now, NEW_REVEAL_DELAY_H).run();
   return getInstall(db, guildId);
 }
 
@@ -16,14 +21,14 @@ export async function ensureInstall(db, guildId, now) {
 // this event. True for a new server or a new install; false for Discord's retry of an event already handled.
 export async function claimWelcome(db, guildId, now, eventTime) {
   return changedOne(await db.prepare(
-    `INSERT INTO installs (guild_id, installed_at, welcomed) VALUES (?, ?, ?)
+    `INSERT INTO installs (guild_id, installed_at, welcomed, reveal_delay_h) VALUES (?, ?, ?, ?)
      ON CONFLICT(guild_id) DO UPDATE SET welcomed = excluded.welcomed WHERE installs.welcomed IS NOT excluded.welcomed`,
-  ).bind(guildId, now, eventTime).run());
+  ).bind(guildId, now, eventTime, NEW_REVEAL_DELAY_H).run());
 }
 
-export const saveSetup = (db, guildId, { channel_id: channel, post_hour_utc: hour, roast }) =>
-  db.prepare('UPDATE installs SET channel_id = ?, post_hour_utc = ?, roast = ? WHERE guild_id = ?')
-    .bind(channel, hour, roast, guildId).run();
+export const saveSetup = (db, guildId, { channel_id: channel, post_hour_utc: hour, reveal_delay_h: revealDelay, roast }) =>
+  db.prepare('UPDATE installs SET channel_id = ?, post_hour_utc = ?, reveal_delay_h = ?, roast = ? WHERE guild_id = ?')
+    .bind(channel, hour, revealDelay, roast, guildId).run();
 
 export const clearChannel = (db, guildId) =>
   db.prepare('UPDATE installs SET channel_id = NULL WHERE guild_id = ?').bind(guildId).run();

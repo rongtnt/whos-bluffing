@@ -85,8 +85,8 @@ run them under Node 22 against a real key pair.
   interaction responses, because those cannot reliably be edited 8 hours later. The reveal removes the A/B buttons.
 - **Setup:** every option is optional; a missing one keeps its value. A server with no channel gets the current
   channel. A new channel gets a one-line hello, which is also the check that Who's Bluffing may post there (403/404 →
-  "I can't post in that channel", nothing saved). There is no command for `reveal_delay_h` (default 8). The column
-  exists for a later version.
+  "I can't post in that channel", nothing saved). `reveal_delay_h` had no command in v0.1 (default 8); the `reveal`
+  option sets it now (see "Local times and the reveal option").
 - **A lost channel:** when the daily post gets 403 or 404, the server's channel is cleared and posting stops until
   someone runs `/bluff setup` again. Other failures (429, 5xx) release the day's claim and retry the next hour.
 - **Weekly recap:** Mondays at the server's hour, before that day's question. It covers the 7 days before. It is
@@ -203,6 +203,42 @@ took it). Two mutants survived as equivalent for any documented input: ignoring 
 **Not verified:** real Discord (no login). That a retry carries the same `timestamp` is inferred from what the field means
 (the time of the event), not stated in the docs. The `GET /guilds/{id}` right after the event assumes the bot user has
 joined by then; if not, the GETs fail, the welcome is skipped quietly, and the server is still registered.
+
+## Local times and the reveal option (2026-10-04)
+
+The owner's problem: the post said "Answer at 22:00 UTC", so members elsewhere had to convert, and a fixed 8-hour window
+lost everyone in a global server who was asleep during it.
+
+1. **Discord timestamps wherever a time is shown.** Each member's app renders them in their own zone.
+   - The reveal, often on the next day: `<t:UNIX:t> (<t:UNIX:R>)`, read as "10:00 AM (in 20 hours)": on the post
+     ("Answer at …"), "Locked in" / "Already locked in" ("Reveal at …") and the reply to `/bluff question`.
+   - The daily hour: `<t:UNIX:t>` in the channel hello and in `/bluff help`; in the setup reply followed by the UTC
+     hour, because the admin typed the hour in UTC ("every day at 9:00 AM (09:00 UTC)"). A recurring hour uses today's
+     date at that hour, so the reader's app applies the zone's current offset (daylight saving included).
+   - The `hour` option stays in UTC: interactions carry no time zone.
+2. **`reveal` option** on `/bluff setup`: INTEGER, `min_value` 2, `max_value` 23, wired to `installs.reveal_delay_h`; a
+   missing option keeps the stored value, like the others. Discord enforces the range from the registered definition, so
+   the code does not check it again (the same as `hour`). 23 is the most because the API takes answers to a daily
+   question only on its day and the next. Each post stores its `reveal_at`, so a change applies from the next post.
+3. **New servers start at 20 hours; existing rows keep 8. No migration.** The brief asked for an additive migration that
+   only changes the column's DEFAULT. SQLite (and so D1) has no `ALTER COLUMN … SET DEFAULT` (checked: a syntax error in
+   SQLite 3.51); changing a default means rebuilding the table (create, copy, drop, rename), which is not additive and
+   not safe beside a live hourly run. So both insert paths write the value: `ensureInstall` (a server's earliest command)
+   and `claimWelcome` (the install event; the INSERT part only, so a re-install keeps the stored delay). Every existing
+   row holds the 8 it was inserted with. The schema's `DEFAULT 8` no longer applies to any code path.
+   `NEW_REVEAL_DELAY_H = 20` lives in `src/game.js`; `test/helpers.js` stores 8 for its servers, as rows stored earlier hold.
+4. **`/bluff help` is per server now:** where and when the question goes (once a channel is set) and the server's own
+   reveal delay. One D1 read, no Discord call, so it is still answered at once (type 4).
+5. **The setup reply** states the reveal delay ("reveals the answer 20 hours later").
+6. **Re-register the command** after deploying: `cd discord && DISCORD_APP_ID=<application id> DISCORD_BOT_TOKEN=<bot token>
+   npm run register`. Until then Discord offers `/bluff setup` without `reveal`; nothing else depends on it.
+7. **Not changed:** the hand-drawn Discord mock on `web/public/discord.html` still shows "Answer at 22:00 UTC" (outside
+   this change's files).
+
+Verified: 49 tests (4 new, others updated). Mutation check on a scratch copy: 8 deliberate bugs each turned the suite red
+(the install event or the earliest command writing 8, a re-install overwriting the stored delay, setup ignoring `reveal`,
+no relative timestamp, the wrong timestamp style, help ignoring the server's delay, the option's bounds). Not verified: a
+real Discord client rendering the timestamps (Discord's documented `<t:…:t>` and `<t:…:R>` styles).
 
 ## Open questions (outside discord/, not changed)
 

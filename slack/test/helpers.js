@@ -121,9 +121,15 @@ export async function send(env, request) {
   return res;
 }
 
-export async function install(env, team = 'T1', { channel = null, hour = 14, roast = 0 } = {}) {
-  await env.DB.prepare('INSERT INTO installs (team_id, bot_token, channel_id, post_hour_utc, roast, installed_at) VALUES (?, ?, ?, ?, ?, ?)')
-    .bind(team, `xoxb-${team}`, channel, hour, roast, '2026-10-01T00:00:00Z').run();
+// `reveal` null = never set (8 hours).
+export async function install(env, team = 'T1', { channel = null, hour = 14, roast = 0, reveal = null } = {}) {
+  await env.DB.prepare('INSERT INTO installs (team_id, bot_token, channel_id, post_hour_utc, roast, reveal_delay_h, installed_at) VALUES (?, ?, ?, ?, ?, ?, ?)')
+    .bind(team, `xoxb-${team}`, channel, hour, roast, reveal, '2026-10-01T00:00:00Z').run();
 }
+
+// Slack date tokens as the bot writes them: `{time}` with an "HH:MM UTC" fallback, and the reveal's
+// `{date_short_pretty} {time}` with a "Mon D HH:MM UTC" fallback.
+export const clockToken = (iso) => `<!date^${Date.parse(iso) / 1000}^{time}|${iso.slice(11, 16)} UTC>`;
+export const revealToken = (iso, day) => `<!date^${Date.parse(iso) / 1000}^{date_short_pretty} {time}|${day} ${iso.slice(11, 16)} UTC>`;
 
 export { worker };
