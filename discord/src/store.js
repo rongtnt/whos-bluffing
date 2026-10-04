@@ -6,10 +6,19 @@ const changedOne = (res) => res.meta.changes === 1;
 
 export const getInstall = (db, guildId) => db.prepare('SELECT * FROM installs WHERE guild_id = ?').bind(guildId).first();
 
-// Discord sends no install callback, so a server's row is created the first time it uses a command.
+// A server's row comes from its install event (POST /events) or, when webhook events are off, its earliest command.
 export async function ensureInstall(db, guildId, now) {
   await db.prepare('INSERT OR IGNORE INTO installs (guild_id, installed_at) VALUES (?, ?)').bind(guildId, now).run();
   return getInstall(db, guildId);
+}
+
+// Install event: registers the server (no channel yet; a known server keeps its settings) and claims the hello for
+// this event. True for a new server or a new install; false for Discord's retry of an event already handled.
+export async function claimWelcome(db, guildId, now, eventTime) {
+  return changedOne(await db.prepare(
+    `INSERT INTO installs (guild_id, installed_at, welcomed) VALUES (?, ?, ?)
+     ON CONFLICT(guild_id) DO UPDATE SET welcomed = excluded.welcomed WHERE installs.welcomed IS NOT excluded.welcomed`,
+  ).bind(guildId, now, eventTime).run());
 }
 
 export const saveSetup = (db, guildId, { channel_id: channel, post_hour_utc: hour, roast }) =>

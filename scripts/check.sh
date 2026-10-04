@@ -34,6 +34,16 @@ say "slack: dry-run deploy"
 say "slack: no token/body logging"
 if grep -rn "console.log(" "$root/slack/src" 2>/dev/null; then echo "console.log found"; fail=1; else echo "clean"; fi
 
+say "discord: tests"
+( cd "$root/discord" && npm test --silent 2>&1 | grep -E "^# (tests|pass|fail)" ) || fail=1
+( cd "$root/discord" && npm test --silent >/dev/null 2>&1 ) || { echo "discord tests failed"; fail=1; }
+
+say "discord: dry-run deploy"
+( cd "$root/discord" && npx wrangler deploy --dry-run --outdir dist >/dev/null 2>&1 && echo "dry-run ok" ) || { echo "dry-run failed"; fail=1; }
+
+say "discord: no token/body logging"
+if grep -rn "console.log(" "$root/discord/src" 2>/dev/null; then echo "console.log found"; fail=1; else echo "clean"; fi
+
 say "items: counts"
 python3 - "$root/items/items.json" <<'PY' || fail=1
 import json, sys, collections

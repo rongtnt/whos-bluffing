@@ -1,5 +1,5 @@
-// Slash command definitions (exported for scripts/register-commands.mjs), every interaction handler, and the
-// post / reveal / recap actions the hourly tick shares with the commands.
+// Slash command definitions (exported for scripts/register-commands.mjs), every interaction handler, the
+// post / reveal / recap actions the hourly tick shares with the commands, and the install hello.
 // Discord needs an answer within 3 s: whatever needs no I/O answers at once (type 4); whatever needs I/O defers
 // (type 5 for commands; type 6 for button presses, which keeps a flow in one message) and then edits @original
 // through the interaction webhook.
@@ -22,7 +22,9 @@ const DISCORD_EPOCH_MS = 1_420_070_400_000;
 const MAX_CUSTOM_ID = 100;
 
 const [SUB, STRING, INTEGER, CHANNEL] = [1, 3, 4, 7];
-const GUILD_TEXT_CHANNELS = [0, 5]; // text and announcement channels
+const TEXT_CHANNEL = 0;
+const GUILD_TEXT_CHANNELS = [TEXT_CHANNEL, 5]; // text and announcement channels
+const WELCOME_TRIES = 3; // channels the install hello tries before giving up
 
 // One global /bluff command; guild installs and server channels only.
 export const COMMANDS = [{
@@ -277,7 +279,33 @@ async function revealNow(env, i) {
   return { content: done ? game.REVEALED : game.NOTHING_TO_REVEAL };
 }
 
-// ---- Setup, stats, recap -------------------------------------------------------------------------------------
+// ---- Install hello, setup, stats, recap ----------------------------------------------------------------------
+
+// The install hello, posted once per install event: the server's system channel, else its text channels in position
+// order. Stops at the post that lands and gives up quietly after WELCOME_TRIES posts (a server where Who's Bluffing may
+// not write anywhere is fine). Returns the channel id, or null.
+export async function welcomeGuild(env, guildId) {
+  const read = async (path) => {
+    const res = await discord(env, 'GET', path);
+    return res.ok ? res.json() : null;
+  };
+  let tries = 0;
+  const post = async (channelId) => {
+    tries += 1;
+    return (await discord(env, 'POST', `/channels/${channelId}/messages`, game.WELCOME)).ok;
+  };
+  const system = (await read(`/guilds/${guildId}`))?.system_channel_id;
+  if (system && (await post(system))) return system;
+  const channels = await read(`/guilds/${guildId}/channels`);
+  const text = (Array.isArray(channels) ? channels : [])
+    .filter((c) => c.type === TEXT_CHANNEL && c.id !== system)
+    .sort((a, b) => a.position - b.position);
+  for (const { id } of text) {
+    if (tries >= WELCOME_TRIES) break;
+    if (await post(id)) return id;
+  }
+  return null;
+}
 
 // Every option is optional: a missing one keeps its current value. A server without a channel gets this channel.
 async function setup(env, i, opts) {

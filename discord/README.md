@@ -15,6 +15,11 @@ server's top 5 and the bluff of the day.
 - **Points** follow the quadratic rule: 50% scores 0; 100% scores +100 if right and −300 if wrong.
 - **Mondays:** a recap of last week. It shows how often the server was right at each confidence level, the most
   calibrated member (named), the bluff count (80%+ sure and wrong), and the streak of days with an answer.
+- **When a server adds it:** one welcome message, in the server's system channel or else the text channel nearest the
+  top of the list that Who's Bluffing may post in: "Who's Bluffing? is in. One question a day, everyone stakes how sure
+  they are, the reveal shows who was bluffing. An admin runs /bluff setup channel:#channel to pick where it posts, and
+  anyone can try /bluff play right now." Daily questions start once an admin picks a channel. This needs the Webhook
+  Events URL (step 7).
 
 ## Commands
 
@@ -109,7 +114,21 @@ question, and the rate limit on `/api/*` exempts it. Without it every API call i
 request and one deliberately bad one, and saves only if the Worker answers both correctly. If saving fails, check
 DISCORD_PUBLIC_KEY.
 
-**7. Register the command (1 min).**
+**7. Webhook Events URL (1 min).** This tells the Worker when a server adds Who's Bluffing, so the server is
+registered and gets one welcome message before anyone there runs a command. Open the **Webhooks** page (left sidebar
+of your app in the Developer Portal):
+
+1. Set **Endpoint URL** (under **Endpoint**) to `WORKER_URL/events`.
+2. Turn on the **Events** toggle.
+3. Select the `APPLICATION_AUTHORIZED` event, and `APPLICATION_DEAUTHORIZED` too (optional, see below).
+4. Press **Save Changes**.
+
+Discord sends a PING to the URL on save, so, as in step 6, the Worker must already be deployed with
+`DISCORD_PUBLIC_KEY` set. Skipping this step loses only the welcome: a server is then registered at its earliest
+command. Discord documents `APPLICATION_DEAUTHORIZED` with the member who removed the app and no server, so it
+usually changes nothing; a removed server is noticed when its next daily post fails, which stops the posts there.
+
+**8. Register the command (1 min).**
 
 ```bash
 DISCORD_APP_ID=<application id> DISCORD_BOT_TOKEN=<bot token> npm run register    # prints: Registered: /bluff
@@ -117,10 +136,11 @@ DISCORD_APP_ID=<application id> DISCORD_BOT_TOKEN=<bot token> npm run register  
 
 Run it again whenever `COMMANDS` in `src/commands.js` changes. It replaces the whole list, so repeats are harmless.
 
-**8. Add it to your server (1 min).** Open `WORKER_URL/install` → pick your server → **Authorize**. That URL is the
-invite link. Share it, or use the Add App button that Discord shows on the app's profile.
+**9. Add it to your server (1 min).** Open `WORKER_URL/install` → pick your server → **Authorize**. That URL is the
+invite link. Share it, or use the Add App button that Discord shows on the app's profile. With step 7 done, the welcome
+message follows shortly (Discord does not promise webhook events in real time).
 
-**9. In Discord (2 min):**
+**10. In Discord (2 min):**
 
 ```
 /bluff setup channel:#general hour:14
@@ -158,8 +178,8 @@ required at 100.
    Information.
 4. Open the **App Directory** page: add the descriptions, tags and screenshots, then enable the listing.
 
-Requirements change over time; check https://discord.com/developers/docs before submitting. PRIVACY.md has no
-Discord section yet; one is needed before listing (suggested text in `NOTES.md` and the build report).
+Requirements change over time; check https://discord.com/developers/docs before submitting. PRIVACY.md covers
+Discord in its "Slack and Discord" paragraph.
 
 ## Secrets and vars (exact names)
 
@@ -177,15 +197,21 @@ Discord section yet; one is needed before listing (suggested text in `NOTES.md` 
 ```bash
 npm test                                       # all tests, mocked Discord and rounds API
 npx wrangler deploy --dry-run --outdir dist    # bundle check, uploads nothing
+npx wrangler d1 migrations apply whosbluffing-discord --remote   # new files in migrations/ only; repeats are harmless
 npx wrangler deploy
 npx wrangler tail                              # live logs (short error codes only)
 ```
+
+Apply migrations before deploying code that needs them. `0002_install_events.sql` adds the column the install events
+use; without it every install event fails, Discord retries it, and in the end Discord turns the Webhook Events URL off.
 
 ## Data
 
 Stored in D1:
 
 - The server id, the chosen channel, the post hour, the reveal delay and the roast flag.
+- When the server was added, and the timestamp of the install event that got the welcome message. The install event
+  also names the member who added the app; Who's Bluffing ignores that part and keeps nothing about them.
 - For each daily post: its message id and the day's question as the API served it.
 - For each answer: choice and confidence under `sha256(guild_id:user_id:SALT)`, plus points and right/wrong once the
   reveal settles them. The API keeps daily points back until the reveal, so nobody can peek.

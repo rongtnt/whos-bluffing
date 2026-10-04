@@ -1,7 +1,7 @@
-// Test doubles: D1 on node:sqlite (runs the real migration), a fetch mock for Discord and the rounds API,
-// Discord-signed interaction builders (a real Ed25519 key pair), and the hourly trigger.
+// Test doubles: D1 on node:sqlite (runs the real migrations), a fetch mock for Discord and the rounds API,
+// Discord-signed request builders (a real Ed25519 key pair), and the hourly trigger.
 import { DatabaseSync } from 'node:sqlite';
-import { readFileSync } from 'node:fs';
+import { readFileSync, readdirSync } from 'node:fs';
 import { createHash, generateKeyPairSync, sign } from 'node:crypto';
 import worker from '../src/index.js';
 
@@ -25,12 +25,16 @@ export const snowflake = (ms) => String(BigInt(ms - 1_420_070_400_000) << 22n);
 export const today = () => new Date().toISOString().slice(0, 10);
 export const points = (conf, correct) => Math.round(100 - 400 * (conf / 100 - (correct ? 1 : 0)) ** 2);
 
+const MIGRATIONS = new URL('../migrations/', import.meta.url);
+
 // Same call shapes as D1: prepare().bind().first() | .all() -> {results} | .run() -> {meta}; batch([...]).
 // `readDelay` (ms) delivers first() late, so two overlapping requests both read before either writes, as two
-// isolates can.
+// isolates can. Runs every migration in order, as `wrangler d1 migrations apply` does.
 export function fakeD1({ readDelay = 0 } = {}) {
   const db = new DatabaseSync(':memory:');
-  db.exec(readFileSync(new URL('../migrations/0001_init.sql', import.meta.url), 'utf8'));
+  for (const file of readdirSync(MIGRATIONS).filter((f) => f.endsWith('.sql')).sort()) {
+    db.exec(readFileSync(new URL(file, MIGRATIONS), 'utf8'));
+  }
   const statement = (sql, args = []) => ({
     bind: (...a) => statement(sql, a),
     first: async () => {
@@ -128,9 +132,9 @@ export const messageEdits = (calls) => discordCalls(calls, 'PATCH', /^\/api\/v10
 export const memberLists = (calls) => discordCalls(calls, 'GET', /^\/api\/v10\/guilds\/\d+\/members$/);
 export const channelOfPost = (call) => call.path.split('/')[4];
 
-export function signedRequest(payload, { ts = Math.floor(Date.now() / 1000), sig } = {}) {
+export function signedRequest(payload, { ts = Math.floor(Date.now() / 1000), sig, path = '/interactions' } = {}) {
   const body = JSON.stringify(payload);
-  return new Request('https://worker.test/interactions', {
+  return new Request(`https://worker.test${path}`, {
     method: 'POST',
     headers: { 'content-type': 'application/json', 'x-signature-timestamp': String(ts), 'x-signature-ed25519': sig ?? signBody(String(ts), body) },
     body,

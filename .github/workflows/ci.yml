@@ -19,6 +19,7 @@ jobs:
         run: |
           (cd web && npm ci --no-audit --no-fund)
           (cd slack && npm ci --no-audit --no-fund)
+          (cd discord && npm ci --no-audit --no-fund)
           (cd anki && uv sync --quiet)
       - name: repo-wide acceptance check
         env:

@@ -130,6 +130,13 @@ export const alreadyPosted = (guildId, post) =>
 
 // ---- Setup, stats, recap -------------------------------------------------------------------------------------
 
+// Posted once when a server adds Who's Bluffing (the install webhook event), before anyone has run a command.
+export const WELCOME = {
+  content: "Who's Bluffing? is in. One question a day, everyone stakes how sure they are, the reveal shows who was bluffing. " +
+    'An admin runs /bluff setup channel:#channel to pick where it posts, and anyone can try /bluff play right now.',
+  allowed_mentions: NO_PINGS,
+};
+
 export const channelHello = (hour) => ({
   content: `Who's Bluffing will post a question here every day at ${hourText(hour)}. Tap A or B, then say how sure you are.`,
   allowed_mentions: NO_PINGS,

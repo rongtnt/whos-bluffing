@@ -1,34 +1,62 @@
-// Who's Bluffing for Discord: the interactions endpoint, the install redirect, and the hourly tick
-// (reveal what is due, Monday recaps, then the daily question for servers whose hour has come).
+// Who's Bluffing for Discord: the interactions endpoint, the webhook events endpoint (server installs), the install
+// redirect, and the hourly tick (reveal what is due, Monday recaps, then the daily question for servers whose hour
+// has come).
 
 import { verifyDiscord } from './verify.js';
 import * as api from './api.js';
 import * as store from './store.js';
 import { isoDate } from './game.js';
-import { handleInteraction, installUrl, logError, postQuestion, postRecap, revealPost } from './commands.js';
+import { handleInteraction, installUrl, logError, postQuestion, postRecap, revealPost, welcomeGuild } from './commands.js';
 
 const MAX_BODY = 1 << 20;
 const MONDAY = 1;
 const CHANNEL_GONE = new Set([403, 404]);
+const WEBHOOK_EVENT = 1; // webhook events: 0 = PING, 1 = an event
+const USER_INSTALL = 1; // integration_type: 0 = server, 1 = a member's own account
 
 const textResponse = (body, status = 200) => new Response(body, { status, headers: { 'content-type': 'text/plain; charset=utf-8' } });
 
-async function interactions(request, env, ctx) {
+// Both Discord endpoints: the parsed body of a correctly signed request, or the Response to send instead.
+async function signedJson(request, env) {
   if (Number(request.headers.get('content-length') ?? 0) > MAX_BODY) return textResponse('Too large', 413);
   const raw = await request.text();
   const h = request.headers;
-  // Discord checks the endpoint with deliberately bad signatures and expects 401.
+  // Discord checks each endpoint with deliberately bad signatures and expects 401.
   if (!(await verifyDiscord(env.DISCORD_PUBLIC_KEY, h.get('x-signature-timestamp'), h.get('x-signature-ed25519'), raw))) {
     return textResponse('Invalid request signature', 401);
   }
-  let interaction;
   try {
-    interaction = JSON.parse(raw);
+    return JSON.parse(raw);
   } catch {
     return textResponse('Bad request', 400); // not logged: parse errors quote the input
   }
+}
+
+async function interactions(request, env, ctx) {
+  const interaction = await signedJson(request, env);
+  if (interaction instanceof Response) return interaction;
   if (interaction.type === 1) return Response.json({ type: 1 }); // PING -> PONG
   return handleInteraction(interaction, env, ctx);
+}
+
+// Webhook events: the PING on save, and APPLICATION_AUTHORIZED for a server install, which registers the server and
+// says hello once. Anything else is acknowledged and ignored (an error makes Discord retry and, in the end, drop the
+// URL). The D1 write happens before the 204, so if it fails Discord retries; the Discord calls run after it.
+async function events(request, env, ctx) {
+  const body = await signedJson(request, env);
+  if (body instanceof Response) return body;
+  const event = (body.type === WEBHOOK_EVENT && body.event) || {};
+  const guildId = event.data?.guild?.id;
+  if (guildId && event.type === 'APPLICATION_AUTHORIZED' && event.data.integration_type !== USER_INSTALL) {
+    // A retry carries the same event timestamp: it finds the hello claimed and posts nothing.
+    if (await store.claimWelcome(env.DB, guildId, new Date().toISOString(), event.timestamp ?? '')) {
+      ctx.waitUntil(welcomeGuild(env, guildId).catch((err) => logError('welcome', err)));
+    }
+  }
+  // Discord documents this event with `user` only, so it acts only if a server is named. Without it, the next daily
+  // post's 403/404 notices the uninstall and clears the channel, as before.
+  if (guildId && event.type === 'APPLICATION_DEAUTHORIZED') await store.clearChannel(env.DB, guildId);
+  return textResponse(null, 204);
 }
 
 // ---- Hourly tick --------------------------------------------------------------------------------------------
@@ -74,6 +102,7 @@ export default {
       const { pathname } = new URL(request.url);
       const route = `${request.method} ${pathname}`;
       if (route === 'POST /interactions') return await interactions(request, env, ctx);
+      if (route === 'POST /events') return await events(request, env, ctx);
       if (route === 'GET /install') return Response.redirect(installUrl(env), 302);
       return textResponse('Not found', 404);
     } catch (err) {

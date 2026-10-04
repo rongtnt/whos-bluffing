@@ -111,16 +111,103 @@ run them under Node 22 against a real key pair.
 - **Logging:** one `console.error` helper prints a tag plus a status or message. It never prints bodies, tokens or env
   values.
 - **Extra files:** `package.json` and `package-lock.json` (wrangler as the only dev dependency, no runtime
-  dependencies), and `test/helpers.js` (a D1 fake on `node:sqlite` running the real migration, the fetch mock, and
-  signed requests from a real Ed25519 key pair).
+  dependencies), and `test/helpers.js` (a D1 fake on `node:sqlite` running the real migrations in order, the fetch
+  mock, and signed requests from a real Ed25519 key pair).
+
+## Install events (`POST /events`, 2026-10-04)
+
+Interactions carry no install notice, so a server used to be registered only at its earliest command, and an admin
+who added the bot and ran nothing never heard from it. Discord's webhook events report installs over plain HTTP, so
+the Worker still needs no gateway connection.
+
+**Payload**, checked against Discord's docs source (`developers/events/webhook-events.mdx` in
+`discord/discord-api-docs`, main branch, read 2026-10-04; published at
+https://docs.discord.com/developers/events/webhook-events). Field names and types as documented, comments mine:
+
+```jsonc
+{
+  "version": 1,                       // always 1
+  "application_id": "<snowflake>",
+  "type": 1,                          // 0 = PING, 1 = an event
+  "event": {                          // present when type is 1
+    "type": "APPLICATION_AUTHORIZED", // or "APPLICATION_DEAUTHORIZED", "ENTITLEMENT_CREATE", ...
+    "timestamp": "2024-10-18T14:42:53.064834",  // ISO8601, when the event happened (the docs' example value)
+    "data": {
+      "integration_type": 0,          // optional: 0 = server install, 1 = installed to a member's own account
+      "scopes": ["applications.commands", "bot"],
+      "user": { },                    // the member who authorized the app (a user object)
+      "guild": { }                    // a guild object; only when integration_type is 0
+    }
+  }
+}
+```
+
+`APPLICATION_DEAUTHORIZED` is documented with `data: { "user": { } }` only: no guild and no integration_type.
+
+Response rules from the same page: answer every event with 204 and an empty body within 3 seconds; a PING answer needs a
+valid Content-Type; an unanswered event is retried with exponential backoff for up to 10 minutes, and an app that
+fails too often stops getting events (Discord emails the owner). The signature is the same Ed25519 pair of headers as
+interactions, checked on every request; Discord probes with bad signatures and removes a URL that does not answer 401.
+
+**Handling** (`events` in `src/index.js`):
+
+- The same check as `/interactions`: both routes go through `signedJson` (size limit, `verifyDiscord`, JSON parse).
+- PING (type 0) → 204. `APPLICATION_AUTHORIZED` with a `guild.id` and an `integration_type` other than 1 → register the
+  server and post the welcome. Everything else → 204, ignored: an error status would make Discord retry and, in the
+  end, drop the URL.
+- The D1 write runs before the 204, so a D1 failure answers 500 and Discord retries. The Discord calls run in
+  `ctx.waitUntil` after the 204.
+- Nothing from `user` is read or stored.
+
+**Idempotency key: `(guild_id, event.timestamp)`**, kept in the new column `installs.welcomed`
+(`migrations/0002_install_events.sql`). One statement registers the server and claims the welcome:
+
+```sql
+INSERT INTO installs (guild_id, installed_at, welcomed) VALUES (?, ?, ?)
+ON CONFLICT(guild_id) DO UPDATE SET welcomed = excluded.welcomed WHERE installs.welcomed IS NOT excluded.welcomed
+```
+
+It changes one row for a new server or a new install event, and none for a retry of an event already handled (a retry
+is the same event, so the same timestamp). The welcome is posted only when a row changed. A known server keeps its
+channel, hour and roast setting. The docs give webhook events no id; the timestamp is the stable field there is.
+
+**Channel choice** (`welcomeGuild` in `src/commands.js`): `GET /guilds/{id}` with the bot token → `system_channel_id`.
+If that is unset or the post there fails, `GET /guilds/{id}/channels` → text channels (type 0), the system channel left
+out, sorted by `position`. `POST /channels/{id}/messages` goes down that order and stops at the post that returns 2xx;
+after 3 posts in all it stops without logging, since a server where Who's Bluffing may not write anywhere is fine. A
+thrown error (network) is logged with a short reason only.
+
+**Deviations from the brief:**
+
+1. **Portal location.** The docs put the setting on the app's **Webhooks** page (Endpoint URL, Events toggle, event
+   list, Save Changes), not under General Information. The README follows the docs.
+2. **`APPLICATION_DEAUTHORIZED` names no server.** Its documented data is `user` only, and the docs describe it as a
+   member revoking the app's authorization (token revocation, User Settings → Authorized Apps, account bans). So the
+   handler clears a server's channel only if the payload carries a `guild.id`, which the docs do not promise. Removed
+   servers are still noticed as before: the next daily post gets 403/404 and the channel is cleared.
+3. **"Inactive" means no channel** (`store.clearChannel`), not a new column: `dueInstalls` and `recapInstalls` already
+   skip `channel_id IS NULL`. `/bluff setup` makes the server active again.
+4. **Copy:** a bare `/bluff` cannot run, so the welcome says `/bluff setup channel:#channel` and `/bluff play`.
+5. **`integration_type` is optional in the docs,** so the check is "a guild is present and the type is not 1" rather
+   than "the type is 0". User installs (type 1) are ignored either way.
+6. If Discord sends a new `APPLICATION_AUTHORIZED` for a server that still has the bot (a re-authorization), it is a
+   new event, and the welcome goes out again.
+
+**Verified:** 9 new tests in `test/events.test.js` (45 in all) with mocked Discord. Mutation check on a scratch copy:
+12 deliberate bugs in the new code each turned the suite red (no idempotency gate, key not the event timestamp, no
+3-post cap, no position sort, system channel retried, non-text channels tried, user installs handled, deauthorize
+ignored, Discord awaited before the 204, no signature check, 200 instead of 204, posting on after the system channel
+took it). Two mutants survived as equivalent for any documented input: ignoring the outer `type` (a PING carries no
+`event`) and reading a failed GET's JSON body (the error body has no `system_channel_id` and is not an array).
+
+**Not verified:** real Discord (no login). That a retry carries the same `timestamp` is inferred from what the field means
+(the time of the event), not stated in the docs. The `GET /guilds/{id}` right after the event assumes the bot user has
+joined by then; if not, the GETs fail, the welcome is skipped quietly, and the server is still registered.
 
 ## Open questions (outside discord/, not changed)
 
-- **PRIVACY.md has no Discord section.** It is needed for verification and the App Directory. Suggested text:
-  "**Discord:** the Discord app stores, per server, the server id, the chosen channel, the posting hour, the roast
-  setting, its own daily posts, and per-day answers (choice, confidence, points) keyed by a salted hash of the member
-  id. It never stores messages, usernames or member ids. Display names are fetched from Discord only while drawing a
-  leaderboard."
+- **PRIVACY.md** covers Discord in its "Slack and Discord" paragraph (line 21), so the earlier open question is closed.
+  It does not mention the install time or the welcome timestamp; both describe the server, not a member.
 - Resolved by the contract follow-ups: the rate-limit concern (the `x-bluff-bot` header is exempt) and early
   peeking (`dq-` answers no longer return the truth).
 - **PREREG's MAU definition** lists "an in-channel Slack answer". `docs/api-rounds.md` counts a Discord in-channel
@@ -133,12 +220,12 @@ cd discord
 npm test
 npx wrangler deploy --dry-run --outdir dist
 grep -rn "console.log(" src                                         # expect no output
-grep -n -i -E "user_id|username|global_name|nick" src/store.js migrations/0001_init.sql   # expect no output
+grep -n -i -E "user_id|username|global_name|nick" src/store.js migrations/*.sql   # expect no output
 ```
 
 ## Verified and not verified
 
-- Verified: 36 tests with mocked Discord and a mocked rounds API, against the real migration on SQLite. The wrangler
+- Verified (v0.1; install events are covered in their own section above): 36 tests with mocked Discord and a mocked rounds API, against the real migration on SQLite. The wrangler
   4.147.0 dry-run bundle builds. Ed25519 was checked in workerd. Mutation check: 24 deliberate bugs, each of which
   turned the suite red:
   - no salt; no bot key header; no signature check; no revision flag
