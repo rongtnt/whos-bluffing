@@ -9,7 +9,7 @@ never "is published", until it is out.
 
 ## App description (General Information, 301 characters)
 
-One question a day for your server: which is longer, the Nile or the Danube? Pick A or B, then say how sure you are, from 50% to 100%. Eight hours later the answer appears with its source, how the server split, the top 5 and the bluff of the day. Being sure only pays when you are right. Free, no ads.
+One question a day for your server: which is longer, the Nile or the Danube? Pick A or B, then say how sure you are, from 50% to 100%. At reveal time the answer appears with its source, how the server split, the top 5 and the bluff of the day. Being sure only pays when you are right. Free, no ads.
 
 ## Detailed description (Discovery Settings, Markdown)
 
