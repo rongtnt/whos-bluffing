@@ -322,6 +322,7 @@
     "grid_label": "Your answers, question by question",
     "sq_label": "Question {i}: {verdict} at {conf}% sure, {points} points",
     "detail_n": "Question {i} of {n}",
-    "detail_pick": "You picked {letter} · {name} at {conf}% sure."
+    "detail_pick": "You picked {letter} · {name} at {conf}% sure.",
+    "fun_label": "Did you know"
   }
 }

@@ -22,6 +22,10 @@ const ACTIONS_URL = 'https://github.com/rongtnt/whos-bluffing/actions'; // the r
     if (saved === 'light' || saved === 'dark') root.dataset.theme = saved;
   } catch { /* storage blocked: follow the system theme */ }
   root.classList.add('js'); // styles.css hides below-the-game content until the page is .ready
+  // Before the first paint: what the constants switch on is shown by styles.css at once, so nothing moves at load.
+  if (COMMUNITY_INVITE_URL) root.classList.add('has-community');
+  if (CONTACT_EMAIL) root.classList.add('has-contact');
+  if (ACTIONS_URL) root.classList.add('has-actions');
   const isDark = () => (root.dataset.theme ? root.dataset.theme === 'dark' : prefersDark.matches);
   const all = (sel) => document.querySelectorAll(sel);
 

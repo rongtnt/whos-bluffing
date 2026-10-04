@@ -2,7 +2,7 @@
 // then the result with today's histogram, streak, 30-day hit rate and a share card. Scoring is server-side
 // (docs/api-daily.md). Local state: whosbluffing_anon (ui.js) and whosbluffing_daily = {date: play}, so a reload resumes the game.
 // The page's hero holds the "Play today's game" button; ctx.setPlay(label, action) tells it what to do.
-import { html, api, store, anonId } from './ui.js';
+import { html, api, store, anonId, fmtMonth } from './ui.js';
 import { showRange } from './test.js';
 import { renderShare } from './share.js';
 
@@ -12,8 +12,8 @@ const DAY_MS = 86400000;
 const shiftDay = (date, n) => new Date(Date.parse(`${date}T00:00:00Z`) + n * DAY_MS).toISOString().slice(0, 10);
 
 // Years print without separators or unit (1969, not 1,969 year); everything else en-US style, with its unit.
-export const fmtNumber = (v, unit) => (unit === 'year' ? String(v) : v.toLocaleString('en-US', { maximumFractionDigits: 3 }));
-export const fmtValue = (v, unit) => (unit === 'year' ? String(v) : `${fmtNumber(v, unit)} ${unit}`);
+export const fmtNumber = (v, unit) => (unit === 'year' ? String(v) : unit === 'month' ? fmtMonth(v) : v.toLocaleString('en-US', { maximumFractionDigits: 3 }));
+export const fmtValue = (v, unit) => (unit === 'year' || unit === 'month' ? fmtNumber(v, unit) : `${fmtNumber(v, unit)} ${unit}`);
 
 // i18n key of the one-line calibration note under an answer.
 export const noteKey = (a) => (a.hit ? 'daily.note_hit' : a.truth > a.high ? 'daily.note_above' : 'daily.note_below');

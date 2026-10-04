@@ -197,3 +197,103 @@ test('status page: verdicts for the server check and the KPI run; press files ex
     assert.deepEqual(pngSize(readFileSync(new URL(`public/press/${file}`, WEB))), [Number(w), Number(h)], file);
   }
 });
+
+// --- the AI pack (items/ai_curated.json): months, reveal facts, reaction lines, the home example card --------------
+
+test('AI pack: month values (YYYYMM) read as a short month and a four-digit year in every formatter', async () => {
+  const { fmtValue: endValue } = await import('../public/round-end.js');
+  const { fmtValue: dailyValue, fmtNumber } = await import('../public/daily.js');
+  const { fmtMonth } = await import('../public/ui.js');
+  for (const f of [endValue, dailyValue, fmtNumber]) {
+    assert.equal(f(202101, 'month'), 'Jan 2021');
+    assert.equal(f(202211, 'month'), 'Nov 2022');
+  }
+  assert.equal(fmtMonth(199304), 'Apr 1993');
+  assert.equal(endValue(1969, 'year'), '1969'); // unchanged
+  assert.equal(endValue(-2560, 'year'), '2560 BC');
+  assert.equal(endValue(175000000000, 'parameters'), '175,000,000,000 parameters');
+});
+
+test('AI pack: the answer carries the pair\'s reveal fact and category; the fact never reaches the browser\'s pool.json', async () => {
+  const { answer } = await import('../functions/_rounds.js');
+  const { publicPool, serverPool } = await import('../scripts/sync-items.js');
+  const day = DATA.rounds['2026-10-05'];
+  assert.ok(day, 'the ranked day 2026-10-05 exists');
+  const slot1 = DATA.pairs.get(day.ranked[0]);
+  const [a, b] = [DATA.items.get(slot1.a_id), DATA.items.get(slot1.b_id)];
+  assert.equal(a.category, 'ai_timeline'); // slot 1 is the day's AI pair (CHANGELOG 2026-10-04 night)
+  const fun = a.fun || b.fun;
+  assert.ok(fun && fun.length <= 140, 'slot 1 has a reveal fact');
+  const db = openD1();
+  const plain = [...DATA.pairs.values()].find((p) => !DATA.items.get(p.a_id).fun && !DATA.items.get(p.b_id).fun);
+  await db.prepare('INSERT INTO rounds (round_id, mode, date, items, created_at, difficulty) VALUES (?, ?, ?, ?, ?, ?)')
+    .bind('AAAAAAAAAAA2', 'quick', NOW.toISOString().slice(0, 10), JSON.stringify([slot1.id, plain.id]), NOW.toISOString(), 'normal').run();
+  const r = await answer(db, DATA, { round_id: 'AAAAAAAAAAA2', item_id: slot1.id, choice: slot1.truth, conf: 80, rt_ms: 3000, anon_id: 'aiPairTester'.padEnd(22, 'x'), surface: 'web' }, NOW);
+  assert.equal(r.status, 200, JSON.stringify(r.body));
+  assert.deepEqual(r.body.truth, { a_value: a.answer, b_value: b.answer, unit: 'month', a_source: a.source, b_source: b.source, fun, category: 'ai_timeline' });
+  const other = await answer(db, DATA, { round_id: 'AAAAAAAAAAA2', item_id: plain.id, choice: 0, conf: 80, rt_ms: 1, anon_id: 'x'.repeat(22), surface: 'web' }, NOW);
+  assert.equal(other.status, 200);
+  assert.ok(!('fun' in other.body.truth), 'no fact when neither item has one');
+  const pool = { version: 1, items: [{ id: 'w0001', category: 'ai_timeline', en: { prompt: 'p', unit: 'month' }, answer: 202101, accept: [1, 2], source: 's', name: 'n', fun: 'A fact.' }] };
+  assert.equal(serverPool(pool).items[0].fun, 'A fact.');
+  assert.ok(!('fun' in publicPool(pool).items[0]));
+  assert.ok(!JSON.stringify(json('public/pool.json')).includes(fun), 'public/pool.json holds no reveal fact');
+});
+
+test('AI pack: the reveal and the detail card show the fact under the sources with a "Did you know" label, only when present', async () => {
+  const { detailCard } = await import('../public/round-end.js');
+  const en = json('public/i18n/en.json');
+  const t = (key, vars = {}) => key.split('.').reduce((o, k) => o?.[k], en).replace(/\{(\w+)\}/g, (m, k) => (k in vars ? vars[k] : m));
+  const truth = { a_value: 202211, b_value: 202101, unit: 'month', a_source: 'https://en.wikipedia.org/wiki/ChatGPT', b_source: 'https://en.wikipedia.org/wiki/Anthropic' };
+  const st = (fun) => ({ items: [{ id: 'p00001', prompt: 'Which came first?', a: 'ChatGPT (released)', b: 'Anthropic (founded)' }],
+    answers: { p00001: { choice: 1, conf: 80, correct: true, points: 84, truth: { ...truth, ...(fun && { fun }) } } } });
+  const withFun = String(detailCard(st('Anthropic was founded in January 2021 by seven former OpenAI employees.'), 0, t));
+  assert.match(withFun, /Nov 2022 .*Jan 2021|Jan 2021[\s\S]*Nov 2022/);
+  assert.match(withFun, /<\/ul>\n<p class="fun"><span class="fun-label">Did you know<\/span> Anthropic was founded in January 2021 by seven former OpenAI employees\.<\/p>/);
+  assert.doesNotMatch(String(detailCard(st(null), 0, t)), /class="fun"/);
+  assert.match(read('public/rounds.js'), /\$\{a\.truth\.fun \? html`<p class="fun"><span class="fun-label">\$\{t\('rounds\.fun_label'\)\}<\/span> \$\{a\.truth\.fun\}<\/p>` : ''\}/);
+});
+
+test('AI pack: reaction lines are posts/ai-humor.md section 1, word for word, and only AI pairs outside class mode use them', async () => {
+  const { REACTIONS, AI_SURE, reactionBucket, pickReaction, isAiPair } = await import('../public/reactions.js');
+  const md = readFileSync(new URL('../../posts/ai-humor.md', import.meta.url), 'utf8');
+  const sec = md.slice(md.indexOf('## 1.'), md.indexOf('## 2.'));
+  const lines = (from, to) => [...sec.slice(sec.indexOf(from), to ? sec.indexOf(to) : undefined).matchAll(/^- (.+)$/gm)].map((m) => m[1]);
+  const right = lines('**Right', '**Wrong');
+  const wrong = lines('**Wrong');
+  const strip = (l) => l.replace(/ \(sure\)$/, '');
+  assert.deepEqual(REACTIONS.ai_right, right.map(strip));
+  assert.deepEqual(REACTIONS.ai_wrong, wrong.map(strip));
+  assert.deepEqual([...AI_SURE], [...right, ...wrong].filter((l) => l.endsWith(' (sure)')).map(strip));
+  const ai = (correct, conf) => ({ correct, conf, truth: { category: 'ai_timeline' } });
+  const plain = (correct, conf) => ({ correct, conf, truth: { category: 'river_length' } });
+  assert.equal(isAiPair(ai(true, 80)), true);
+  assert.equal(isAiPair({ category: 'ai_params' }), true);
+  assert.equal(isAiPair(plain(true, 80)), false);
+  assert.equal(reactionBucket([ai(true, 80)], 0, 10), 'ai_right');
+  assert.equal(reactionBucket([ai(false, 50)], 0, 10), 'ai_wrong');
+  assert.equal(reactionBucket([ai(true, 70), ai(true, 70), ai(true, 70)], 2, 10), 'ai_right'); // AI lines even on a streak
+  assert.equal(reactionBucket([ai(false, 80)], 0, 10, { mild: true }), 'wrong_mid'); // class mode: the general lines
+  assert.equal(reactionBucket([plain(true, 80)], 0, 10), 'right_mid');
+  for (let seed = 1; seed <= 60; seed += 1) {
+    const rand = seeded(seed);
+    const low = pickReaction([ai(false, 60)], 0, 10, new Set(), { rand });
+    assert.ok(REACTIONS.ai_wrong.includes(low.template) && !AI_SURE.has(low.template), `seed ${seed}: "${low.template}" at 60%`);
+    const sure = pickReaction([ai(false, 100)], 0, 10, new Set(), { rand });
+    assert.ok(REACTIONS.ai_wrong.includes(sure.template), sure.template);
+    const mild = pickReaction([ai(true, 90)], 0, 10, new Set(), { rand, mild: true });
+    assert.ok(!REACTIONS.ai_right.includes(mild.template), `class mode got "${mild.template}"`);
+  }
+  assert.equal(pickReaction([ai(false, 90)], 0, 10, new Set(), { rand: () => 0.3 }).text.includes('{conf}'), false);
+});
+
+test('home page: the example card is the AI question (Anthropic, Jan 2021, right at 80%)', () => {
+  const home = read('public/index.html');
+  const card = home.match(/<figure class="hero-demo" aria-hidden="true">[\s\S]*?<\/figure>/)[0];
+  assert.match(card, /<p class="demo-q">Which came first\?<\/p>/);
+  assert.match(card, /<span class="is-true"><b>✓<\/b><span>Anthropic \(founded\)<small>Jan 2021<\/small><\/span><\/span><span><b>B<\/b><span>ChatGPT \(released\)<small>Nov 2022<\/small><\/span><\/span>/);
+  assert.match(card, /<span class="on">80%<\/span>/);
+  assert.match(card, /<p class="demo-verdict">✓ Right at 80% sure · \+84 points<\/p>/);
+  assert.match(card, /<figcaption>An example question<\/figcaption>/);
+  assert.doesNotMatch(card, /Nile|Danube/);
+});

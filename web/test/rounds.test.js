@@ -180,7 +180,7 @@ test('answer: server scores it; the first answer is final; 404 for a pair outsid
   const body = { round_id: `rk-${DAY}`, item_id: id, choice: p.truth, conf: 80, rt_ms: 2500, anon_id: anon('a'), surface: 'web' };
   const first = await answer(db, DATA, body, NOW);
   const [a, b] = [DATA.items.get(p.a_id), DATA.items.get(p.b_id)];
-  assert.deepEqual(first.body, { correct: true, truth: { a_value: a.answer, b_value: b.answer, unit: a.en.unit, a_source: a.source, b_source: b.source },
+  assert.deepEqual(first.body, { correct: true, truth: { a_value: a.answer, b_value: b.answer, unit: a.en.unit, a_source: a.source, b_source: b.source, category: a.category },
     points: 84, total: 84, choice: p.truth, conf: 80 });
   const repeat = await answer(db, DATA, { ...body, choice: 1 - p.truth, conf: 100 }, NOW);
   assert.deepEqual(repeat, first); // idempotent per (anon_id, round_id, item_id)

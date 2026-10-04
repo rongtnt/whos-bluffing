@@ -217,10 +217,12 @@ export function pairView(data, id) {
   return { id, prompt: template(data, p).prompt, a: data.items.get(p.a_id).name, b: data.items.get(p.b_id).name };
 }
 
+// Both values and sources; `fun`, a curated reveal fact (the AI pack), when either item has one (the first non-empty).
 function truthView(data, p) {
   const a = data.items.get(p.a_id);
   const b = data.items.get(p.b_id);
-  return { a_value: a.answer, b_value: b.answer, unit: a.en.unit, a_source: a.source, b_source: b.source };
+  const fun = a.fun || b.fun;
+  return { a_value: a.answer, b_value: b.answer, unit: a.en.unit, a_source: a.source, b_source: b.source, ...(fun && { fun }) };
 }
 
 // {kind: 'ranked'|'question', date} or {kind: 'quick'}; null when the id has no valid shape.
@@ -378,7 +380,8 @@ function answerBodyError(b) {
   return null;
 }
 
-const answerBody = (data, p, a, total) => ({ correct: Boolean(a.correct), truth: truthView(data, p), points: a.points, total, choice: a.choice, conf: a.conf });
+// truth.category lets the web game pick the AI pack's reaction lines (categories ai_*).
+const answerBody = (data, p, a, total) => ({ correct: Boolean(a.correct), truth: { ...truthView(data, p), category: data.items.get(p.a_id).category }, points: a.points, total, choice: a.choice, conf: a.conf });
 
 export async function answer(db, data, b, now) {
   const bad = answerBodyError(b);

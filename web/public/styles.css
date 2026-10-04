@@ -593,6 +593,12 @@ button.pick:hover { border-color: var(--accent); }
   .type-tiles { grid-template-columns: repeat(3, minmax(0, 1fr)); }
 }
 
+/* Set constants (site.js marks <html> before the first paint) show their links at once and hide the "soon" lines */
+.has-community [data-community-soon], .has-actions [data-actions-soon] { display: none !important; }
+.has-community [data-community-join][hidden] { display: inline-flex !important; }
+.has-contact p[data-contact][hidden] { display: block !important; }
+.has-contact span[data-contact][hidden], .has-actions a[data-actions][hidden] { display: inline !important; }
+
 /* Community, status, press */
 .status { padding-bottom: 40px; }
 .status-grid { display: grid; gap: 12px; margin: 8px 0 16px; }
@@ -650,6 +656,9 @@ button.pick:hover { border-color: var(--accent); }
 /* little cards in brand green and, every third one, a small diamond in the accent colour (the pip) */
 .confetti.anim i { position: absolute; width: 7px; height: 10px; border-radius: 2px; background: var(--hit); opacity: 0; animation: confetti 0.6s var(--d, 0ms) cubic-bezier(0.15, 0.7, 0.3, 1) backwards; }
 .round-kind { margin: 0 0 12px; color: var(--muted); font-weight: 700; }
+/* The AI pack's reveal fact, under the sources */
+.fun { margin: 2px 0 12px; color: var(--muted); font-size: var(--fs-6); line-height: 1.45; }
+.fun-label { display: inline-block; margin-right: 6px; padding: 1px 7px; border-radius: 6px; background: var(--accent-soft); color: var(--accent); font-size: 11px; font-weight: 800; letter-spacing: 0.04em; text-transform: uppercase; vertical-align: 1px; }
 .result-grid { display: grid; grid-template-columns: repeat(10, minmax(0, 44px)); gap: 6px; margin: 4px 0 8px; }
 .sq { width: 100%; min-height: 0; aspect-ratio: 1; padding: 0; border: 0; border-radius: 22%; background: var(--hit); transition: transform 0.15s ease-out; }
 .sq.miss { background: var(--miss); }

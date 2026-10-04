@@ -127,6 +127,27 @@ export const REACTIONS = {
     ['Momentum: gone.', 'Momentum: paused.'],
     "That's the risk of living at 100%.",
   ],
+  // The AI pack (pair categories ai_*), copied from posts/ai-humor.md section 1; a line in AI_SURE needs a stake of 90%+.
+  ai_right: [
+    "Shipped before the competitor's blog post. Nice.",
+    "Correct, and released without a waitlist.",
+    "Right. No system card needed for that one.",
+    "Correct at {conf}%. Better calibrated than most launch dates.",
+    "Right, and nobody had to rename it afterwards.",
+    "Right. In a lab, that answer would ship as v2-pro-max-preview.",
+    "Correct, in less time than a model naming meeting.",
+    "Right, and nobody had to announce it in a livestream.",
+  ],
+  ai_wrong: [
+    "Confident, unverified, and already deprecated.",
+    "Somewhere a lab is drafting a safety post about that answer.",
+    "{conf}% sure and wrong. The labs call that a hallucination.",
+    "Wrong, but announced with the confidence of a launch event.",
+    "Not quite. A new version of that answer ships this afternoon.",
+    "Wrong. It won't be mentioned in the release notes.",
+    "That answer has been rolled back.",
+    "Wrong at {conf}%. The benchmark looked so promising.",
+  ],
   last: [ // the last question of a round
     "That's the round. Let's count the damage.",
     "That's the lot. Drumroll, please.",
@@ -138,9 +159,17 @@ export const REACTIONS = {
   ],
 };
 
-// The bucket for answer k of n; answers[0..k] = [{correct, conf}] in round order (later ones are ignored).
-export function reactionBucket(answers, k, n) {
+// AI-pack lines written for a stake of 90% or more.
+export const AI_SURE = new Set(["Confident, unverified, and already deprecated.", "{conf}% sure and wrong. The labs call that a hallucination.", "Wrong, but announced with the confidence of a launch event."]);
+
+// Is answer a about an AI-pack pair? (truth.category from POST /api/round/answer)
+export const isAiPair = (a) => /^ai_/.test(a?.category ?? a?.truth?.category ?? '');
+
+// The bucket for answer k of n; answers[0..k] = [{correct, conf, category?}] in round order (later ones are ignored).
+// An AI-pack pair takes the AI lines, except in mild mode (class mode), which keeps the general ones.
+export function reactionBucket(answers, k, n, { mild = false } = {}) {
   const a = answers[k];
+  if (isAiPair(a) && !mild) return a.correct ? 'ai_right' : 'ai_wrong';
   if (k === n - 1) return 'last';
   const run = streak(answers, k);
   if (!a.correct && run % 3 === 0) return 'streak_wrong';
@@ -165,8 +194,8 @@ const fill = (line, vars) => line.replace(/\{(conf|run)\}/g, (m, k) => String(va
 // One line for answer k: a line from its bucket not used yet in this round (`used` holds the template texts), at random.
 // Returns {bucket, template, text}. Only when a bucket is spent does a line come round again.
 export function pickReaction(answers, k, n, used = new Set(), { mild = false, rand = Math.random } = {}) {
-  const bucket = reactionBucket(answers, k, n);
-  const all = linesOf(bucket, mild);
+  const bucket = reactionBucket(answers, k, n, { mild });
+  const all = linesOf(bucket, mild).filter((l) => !AI_SURE.has(l) || answers[k].conf >= 90);
   const fresh = all.filter((l) => !used.has(l));
   const pool = fresh.length ? fresh : all;
   const template = pool[Math.floor(rand() * pool.length)];

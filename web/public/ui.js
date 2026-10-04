@@ -54,6 +54,10 @@ export const pct = (x) => Math.round(x * 100);
 export const signed = (n) => (n > 0 ? `+${n}` : n < 0 ? `−${-n}` : '0');
 export const num = (x) => x.toLocaleString('en-US', { maximumFractionDigits: 3 });
 
+// A month stored as YYYYMM (the AI pack's unit `month`): 202211 -> "Nov 2022".
+const MONTHS = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'];
+export const fmtMonth = (v) => `${MONTHS[(v % 100) - 1] ?? '?'} ${Math.floor(v / 100)}`;
+
 export const chartLabels = (t) => ({
   title: t('results.chart_title'), x: t('results.chart_x'), y: t('results.chart_y'), diag: t('results.chart_diag'),
 });

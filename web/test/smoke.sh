@@ -547,6 +547,25 @@ expect "unknown pack -> 400" 400 'r.error === "unknown pack"'
 req GET "/api/round?mode=quick"
 expect "no pack -> all" 200 'r.pack === "all" && r.items.length === 10'
 
+echo "== AI pack: the day's AI pair (2026-10-05, slot 1) end to end: month values, reveal fact, category"
+# The ranked day is in the future during a smoke run, so its pair goes into a quick round written straight into the local D1.
+AI_PAIR=$(node -e 'process.stdout.write(require("./functions/_rounds.json")["2026-10-05"].ranked[0])')
+AI_EXPECT=$(node -e '
+  const pool = new Map(require("./functions/_pool.json").items.map((i) => [i.id, i]));
+  const p = require("./functions/_pairs.json").pairs.find((x) => "p" + String(x[0]).padStart(5, "0") === process.argv[1]);
+  const [a, b] = [p[1], p[2]].map((n) => pool.get("w" + String(n).padStart(4, "0")));
+  process.stdout.write(JSON.stringify({ a: a.answer, b: b.answer, fun: a.fun || b.fun, truth: p[3], cat: a.category }));' "$AI_PAIR")
+"${WRANGLER[@]}" d1 execute whosbluffing --local --persist-to "$STATE" --command \
+  "INSERT INTO rounds (round_id, mode, date, items, created_at, difficulty) VALUES ('AIAIAIAIAIA2', 'quick', '$TODAY', '[\"$AI_PAIR\"]', '${TODAY}T00:00:00Z', 'normal')" > /dev/null 2>&1 \
+  || fail "insert the AI pair's quick round"
+req POST /api/round/answer "$(rbody AIAIAIAIAIA2 "$AI_PAIR" "$HOST" web 1 80)"
+expect "answer the AI pair $AI_PAIR -> month values (YYYYMM), its reveal fact and category ai_timeline, 84 points" 200 \
+  "const e = $AI_EXPECT; r.correct === true && r.points === 84 && r.truth.unit === 'month' && r.truth.a_value === e.a && r.truth.b_value === e.b && r.truth.a_value > 190000 && r.truth.fun === e.fun && r.truth.fun.length <= 140 && r.truth.category === 'ai_timeline'"
+req GET /pool.json
+printf '%s' "$BODY" | node -e 'const s = require("fs").readFileSync(0, "utf8"); process.exit(s.includes(JSON.parse(process.argv[1]).fun) ? 1 : 0)' "$AI_EXPECT" \
+  || fail "public/pool.json must not carry the reveal fact"
+pass "GET /pool.json -> no reveal facts"
+
 echo "== public reads: CORS on GET /api/round/stats and /api/kpi only"
 # Through another host name, so the 60 s stats cache that later checks read stays untouched; the stats are asked twice,
 # so the second answer comes from the cache and must carry the header too.

@@ -5,8 +5,8 @@
 import { readFileSync } from 'node:fs';
 import { fileURLToPath } from 'node:url';
 import { addDays, dayNumber, todayUTC, isDate } from '../functions/_daily.js';
+import { fmtValue as fmt } from '../public/round-end.js'; // years as "2560 BC", months (YYYYMM) as "Nov 2022"
 
-const fmt = (value, unit) => (unit === 'year' ? (value < 0 ? `${-value} BC` : String(value)) : `${value.toLocaleString('en-US', { maximumFractionDigits: 3 })} ${unit}`);
 
 // The daily range game's review for one date (throws if nothing is scheduled).
 export function review(pool, schedule, date) {
