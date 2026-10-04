@@ -297,3 +297,40 @@ test('home page: the example card is the AI question (Anthropic, Jan 2021, right
   assert.match(card, /<figcaption>An example question<\/figcaption>/);
   assert.doesNotMatch(card, /Nile|Danube/);
 });
+
+// --- type names players read (the owner: "use normal words that say how confident people are") ---------------------
+
+test('types: display names and one-liners everywhere players read them; the API and stored data keep their names', async () => {
+  const { TYPE_NAMES, typeName } = await import('../public/types.js');
+  const { TYPES, typeOf } = await import('../functions/_rounds.js');
+  const { challengeDescription } = await import('../functions/_challenge.js');
+  const WANT = {
+    Bluffer: ['Bluffer', 'bluffer', 'Way more sure than right: 15 or more points over.'],
+    'Hot-headed': ['Too sure', 'hot_headed', '5 to 15 points more sure than right.'],
+    Calibrated: ['Spot on', 'calibrated', "Your confidence matches how often you're right, within 5 points."],
+    Modest: ['Too modest', 'modest', '5 to 15 points less sure than right.'],
+    Hedger: ['Playing it safe', 'hedger', '15 or more points less sure than right.'],
+  };
+  assert.deepEqual(TYPES, Object.keys(WANT)); // internal names unchanged
+  assert.equal(typeOf(800, 7, 10), 'Hot-headed');
+  const en = json('public/i18n/en.json');
+  const home = read('public/index.html');
+  for (const [api, [name, key, line]] of Object.entries(WANT)) {
+    assert.equal(TYPE_NAMES[api], name);
+    assert.equal(typeName(api), name);
+    assert.equal(en.rounds[`type_${key}`], line, api);
+    const tile = home.match(new RegExp(`data-type="${key.replace('_', '-')}"[^>]*>[\\s\\S]*?</button>`))[0];
+    assert.match(tile, new RegExp(`<span>${name}</span>[\\s\\S]*<span class="type-tip">${line.replace(/[.?]/g, '\\$&')}</span>`), api);
+  }
+  const faq = home.match(/<summary>What do the types mean\?<\/summary><p>([^<]+)<\/p>/)[1];
+  for (const [name] of Object.values(WANT)) assert.ok(faq.includes(name), `FAQ: ${name}`);
+  assert.doesNotMatch(home.replace(/data-type="[a-z-]+"/g, ''), /Hot-headed|Calibrated|Hedger|\bModest\b/);
+  assert.equal(challengeDescription('Hedger', 100, 70), "Playing it safe: 100% right at 70% sure. Play the same ten questions on Who's Bluffing.");
+  const url = 'https://whosbluffing.com/c/ABCDEFGHJKLM/abcdefghij';
+  assert.equal(shareWith(`Who's Bluffing? · Hot-headed · 420 pts · 70% right at 80% sure · ${url}`, { type: 'Hot-headed', pack: 'ai', url }),
+    `Who's Bluffing? · AI pack · Too sure · 420 pts · 70% right at 80% sure · ${url}`);
+  const rounds = read('public/rounds.js');
+  assert.match(rounds, /<p class="type-name">\$\{typeName\(res\.type\)\}<\/p>/);
+  assert.match(rounds, /type: typeName\(res\.type\),/); // the share card's canvas text
+  assert.match(rounds, /\(p\) => typeName\(p\.type\)/); // the side-by-side
+});

@@ -13,6 +13,7 @@ import { pickReaction, bestLine } from './reactions.js';
 import { createSound } from './sound.js';
 import { countTo, raceTo, confetti } from './motion.js';
 import { resultGrid, wireGrid, fmtValue, fmtPoints } from './round-end.js';
+import { typeName } from './types.js';
 
 export { fmtValue, fmtPoints };
 
@@ -314,7 +315,7 @@ function showEnd(ctx, st, res) {
 <p class="round-kind">${roundLabel(t, st)}</p>
 ${resultGrid(st, t)}
 <section class="type-card type-${TYPES[res.type]} anim anim-flip" aria-label="${t('rounds.type_label')}">
-  <p class="type-name">${res.type}</p>
+  <p class="type-name">${typeName(res.type)}</p>
   <p class="type-def">${t(typeKey(res.type))}</p>
   <p class="type-line">${t('rounds.score_sub', { accuracy: Math.round(res.accuracy), mean_conf: Math.round(res.mean_conf) })} · ${t('rounds.overconf', { x: signed(Math.round(res.overconfidence)) })}</p>
 </section>
@@ -347,9 +348,9 @@ ${counters(t, res)}
   const acts = Object.fromEntries([...app.querySelectorAll('[data-act]')].map((b) => [b.dataset.act, b]));
   acts.again.onclick = () => playAgain(ctx);
   acts.challenge.onclick = () => challengeFriend(ctx, panel('challenge-panel'), res, st);
-  const copy = shareWith(res.share_text, { pack: st.mode === 'quick' ? st.pack : null, line: bestLine(st.items, st.answers), url: res.challenge_url });
+  const copy = shareWith(res.share_text, { pack: st.mode === 'quick' ? st.pack : null, line: bestLine(st.items, st.answers), url: res.challenge_url, type: res.type });
   acts.share.onclick = () => toggle(acts.share, panel('share-panel'), (el) => renderRoundShare(ctx, el, {
-    lines: { kicker: st.mode === 'ranked' ? t('rounds.ranked') : t('rounds.card_kicker'), type: res.type, score: t('rounds.card_score', { score: fmtTotal(res.score) }),
+    lines: { kicker: st.mode === 'ranked' ? t('rounds.ranked') : t('rounds.card_kicker'), type: typeName(res.type), score: t('rounds.card_score', { score: fmtTotal(res.score) }),
       line: t('rounds.score_sub', { accuracy: Math.round(res.accuracy), mean_conf: Math.round(res.mean_conf) }), cta: t('rounds.card_cta') },
     copy, url: res.challenge_url, onShare: () => event('share', st.round_id),
   }));
@@ -427,7 +428,7 @@ async function showVs(ctx, el, roundId, token) {
 <p class="headline">${d > 0 ? t('rounds.vs_win', { d }) : d < 0 ? t('rounds.vs_lose', { name, d: -d }) : t('rounds.vs_tie')}</p>
 <table class="vs"><thead><tr><td></td><th scope="col">${t('rounds.you')}</th><th scope="col">${name}</th></tr></thead><tbody>
 <tr class="anim anim-slide vs-score"><th scope="row">${t('rounds.vs_score')}</th><td><b class="anim" data-race="${me.score}">${me.score}</b></td><td><b class="anim" data-race="${them.score}">${them.score}</b></td></tr>
-${row(t('rounds.vs_type'), (p) => p.type)}
+${row(t('rounds.vs_type'), (p) => typeName(p.type))}
 ${row(t('rounds.vs_right'), (p) => `${Math.round(p.accuracy)}%`)}
 ${row(t('rounds.vs_sure'), (p) => `${Math.round(p.mean_conf)}%`)}
 </tbody></table>`;

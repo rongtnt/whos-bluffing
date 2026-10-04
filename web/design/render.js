@@ -26,6 +26,7 @@ import { tmpdir } from 'node:os';
 import { join } from 'node:path';
 import { fileURLToPath } from 'node:url';
 import { SR, bed, effects, mix, wav, fromPcm } from './soundtrack.js';
+import { PACKS } from '../public/packs.js';
 
 const WEB = fileURLToPath(new URL('../', import.meta.url));
 const CHROME = process.env.CHROME ?? '/Applications/Google Chrome.app/Contents/MacOS/Google Chrome';
@@ -293,17 +294,28 @@ const FFMPEG = process.env.FFMPEG ?? 'ffmpeg';
 const PRESS = join(WEB, 'public/press');
 const FPS = 30;
 const DISSOLVE = 9; // frames: every cut is a 0.3 s dissolve, the outgoing shot pushing in 4% (design/demo.html)
-// The edit, shared by both cuts, in frames: the hook until 36; the game from 36 (the wrong option tapped at 117, 100%
-// tapped at 177, the reveal at 185); the end screen from 296; the end card from 516 to the end at 600 (20 s).
-const CUT = { hookEnd: 36, a: 36, tapA: 117, tap100: 177, reveal: 185, b: 296, end: 516, total: 600 };
-const WORDS = [2, 5, 8, 11, 14, 17, 20, 25, 28]; // "You're not as smart as you think." word by word, then "Prove it."
 const STAMP_S = 0.26; // the BLUFF stamp lands this long after the reveal (styles.css: a 0.15 s delay, then the overshoot)
-const CAPTIONS = [
-  { html: 'Pick one.', from: 46, to: CUT.tap100 },
-  { html: '100% sure. <b>100% wrong.</b>', from: CUT.reveal + Math.round(STAMP_S * FPS), to: CUT.b },
-  { html: 'And yes, <b>it roasts you.</b>', from: CUT.b + 15, to: CUT.total },
-];
-// Ten answers, [right, conf]: the leading 100% miss on camera, the rest off camera, ending Hot-headed (7 of 10 right at
+const stampAt = (reveal) => reveal + Math.round(STAMP_S * FPS);
+// The editions: one 20 s edit each, shared by its two cuts, in frames: the hook until hookEnd; the game from a (the
+// wrong option tapped at tapA, 100% tapped at tap100, the reveal at reveal); the end screen from b; the end card from
+// end. words: the frames the hook's words pop on, a tick each; sheet: the review frames, in seconds.
+const EDITIONS = {
+  // "You're not as smart as you think. Prove it." (design/demo.html's own hook), on today's ranked round.
+  v3: { name: 'demo', cut: { hookEnd: 36, a: 36, tapA: 117, tap100: 177, reveal: 185, b: 296, end: 516, total: 600 },
+    words: [2, 5, 8, 11, 14, 17, 20, 25, 28],
+    captions: [{ html: 'Pick one.', from: 46, to: 177 }, { html: '100% sure. <b>100% wrong.</b>', from: stampAt(185), to: 296 },
+      { html: 'And yes, <b>it roasts you.</b>', from: 311, to: 600 }],
+    sheet: [1.1, 2.5, 3.97, 6.7, 11, 18.6] },
+  // The AI pack: its pair as the hook, then that pair leading a quick round of the pack, its "Did you know" fact held.
+  ai: { name: 'demo-ai', pair: 'p36637', pack: 'ai', cut: { hookEnd: 45, a: 45, tapA: 126, tap100: 180, reveal: 188, b: 336, end: 516, total: 600 },
+    words: [2, 5, 8, 11, 14, 17, 24, 27, 30, 33],
+    hook: { lines: [['Which', 'came'], ['first,', 'ChatGPT'], ['or', 'Anthropic?']], prove: [['How', 'sure'], ['are', 'you?']], scale: 0.9 },
+    url: 'whosbluffing.com · the AI pack',
+    captions: [{ html: 'Pick one.', from: 55, to: 180 }, { html: '100% sure. <b>100% wrong.</b>', from: stampAt(188), to: 250 },
+      { html: '<b>Anthropic</b> came first.', from: 250, to: 600 }],
+    sheet: [1.3, 3, 7, 9.5, 13, 18.6] },
+};
+// Ten answers, [right, conf]: the leading 100% miss on camera, the rest off camera, ending Too sure ("Hot-headed" in the API; 7 of 10 right at
 // 81% sure) with the roast line from that miss.
 const PLAN = [[0, 100], [1, 80], [0, 70], [1, 80], [1, 80], [0, 80], [1, 80], [1, 80], [1, 80], [1, 80]];
 const GAME_SCALE = 2.16; // the tall cut shows the 375x667 game at this scale, so the take is shot at it
@@ -367,11 +379,37 @@ const SLIDE_IN = `(() => { for (const [sel, delay] of [['.type-card', 150], ['.r
   el.animate([{ opacity: 0, transform: 'translateY(28px)' }, { opacity: 1, transform: 'none' }], { duration: 500, delay, easing: 'cubic-bezier(0.2, 0.9, 0.3, 1.1)', fill: 'both' }); }
   return true; })()`;
 
-// The game take: today's ranked round on the page's virtual clock (a fresh player, motion on, no nav), one exact frame
-// per 1/FPS. Segment a: the question, the two taps, the reveal; segment b: the end screen. Returns { a, b, taps }.
-async function gameTake(cdp, base, dir, truth) {
+// The AI edition's round: its pair and nine more of its pack (the most viewed, no item twice), written straight into the
+// local D1 as the smoke test does (the pair's ranked day may be ahead), read back as the game would load it. D1_STATE:
+// the dev server's --persist-to (npm run dev: web/.wrangler/state).
+async function quickRound(base, ed) {
+  const { pairs } = JSON.parse(readFileSync(join(WEB, '../items/pairs.json'), 'utf8'));
+  const lead = pairs.find((p) => p.id === ed.pair);
+  const used = new Set([lead.a_id, lead.b_id]);
+  const ids = [lead.id];
+  for (const p of pairs.filter((x) => PACKS[ed.pack].categories.includes(x.category)).sort((x, y) => y.fame - x.fame)) {
+    if (ids.length === 10) break;
+    if (used.has(p.a_id) || used.has(p.b_id)) continue;
+    ids.push(p.id); used.add(p.a_id); used.add(p.b_id);
+  }
+  const id = `DEMOAI${Date.now().toString(36).toUpperCase().replace(/[^A-Z2-9]/g, 'X').slice(-6)}`; // 12 of A-Z, 2-9
+  const today = new Date().toISOString().slice(0, 10);
+  const sql = `INSERT INTO rounds (round_id, mode, date, items, created_at, difficulty) VALUES ('${id}', 'quick', '${today}', '${JSON.stringify(ids)}', '${today}T00:00:00Z', 'normal')`;
+  const r = spawnSync('npx', ['wrangler', 'd1', 'execute', 'whosbluffing', '--local', '--persist-to', process.env.D1_STATE ?? join(WEB, '.wrangler/state'),
+    '--command', sql], { cwd: WEB, encoding: 'utf8' });
+  if (r.status !== 0) throw new Error(`could not write the quick round: ${r.stderr || r.stdout}`);
+  const round = await fetch(`${base}/api/round?round_id=${id}`).then((x) => x.json());
+  if (round.items?.[0]?.id !== ed.pair) throw new Error(`the quick round did not load: ${JSON.stringify(round)}`);
+  return { round_id: id, mode: 'quick', date: round.date, items: round.items, answers: {}, total: 0, pack: ed.pack, difficulty: 'normal' };
+}
+
+// The game take on the page's virtual clock (a fresh player, motion on, no nav), one exact frame per 1/FPS: today's
+// ranked round, or `round` (saved as the round in progress, which Play resumes). Segment a: the question, the two taps,
+// the reveal; segment b: the end screen. Returns { a, b, taps }.
+async function gameTake(cdp, base, dir, truth, { cut: CUT }, round) {
   const view = { width: 375, height: 667, scale: GAME_SCALE };
   await freshPlayer(cdp, base, view);
+  if (round) await evaluate(cdp, `localStorage.setItem('whosbluffing_round', ${JSON.stringify(JSON.stringify(round))}), true`);
   const { identifier } = await cdp.send('Page.addScriptToEvaluateOnNewDocument', { source: VIRTUAL_CLOCK });
   await open(cdp, `${base}/`, { ...view, motion: 'no-preference', waitReady: false });
   await cdp.send('Page.removeScriptToEvaluateOnNewDocument', { identifier });
@@ -417,11 +455,11 @@ async function gameTake(cdp, base, dir, truth) {
 }
 
 // The picture: design/demo.html at w x h, one PNG per frame, with the game take in its phone.
-async function stageFrames(cdp, dir, w, h, timeline) {
+async function stageFrames(cdp, dir, w, h, timeline, total) {
   mkdirSync(dir, { recursive: true });
   await open(cdp, `file://${WEB}design/demo.html?w=${w}&h=${h}`, { width: w, height: h, mobile: false, motion: 'no-preference', waitReady: false });
   await evaluate(cdp, `setup(${JSON.stringify(timeline)})`);
-  for (let i = 0; i < CUT.total; i += 1) {
+  for (let i = 0; i < total; i += 1) {
     for (let attempt = 1; ; attempt += 1) { // a screenshot that never returns is retried, not waited on
       try {
         await within(20000, (async () => { await evaluate(cdp, `show(${i})`); await shoot(cdp, join(dir, `s${pad5(i)}.png`), 'png'); })());
@@ -437,7 +475,7 @@ const within = (ms, promise) => Promise.race([promise, new Promise((_, fail) => 
 
 // The sound (design/soundtrack.js): the bed (synthesised, or the --music file) brought to -20 LUFS, the effects on the
 // edit's frames, the bed ducked 4 dB under them; returns the mix and the second loudnorm pass that puts it at -16 LUFS.
-function soundtrack(dir, music) {
+function soundtrack(dir, music, { cut: CUT, words: WORDS }) {
   const s = (frame) => frame / FPS;
   const total = s(CUT.total);
   const bedWav = join(dir, 'bed.wav');
@@ -459,61 +497,75 @@ function encode(out, frames, sound) {
     '-c:a', 'aac', '-b:a', '192k', '-ar', SR, '-ac', 2, '-movflags', '+faststart', out);
 }
 
-// A poster: the hook's closing frame at w x h.
-async function hookPoster(cdp, file, w, h) {
+// A poster: the edition's hook, its closing frame, at w x h.
+async function hookPoster(cdp, file, w, h, ed) {
   await open(cdp, `file://${WEB}design/demo.html?w=${w}&h=${h}`, { width: w, height: h, mobile: false, motion: 'no-preference', waitReady: false });
-  await evaluate(cdp, `setup(${JSON.stringify({ hookEnd: CUT.total, endStart: CUT.total, words: WORDS })})`);
-  await evaluate(cdp, `show(${CUT.hookEnd})`);
+  await evaluate(cdp, `setup(${JSON.stringify({ hookEnd: ed.cut.total, endStart: ed.cut.total, words: ed.words, hook: ed.hook, url: ed.url })})`);
+  await evaluate(cdp, `show(${ed.cut.hookEnd})`);
   await capture(cdp, file, w, h);
 }
 
-// demo-vertical.mp4 (1080x1920) and demo.mp4 (1080x1080): the same 20 s edit and sound, the game in a phone over navy
-// (design/demo.html). demo.gif: the square cut's opening 12 s, 640 px, silent. The posters: the hook's closing frame.
-// design/screens/demo-vertical-frames.png: six frames of the tall cut, for review. part: vertical | square (one cut).
-async function demo(cdp, base, part, music) {
-  const ranked = await fetch(`${base}/api/round?mode=ranked`).then((r) => r.json());
+// <name>-vertical.mp4 (1080x1920) and <name>.mp4 (1080x1080): the edition's 20 s edit and sound, the game in a phone
+// over navy (design/demo.html). <name>.gif: the square cut's opening 12 s, 640 px, silent. The posters: the hook's
+// closing frame at 1200x675, 1080x1920 and 1080x1350. design/screens/<name>-vertical-frames.png: six frames of the tall
+// cut, for review. part: vertical | square (one cut).
+async function demo(cdp, base, part, music, edition = 'v3') {
+  const ed = EDITIONS[edition];
+  if (!ed) throw new Error(`unknown edition ${edition} (${Object.keys(EDITIONS).join(' | ')})`);
+  const { cut, name } = ed;
+  let ids;
+  const round = ed.pair ? await quickRound(base, ed) : null;
+  if (round) ids = round.items.map((i) => i.id);
+  else {
+    const ranked = await fetch(`${base}/api/round?mode=ranked`).then((r) => r.json());
+    ids = ranked.items.map((i) => i.id);
+    const players = [['1111111110', [90]], ['1101101101', [80, 70]], ['1010101010', [100, 60]], ['1111110000', [70]]];
+    for (const [i, [pattern, confs]] of players.entries()) {
+      await playRoundApi(base, ranked, `demoApi${Date.now().toString(36)}${i}`.padEnd(22, 'x'), pattern, confs); // for the rank tile
+    }
+  }
   const all = truthOf();
-  const truth = new Map(ranked.items.map((i) => [i.id, all.get(i.id)]));
-  const players = [['1111111110', [90]], ['1101101101', [80, 70]], ['1010101010', [100, 60]], ['1111110000', [70]]];
-  for (const [i, [pattern, confs]] of players.entries()) {
-    await playRoundApi(base, ranked, `demoApi${Date.now().toString(36)}${i}`.padEnd(22, 'x'), pattern, confs); // for the rank tile
-  }
+  const truth = new Map(ids.map((id) => [id, all.get(id)]));
   const dir = mkdtempSync(join(tmpdir(), 'whosbluffing-demo-'));
-  console.log('game take');
-  const take = await gameTake(cdp, base, join(dir, 'game'), truth);
-  const timeline = { hookEnd: CUT.hookEnd, endStart: CUT.end, words: WORDS, a: take.a, b: take.b, tapA: CUT.tapA, taps: take.taps, captions: CAPTIONS };
-  console.log('sound');
-  const sound = soundtrack(dir, music);
-  for (const [name, w, h] of [['demo-vertical', 1080, 1920], ['demo', 1080, 1080]]) {
+  console.log(`${name}: game take`);
+  const take = await gameTake(cdp, base, join(dir, 'game'), truth, ed, round);
+  const timeline = { hookEnd: cut.hookEnd, endStart: cut.end, words: ed.words, a: take.a, b: take.b, tapA: cut.tapA, taps: take.taps,
+    captions: ed.captions, hook: ed.hook, url: ed.url };
+  console.log(`${name}: sound`);
+  const sound = soundtrack(dir, music, ed);
+  for (const [file, w, h] of [[`${name}-vertical`, 1080, 1920], [name, 1080, 1080]]) {
     if (part && part !== (h > w ? 'vertical' : 'square')) continue;
-    console.log(name);
-    await stageFrames(cdp, join(dir, name), w, h, timeline);
-    encode(join(dir, `${name}.mp4`), join(dir, name), sound);
+    console.log(file);
+    await stageFrames(cdp, join(dir, file), w, h, timeline, cut.total);
+    encode(join(dir, `${file}.mp4`), join(dir, file), sound);
   }
-  if (existsSync(join(dir, 'demo.mp4'))) {
-    ffmpeg('-t', 12, '-i', join(dir, 'demo.mp4'), '-vf',
+  if (existsSync(join(dir, `${name}.mp4`))) {
+    ffmpeg('-t', 12, '-i', join(dir, `${name}.mp4`), '-vf',
       'fps=15,scale=640:-1:flags=lanczos,split[a][b];[a]palettegen=stats_mode=diff[p];[b][p]paletteuse=dither=bayer:bayer_scale=5:diff_mode=rectangle',
-      '-loop', 0, join(dir, 'demo.gif'));
+      '-loop', 0, join(dir, `${name}.gif`));
   }
-  if (existsSync(join(dir, 'demo-vertical.mp4'))) {
-    const sheet = [1.1, 2.5, 3.97, 6.7, 11, 18.6].map((t, i) => {
+  if (existsSync(join(dir, `${name}-vertical.mp4`))) {
+    const sheet = ed.sheet.map((t, i) => {
       const f = join(dir, `sheet${i}.png`);
-      ffmpeg('-ss', t, '-i', join(dir, 'demo-vertical.mp4'), '-frames:v', 1, '-vf', 'scale=360:-1:flags=lanczos', f);
+      ffmpeg('-ss', t, '-i', join(dir, `${name}-vertical.mp4`), '-frames:v', 1, '-vf', 'scale=360:-1:flags=lanczos', f);
       return f;
     });
-    ffmpeg(...sheet.flatMap((f) => ['-i', f]), '-filter_complex', `hstack=inputs=${sheet.length}`, join(WEB, 'design/screens/demo-vertical-frames.png'));
+    ffmpeg(...sheet.flatMap((f) => ['-i', f]), '-filter_complex', `hstack=inputs=${sheet.length}`, join(WEB, `design/screens/${name}-vertical-frames.png`));
   }
-  await hookPoster(cdp, join(dir, 'demo-poster.png'), 1200, 675);
-  await hookPoster(cdp, join(dir, 'demo-vertical-poster.png'), 1080, 1920);
+  await hookPoster(cdp, join(dir, `${name}-poster.png`), 1200, 675, ed);
+  await hookPoster(cdp, join(dir, `${name}-vertical-poster.png`), 1080, 1920, ed);
+  await hookPoster(cdp, join(dir, `${name}-poster-1080x1350.png`), 1080, 1350, ed);
   // Copied in at the end: a write under public/ makes `wrangler pages dev` reload, which would break a take.
-  for (const f of ['demo.mp4', 'demo.gif', 'demo-poster.png', 'demo-vertical.mp4', 'demo-vertical-poster.png']) {
+  for (const f of [`${name}.mp4`, `${name}.gif`, `${name}-poster.png`, `${name}-poster-1080x1350.png`, `${name}-vertical.mp4`, `${name}-vertical-poster.png`]) {
     if (existsSync(join(dir, f))) { copyFileSync(join(dir, f), join(PRESS, f)); console.log(`wrote web/public/press/${f}`); }
   }
   rmSync(dir, { recursive: true, force: true });
 }
 
 const args = process.argv.slice(2);
-const music = args.includes('--music') ? args.splice(args.indexOf('--music'), 2)[1] : undefined;
+const option = (flag) => (args.includes(flag) ? args.splice(args.indexOf(flag), 2)[1] : undefined);
+const music = option('--music');
+const edition = option('--edition');
 const [mode = 'assets', base = 'http://127.0.0.1:8788', part] = args;
 const cdp = await launch();
 let failed = 0;
@@ -523,7 +575,7 @@ try {
   else if (mode === 'checks') failed = await checks(cdp, base);
   else if (mode === 'rounds') await roundScreens(cdp, base);
   else if (mode === 'results') await resultScreens(cdp, base);
-  else if (mode === 'demo') await demo(cdp, base, part, music);
+  else if (mode === 'demo') await demo(cdp, base, part, music, edition);
   else throw new Error(`unknown mode ${mode} (assets | screens | checks | rounds | results | demo)`);
 } finally {
   cdp.close();

@@ -484,7 +484,7 @@ test('challenge page: per-link Open Graph tags, noindex, the app, escaped nickna
   const title = 'Sam &quot;&lt;b&gt;&quot; scored 640. Can you beat them?';
   assert.ok(page.includes(`<title>${title}</title>`));
   assert.ok(page.includes(`<meta property="og:title" content="${title}">`));
-  assert.ok(page.includes('<meta property="og:description" content="Calibrated: 80% right at 82% sure. Play the same ten questions on Who&#39;s Bluffing.">')); // esc() turns ' into &#39;
+  assert.ok(page.includes('<meta property="og:description" content="Spot on: 80% right at 82% sure. Play the same ten questions on Who&#39;s Bluffing.">')); // esc() turns ' into &#39;
   assert.ok(page.includes('<meta property="og:image" content="https://whosbluffing.com/og.png">'));
   assert.ok(page.includes('<meta property="og:url" content="https://whosbluffing.com/c/ABCDEFGHJK23/Tok_en-123">'));
   assert.ok(page.includes('<meta name="robots" content="noindex">'));

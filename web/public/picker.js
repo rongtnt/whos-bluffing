@@ -3,6 +3,7 @@
 // ?pack= and ?difficulty= in the address pick one for a link. The ranked round ignores both.
 import { store } from './ui.js';
 import { PACKS, DEFAULT_PACK, DEFAULT_DIFFICULTY, packLabel, difficultyLabel } from './packs.js';
+import { typeName } from './types.js';
 
 const PACK_KEY = 'whosbluffing_pack';
 const DIFFICULTY_KEY = 'whosbluffing_difficulty';
@@ -85,10 +86,11 @@ export function initPicker(doc = document) {
 // "Quick round · Geography · Brutal" and the like, for the round's badge and the end screen.
 export const quickLabel = (pack, difficulty) => `${packLabel(pack ?? DEFAULT_PACK)} · ${difficultyLabel(difficulty ?? DEFAULT_DIFFICULTY)}`;
 
-// The share text with the pack after the name ("Who's Bluffing? · Geography pack · …"), unless the pack is All; and
-// the round's best reaction line on its own line under the score, before the link.
-export function shareWith(text, { pack, line, url } = {}) {
-  let out = text;
+// The share text with the type's display name (the API's text names the type as stored, types.js), the pack after the
+// name ("Who's Bluffing? · Geography pack · …") unless the pack is All, and the round's best reaction line on its own
+// line under the score, before the link.
+export function shareWith(text, { pack, line, url, type } = {}) {
+  let out = type ? text.replace(` · ${type} · `, ` · ${typeName(type)} · `) : text;
   if (pack && pack !== DEFAULT_PACK && PACKS[pack]) out = out.replace(/^(Who's Bluffing\?) · /, `$1 · ${packLabel(pack)} pack · `);
   if (line) {
     const tail = url ? ` · ${url}` : '';

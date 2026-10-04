@@ -21,6 +21,7 @@
   .hook { position: absolute; left: var(--m); right: var(--m); top: 46%; transform: translateY(-50%); font-size: var(--hook); line-height: 1.02; }
   .hook span { display: inline-block; transform-origin: 0 80%; animation: pop 0.24s var(--spring) both; }
   .hook .prove { margin-top: 0.42em; color: var(--soft-blue); }
+  .hook .prove + .prove { margin-top: 0; }
 
   /* The game in a phone, captions in the clear space beside it. */
   .caps { position: absolute; left: var(--cx); top: var(--cy); width: var(--cw); height: var(--ch); display: flex; flex-direction: column; justify-content: var(--cj); }
@@ -80,10 +81,23 @@
   const delay = (el, ...frames) => { el.style.animationDelay = frames.map((f) => `${ms(f)}ms`).join(', '); };
   let T = null;
 
+  // A line of the hook, a span per word.
+  const line = (words, className = '') => {
+    const p = Object.assign(document.createElement('p'), { className });
+    words.forEach((w, i) => p.append(...(i ? [' '] : []), Object.assign(document.createElement('span'), { textContent: w })));
+    return p;
+  };
+
   // t: { hookEnd, endStart, words: [frame...], a: { start, frames, dir }, b: {...}, tapA, taps: [{ frame, x, y }],
-  // captions: [{ html, from, to }] }, frames at FPS; x, y in the game's CSS px.
+  // captions: [{ html, from, to }], hook?: { lines: [[word...]...], prove: [[word...]...], scale }, url? }, frames at
+  // FPS; x, y in the game's CSS px. Without hook and url, the page's own (the v3 edition's).
   window.setup = (t) => {
     T = t;
+    if (t.hook) {
+      document.querySelector('.hook').replaceChildren(...t.hook.lines.map((l) => line(l)), ...t.hook.prove.map((l) => line(l, 'prove')));
+      document.documentElement.style.setProperty('--hook', `${vars.hook * (t.hook.scale ?? 1)}px`);
+    }
+    if (t.url) document.querySelector('.url').textContent = t.url;
     document.querySelectorAll('.hook span').forEach((el, i) => delay(el, t.words[i]));
     delay(document.getElementById('hook'), t.hookEnd);
     delay(document.querySelector('#play .in'), t.hookEnd);

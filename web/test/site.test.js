@@ -6,6 +6,7 @@ import { readFileSync, readdirSync } from 'node:fs';
 import { markdown, inline, renderPage, DOCS } from '../scripts/sync-docs.js';
 import { proofTiles, MIN_PLAYERS, MIN_ROOM, roomView, roomChart, receipt, EXAMPLE_ROOM, EXAMPLE_BLUFFS } from '../public/home.js';
 import { TYPES } from '../functions/_rounds.js';
+import { typeName } from '../public/types.js';
 
 const PUBLIC = new URL('../public/', import.meta.url);
 const read = (u) => readFileSync(u, 'utf8');
@@ -95,5 +96,5 @@ test('live panel: the room chart from 20 players (today, else yesterday, else th
   assert.ok(home.includes(`<div class="room-box" data-room-chart>${roomChart(EXAMPLE_ROOM, { example: true })}</div>`), 'the static example chart is the builder\'s');
   assert.ok(home.includes(`<ol class="receipts is-example" data-receipts>${EXAMPLE_BLUFFS.map(receipt).join('')}</ol>`), 'the static example receipts are the builder\'s');
   assert.equal([...home.matchAll(/<figcaption class="live-cap" data-(?:room|receipts)-cap>Example<\/figcaption>/g)].length, 2);
-  assert.deepEqual([...home.matchAll(/<button type="button" class="type-tile" data-type="[a-z-]+" aria-pressed="false"><svg [^>]+><path d="[^"]+"\/><\/svg><span>([^<]+)<\/span><span class="type-band" aria-hidden="true">(?:<i><\/i>){5}<\/span><span class="type-tip">[^<]+<\/span><\/button>/g)].map((m) => m[1]), TYPES);
+  assert.deepEqual([...home.matchAll(/<button type="button" class="type-tile" data-type="[a-z-]+" aria-pressed="false"><svg [^>]+><path d="[^"]+"\/><\/svg><span>([^<]+)<\/span><span class="type-band" aria-hidden="true">(?:<i><\/i>){5}<\/span><span class="type-tip">[^<]+<\/span><\/button>/g)].map((m) => m[1]), TYPES.map(typeName)); // the names players read (public/types.js)
 });

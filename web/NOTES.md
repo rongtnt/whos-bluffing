@@ -16,6 +16,10 @@ Owner request: fill the empty space under the example card at ≥ 900 px with so
 - render.js `checks` reports a 0.005 layout shift on `/community` at 1280 px (twice); that page uses none of these classes and the preview pane shows no shift there; not resolved here.
 - Checked in headless Chrome and the preview pane (1280 and 375, light and dark); not on iOS Safari or Firefox.
 
+## Type names players read (2026-10-04, night)
+
+Owner: "use normal words that say how confident people are". Display names only (`public/types.js`): Bluffer stays Bluffer, Hot-headed → Too sure, Calibrated → Spot on, Modest → Too modest, Hedger → Playing it safe, with the owner's one-liners in `i18n/en.json` (`rounds.type_*`), on the home page's type tiles (colours and glyphs unchanged) and in the FAQ. The API's `type`, the stored plays, the `type-*` CSS classes, the tiles' `data-type` and the internal keys keep the original names; the server's `share_text` too, so the web swaps the name in when it copies the text (`shareWith`), and the share card, the end screen's type card, the side-by-side and the challenge page's preview text (`functions/_challenge.js`) show the new names. Earlier notes below use the API's names. The Slack and Discord apps (outside web/) still print the API's names.
+
 ## AI pack in the web game (2026-10-04, night)
 
 Coordinator's four changes after the AI pack landed (`items/ai_curated.json`). Changed: `public/{ui,round-end,daily,rounds,reactions,site}.js`, `public/{index.html,styles.css,i18n/en.json}`, `functions/_rounds.js`, `scripts/tomorrow.js`, `test/{parity,rounds}.test.js`, `test/smoke.sh`, home screenshots.
