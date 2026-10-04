@@ -1,9 +1,9 @@
-Title: Show HN: HowSure – a daily 30-second game that measures how overconfident you are
+Title: Show HN: HowSure – a 30-second game that finds out who's bluffing
 
-Five questions a day, same for everyone. For each one you give a range you're 90% sure contains the answer ("How tall is Angel Falls, in metres?"). Then you see the truth, the source, and whether you were inside. Most people get 2 or 3 of 5 — at "90% sure".
+Ten comparison questions ("Which is longer, the Nile or the Danube?"). You pick one, then stake how sure you are: 50% to 100%. The scoring rule is the quadratic one from forecasting: 50% scores zero either way, 100% right is +100, 100% wrong is −300, so honest confidence maximizes expected points. Most people discover their "90% sure" is right about 70% of the time.
 
-Share grid like Wordle (🟩🟩🟥🟩🟩 4/5), streaks, and a personal calibration curve that builds over days. There's a Slack app that posts the day's game to a channel with a team leaderboard, and a classroom mode for instructors.
+At the end you get a type (Bluffer, Hot-headed, Calibrated, Modest, Hedger), a one-line roast if you earned one, and a challenge link that lets a friend play the same ten questions against your score. There's a ranked round every day and unlimited quick rounds.
 
-Why I built it: I wanted a dataset nobody has — does getting daily feedback actually make people better calibrated? Hypotheses were published before launch; anonymous data and code are open. No accounts, no tracking, no ads. Cloudflare Pages + Workers + D1, vanilla JS; every question comes from Wikidata or an official source with the link attached, and players can flag bad ones.
+Slack and Discord apps post one question a day in a channel; everyone answers, and at the reveal the channel sees who was right and the day's biggest bluff (anonymous by default; servers can turn on roast mode).
 
-Prior art I learned from: Quantified Intuitions' Estimation Game and Calibration Training. {URL}
+The questions are generated from Wikidata facts with the source attached to every answer; players can flag bad ones. The whole thing is also a pre-registered study: do people get better calibrated with daily feedback? Anonymous data and code are open. No accounts, no tracking, no ads. Cloudflare Pages + Workers + D1, vanilla JS. {URL}

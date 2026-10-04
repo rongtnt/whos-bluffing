@@ -1,12 +1,12 @@
-Subject: A daily calibration game your readers might like (open data, pre-registered)
+Subject: A 30-second game that scores how sure people are (open data, pre-registered)
 
 Hi {Name},
 
-I'm an undergraduate who built HowSure, a free daily game: five questions, you give a range you're 90% sure contains the answer, and you find out whether your "90%" is really 90% (for most people it's closer to 50%). 30 seconds, no account, share grid, Slack app for teams, classroom mode for instructors.
+I'm an undergraduate who built HowSure, a free game: ten "which is bigger" questions, you stake your confidence from 50% to 100%, and a proper scoring rule tells you whether your confidence is worth anything (most people's "90%" is right about 70% of the time). There's a type at the end, a link to challenge a friend, and Slack/Discord bots that post one question a day to a channel with a reveal of the day's biggest bluff.
 
-It doubles as a study: the hypotheses (including whether daily feedback improves calibration, with a survivorship check) were published before launch, and the anonymous data will be open.
+It doubles as a pre-registered study of whether daily feedback improves calibration; the anonymous data will be open.
 
-If it fits a links post, here it is: {URL}. Happy to send the first results when the sample is in.
+If it fits a links post: {URL}. Happy to send the first results when the sample is in.
 
 Thanks,
 Ethan

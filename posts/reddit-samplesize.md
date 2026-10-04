@@ -1,3 +1,3 @@
-Title: [Casual] How overconfident are you? A 30-second daily game with instant results (everyone)
+Title: [Casual] Who's bluffing? A 30-second game that scores how sure you are, not just whether you're right (everyone)
 
-Five numbers a day; for each you give a range you're 90% sure about. At the end you see how many of your "90% ranges" actually contained the truth (for most people: 2–3 of 5), today's average, and a share grid. Anonymous, no account. The answers go into an open research dataset on whether daily feedback improves calibration; the hypotheses were posted before launch. {URL}
+Ten "which is bigger/longer/older" questions. Pick one, stake your confidence from 50% to 100%, see the truth with its source. 100% wrong costs you three times what 100% right earns, so you find out fast whether your confidence is worth anything. You get a type at the end (most people are Hot-headed) and a link to challenge a friend on the same questions. Anonymous, no account; the answers feed an open, pre-registered study of whether feedback improves calibration. {URL}
