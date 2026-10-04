@@ -13,13 +13,14 @@
 //                                          players for the leaderboard, and opens a challenge link from a fifth
 //   node design/render.js results [BASE]   design/screens/results-<width>-<theme>.png at 375, 768 and 1280 px: the full
 //                                          assessment (/test) played through to its results page, whole page
-//   node design/render.js demo [BASE] [vertical|square] [--music FILE]
+//   node design/render.js demo [BASE] [vertical|square] [--music FILE] [--edition ai]
 //                                          public/press/demo-vertical.mp4 (1080x1920) and demo.mp4 (1080x1080), one
 //                                          20 s edit with sound; demo.gif, demo-poster.png, demo-vertical-poster.png and
 //                                          design/screens/demo-vertical-frames.png: today's ranked round played in the
 //                                          page on a stand-in clock, composed by design/demo.html, sound from
 //                                          design/soundtrack.js (FILE: the music instead of the synthesised bed; see
 //                                          design/MEDIA_NOTES.md), cut by ffmpeg (FFMPEG=/path/to/ffmpeg picks another)
+//                                          --edition ai: the AI pack's demo-ai* files (D1_STATE: the dev server's D1)
 import { spawn, spawnSync } from 'node:child_process';
 import { mkdtempSync, mkdirSync, writeFileSync, readFileSync, rmSync, copyFileSync, existsSync } from 'node:fs';
 import { tmpdir } from 'node:os';

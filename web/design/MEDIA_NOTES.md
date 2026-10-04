@@ -7,6 +7,8 @@ and how to put a different music track under them.
 
 Hook 0 to 1.2 (a tick per word) · question from 1.2 · tap on the answer 3.9 · tap on 100% 5.9 · reveal 6.17 ·
 BLUFF stamp lands 6.43 · end screen 9.87 · end card 17.2 to 20. Every cut is a 0.3 s dissolve.
+The AI pack edition (`--edition ai`): hook 0 to 1.5 (ten ticks) · taps 4.2 and 6.0 · reveal 6.27 · stamp 6.53 · end
+screen 11.2 · end card 17.2 to 20.
 
 ## Sound
 
