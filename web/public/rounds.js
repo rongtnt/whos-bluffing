@@ -1,18 +1,18 @@
 // Rounds at / and on challenge pages (/c/<round>/<token>): ten comparison pairs per round. Pick A or B, say how sure
 // you are, see both values and sources at once; at the end your score, type, calibration chart and challenge link.
-// Scoring is server-side (docs/api-rounds.md). Local state: hs_anon (ui.js), hs_seen_pairs (the newest 300 pair ids
-// played; the server keeps the last 300 it is sent), hs_round (the round in progress, so a reload resumes), hs_ranked
-// ({date: score} of finished ranked rounds), hs_nick (the nickname for challenge links: null = never asked, '' =
-// skipped), hs_mine (this browser's challenge tokens).
+// Scoring is server-side (docs/api-rounds.md). Local state: whosbluffing_anon (ui.js), whosbluffing_seen_pairs (the newest 300 pair ids
+// played; the server keeps the last 300 it is sent), whosbluffing_round (the round in progress, so a reload resumes), whosbluffing_ranked
+// ({date: score} of finished ranked rounds), whosbluffing_nick (the nickname for challenge links: null = never asked, '' =
+// skipped), whosbluffing_mine (this browser's challenge tokens).
 import { html, api, store, anonId, calibrationChart, chartLabels, signed } from './ui.js';
 import { bins } from './metrics.js';
 import { renderRoundShare } from './share.js';
 
-const SEEN_KEY = 'hs_seen_pairs';
-const ROUND_KEY = 'hs_round';
-const RANKED_KEY = 'hs_ranked';
-const NICK_KEY = 'hs_nick';
-const MINE_KEY = 'hs_mine';
+const SEEN_KEY = 'whosbluffing_seen_pairs';
+const ROUND_KEY = 'whosbluffing_round';
+const RANKED_KEY = 'whosbluffing_ranked';
+const NICK_KEY = 'whosbluffing_nick';
+const MINE_KEY = 'whosbluffing_mine';
 const MAX_SEEN = 300;
 const KEEP_RANKED = 60; // days of finished ranked rounds kept locally
 const KEEP_MINE = 50;

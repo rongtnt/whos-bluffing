@@ -11,3 +11,6 @@ Deviations from `prereg/PREREG.md` after it is finalized are logged here with a 
 ## 2026-10-03 (evening)
 - Game loop redesigned before launch: the viral game becomes 10-question comparison rounds with staked confidence (quadratic scoring), ranked daily round + unlimited quick rounds, challenge links, and a one-question-a-day Slack post with an anonymous reveal (optional roast mode). Intervals stay in the full assessment only. PREREG Study A rewritten accordingly; play and MAU definitions updated; engagement metrics added. Reason: the interval-typing loop had no social or repeat-play hook (docs/api-rounds.md, briefs/BRIEF_rounds.md).
 - Discord added as a surface (user lifted the earlier restriction); communities now counted per platform.
+
+## 2026-10-04
+- Renamed from HowSure to Who's Bluffing? (howsure.me belongs to an unrelated product)

@@ -22,7 +22,7 @@ from aqt.reviewer import Reviewer
 from . import i18n, store
 
 ADDON_VERSION = "0.2.0"
-DB_PATH = os.path.join(os.path.dirname(__file__), "user_files", "howsure.sqlite")
+DB_PATH = os.path.join(os.path.dirname(__file__), "user_files", "whosbluffing.sqlite")
 UNRATED = "unrated_answers"
 DAY_MS = 86_400_000
 
@@ -49,7 +49,7 @@ def _elapsed_ms(since: float | None) -> int | None:
 
 
 def _eval(js: str) -> None:
-    mw.reviewer.web.eval(f"window.howsure && {js}")
+    mw.reviewer.web.eval(f"window.whosbluffing && {js}")
 
 
 def snapshot(col: Collection, card: Card, now_ms: int) -> dict:
@@ -86,7 +86,7 @@ def rate(n: int) -> None:
         "q_rt_ms": _elapsed_ms(_question_shown),
         **snapshot(mw.col, card, int(time.time() * 1000)),
     }
-    _eval(f"howsure.mark({n})")
+    _eval(f"whosbluffing.mark({n})")
     if reveal:
         reviewer._getTypedAnswer()  # Anki's own Show Answer path; ends in Reviewer._showAnswer()
 
@@ -95,8 +95,8 @@ def on_web_content(web_content: object, context: object) -> None:
     if not isinstance(context, Reviewer):
         return
     base = f"/_addons/{mw.addonManager.addonFromModule(__name__)}/web"
-    web_content.css.append(f"{base}/howsure.css")
-    web_content.js.append(f"{base}/howsure.js")
+    web_content.css.append(f"{base}/whosbluffing.css")
+    web_content.js.append(f"{base}/whosbluffing.js")
 
 
 def on_question(card: Card) -> None:
@@ -111,19 +111,19 @@ def on_question(card: Card) -> None:
         "high": i18n.t(lang_code, "certain"),
         "hints": [i18n.t(lang_code, "key_hint", key=k) for k in cfg["keys"]],
     }
-    _eval(f"howsure.show({json.dumps(opts)})")
+    _eval(f"whosbluffing.show({json.dumps(opts)})")
 
 
 def on_answer_shown(card: Card) -> None:
     global _answer_shown
     _answer_shown = time.monotonic()
-    _eval("howsure.hide()")
+    _eval("whosbluffing.hide()")
 
 
 def on_js_message(handled: tuple[bool, object], message: str, context: object) -> tuple[bool, object]:
-    if not (isinstance(context, Reviewer) and message.startswith("howsure:jol:")):
+    if not (isinstance(context, Reviewer) and message.startswith("whosbluffing:jol:")):
         return handled
-    value = message[len("howsure:jol:"):]
+    value = message[len("whosbluffing:jol:"):]
     if value in ("1", "2", "3", "4", "5"):
         rate(int(value))
     return (True, None)

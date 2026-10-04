@@ -1,6 +1,6 @@
 {
   "$schema": "https://json-schema.org/draft/2020-12/schema",
-  "title": "HowSure item bank",
+  "title": "Who's Bluffing item bank",
   "type": "object",
   "required": ["version", "items"],
   "properties": {

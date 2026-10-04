@@ -95,7 +95,7 @@ export function signedRequest(body, { ts = Math.floor(Date.now() / 1000), secret
 
 export const slashBody = (fields = {}) =>
   new URLSearchParams({
-    command: '/howsure', text: '', team_id: 'T1', user_id: 'U1', channel_id: 'C1',
+    command: '/bluff', text: '', team_id: 'T1', user_id: 'U1', channel_id: 'C1',
     response_url: 'https://hooks.slack.com/commands/T1/1/abc', trigger_id: 'trigger-1', ...fields,
   }).toString();
 

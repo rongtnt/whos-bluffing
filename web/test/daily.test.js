@@ -35,7 +35,7 @@ const SCHEDULE = {
 };
 const DATA = loadDaily(POOL, SCHEDULE);
 const NOW = new Date(`${DAY}T12:00:00Z`);
-const URL_ = 'https://howsure.example/';
+const URL_ = 'https://whosbluffing.example/';
 const truth = (id) => DATA.items.get(id).answer;
 const inside = (t) => [t - 10 - Math.abs(t), t + 10 + Math.abs(t)];
 const above = (t) => [t + 10 + Math.abs(t), t + 20 + 2 * Math.abs(t)];
@@ -73,10 +73,10 @@ test('day number and UTC day: 2026-10-17 is #1, earlier days are #0, days change
 
 test('share text: brief format, 🟩 hit / 🟥 miss, one decimal average', () => {
   const grid = [true, true, false, true, true];
-  assert.equal(shareText({ number: 12, grid, hits: 4, n: 5, avg: 2.8, url: 'https://howsure.me/' }),
-    "HowSure #12 🟩🟩🟥🟩🟩 4/5 at 90%\nToday's average 2.8/5\nhttps://howsure.me/");
+  assert.equal(shareText({ number: 12, grid, hits: 4, n: 5, avg: 2.8, url: 'https://whosbluffing.com/' }),
+    "Who's Bluffing? #12 🟩🟩🟥🟩🟩 4/5 at 90%\nToday's average 2.8/5\nhttps://whosbluffing.com/");
   assert.equal(shareText({ number: 3, grid: [true, false, true, true], hits: 3, n: 4, avg: 3, url: 'u' }),
-    "HowSure #3 🟩🟥🟩🟩 3/4 at 90%\nToday's average 3.0/4\nu");
+    "Who's Bluffing? #3 🟩🟥🟩🟩 3/4 at 90%\nToday's average 3.0/4\nu");
 });
 
 test('log ratio error: signed log10(midpoint / truth), null unless both are positive', () => {
@@ -157,7 +157,7 @@ test('complete: every item first; counted once; streak over consecutive days; sh
   assert.equal(a.body.hits, 4);
   assert.equal(a.body.n, 5);
   assert.equal(a.body.streak, 2);
-  assert.equal(a.body.share_text, `HowSure #1 🟩🟩🟥🟩🟩 4/5 at 90%\nToday's average 4.0/5\n${URL_}`);
+  assert.equal(a.body.share_text, `Who's Bluffing? #1 🟩🟩🟥🟩🟩 4/5 at 90%\nToday's average 4.0/5\n${URL_}`);
   assert.deepEqual(a.body.today, { players: 1, avg_hits: 4, hist: [0, 0, 0, 0, 1, 0] });
 
   assert.equal((await play(db, 'b', [true, false, false, true, false])).body.streak, 1);
@@ -192,7 +192,7 @@ test('date rule: answer and complete take today or yesterday (UTC) only; yesterd
   const r = await play(db, 'late', yHits, { date: PREV, now: justAfterMidnight });
   assert.equal(r.status, 200);
   assert.deepEqual([r.body.hits, r.body.n], [4, 5]);
-  assert.match(r.body.share_text, /^HowSure #0 🟩🟥🟩🟩🟩 4\/5 at 90%/); // pre-launch day: #0
+  assert.match(r.body.share_text, /^Who's Bluffing\? #0 🟩🟥🟩🟩🟩 4\/5 at 90%/); // pre-launch day: #0
   const row = await db.prepare('SELECT date, surface, hits FROM plays WHERE anon_id = ?').bind(anon('late')).first();
   assert.deepEqual(row, { date: PREV, surface: 'web', hits: 4 });
   const w0006 = await db.prepare('SELECT hit FROM daily_answers WHERE anon_id = ? AND item_id = ?').bind(anon('late'), 'w0006').first();
@@ -249,7 +249,7 @@ test('flag: three players who answered retire an item; the day is recomputed; la
   const e = await play(db, 'e', [true, false, true, true, true]); // never sees w0002
   assert.equal(e.body.n, 4);
   assert.equal(e.body.hits, 4);
-  assert.match(e.body.share_text, /^HowSure #1 🟩🟩🟩🟩 4\/4 at 90%\nToday's average 2\.3\/4\n/);
+  assert.match(e.body.share_text, /^Who's Bluffing\? #1 🟩🟩🟩🟩 4\/4 at 90%\nToday's average 2\.3\/4\n/);
   assert.deepEqual(e.body.today, { players: 4, avg_hits: 2.25, hist: [1, 0, 1, 1, 1, 0] });
   const repeat = await complete(db, DATA, { date: DAY, anon_id: anon('a'), surface: 'web' }, NOW, URL_);
   assert.deepEqual([repeat.body.hits, repeat.body.n], [3, 4]); // a's play, rescored without the retired item

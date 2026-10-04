@@ -1,6 +1,6 @@
 {
   "meta": {
-    "title": "HowSure — How sure are you?"
+    "title": "Who's Bluffing? — Find out who's bluffing."
   },
   "nav": {
     "daily": "Daily game",
@@ -9,7 +9,7 @@
     "teach": "For teachers"
   },
   "landing": {
-    "h1": "How sure are you?",
+    "h1": "Who's bluffing?",
     "lead": "Pick answers, say how sure you are, and find out whether your confidence matches what you actually know.",
     "consent": "5 minutes. Anonymous — no account, no tracking. Your answers go into a public research dataset. Close the page any time to stop.",
     "start": "Start",
@@ -24,7 +24,7 @@
   },
   "test": {
     "progress": "{i} of {n}",
-    "how_sure": "How sure are you?",
+    "how_sure": "Say how sure you are.",
     "coin_flip": "50% = coin flip",
     "certain": "100% = certain",
     "range_intro": "Give a range you are 90% sure contains the answer.",
@@ -123,12 +123,12 @@
     "copied": "Copied",
     "copy_failed": "Couldn't copy. Select the link and copy it yourself.",
     "long_press": "On a phone, press and hold the image to save it.",
-    "card_question": "How sure are you?",
+    "card_question": "Find out who's bluffing.",
     "card_cta": "Free 5-minute test",
     "copy_result": "Copy result"
   },
   "class": {
-    "title": "Use HowSure in class",
+    "title": "Use Who's Bluffing in class",
     "lead": "Students take the test on their phones while you watch the class's confidence curve build live. No accounts. You see only class totals, never anyone's answers, and nothing until 5 students have finished.",
     "label": "Class name (optional)",
     "label_placeholder": "e.g. Psych 101, Tuesday",
@@ -198,7 +198,7 @@
     "ranked_chart": "Scores in today’s ranked round"
   },
   "daily": {
-    "title": "HowSure #{number}",
+    "title": "Who's Bluffing? #{number}",
     "lead": "Five questions, the same for everyone today. For each one, give a range you are 90% sure contains the answer.",
     "consent": "About a minute. Anonymous — no account, no tracking. Your answers go into a public research dataset.",
     "start": "Play today’s game",
@@ -249,7 +249,7 @@
     "progress": "{i} of {n}",
     "pts": "pts",
     "total_label": "Running total",
-    "how_sure": "How sure are you?",
+    "how_sure": "Say how sure you are.",
     "coin_flip": "50% = coin flip",
     "stake": "100% = stake it all",
     "loading": "Loading a round…",
@@ -287,7 +287,7 @@
     "share": "Share",
     "share_native": "Share…",
     "leaderboard": "Today’s ranked leaderboard",
-    "card_kicker": "I played HowSure",
+    "card_kicker": "I played Who's Bluffing",
     "card_score": "{score} points",
     "card_cta": "Can you beat it? Same ten questions:",
     "nick_label": "Your name on the challenge (optional)",

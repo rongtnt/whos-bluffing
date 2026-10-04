@@ -1,4 +1,4 @@
-// HowSure for Anki v0.2 (migrations/0004_anki.sql): validation and the D1 work behind /api/anki/* and the KPI's
+// Who's Bluffing for Anki v0.2 (migrations/0004_anki.sql): validation and the D1 work behind /api/anki/* and the KPI's
 // anki_contributors_30d. Functions return {status, body}, like _daily.js. Bounded: a submit reads and writes only the
 // request's own rows (one primary-key lookup each) plus the install's row and two anki_agg rows; a delete touches one
 // install's rows; stats and the KPI read anki_agg only (one row per day).

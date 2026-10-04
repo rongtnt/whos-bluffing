@@ -14,8 +14,8 @@ Brief: `briefs/BRIEF_anki_v02.md`. Files: `upload.py` (new, the only network cod
 6. **Dashboard status line** ("Sharing on · 1,240 ratings uploaded · last 2 h ago") and the Stop sharing / Delete my data buttons are Qt widgets under the existing buttons, not part of the HTML (whose test asserts it contains no link). "Uploaded" = local rows up to the cursor under the current id. Stop sharing shows while sharing is on; Delete my data once consent was ever given, until the data is deleted.
 7. **Consent dialog** is a `QMessageBox` with Accept / Not now; Not now is the default button, so Enter does not consent (Escape and closing the window also mean Not now). macOS ignores message-box window titles, so the title is also the bold main text and the consent text is the informative text. The Chinese dialog is a translation plus the English sentence from PRIVACY.md word for word (labelled 英文原文); a test checks both against the file.
 8. **Existing tests touched:** the `pkg` fixture moved from `tests/test_import.py` to `tests/conftest.py` (session scope, so the new `tests/test_sharing.py` can use the same stubbed import), and its menu assertion now expects two Tools entries. No assertion was weakened.
-9. **`scripts/check.sh` "anki: no network code" fails by design.** It greps `\b(http|urllib|requests|socket)\b` over `anki/src`, which v0.2 must match (`upload.py` uses urllib, as the brief requires). `scripts/` is outside this builder's folders. Every hit is in `upload.py` (checked); suggested replacement for that step: `grep -rliE "\b(http|urllib|requests|socket)\b" anki/src` must print exactly `anki/src/howsure/upload.py`. `TESTING.md` uses that rule.
-10. **Default `api_base` is `https://howsure.me`**, which is not deployed yet. Until it is, uploads fail quietly and retry; nothing is lost (the cursor does not move).
+9. **`scripts/check.sh` "anki: no network code" fails by design.** It greps `\b(http|urllib|requests|socket)\b` over `anki/src`, which v0.2 must match (`upload.py` uses urllib, as the brief requires). `scripts/` is outside this builder's folders. Every hit is in `upload.py` (checked); suggested replacement for that step: `grep -rliE "\b(http|urllib|requests|socket)\b" anki/src` must print exactly `anki/src/whosbluffing/upload.py`. `TESTING.md` uses that rule.
+10. **Default `api_base` is `https://whosbluffing.com`**, which is not deployed yet. Until it is, uploads fail quietly and retry; nothing is lost (the cursor does not move).
 
 ### Headless probes (scratch scripts, not part of pytest)
 
@@ -61,9 +61,9 @@ Hooks (`aqt.gui_hooks`):
 - `reviewer_did_show_question(card)`: start the question timer, clear any stale pending rating, show the bar.
 - `reviewer_did_show_answer(card)`: start the answer timer, hide the bar. *(Not in the brief; needed for `a_rt_ms` when the answer is revealed by Space.)*
 - `reviewer_did_answer_card(reviewer, card, ease)`: write the row, or bump the unrated counter.
-- `webview_did_receive_js_message(handled, message, context)`: button clicks, `howsure:jol:<n>`.
+- `webview_did_receive_js_message(handled, message, context)`: button clicks, `whosbluffing:jol:<n>`.
 - `state_shortcuts_will_change(state, shortcuts)`: rating keys (see deviation 1).
-- `webview_will_set_content(web_content, context)`: add `web/howsure.js` + `howsure.css` to the reviewer page via `addonManager.setWebExports`.
+- `webview_will_set_content(web_content, context)`: add `web/whosbluffing.js` + `whosbluffing.css` to the reviewer page via `addonManager.setWebExports`.
 
 Reviewer and collection:
 - **Show-answer method:** `Reviewer._getTypedAnswer()`. It is what Anki's own Show Answer button (`pycmd("ans")` → `Reviewer._linkHandler`) and Space/Enter on the question side (`Reviewer.onEnterKey`) call. It reads the typed answer, then calls `Reviewer._showAnswer()`, the method that actually shows the answer. Both are underscore-private.
@@ -74,7 +74,7 @@ Reviewer and collection:
 
 ## Deviations from the brief
 
-1. **Keys 1–5 are bound in Python, not read in JavaScript.** In the review state Anki registers window-level Qt shortcuts for 1–4 (answer ease, via `pm.get_answer_key`) and 5 (pause audio). Qt consumes a key press that matches a shortcut before the web page sees it, so a JS `keydown` listener never receives 1–5. Headless probe (offscreen Qt, QWebEngineView + window QShortcuts on 1–5, `QTest.keyClick`): page focused → the Qt shortcuts fired for 1 and 5 and JS received only the unbound control key 8; text input focused → JS received 1 and no shortcut fired. Fix: `state_shortcuts_will_change` wraps each configured key. On the question side the wrapper rates; otherwise it calls the callable Anki had bound, so answer-side keys run Anki's original handlers unchanged (tested). Keys with no Anki binding (e.g. answer keys remapped) are added and do nothing outside the question side. The JS only draws the buttons and sends `pycmd("howsure:jol:<n>")`. Side effect: on the question side, 5 rates instead of pausing audio (documented in README and config.md).
+1. **Keys 1–5 are bound in Python, not read in JavaScript.** In the review state Anki registers window-level Qt shortcuts for 1–4 (answer ease, via `pm.get_answer_key`) and 5 (pause audio). Qt consumes a key press that matches a shortcut before the web page sees it, so a JS `keydown` listener never receives 1–5. Headless probe (offscreen Qt, QWebEngineView + window QShortcuts on 1–5, `QTest.keyClick`): page focused → the Qt shortcuts fired for 1 and 5 and JS received only the unbound control key 8; text input focused → JS received 1 and no shortcut fired. Fix: `state_shortcuts_will_change` wraps each configured key. On the question side the wrapper rates; otherwise it calls the callable Anki had bound, so answer-side keys run Anki's original handlers unchanged (tested). Keys with no Anki binding (e.g. answer keys remapped) are added and do nothing outside the question side. The JS only draws the buttons and sends `pycmd("whosbluffing:jol:<n>")`. Side effect: on the question side, 5 rates instead of pausing audio (documented in README and config.md).
 2. **Reveal via `_getTypedAnswer()`, not `_showAnswer()` directly.** Calling `_showAnswer()` directly on a type-in-answer card would pass `typedAnswer=None` into `col.compare_answer`. `_getTypedAnswer()` is Anki's own Show Answer path and ends in `_showAnswer()`.
 3. **Scheduling fields are snapshotted when the rating is given, not read in `reviewer_did_answer_card`.** `Reviewer._answerCard` → `after_answer` calls `self.card.load()` before firing that hook, so `card.ivl` and `card.memory_state` there already include the new grade, and retrievability is ~1.0 (verified on a temp collection: 1.0 right after a review). `ivl_days`, `reps`, `lapses`, `days_since_last_review`, `stability`, `difficulty` and `retrievability` therefore describe the card as it was when the learner judged it. `ts`, `ease` and `a_rt_ms` are taken at answer time.
 4. `days_since_last_review` = (now − newest revlog id with `ease > 0`) in fractional days, clamped at ≥ 0. `ease > 0` skips manual reschedule rows. Null for a card with no earlier answer.
@@ -85,16 +85,16 @@ Reviewer and collection:
 9. Timers: `q_rt_ms` = question shown → rating; `a_rt_ms` = answer shown → `reviewer_did_answer_card`, which includes the scheduler's background op (a few ms). `time.monotonic()`.
 10. Repeat presses: with `reveal_on_rate` on, a second press while the answer is coming is ignored; with it off, the last press before the reveal wins.
 11. `metrics.auroc` uses the rank-sum formula (O(n log n), average ranks for ties) instead of the pairwise loop in `analysis/metrics_reference.py`. It gives identical results on every vector and stays fast on 500k ratings.
-12. Public deck: only `type == "2afc"` items (the two `attention` checks are web-test controls). One note type "HowSure two-choice" (id 1745312601), deck ids en 1745312611 / zh 1745312612, note GUID = `guid_for("howsure", id, lang)`, fields HTML-escaped, source shown as plain text. A malformed two-choice item raises an error naming its id. With the bank present on 2026-10-03, it builds 40 notes per language.
-13. Tests: `tests/conftest.py` puts `src/howsure` on `sys.path`, so `store`/`metrics`/`i18n` import without running the package `__init__` (which needs a running Anki), and `src` for the package smoke test. `pyproject.toml` has a `dev` dependency group, so `uv run --project anki pytest anki/tests` reproduces the environment.
+12. Public deck: only `type == "2afc"` items (the two `attention` checks are web-test controls). One note type "Who's Bluffing? two-choice" (id 1745312601), deck ids en 1745312611 / zh 1745312612, note GUID = `guid_for("whosbluffing", id, lang)`, fields HTML-escaped, source shown as plain text. A malformed two-choice item raises an error naming its id. With the bank present on 2026-10-03, it builds 40 notes per language.
+13. Tests: `tests/conftest.py` puts `src/whosbluffing` on `sys.path`, so `store`/`metrics`/`i18n` import without running the package `__init__` (which needs a running Anki), and `src` for the package smoke test. `pyproject.toml` has a `dev` dependency group, so `uv run --project anki pytest anki/tests` reproduces the environment.
 
-14. The bar's bottom padding uses CSS `body:has(> #howsure-bar:not([hidden]))`, not a body class: Anki's `_showQuestion` JS resets `document.body.className` on every question.
+14. The bar's bottom padding uses CSS `body:has(> #whosbluffing-bar:not([hidden]))`, not a body class: Anki's `_showQuestion` JS resets `document.body.className` on every question.
 
 ## Headless probes (scratch scripts, not part of pytest)
 
 Both ran with `QT_QPA_PLATFORM=offscreen` (nothing displayed) against the venv's QtWebEngine 6.11:
 - Key routing: see deviation 1.
-- Bar: `web/howsure.js` + `howsure.css` in a QWebEngineView → 5 buttons, labels `Not sure 1 2 3 4 5 Certain`, `position: fixed; bottom: 0`; body padding 56px even after `body.className` is reset; clicking button 3 sends `pycmd("howsure:jol:3")`; `mark(3)` highlights it; `hide()` and `show_buttons: false` remove the bar and the padding; re-showing leaves one bar in the DOM.
+- Bar: `web/whosbluffing.js` + `whosbluffing.css` in a QWebEngineView → 5 buttons, labels `Not sure 1 2 3 4 5 Certain`, `position: fixed; bottom: 0`; body padding 56px even after `body.className` is reset; clicking button 3 sends `pycmd("whosbluffing:jol:3")`; `mark(3)` highlights it; `hide()` and `show_buttons: false` remove the bar and the padding; re-showing leaves one bar in the DOM.
 
 This is the same engine Anki uses, but it is not the real reviewer page. Rendering inside Anki stays a manual check (`TESTING.md`).
 
@@ -104,3 +104,9 @@ This is the same engine Anki uses, but it is not the real reviewer page. Renderi
 - `keys` changes apply the next time the review screen opens; the other settings apply from the next card.
 - Deleting the add-on deletes `user_files` with the ratings (Anki's behaviour); README and TESTING say to export first.
 - The Tools menu label is chosen at startup, so a `language` change shows there after a restart.
+
+## Rename to Who's Bluffing? (2026-10-04)
+
+- Package folder and module `whosbluffing` (manifest `package`), name "Who's Bluffing? for Anki", bar assets `web/whosbluffing.{js,css}`, JS bridge `whosbluffing:jol:<n>`, ratings in `user_files/whosbluffing.sqlite`, default `api_base` `https://whosbluffing.com`. Behaviour unchanged; 44 tests pass.
+- An install of the old package keeps its own folder and data file; the new add-on starts empty. Nothing was published and the local Anki had no profile, so no ratings existed to carry over.
+- The public deck's note GUIDs are seeded with "whosbluffing" now, so they differ from the old decks' GUIDs (a re-import would add new notes rather than update old ones). Deck and note-type ids are unchanged.

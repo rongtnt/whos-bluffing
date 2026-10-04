@@ -18,9 +18,9 @@ function secret(env, name) {
 export const anonId = (env, guildId, userId) => sha256Hex(`${guildId}:${userId}:${secret(env, 'SALT')}`);
 export const communityId = async (env, guildId) => `discord:${await sha256Hex(`${guildId}:${secret(env, 'SALT')}`)}`;
 
-// Every call carries x-howsure-bot: the API needs it for same-day reveals, and the rate limit exempts it.
+// Every call carries x-bluff-bot: the API needs it for same-day reveals, and the rate limit exempts it.
 async function call(env, path, body) {
-  const headers = { 'x-howsure-bot': secret(env, 'BOT_KEY') };
+  const headers = { 'x-bluff-bot': secret(env, 'BOT_KEY') };
   const init = body
     ? { method: 'POST', headers: { ...headers, 'content-type': 'application/json' }, body: JSON.stringify(body) }
     : { headers };

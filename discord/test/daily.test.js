@@ -25,7 +25,7 @@ test('tapping B on the daily post answers at once with a private confidence pick
   const body = await res.json();
   assert.equal(body.type, 4);
   assert.equal(body.data.flags, 64);
-  assert.equal(body.data.content, 'You picked **B**. How sure are you?');
+  assert.equal(body.data.content, 'You picked **B**. Say how sure you are.');
   const buttons = body.data.components.flatMap((r) => r.components);
   assert.deepEqual(buttons.map((b) => b.label), ['50% · coin flip', '60%', '70%', '80%', '90%', '100% · stake it all']);
   assert.deepEqual(buttons.map((b) => b.custom_id), [50, 60, 70, 80, 90, 100].map((c) => cId(1, c)));
@@ -45,7 +45,7 @@ test('a confidence tap defers, sends the hashed answer with the bot key, stores 
     round_id: 'dq-2026-10-06', item_id: 'p00042', choice: 1, conf: 80, rt_ms: 4000,
     anon_id: anon(GUILD, USER), community: community(GUILD), surface: 'discord',
   });
-  assert.equal(answer.headers['x-howsure-bot'], 'test-bot-key');
+  assert.equal(answer.headers['x-bluff-bot'], 'test-bot-key');
   assert.ok(!JSON.stringify(calls.filter((c) => c.host === 'api.test')).includes(USER), 'raw user id reached the API');
 
   const [edit] = originalEdits(calls);
@@ -107,7 +107,7 @@ test('API down: the picker stays for another try and a private "taking a break" 
   await send(env, signedRequest(tapAfter(cId(0, 90), 1000)));
   assert.equal(originalEdits(calls).length, 0);
   assert.deepEqual(followUps(calls)[0].body, {
-    allowed_mentions: { parse: [] }, flags: 64, content: 'HowSure is taking a break, try again in a minute.',
+    allowed_mentions: { parse: [] }, flags: 64, content: "Who's Bluffing is taking a break, try again in a minute.",
   });
   assert.equal(env.DB.rows('SELECT * FROM answers').length, 0);
 });
@@ -118,6 +118,6 @@ test('without BOT_KEY nothing reaches the web API and the member gets the "takin
   const calls = mockFetch();
   await send(env, signedRequest(tapAfter(cId(0, 90), 1000)));
   assert.equal(calls.filter((c) => c.host === 'api.test').length, 0);
-  assert.equal(followUps(calls)[0].body.content, 'HowSure is taking a break, try again in a minute.');
+  assert.equal(followUps(calls)[0].body.content, "Who's Bluffing is taking a break, try again in a minute.");
   assert.equal(env.DB.rows('SELECT * FROM answers').length, 0);
 });

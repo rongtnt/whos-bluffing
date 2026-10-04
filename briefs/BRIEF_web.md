@@ -1,4 +1,4 @@
-# Builder brief — HowSure web test v0.1
+# Builder brief — Who's Bluffing? web test v0.1
 
 You are the executor. Build exactly this. If something here is impossible or wrong, do the smallest sensible thing and record it in `web/NOTES.md`. Do **not** change the design otherwise.
 
@@ -13,7 +13,7 @@ Node 22 (installed). `npx wrangler@4` for local dev and tests. Static frontend i
 ## Files
 ```
 web/package.json            scripts: dev, test, smoke, sync-items, migrate:local
-web/wrangler.toml           pages_build_output_dir="public"; [[d1_databases]] binding="DB" database_name="howsure"; compatibility_date
+web/wrangler.toml           pages_build_output_dir="public"; [[d1_databases]] binding="DB" database_name="whosbluffing"; compatibility_date
 web/migrations/0001_init.sql
 web/public/index.html app.js test.js results.js share.js class.js stats.js styles.css
 web/public/i18n/en.json i18n/zh.json

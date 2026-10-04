@@ -7,5 +7,5 @@ __pycache__/
 .DS_Store
 web/public/items.json
 web/functions/_items.json
-anki/src/howsure/user_files/
+anki/src/whosbluffing/user_files/
 .dev.vars

@@ -1,19 +1,19 @@
-# Builder brief — HowSure for Discord v0.1 (the install-once channel that scaled Truth or Dare)
+# Builder brief — Who's Bluffing? for Discord v0.1 (the install-once channel that scaled Truth or Dare)
 
 You are the executor. Repo /Users/ethan/howsure; create and edit only discord/ (plus posts/discord-listing.md). Read first: docs/api-rounds.md (you consume it; mock it in tests — the web builder implements it in parallel), prereg/PREREG.md (play and community definitions), PRIVACY.md, slack/ (the Slack worker is the sibling; copy its structure, store and test style where it fits; do not edit it).
 
 Hard rules: no git commands; no deploy/login/purchases; no runtime npm deps (Cloudflare Workers runtime; vendor an Ed25519 verifier with its licence only if `crypto.subtle` cannot verify Discord's signatures in Workers — check first and record it in NOTES). Never store raw Discord user ids with answers: anon_id = hex sha256(guild_id + ":" + user_id + ":" + SALT); never store message text or usernames (fetch display names at render time only). Respond to interactions within 3 s (defer with type 5, then edit via the webhook). Plain English; no "first/largest"; no mention of AI.
 
 ## Product
-- Daily question in a channel at the server's hour: "HowSure · Which is longer: the Nile or the Danube?" with buttons **A** / **B**; tapping one shows an ephemeral confidence picker (50 … 100: "coin flip" … "stake it all"); confidence → `POST /api/round/answer` (round_id from `/api/round/daily-question`, surface=discord, community=`discord:<guild hash>`; revisions before the reveal use `revision: true`) → ephemeral "Locked in: B at 80%. Reveal at 20:00 UTC."
-- Reveal (hourly tick after post + reveal delay, default 8 h, or `/howsure reveal`): edit the original message: correct answer with both values and sources, "{n} answered · {pct_a}% A · {pct_b}% B", top 5 by points (names rendered live), and the bluff line — **roast mode off by default** ("Someone was 95% sure the Nile is shorter. It isn't."); `/howsure setup roast on` names the bluffer.
-- `/howsure play`: a full 10-question quick round inside Discord as an ephemeral flow (buttons A/B → confidence buttons → reveal text with points → next), using the quick-round endpoints with surface=discord; end with score, type, roast line, and a "Challenge" button that posts the challenge link to the channel if the player wants.
-- `/howsure` (post today's question now), `/howsure setup #channel HH [roast on|off]`, `/howsure stats` (30-day leaderboard, participation), `/howsure reveal`, `/howsure help`, `/howsure invite`.
+- Daily question in a channel at the server's hour: "Who's Bluffing? · Which is longer: the Nile or the Danube?" with buttons **A** / **B**; tapping one shows an ephemeral confidence picker (50 … 100: "coin flip" … "stake it all"); confidence → `POST /api/round/answer` (round_id from `/api/round/daily-question`, surface=discord, community=`discord:<guild hash>`; revisions before the reveal use `revision: true`) → ephemeral "Locked in: B at 80%. Reveal at 20:00 UTC."
+- Reveal (hourly tick after post + reveal delay, default 8 h, or `/bluff reveal`): edit the original message: correct answer with both values and sources, "{n} answered · {pct_a}% A · {pct_b}% B", top 5 by points (names rendered live), and the bluff line — **roast mode off by default** ("Someone was 95% sure the Nile is shorter. It isn't."); `/bluff setup roast on` names the bluffer.
+- `/bluff play`: a full 10-question quick round inside Discord as an ephemeral flow (buttons A/B → confidence buttons → reveal text with points → next), using the quick-round endpoints with surface=discord; end with score, type, roast line, and a "Challenge" button that posts the challenge link to the channel if the player wants.
+- `/bluff` (post today's question now), `/bluff setup #channel HH [roast on|off]`, `/bluff stats` (30-day leaderboard, participation), `/bluff reveal`, `/bluff help`, `/bluff invite`.
 - Weekly recap on Mondays (calibration by confidence level, most calibrated member named, bluff count, streak).
 
 ## Files
 ```
-discord/wrangler.toml        Worker "howsure-discord"; D1 binding DB; [triggers] crons = ["0 * * * *"]; vars API_BASE, DISCORD_APP_ID
+discord/wrangler.toml        Worker "whosbluffing-discord"; D1 binding DB; [triggers] crons = ["0 * * * *"]; vars API_BASE, DISCORD_APP_ID
 discord/src/index.js         routes: POST /interactions (verify, route), GET /install (redirect to the OAuth2 authorize URL with scopes bot+applications.commands and minimal permission bits: Send Messages, Embed Links, Read Message History), scheduled() handler
 discord/src/verify.js        Ed25519 verification of X-Signature-Ed25519 / X-Signature-Timestamp
 discord/src/commands.js      slash command definitions (exported for the register script) and handlers

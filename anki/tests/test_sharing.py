@@ -15,7 +15,7 @@ from conftest import ANKI, CONFIG
 
 PRIVACY = (ANKI.parent / "PRIVACY.md").read_text(encoding="utf-8")
 SERVER_INSTALL_RE = re.compile(r"^[A-Za-z0-9_-]{32,64}$")  # what web/functions/_anki.js accepts
-BASE = "https://howsure.example"
+BASE = "https://whosbluffing.example"
 
 
 def full_row(store, salt, n):
@@ -33,7 +33,7 @@ def full_row(store, salt, n):
 def env(pkg, tmp_path, monkeypatch):
     """A temp database, a config that remembers writes, inline background tasks, and no network."""
     hooks, sharing, upload = pkg.hooks, pkg.sharing, pkg.upload
-    monkeypatch.setattr(hooks, "DB_PATH", str(tmp_path / "user_files" / "howsure.sqlite"))
+    monkeypatch.setattr(hooks, "DB_PATH", str(tmp_path / "user_files" / "whosbluffing.sqlite"))
     state = {**CONFIG, "api_base": BASE}
     manager = hooks.mw.addonManager
     monkeypatch.setattr(manager.getConfig, "side_effect", lambda _module: dict(state))

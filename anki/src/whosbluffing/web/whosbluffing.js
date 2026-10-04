@@ -1,5 +1,5 @@
-/* HowSure rating bar for the reviewer's question side.
-   Buttons send pycmd("howsure:jol:<n>"). Keys 1-5 are bound in Python (hooks.py):
+/* Who's Bluffing rating bar for the reviewer's question side.
+   Buttons send pycmd("whosbluffing:jol:<n>"). Keys 1-5 are bound in Python (hooks.py):
    Anki's Qt shortcuts consume those key presses before this page could see them. */
 (function () {
   "use strict";
@@ -13,23 +13,23 @@
     b.setAttribute("data-jol", String(n));
     b.addEventListener("click", function () {
       b.blur();
-      pycmd("howsure:jol:" + n);
+      pycmd("whosbluffing:jol:" + n);
     });
     return b;
   }
 
   function label(text) {
     var s = document.createElement("span");
-    s.className = "howsure-end";
+    s.className = "whosbluffing-end";
     s.textContent = text;
     return s;
   }
 
-  window.howsure = {
+  window.whosbluffing = {
     show: function (opts) {
       if (bar) bar.remove();
       bar = document.createElement("div");
-      bar.id = "howsure-bar";
+      bar.id = "whosbluffing-bar";
       bar.setAttribute("role", "group");
       bar.setAttribute("aria-label", opts.title);
       bar.appendChild(label(opts.low));
@@ -41,7 +41,7 @@
     mark: function (n) {
       if (!bar) return;
       bar.querySelectorAll("button").forEach(function (b) {
-        b.classList.toggle("howsure-on", b.getAttribute("data-jol") === String(n));
+        b.classList.toggle("whosbluffing-on", b.getAttribute("data-jol") === String(n));
       });
     },
     hide: function () {

@@ -3,7 +3,7 @@
 ## T-7 (by Oct 10)
 - [ ] Repo pushed (private). `scripts/check.sh` green on your machine.
 - [ ] Cloudflare: `wrangler login`; D1 created; `migrations apply --remote`; `npm run sync-items`; Pages deployed; KPI_KEY set on Pages and on `web/kpi-worker`; kpi-worker deployed; rate-limit rule on `/api/*`.
-- [ ] Domain bound (howsure.me) or replace the hard-coded domain in `web/public/sitemap.xml`, `robots.txt`, share text and `kpi-worker` RUN_URL.
+- [ ] Domain bound (whosbluffing.com) or replace the hard-coded domain in `web/public/sitemap.xml`, `robots.txt`, share text and `kpi-worker` RUN_URL.
 - [ ] Slack app created from `slack/manifest.yaml`; secrets set; worker deployed; installed in a test workspace; one full play; leaderboard renders.
 - [ ] Items: `items/REVIEW.md` source pass done; fact-check report (`analysis/factcheck-*.md`) actioned; `npm run tomorrow` for each of Oct 17–31 looked at once.
 

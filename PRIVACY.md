@@ -1,6 +1,6 @@
 # Privacy
 
-HowSure is an independent, unaffiliated, non-commercial project. No accounts, no advertising, no tracking scripts, no sale of data.
+Who's Bluffing is an independent, unaffiliated, non-commercial project. No accounts, no advertising, no tracking scripts, no sale of data.
 
 ## Web (rounds, daily game and full assessment)
 
@@ -26,7 +26,7 @@ HowSure is an independent, unaffiliated, non-commercial project. No accounts, no
 
 **Opting out:** do not press Submit, or close the page. Because sessions carry no identifier linked to you, we cannot locate a specific session afterwards to delete it.
 
-## Anki add-on (HowSure for Anki)
+## Anki add-on (Who's Bluffing? for Anki)
 
 **v0.1 is local only.** Your ratings are stored in a SQLite file inside the add-on's `user_files` folder on your computer. Nothing is sent anywhere. You can export or delete the file at any time.
 

@@ -23,8 +23,8 @@ test('markdown: headings with ids, paragraphs, lists, bold, safe links; code and
     '<ol>\n<li>first</li>\n<li>second</li>\n</ol>',
   ].join('\n'));
   assert.equal(inline('`**not bold**` and <b>'), '<code>**not bold**</code> and &lt;b&gt;');
-  const page = renderPage(DOCS[0], '# Privacy', '<title>{{title}}</title><link href="https://howsure.me{{path}}">{{main}} $& {{path}}');
-  assert.match(page, /^<title>Privacy \| HowSure<\/title><link href="https:\/\/howsure.me\/privacy"><article/);
+  const page = renderPage(DOCS[0], '# Privacy', '<title>{{title}}</title><link href="https://whosbluffing.com{{path}}">{{main}} $& {{path}}');
+  assert.match(page, /^<title>Privacy \| Who's Bluffing\?<\/title><link href="https:\/\/whosbluffing.com\/privacy"><article/);
   assert.match(page, /<\/article> \$& \/privacy$/); // "$&" in the template is not a replacement pattern
 });
 
@@ -37,8 +37,8 @@ test('every page: title, description, canonical, Open Graph, icons, theme colour
     want(/<title>[^<{]{10,}<\/title>/, 'title');
     want(/<meta name="description" content="[^"{]{20,}">/, 'description');
     if (file === '404.html') want(/<meta name="robots" content="noindex">/, 'noindex');
-    else want(new RegExp(`<link rel="canonical" href="https://howsure.me${pathOf(file)}">`), 'canonical');
-    want(/<meta property="og:image" content="https:\/\/howsure.me\/og.png">/, 'og:image');
+    else want(new RegExp(`<link rel="canonical" href="https://whosbluffing.com${pathOf(file)}">`), 'canonical');
+    want(/<meta property="og:image" content="https:\/\/whosbluffing.com\/og.png">/, 'og:image');
     want(/<meta name="twitter:card" content="summary_large_image">/, 'twitter card');
     want(/<link rel="icon" href="\/favicon.svg" type="image\/svg\+xml">/, 'favicon');
     want(/<link rel="apple-touch-icon" href="\/apple-touch-icon.png">/, 'touch icon');
@@ -55,7 +55,7 @@ test('markup is CSP-safe (no inline scripts, styles or handlers) and every page 
     assert.doesNotMatch(h, /<script(?![^>]*\bsrc=)[^>]*>/, `${file}: inline script`);
     assert.doesNotMatch(h, /\sstyle=|<style|\son[a-z]+=/i, `${file}: inline style or event handler`);
   }
-  const listed = [...read(new URL('sitemap.xml', PUBLIC)).matchAll(/<loc>https:\/\/howsure\.me(\/[^<]*)<\/loc>/g)].map((m) => m[1]).sort();
+  const listed = [...read(new URL('sitemap.xml', PUBLIC)).matchAll(/<loc>https:\/\/whosbluffing\.com(\/[^<]*)<\/loc>/g)].map((m) => m[1]).sort();
   const expected = pages.filter((f) => f !== '404.html').map(pathOf).sort();
   assert.deepEqual(listed, expected);
 });

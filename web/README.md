@@ -1,4 +1,4 @@
-# HowSure web
+# Who's Bluffing? web
 
 English only. A free game of rounds (ten either-or comparison questions with a confidence each: one ranked round a day, the same for everyone, then unlimited quick rounds, challenge links, and one question a day for Slack and Discord) and a 5-minute full assessment (12 two-choice questions with a confidence rating, 6 numeric 90% ranges, 2 attention checks). Static frontend (vanilla ES modules, no bundler) on Cloudflare Pages, API in Pages Functions, data in D1. No accounts, no cookies, no third-party scripts or fonts, no IP or user-agent storage.
 
@@ -32,7 +32,7 @@ Every page is a static HTML file in `public/` with the same head (title, descrip
 - `node design/render.js checks` reports layout shift and horizontal overflow at 375 and 1280 px on every page, a Tab walk over `/` and `/slack` (every control reached, each with a focus ring) and the theme toggle's label and persistence.
 - `node design/contrast.js` checks every text/background pair of the tokens in `styles.css`, light and dark.
 
-API (JSON). **Rounds** follow `docs/api-rounds.md` (`functions/_rounds.js`, `migrations/0005_rounds.sql`): `GET /api/round?mode=ranked|quick&seen=…`, `POST /api/round/answer`, `POST /api/round/complete`, `GET /api/round/:round_id/compare?me=&them=`, `GET /api/round/stats?date=` (cached 60 s), `POST /api/event`, `GET /api/round/daily-question?date=`, `GET /api/round/reveal?date=&community=`, `POST /api/flag` with a pair id. Round ids: `rk-<date>` (ranked, from `daily/rounds.json`), `dq-<date>` (the Slack/Discord question), 12 characters `A-Z2-9` (quick, stored in `rounds`). Status codes: 400 invalid body, 403 (a pair flag from someone who did not answer it; the reveal of a question that still takes answers, today's or yesterday's, without the bot header), 404 unknown round or item, 409 `{"error":"locked"}` (a daily question older than yesterday). This build's additions (`GET /api/round?round_id=`, the echoed `choice`/`conf`, complete's `challenge` and `today`, the absolute `challenge_url`, the stats bins, pair flags with `round_id` and the retire cascade, points settled at the reveal or by the KPI run) are written into the contract's "Additions" section. **Bot header:** the Slack and Discord workers send `x-howsure-bot: <BOT_KEY>`; the API checks it (constant time, no key = nobody) only where the contract needs it: revealing a question that still takes answers. **429** comes from the Cloudflare rate-limiting rule (Deploy below), not from code.
+API (JSON). **Rounds** follow `docs/api-rounds.md` (`functions/_rounds.js`, `migrations/0005_rounds.sql`): `GET /api/round?mode=ranked|quick&seen=…`, `POST /api/round/answer`, `POST /api/round/complete`, `GET /api/round/:round_id/compare?me=&them=`, `GET /api/round/stats?date=` (cached 60 s), `POST /api/event`, `GET /api/round/daily-question?date=`, `GET /api/round/reveal?date=&community=`, `POST /api/flag` with a pair id. Round ids: `rk-<date>` (ranked, from `daily/rounds.json`), `dq-<date>` (the Slack/Discord question), 12 characters `A-Z2-9` (quick, stored in `rounds`). Status codes: 400 invalid body, 403 (a pair flag from someone who did not answer it; the reveal of a question that still takes answers, today's or yesterday's, without the bot header), 404 unknown round or item, 409 `{"error":"locked"}` (a daily question older than yesterday). This build's additions (`GET /api/round?round_id=`, the echoed `choice`/`conf`, complete's `challenge` and `today`, the absolute `challenge_url`, the stats bins, pair flags with `round_id` and the retire cascade, points settled at the reveal or by the KPI run) are written into the contract's "Additions" section. **Bot header:** the Slack and Discord workers send `x-bluff-bot: <BOT_KEY>`; the API checks it (constant time, no key = nobody) only where the contract needs it: revealing a question that still takes answers. **429** comes from the Cloudflare rate-limiting rule (Deploy below), not from code.
 
 The retired daily range game keeps `docs/api-daily.md` exactly (`GET /api/daily`, `POST /api/daily/answer`, `POST /api/daily/complete`, `GET /api/daily/stats`, `POST /api/flag` with a pool id) for its data; `/` no longer uses it. Also `GET /api/kpi`, `POST /api/kpi/run` (needs the `x-kpi-key` header), `POST /api/submit`, `GET /api/stats`, `POST /api/class`, `GET /api/class/:code`, `GET /api/class/d/:secret[.csv]`.
 
@@ -53,28 +53,28 @@ Tests: `npm test` (metric vectors, unit tests on a real SQLite database through 
 ```bash
 cd web
 npx wrangler login
-npx wrangler d1 create howsure                          # paste the printed database_id into wrangler.toml
-npx wrangler d1 migrations apply howsure --remote
-npm run sync-items && npx wrangler pages deploy --project-name howsure
-npx wrangler pages secret put KPI_KEY --project-name howsure   # any long random string; protects POST /api/kpi/run
-npx wrangler pages secret put BOT_KEY --project-name howsure   # another long random string; the same value goes to the Slack and Discord workers (x-howsure-bot)
+npx wrangler d1 create whosbluffing                          # paste the printed database_id into wrangler.toml
+npx wrangler d1 migrations apply whosbluffing --remote
+npm run sync-items && npx wrangler pages deploy --project-name whosbluffing
+npx wrangler pages secret put KPI_KEY --project-name whosbluffing   # any long random string; protects POST /api/kpi/run
+npx wrangler pages secret put BOT_KEY --project-name whosbluffing   # another long random string; the same value goes to the Slack and Discord workers (x-bluff-bot)
 ```
 
 `pages deploy` uploads `public/` and bundles `functions/` as they are on disk, so always run `npm run sync-items` first: it writes the git-ignored copies `public/items.json`, `public/pool.json` (prompts only), `functions/_items.json`, `functions/_pool.json` (the fields the API reads), `functions/_schedule.json`, `functions/_pairs.json` (compact), `functions/_rounds.json` and `functions/_page.json` (the challenge page's template, from `scripts/page.html`). Pairs and ranked days are bundled into the API, so **any change to `items/pairs.json` or `daily/rounds.json` goes live only after `npm run sync-items` and a deploy**. The bundle is about 1.35 MB (285 KB gzipped).
 
-**Rate limiting** (after the first deploy, in the Cloudflare dashboard): a WAF rate-limiting rule on `/api/*` (for example 120 requests per minute per IP, block for a minute, answers 429), skipping requests whose `x-howsure-bot` header equals `BOT_KEY`. Pages Functions have no rate limiter of their own.
+**Rate limiting** (after the first deploy, in the Cloudflare dashboard): a WAF rate-limiting rule on `/api/*` (for example 120 requests per minute per IP, block for a minute, answers 429), skipping requests whose `x-bluff-bot` header equals `BOT_KEY`. Pages Functions have no rate limiter of their own.
 
 ### Daily KPI job (cron)
 
 Pages Functions cannot run on a schedule. `kpi-worker/` is a tiny Worker whose cron calls `POST /api/kpi/run?as_of=<yesterday>` once a day with the key. The run first settles the points of daily-question answers that can no longer change (questions older than yesterday, 35 days back), then scans `round_plays`, `round_answers` (daily questions), `player_days`, `events` and `sessions` once and writes one row to `kpi`: MAU and DAU per surface (web, Slack, Discord, rooms, classroom), communities per platform, and the engagement numbers (rounds per player per day, day-1 and day-7 return, challenge conversion, share rate; trailing 30 days). `/stats` and `GET /api/kpi` read only that row. Its `kpi-worker/wrangler.toml`:
 
 ```toml
-name = "howsure-kpi"
+name = "whosbluffing-kpi"
 main = "src/index.js"
 compatibility_date = "2026-09-01"
 
 [vars]
-RUN_URL = "https://howsure.pages.dev/api/kpi/run" # replace with the deployed site's address
+RUN_URL = "https://whosbluffing.pages.dev/api/kpi/run" # replace with the deployed site's address
 
 [triggers]
 crons = ["10 0 * * *"] # 00:10 UTC every day
@@ -96,7 +96,7 @@ npm run tomorrow             # tomorrow's ranked round (UTC): the 10 pairs with 
 ```
 
 Check each pair against its two sources. To swap one, replace its id in `daily/rounds.json` (one line per day) with another pair from `items/pairs.json` whose `ref_quality` is `referenced` (PREREG: ranked rounds use only items with a Wikidata reference or a fact-check; `npm run sync-items` refuses anything else), ideally the same difficulty and not used within 180 days, then `npm run sync-items` and deploy. A pair flagged by three players who answered it retires with both of its values; list retired pairs and items with
-`npx wrangler d1 execute howsure --remote --command "SELECT pair_id, retired_at FROM pair_runtime WHERE retired_at IS NOT NULL"` (and `items_runtime` for values) and swap them out of future days.
+`npx wrangler d1 execute whosbluffing --remote --command "SELECT pair_id, retired_at FROM pair_runtime WHERE retired_at IS NOT NULL"` (and `items_runtime` for values) and swap them out of future days.
 
 Keep the days filled: `python3 analysis/items_pipeline/pairs.py` (from the repo root) appends days up to 120 ahead and never changes an existing day. Rules for new days: 10 referenced pairs (3 easy, 4 medium, 3 hard by ratio), at most 2 per category, plus one more referenced pair as the daily question; the 22 items are 22 different entities; no pair again within 180 days, no item within 25 days; well-known items first. It also regenerates `items/pairs.json`, keeping every existing pair's id and A/B order. Export `pair_runtime` to `daily/pair_runtime.json` and `items_runtime` to `daily/runtime.json` (`--json`) first and it skips retired pairs and items.
 
@@ -125,7 +125,7 @@ No request reads an unbounded number of rows: a round touches its own 10 answers
 8. `/class`: create a code; the student link opens `/test?c=CODE`; the dashboard waits for 5 students.
 9. `/stats` shows the MAU definition; after the cron's first run it shows MAU, DAU, communities and the engagement numbers.
 10. `npm run tomorrow` prints tomorrow's ranked round; the Worker's cron log shows a 200 from the run endpoint.
-11. `curl -H "x-howsure-bot: $BOT_KEY" "https://<site>/api/round/reveal?community=slack:test"` answers 200; without the header, 403.
-12. `npx wrangler d1 execute howsure --remote --command "SELECT * FROM round_plays LIMIT 3"`: anonymous ids and public tokens only, no IP address or user agent.
+11. `curl -H "x-bluff-bot: $BOT_KEY" "https://<site>/api/round/reveal?community=slack:test"` answers 200; without the header, 403.
+12. `npx wrangler d1 execute whosbluffing --remote --command "SELECT * FROM round_plays LIMIT 3"`: anonymous ids and public tokens only, no IP address or user agent.
 
 Deviations from the brief and known limits: `NOTES.md`.

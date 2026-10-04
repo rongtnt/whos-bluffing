@@ -1,4 +1,4 @@
-# HowSure — Pre-registration (v0 DRAFT, 2026-10-03)
+# Who's Bluffing? — Pre-registration (v0 DRAFT, 2026-10-03)
 
 Status: draft. The final version is committed **before** the public launch of the web test and **before** the Anki add-on's data-sharing switch is enabled. Any deviation after that is logged in `CHANGELOG.md` with date and reason. Independent, unaffiliated project; anonymous opt-in data; no IRB review.
 

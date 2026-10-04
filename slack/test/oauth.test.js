@@ -28,7 +28,7 @@ test('OAuth callback exchanges the code and stores the bot token per team; reins
   });
   const res = await send(env, callback(STATE, STATE));
   assert.equal(res.status, 200);
-  assert.match(await res.text(), /HowSure is installed/);
+  assert.match(await res.text(), /Who's Bluffing is installed/);
   assert.deepEqual(slackCalls(calls, 'oauth.v2.access')[0].body, {
     client_id: 'client-id', client_secret: 'client-secret', code: 'c0de', redirect_uri: 'https://worker.test/slack/oauth/callback',
   });

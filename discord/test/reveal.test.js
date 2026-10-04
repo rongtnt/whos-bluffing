@@ -17,7 +17,7 @@ const MEMBERS = [
 const REVEAL = { n: 4, pct_a: 75, pct_b: 25, correct: 0, ...TRUTH, biggest_bluff: { anon_id: anon(GUILD, LEE), conf: 90, choice: 1 } };
 const membersOk = (list = MEMBERS) => (c) => (c.path.endsWith('/members') ? { body: list } : undefined);
 const HEAD = [
-  '**HowSure** · Which is longer: the Nile or the Danube?',
+  "**Who's Bluffing?** · Which is longer: the Nile or the Danube?",
   `✅ **A · the Nile**: 6,650 km ([source](<${TRUTH.a_source}>))`,
   `B · the Danube: 2,850 km ([source](<${TRUTH.b_source}>))`,
   '4 answered · 75% A · 25% B',
@@ -68,7 +68,7 @@ test('reveal, roast off: both values with sources, the split, top 5 by name (pos
     { anon_id: anon(GUILD, LEE), points: -224, correct: 0 },
   ]);
   const [reveal] = apiCalls(calls, '/api/round/reveal');
-  assert.equal(reveal.headers['x-howsure-bot'], 'test-bot-key');
+  assert.equal(reveal.headers['x-bluff-bot'], 'test-bot-key');
 });
 
 test("settling at the reveal follows the contract's points rule at every confidence, either answer right", async () => {
@@ -121,7 +121,7 @@ test('display names are markdown-escaped and nobody is pinged', async () => {
   assert.deepEqual(body.allowed_mentions, { parse: [] });
 });
 
-test('/howsure reveal: Manage Server only; reveals once, then there is nothing left to reveal', async () => {
+test('/bluff reveal: Manage Server only; reveals once, then there is nothing left to reveal', async () => {
   const env = makeEnv();
   await answeredDay(env);
   const calls = mockFetch({ discord: membersOk(), api: { '/api/round/reveal': () => REVEAL } });
@@ -140,7 +140,7 @@ test('/howsure reveal: Manage Server only; reveals once, then there is nothing l
   await send(env, revealCommand());
   await runCron(env, '2026-10-06T23:00:00Z');
   assert.equal(messageEdits(calls).length, 1);
-  assert.equal(originalEdits(calls)[1].body.content, "There is no question waiting for its answer. Type /howsure question to post today's.");
+  assert.equal(originalEdits(calls)[1].body.content, "There is no question waiting for its answer. Type /bluff question to post today's.");
 });
 
 test('a miss below 80% is not a bluff; a day nobody answered says so', async () => {

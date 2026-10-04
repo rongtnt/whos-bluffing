@@ -320,7 +320,7 @@ wheels = [
 ]
 
 [[package]]
-name = "howsure-anki-dev"
+name = "whosbluffing-anki-dev"
 version = "0.1.0"
 source = { virtual = "." }
 

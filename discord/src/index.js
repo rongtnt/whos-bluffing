@@ -1,4 +1,4 @@
-// HowSure for Discord: the interactions endpoint, the install redirect, and the hourly tick
+// Who's Bluffing for Discord: the interactions endpoint, the install redirect, and the hourly tick
 // (reveal what is due, Monday recaps, then the daily question for servers whose hour has come).
 
 import { verifyDiscord } from './verify.js';
@@ -57,7 +57,7 @@ async function postDue(env, now) {
   const q = await api.dailyQuestion(env, date);
   for (const install of due) {
     const result = await postQuestion(env, install, install.channel_id, date, q, now).catch((err) => logError('post', err));
-    // The channel is gone or HowSure lost access: stop posting until someone runs /howsure setup again.
+    // The channel is gone or Who's Bluffing lost access: stop posting until someone runs /bluff setup again.
     if (CHANNEL_GONE.has(result?.status)) await store.clearChannel(env.DB, install.guild_id);
   }
 }

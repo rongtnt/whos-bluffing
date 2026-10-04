@@ -45,9 +45,9 @@ test('Monday recap: accuracy per confidence level, most calibrated (named), bluf
   await runCron(env, `${MONDAY}T14:00:00Z`);
   const posts = slackCalls(calls, 'chat.postMessage');
   assert.deepEqual(posts.map((c) => c.body.channel), ['C1', 'C1']);
-  assert.match(posts[1].body.text, /^HowSure · Which is longer/, 'the recap comes before the new question');
+  assert.match(posts[1].body.text, /^Who's Bluffing\? · Which is longer/, 'the recap comes before the new question');
   assert.equal(posts[0].body.text, [
-    '*HowSure · last week in this workspace* (Oct 26 – Nov 1)',
+    "*Who's Bluffing? · last week in this workspace* (Oct 26 – Nov 1)",
     '*How often each confidence level was right*',
     '100% sure: 1 of 2 right (50%)',
     '90% sure: 2 of 4 right (50%)',

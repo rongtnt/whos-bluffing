@@ -1,20 +1,20 @@
-HowSure Source Licence — all rights reserved; viewing and research verification permitted
+Who's Bluffing? Source Licence — all rights reserved; viewing and research verification permitted
 
 Copyright (c) 2026 Ethan Rong. All rights reserved.
 
-The source code, item banks, designs, documentation and other files in this repository (the "Work") are published so that anyone can read them and verify the research built on HowSure. No other rights are granted.
+The source code, item banks, designs, documentation and other files in this repository (the "Work") are published so that anyone can read them and verify the research built on Who's Bluffing. No other rights are granted.
 
 You may:
 1. View the Work on GitHub and download a copy for personal reading.
-2. Run the Work on your own machine solely to verify or reproduce the results described in prereg/PREREG.md and in HowSure's published reports, and quote short excerpts for that purpose with attribution.
+2. Run the Work on your own machine solely to verify or reproduce the results described in prereg/PREREG.md and in the published reports of Who's Bluffing, and quote short excerpts for that purpose with attribution.
 
 You may not, without prior written permission from the copyright holder:
 - use the Work, or any part of it, in any product, service, website, bot, app, course, dataset or research tool of your own, whether free or paid;
 - copy, modify, translate, adapt, merge, publish, distribute, sublicense, host or sell the Work or any derivative work;
 - remove or alter copyright, licence or attribution notices;
-- use the HowSure name, logo or domain.
+- use the Who's Bluffing name, logo or domain.
 
-Data releases: the anonymous datasets that HowSure publishes are licensed separately under Creative Commons Attribution-NonCommercial 4.0 (CC BY-NC 4.0), as stated in the data card that accompanies each release.
+Data releases: the anonymous datasets that Who's Bluffing publishes are licensed separately under Creative Commons Attribution-NonCommercial 4.0 (CC BY-NC 4.0), as stated in the data card that accompanies each release.
 
 Third-party components keep their own licences (see the notices next to them, for example in web/public/vendor). Prior art is credited in README.md.
 

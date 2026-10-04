@@ -451,7 +451,7 @@ export const qrcode = function(typeNumber, errorCorrectionLevel) {
     makeImpl(false, getBestMaskPattern() );
   };
 
-  // HowSure: unused HTML/SVG/ASCII/canvas renderer methods removed here (MIT permits modification).
+  // Who's Bluffing: unused HTML/SVG/ASCII/canvas renderer methods removed here (MIT permits modification).
   return _this;
 };
 

@@ -18,8 +18,8 @@ export async function headerMatches(request, header, secret) {
   return a.reduce((diff, x, i) => diff | (x ^ b[i]), 0) === 0;
 }
 
-// The Slack and Discord workers send x-howsure-bot: BOT_KEY (docs/api-rounds.md).
-export const isBot = (request, env) => headerMatches(request, 'x-howsure-bot', env.BOT_KEY);
+// The Slack and Discord workers send x-bluff-bot: BOT_KEY (docs/api-rounds.md).
+export const isBot = (request, env) => headerMatches(request, 'x-bluff-bot', env.BOT_KEY);
 
 // Unexpected exceptions become a generic 500; details go to the log, never to the client.
 export const safe = (handler) => async (ctx) => {

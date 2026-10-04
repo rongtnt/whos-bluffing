@@ -15,7 +15,7 @@ const PLAY_ICON = '<svg class="i i-fill" viewBox="0 0 24 24" aria-hidden="true" 
 
 export const challengeTitle = (nickname, score) => `${nickname || 'Someone'} scored ${score}. Can you beat them?`;
 export const challengeDescription = (type, accuracy, meanConf) =>
-  `${type}: ${Math.round(accuracy)}% right at ${Math.round(meanConf)}% sure. Play the same ten questions on HowSure.`;
+  `${type}: ${Math.round(accuracy)}% right at ${Math.round(meanConf)}% sure. Play the same ten questions on Who's Bluffing.`;
 
 // play: {round_id, public_token, nickname, score, type, accuracy, mean_conf}
 export function challengePage(template, play) {

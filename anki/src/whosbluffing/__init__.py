@@ -1,4 +1,4 @@
-"""HowSure: press 1-5 on the question side to say how sure you are. Ratings stay on this computer unless the
+"""Who's Bluffing: press 1-5 on the question side to say how sure you are. Ratings stay on this computer unless the
 user turns on anonymous sharing (off by default)."""
 from aqt import gui_hooks, mw
 

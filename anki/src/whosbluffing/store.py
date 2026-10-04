@@ -1,4 +1,4 @@
-"""Local SQLite store for HowSure ratings. Pure stdlib, so it is testable without Anki.
+"""Local SQLite store for Who's Bluffing ratings. Pure stdlib, so it is testable without Anki.
 
 Never stores card content: card, deck and note type ids are salted SHA-256 hashes."""
 import csv

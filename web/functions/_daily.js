@@ -77,7 +77,7 @@ export function sumAgg(rows) {
 
 export function shareText({ number, grid, hits, n, avg, url }) {
   const squares = grid.map((hit) => (hit ? '🟩' : '🟥')).join('');
-  return `HowSure #${number} ${squares} ${hits}/${n} at 90%\nToday's average ${(avg ?? 0).toFixed(1)}/${n}\n${url}`;
+  return `Who's Bluffing? #${number} ${squares} ${hits}/${n} at 90%\nToday's average ${(avg ?? 0).toFixed(1)}/${n}\n${url}`;
 }
 
 // --- request validation -------------------------------------------------------------------------------------

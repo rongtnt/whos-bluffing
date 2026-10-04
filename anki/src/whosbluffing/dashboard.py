@@ -1,4 +1,4 @@
-"""Tools > "HowSure: my calibration": one dialog, HTML + inline SVG, no external assets."""
+"""Tools > "Who's Bluffing: my calibration": one dialog, HTML + inline SVG, no external assets."""
 import html
 import os
 from collections.abc import Callable
@@ -131,7 +131,7 @@ def render(rows: list[dict], unrated: int, names: dict[str, str], lang: str, tod
 
 
 def _export(parent: QDialog, t: Tr) -> None:
-    path = getSaveFile(parent, t("export"), "howsure", "CSV", ".csv", "howsure.csv")
+    path = getSaveFile(parent, t("export"), "whosbluffing", "CSV", ".csv", "whosbluffing.csv")
     if not path:
         return
     with hooks.db() as conn:
@@ -148,7 +148,7 @@ def show() -> None:
 
     dialog = QDialog(mw)
     dialog.setWindowTitle(t("dlg_title"))
-    web = AnkiWebView(parent=dialog, title="howsure_dashboard")
+    web = AnkiWebView(parent=dialog, title="whosbluffing_dashboard")
     web.stdHtml(render(rows, unrated, names, lang), context=dialog)
     export_btn = QPushButton(t("export"))
     export_btn.clicked.connect(lambda: _export(dialog, t))

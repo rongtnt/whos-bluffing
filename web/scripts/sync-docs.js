@@ -7,15 +7,15 @@ import { fileURLToPath } from 'node:url';
 
 const ROOT = new URL('../../', import.meta.url);
 const WEB = new URL('../', import.meta.url);
-const REPO = 'https://github.com/rongtnt/howsure/blob/main/';
+const REPO = 'https://github.com/rongtnt/whos-bluffing/blob/main/';
 
 export const DOCS = [
-  { src: 'PRIVACY.md', out: 'public/privacy.html', path: '/privacy', title: 'Privacy | HowSure',
-    description: 'What HowSure stores, what it never stores, and how the anonymous answers are used.' },
-  { src: 'TERMS.md', out: 'public/terms.html', path: '/terms', title: 'Terms of use | HowSure',
-    description: 'HowSure is free, non-commercial and provided as is. No accounts; acceptable use; data use as in the privacy policy.' },
-  { src: 'docs/api-daily.md', out: 'public/docs/api.html', path: '/docs/api', title: 'Daily API | HowSure',
-    description: 'The JSON API behind the HowSure daily game: today’s questions, answers, completion, stats, flags and the KPI.' },
+  { src: 'PRIVACY.md', out: 'public/privacy.html', path: '/privacy', title: "Privacy | Who's Bluffing?",
+    description: "What Who's Bluffing stores, what it never stores, and how the anonymous answers are used." },
+  { src: 'TERMS.md', out: 'public/terms.html', path: '/terms', title: "Terms of use | Who's Bluffing?",
+    description: "Who's Bluffing is free, non-commercial and provided as is. No accounts; acceptable use; data use as in the privacy policy." },
+  { src: 'docs/api-daily.md', out: 'public/docs/api.html', path: '/docs/api', title: "Daily API | Who's Bluffing?",
+    description: "The JSON API behind the Who's Bluffing daily game: today’s questions, answers, completion, stats, flags and the KPI." },
 ];
 
 const esc = (s) => s.replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/"/g, '&quot;');

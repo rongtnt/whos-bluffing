@@ -55,7 +55,7 @@ test('A/B tap sends a private confidence picker: 50 to 100, "coin flip" to "stak
   assert.equal(picker.url.href, POST_URL);
   assert.equal(picker.body.response_type, 'ephemeral');
   assert.equal(picker.body.replace_original, false);
-  assert.equal(picker.body.text, 'You picked B · the Danube. How sure are you?');
+  assert.equal(picker.body.text, 'You picked B · the Danube. Say how sure you are.');
   const buttons = pickerButtons(calls);
   assert.deepEqual(buttons.map((b) => [b.action_id, b.text.text]), [
     ['conf:50', '50% · coin flip'], ['conf:60', '60%'], ['conf:70', '70%'], ['conf:80', '80%'], ['conf:90', '90%'], ['conf:100', '100% · stake it all'],
@@ -78,7 +78,7 @@ test('confidence tap: contract payload to /api/round/answer, answer stored witho
     community: `slack:${sha256(`T1:${SALT}`)}`, surface: 'slack',
   });
   assert.ok(!('revision' in call.body), 'a first answer is not a revision');
-  assert.equal(call.headers['x-howsure-bot'], BOT_KEY);
+  assert.equal(call.headers['x-bluff-bot'], BOT_KEY);
 
   assert.equal(locked.url.href, PICKER_URL);
   assert.equal(locked.body.replace_original, true);
@@ -155,7 +155,7 @@ test('confidence tap with the API down: "taking a break", the picker stays, noth
   const down = mockFetch({ apiDown: true });
   await send(env, signedRequest(tapConf(button.value, 70)));
   const [reply] = replies(down);
-  assert.equal(reply.body.text, 'HowSure is taking a break, try again in a minute.');
+  assert.equal(reply.body.text, "Who's Bluffing is taking a break, try again in a minute.");
   assert.equal(reply.body.replace_original, false);
   assert.equal(answers(env).length, 0);
 });

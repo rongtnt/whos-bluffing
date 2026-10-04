@@ -1,9 +1,9 @@
-"""Build the public HowSure calibration decks (en, zh) from the two-alternative items
+"""Build the public Who's Bluffing calibration decks (en, zh) from the two-alternative items
 in items/items.json. Dev-only (needs genanki).
 
     uv run --project anki python anki/scripts/make_deck.py
 
-Writes anki/dist/HowSure-Calibration-Deck-en.apkg and -zh.apkg. If the bank is
+Writes anki/dist/WhosBluffing-Calibration-Deck-en.apkg and -zh.apkg. If the bank is
 missing or has no two-alternative items, prints a skip message and writes nothing."""
 import html
 import json
@@ -19,11 +19,11 @@ LETTERS = "AB"
 # Fixed ids, so re-importing a newer deck updates notes instead of duplicating them.
 MODEL_ID = 1745312601
 DECK_IDS = {"en": 1745312611, "zh": 1745312612}
-DECK_NAMES = {"en": "HowSure Calibration Deck", "zh": "HowSure 校准题库"}
+DECK_NAMES = {"en": "Who's Bluffing? Calibration Deck", "zh": "Who's Bluffing? 校准题库"}
 
 MODEL = genanki.Model(
     MODEL_ID,
-    "HowSure two-choice",
+    "Who's Bluffing? two-choice",
     fields=[{"name": f} for f in ("ID", "Prompt", "OptionA", "OptionB", "Answer", "Source")],
     templates=[{
         "name": "Card 1",
@@ -60,8 +60,8 @@ def note(item: dict, lang: str) -> genanki.Note:
         model=MODEL,
         fields=[item["id"], esc(text["prompt"]), esc(text["options"][0]), esc(text["options"][1]),
                 f"{LETTERS[answer]}. {esc(text['options'][answer])}", esc(item["source"])],
-        tags=["howsure::public", f"howsure::{item['id']}"],
-        guid=genanki.guid_for("howsure", item["id"], lang),
+        tags=["whosbluffing::public", f"whosbluffing::{item['id']}"],
+        guid=genanki.guid_for("whosbluffing", item["id"], lang),
     )
 
 
@@ -78,7 +78,7 @@ def build(items_path: str | Path = ITEMS, out_dir: str | Path = OUT) -> dict[str
         deck = genanki.Deck(DECK_IDS[lang], DECK_NAMES[lang])
         for item in items:
             deck.add_note(note(item, lang))
-        path = out_dir / f"HowSure-Calibration-Deck-{lang}.apkg"
+        path = out_dir / f"WhosBluffing-Calibration-Deck-{lang}.apkg"
         genanki.Package(deck).write_to_file(str(path))
         built[lang] = (path, len(items))
     return built

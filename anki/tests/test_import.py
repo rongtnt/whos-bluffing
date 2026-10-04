@@ -15,15 +15,15 @@ from conftest import CONFIG, SRC  # the `pkg` fixture (package imported with a s
 
 def test_import_registers_hooks_and_menu(pkg):
     manifest = json.loads((SRC / "manifest.json").read_text(encoding="utf-8"))
-    assert manifest["package"] == "howsure"
+    assert manifest["package"] == "whosbluffing"
     assert manifest["human_version"] == pkg.hooks.ADDON_VERSION
 
 
 def test_web_assets_injected_into_reviewer_only(pkg):
     content = SimpleNamespace(css=[], js=[])
     pkg.hooks.on_web_content(content, pkg.hooks.mw.reviewer)
-    assert content.js == ["/_addons/howsure/web/howsure.js"]
-    assert content.css == ["/_addons/howsure/web/howsure.css"]
+    assert content.js == ["/_addons/whosbluffing/web/whosbluffing.js"]
+    assert content.css == ["/_addons/whosbluffing/web/whosbluffing.css"]
     other = SimpleNamespace(css=[], js=[])
     pkg.hooks.on_web_content(other, object())
     assert other.css == other.js == []
@@ -74,12 +74,12 @@ def test_other_screens_untouched(pkg):
 def test_js_message_filter(pkg):
     hooks, rv = pkg.hooks, pkg.hooks.mw.reviewer
     assert hooks.on_js_message((False, None), "ans", rv) == (False, None)
-    assert hooks.on_js_message((False, None), "howsure:jol:3", object()) == (False, None)
+    assert hooks.on_js_message((False, None), "whosbluffing:jol:3", object()) == (False, None)
     with mock.patch.object(hooks, "rate") as rate:
-        assert hooks.on_js_message((False, None), "howsure:jol:9", rv) == (True, None)
-        assert hooks.on_js_message((False, None), "howsure:jol:x", rv) == (True, None)
+        assert hooks.on_js_message((False, None), "whosbluffing:jol:9", rv) == (True, None)
+        assert hooks.on_js_message((False, None), "whosbluffing:jol:x", rv) == (True, None)
         rate.assert_not_called()
-        hooks.on_js_message((False, None), "howsure:jol:5", rv)
+        hooks.on_js_message((False, None), "whosbluffing:jol:5", rv)
         rate.assert_called_once_with(5)
 
 
@@ -89,7 +89,7 @@ def test_js_message_filter(pkg):
 def env(pkg, tmp_path, monkeypatch):
     col = Collection(str(tmp_path / "collection.anki2"))
     hooks = pkg.hooks
-    monkeypatch.setattr(hooks, "DB_PATH", str(tmp_path / "user_files" / "howsure.sqlite"))
+    monkeypatch.setattr(hooks, "DB_PATH", str(tmp_path / "user_files" / "whosbluffing.sqlite"))
     monkeypatch.setattr(hooks.mw, "col", col)
     hooks.mw.reviewer.reset_mock()
     yield hooks, col, hooks.mw.reviewer
@@ -135,8 +135,8 @@ def test_rate_reveal_answer_writes_one_row(env):
     card = add_card(col)
     review_once(col, card)
     show_question(hooks, rv, card)
-    assert "howsure.show(" in rv.web.eval.call_args.args[0]
-    assert hooks.on_js_message((False, None), "howsure:jol:4", rv) == (True, None)
+    assert "whosbluffing.show(" in rv.web.eval.call_args.args[0]
+    assert hooks.on_js_message((False, None), "whosbluffing:jol:4", rv) == (True, None)
     rv._getTypedAnswer.assert_called_once()  # reveal_on_rate: one press records and reveals
     hooks.rate(2)  # second press while the answer is coming: ignored
     show_answer_and_grade(hooks, rv, card, 3)
@@ -178,7 +178,7 @@ def test_answers_without_rating_only_count(env):
     show_question(hooks, rv, first)
     show_answer_and_grade(hooks, rv, first, 3)  # no rating at all
     show_question(hooks, rv, second)
-    hooks.on_js_message((False, None), "howsure:jol:3", rv)
+    hooks.on_js_message((False, None), "whosbluffing:jol:3", rv)
     show_question(hooks, rv, first)  # next question drops the stale rating
     show_answer_and_grade(hooks, rv, first, 2)
     rows, unrated, _ = saved(hooks)

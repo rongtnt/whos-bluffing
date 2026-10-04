@@ -1,6 +1,6 @@
-# HowSure — How sure are you?
+# Who's Bluffing? — Find out who's bluffing.
 
-Free tools that show people how overconfident they are, and an open study built on the anonymous answers.
+Free tools that show people how overconfident they are, and an open study built on the anonymous answers (formerly HowSure).
 
 Three surfaces, one item bank, one question: do people know what they know?
 

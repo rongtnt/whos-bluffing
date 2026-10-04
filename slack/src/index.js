@@ -1,4 +1,4 @@
-// HowSure for Slack: OAuth install, slash command, the daily question (A/B → private confidence picker → locked in),
+// Who's Bluffing for Slack: OAuth install, slash command, the daily question (A/B → private confidence picker → locked in),
 // the reveal, the Monday recap and the hourly cron.
 // Slack must get an answer within 3 s, so every handler acks first and does the work in ctx.waitUntil.
 
@@ -24,7 +24,7 @@ const shiftDate = (date, days) => isoDate(Date.parse(`${date}T00:00:00Z`) + days
 const textResponse = (body, status = 200) => new Response(body, { status, headers: { 'content-type': 'text/plain; charset=utf-8' } });
 const ack = () => new Response(null, { status: 200 });
 // Logs a short reason only: never request bodies, tokens or env values.
-const logError = (where, err) => console.error(`howsure-slack ${where}: ${err?.message ?? err}`);
+const logError = (where, err) => console.error(`whosbluffing-slack ${where}: ${err?.message ?? err}`);
 
 // Slack Web API. Form-encoded (accepted by every method); object params are JSON-encoded.
 async function slack(token, method, params) {
@@ -100,7 +100,7 @@ async function oauthCallback(request, env) {
   });
   if (!res.ok || !res.team?.id || !res.access_token) return textResponse('The install did not work. Please use the Add to Slack link again.', 400);
   await store.saveInstall(env.DB, res.team.id, res.access_token, new Date().toISOString());
-  return textResponse("HowSure is installed. In Slack, type /howsure setup #channel to choose where the daily question goes, or /howsure to post today's question now.");
+  return textResponse("Who's Bluffing is installed. In Slack, type /bluff setup #channel to choose where the daily question goes, or /bluff to post today's question now.");
 }
 
 // ---- Slash command ------------------------------------------------------------------------------------------
@@ -258,7 +258,7 @@ const bluffOf = (r) => {
 // Edits the day's post into the reveal, drawn from the question stored with the post (no daily-question call, so a
 // late reveal works). Scores the day's answers from the revealed answer first. `row` = an openPosts row (post and
 // install fields). Returns false when another run revealed it first; on any failure the day is left unrevealed so
-// the next run (or /howsure reveal) retries.
+// the next run (or /bluff reveal) retries.
 async function revealDay(env, row) {
   if (!(await store.claimReveal(env.DB, row.team_id, row.date))) return false;
   try {

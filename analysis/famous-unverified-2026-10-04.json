@@ -1,0 +1,2495 @@
+[
+ {
+  "id": "w0001",
+  "category": "country_area",
+  "prompt": "What is the area of France?",
+  "answer": 643801,
+  "unit": "km²",
+  "source": "https://www.wikidata.org/wiki/Q142#P2046",
+  "views_month": 292670
+ },
+ {
+  "id": "w0005",
+  "category": "country_area",
+  "prompt": "What is the area of Japan?",
+  "answer": 377972,
+  "unit": "km²",
+  "source": "https://www.wikidata.org/wiki/Q17#P2046",
+  "views_month": 312902
+ },
+ {
+  "id": "w0009",
+  "category": "country_area",
+  "prompt": "What is the area of India?",
+  "answer": 3287263,
+  "unit": "km²",
+  "source": "https://www.wikidata.org/wiki/Q668#P2046",
+  "views_month": 526849
+ },
+ {
+  "id": "w0011",
+  "category": "country_area",
+  "prompt": "What is the area of People's Republic of China?",
+  "answer": 9596961,
+  "unit": "km²",
+  "source": "https://www.wikidata.org/wiki/Q148#P2046",
+  "views_month": 370568
+ },
+ {
+  "id": "w0013",
+  "category": "country_area",
+  "prompt": "What is the area of Canada?",
+  "answer": 9984670,
+  "unit": "km²",
+  "source": "https://www.wikidata.org/wiki/Q16#P2046",
+  "views_month": 386313
+ },
+ {
+  "id": "w0018",
+  "category": "country_area",
+  "prompt": "What is the area of Egypt?",
+  "answer": 1010408,
+  "unit": "km²",
+  "source": "https://www.wikidata.org/wiki/Q79#P2046",
+  "views_month": 203111
+ },
+ {
+  "id": "w0024",
+  "category": "country_area",
+  "prompt": "What is the area of Chile?",
+  "answer": 756102,
+  "unit": "km²",
+  "source": "https://www.wikidata.org/wiki/Q298#P2046",
+  "views_month": 124798
+ },
+ {
+  "id": "w0025",
+  "category": "country_area",
+  "prompt": "What is the area of Israel?",
+  "answer": 20770,
+  "unit": "km²",
+  "source": "https://www.wikidata.org/wiki/Q801#P2046",
+  "views_month": 320478
+ },
+ {
+  "id": "w0026",
+  "category": "country_area",
+  "prompt": "What is the area of Greece?",
+  "answer": 131957,
+  "unit": "km²",
+  "source": "https://www.wikidata.org/wiki/Q41#P2046",
+  "views_month": 169586
+ },
+ {
+  "id": "w0027",
+  "category": "country_area",
+  "prompt": "What is the area of Iran?",
+  "answer": 1648195,
+  "unit": "km²",
+  "source": "https://www.wikidata.org/wiki/Q794#P2046",
+  "views_month": 283588
+ },
+ {
+  "id": "w0028",
+  "category": "country_area",
+  "prompt": "What is the area of Algeria?",
+  "answer": 2381741,
+  "unit": "km²",
+  "source": "https://www.wikidata.org/wiki/Q262#P2046",
+  "views_month": 177383
+ },
+ {
+  "id": "w0033",
+  "category": "country_area",
+  "prompt": "What is the area of Denmark?",
+  "answer": 42925,
+  "unit": "km²",
+  "source": "https://www.wikidata.org/wiki/Q35#P2046",
+  "views_month": 150767
+ },
+ {
+  "id": "w0034",
+  "category": "country_area",
+  "prompt": "What is the area of Vietnam?",
+  "answer": 331690,
+  "unit": "km²",
+  "source": "https://www.wikidata.org/wiki/Q881#P2046",
+  "views_month": 194298
+ },
+ {
+  "id": "w0036",
+  "category": "country_area",
+  "prompt": "What is the area of Colombia?",
+  "answer": 1141748,
+  "unit": "km²",
+  "source": "https://www.wikidata.org/wiki/Q739#P2046",
+  "views_month": 204439
+ },
+ {
+  "id": "w0037",
+  "category": "country_area",
+  "prompt": "What is the area of Indonesia?",
+  "answer": 1904570,
+  "unit": "km²",
+  "source": "https://www.wikidata.org/wiki/Q252#P2046",
+  "views_month": 257724
+ },
+ {
+  "id": "w0040",
+  "category": "country_area",
+  "prompt": "What is the area of Azerbaijan?",
+  "answer": 86600,
+  "unit": "km²",
+  "source": "https://www.wikidata.org/wiki/Q227#P2046",
+  "views_month": 171124
+ },
+ {
+  "id": "w0044",
+  "category": "country_area",
+  "prompt": "What is the area of Iceland?",
+  "answer": 103004,
+  "unit": "km²",
+  "source": "https://www.wikidata.org/wiki/Q189#P2046",
+  "views_month": 178090
+ },
+ {
+  "id": "w0046",
+  "category": "country_area",
+  "prompt": "What is the area of Pakistan?",
+  "answer": 881913,
+  "unit": "km²",
+  "source": "https://www.wikidata.org/wiki/Q843#P2046",
+  "views_month": 238919
+ },
+ {
+  "id": "w0048",
+  "category": "country_area",
+  "prompt": "What is the area of South Korea?",
+  "answer": 100295,
+  "unit": "km²",
+  "source": "https://www.wikidata.org/wiki/Q884#P2046",
+  "views_month": 179083
+ },
+ {
+  "id": "w0050",
+  "category": "country_area",
+  "prompt": "What is the area of Armenia?",
+  "answer": 29743,
+  "unit": "km²",
+  "source": "https://www.wikidata.org/wiki/Q399#P2046",
+  "views_month": 172363
+ },
+ {
+  "id": "w0053",
+  "category": "country_area",
+  "prompt": "What is the area of Kazakhstan?",
+  "answer": 2724900,
+  "unit": "km²",
+  "source": "https://www.wikidata.org/wiki/Q232#P2046",
+  "views_month": 229678
+ },
+ {
+  "id": "w0056",
+  "category": "country_area",
+  "prompt": "What is the area of Nigeria?",
+  "answer": 923768,
+  "unit": "km²",
+  "source": "https://www.wikidata.org/wiki/Q1033#P2046",
+  "views_month": 164737
+ },
+ {
+  "id": "w0057",
+  "category": "country_area",
+  "prompt": "What is the area of New Zealand?",
+  "answer": 268021,
+  "unit": "km²",
+  "source": "https://www.wikidata.org/wiki/Q664#P2046",
+  "views_month": 221681
+ },
+ {
+  "id": "w0059",
+  "category": "country_area",
+  "prompt": "What is the area of Georgia?",
+  "answer": 69700,
+  "unit": "km²",
+  "source": "https://www.wikidata.org/wiki/Q230#P2046",
+  "views_month": 184348
+ },
+ {
+  "id": "w0060",
+  "category": "country_area",
+  "prompt": "What is the area of Bangladesh?",
+  "answer": 147570,
+  "unit": "km²",
+  "source": "https://www.wikidata.org/wiki/Q902#P2046",
+  "views_month": 196823
+ },
+ {
+  "id": "w0061",
+  "category": "country_area",
+  "prompt": "What is the area of Ethiopia?",
+  "answer": 1104300,
+  "unit": "km²",
+  "source": "https://www.wikidata.org/wiki/Q115#P2046",
+  "views_month": 153218
+ },
+ {
+  "id": "w0067",
+  "category": "country_area",
+  "prompt": "What is the area of Kenya?",
+  "answer": 581309,
+  "unit": "km²",
+  "source": "https://www.wikidata.org/wiki/Q114#P2046",
+  "views_month": 94826
+ },
+ {
+  "id": "w0068",
+  "category": "country_area",
+  "prompt": "What is the area of Syria?",
+  "answer": 185180,
+  "unit": "km²",
+  "source": "https://www.wikidata.org/wiki/Q858#P2046",
+  "views_month": 160644
+ },
+ {
+  "id": "w0072",
+  "category": "country_area",
+  "prompt": "What is the area of the Democratic Republic of the Congo?",
+  "answer": 2344858,
+  "unit": "km²",
+  "source": "https://www.wikidata.org/wiki/Q974#P2046",
+  "views_month": 285486
+ },
+ {
+  "id": "w0073",
+  "category": "country_area",
+  "prompt": "What is the area of Libya?",
+  "answer": 1759541,
+  "unit": "km²",
+  "source": "https://www.wikidata.org/wiki/Q1016#P2046",
+  "views_month": 107040
+ },
+ {
+  "id": "w0079",
+  "category": "country_area",
+  "prompt": "What is the area of Cambodia?",
+  "answer": 181035,
+  "unit": "km²",
+  "source": "https://www.wikidata.org/wiki/Q424#P2046",
+  "views_month": 108394
+ },
+ {
+  "id": "w0080",
+  "category": "country_area",
+  "prompt": "What is the area of Lebanon?",
+  "answer": 10452,
+  "unit": "km²",
+  "source": "https://www.wikidata.org/wiki/Q822#P2046",
+  "views_month": 134758
+ },
+ {
+  "id": "w0082",
+  "category": "country_area",
+  "prompt": "What is the area of Malta?",
+  "answer": 316,
+  "unit": "km²",
+  "source": "https://www.wikidata.org/wiki/Q233#P2046",
+  "views_month": 231838
+ },
+ {
+  "id": "w0083",
+  "category": "country_area",
+  "prompt": "What is the area of Somalia?",
+  "answer": 637657,
+  "unit": "km²",
+  "source": "https://www.wikidata.org/wiki/Q1045#P2046",
+  "views_month": 104972
+ },
+ {
+  "id": "w0084",
+  "category": "country_area",
+  "prompt": "What is the area of North Macedonia?",
+  "answer": 25713,
+  "unit": "km²",
+  "source": "https://www.wikidata.org/wiki/Q221#P2046",
+  "views_month": 128045
+ },
+ {
+  "id": "w0085",
+  "category": "country_area",
+  "prompt": "What is the area of Ghana?",
+  "answer": 238535,
+  "unit": "km²",
+  "source": "https://www.wikidata.org/wiki/Q117#P2046",
+  "views_month": 139739
+ },
+ {
+  "id": "w0087",
+  "category": "country_area",
+  "prompt": "What is the area of Uruguay?",
+  "answer": 176215,
+  "unit": "km²",
+  "source": "https://www.wikidata.org/wiki/Q77#P2046",
+  "views_month": 127507
+ },
+ {
+  "id": "w0088",
+  "category": "country_area",
+  "prompt": "What is the area of Montenegro?",
+  "answer": 13883,
+  "unit": "km²",
+  "source": "https://www.wikidata.org/wiki/Q236#P2046",
+  "views_month": 167076
+ },
+ {
+  "id": "w0089",
+  "category": "country_area",
+  "prompt": "What is the area of Nepal?",
+  "answer": 147181,
+  "unit": "km²",
+  "source": "https://www.wikidata.org/wiki/Q837#P2046",
+  "views_month": 289965
+ },
+ {
+  "id": "w0090",
+  "category": "country_area",
+  "prompt": "What is the area of Angola?",
+  "answer": 1246700,
+  "unit": "km²",
+  "source": "https://www.wikidata.org/wiki/Q916#P2046",
+  "views_month": 88101
+ },
+ {
+  "id": "w0092",
+  "category": "country_area",
+  "prompt": "What is the area of Monaco?",
+  "answer": 2.08,
+  "unit": "km²",
+  "source": "https://www.wikidata.org/wiki/Q235#P2046",
+  "views_month": 206386
+ },
+ {
+  "id": "w0094",
+  "category": "country_area",
+  "prompt": "What is the area of Tanzania?",
+  "answer": 947303,
+  "unit": "km²",
+  "source": "https://www.wikidata.org/wiki/Q924#P2046",
+  "views_month": 117417
+ },
+ {
+  "id": "w0096",
+  "category": "country_area",
+  "prompt": "What is the area of Kyrgyzstan?",
+  "answer": 199951,
+  "unit": "km²",
+  "source": "https://www.wikidata.org/wiki/Q813#P2046",
+  "views_month": 156676
+ },
+ {
+  "id": "w0097",
+  "category": "country_area",
+  "prompt": "What is the area of the United Arab Emirates?",
+  "answer": 83600,
+  "unit": "km²",
+  "source": "https://www.wikidata.org/wiki/Q878#P2046",
+  "views_month": 203496
+ },
+ {
+  "id": "w0098",
+  "category": "country_area",
+  "prompt": "What is the area of Chad?",
+  "answer": 1284000,
+  "unit": "km²",
+  "source": "https://www.wikidata.org/wiki/Q657#P2046",
+  "views_month": 65452
+ },
+ {
+  "id": "w0099",
+  "category": "country_area",
+  "prompt": "What is the area of Myanmar?",
+  "answer": 676577,
+  "unit": "km²",
+  "source": "https://www.wikidata.org/wiki/Q836#P2046",
+  "views_month": 183121
+ },
+ {
+  "id": "w0102",
+  "category": "country_area",
+  "prompt": "What is the area of Namibia?",
+  "answer": 825615,
+  "unit": "km²",
+  "source": "https://www.wikidata.org/wiki/Q1030#P2046",
+  "views_month": 105412
+ },
+ {
+  "id": "w0105",
+  "category": "country_area",
+  "prompt": "What is the area of Laos?",
+  "answer": 236800,
+  "unit": "km²",
+  "source": "https://www.wikidata.org/wiki/Q819#P2046",
+  "views_month": 94247
+ },
+ {
+  "id": "w0106",
+  "category": "country_area",
+  "prompt": "What is the area of Cameroon?",
+  "answer": 475442,
+  "unit": "km²",
+  "source": "https://www.wikidata.org/wiki/Q1009#P2046",
+  "views_month": 98982
+ },
+ {
+  "id": "w0107",
+  "category": "country_area",
+  "prompt": "What is the area of San Marino?",
+  "answer": 61.2,
+  "unit": "km²",
+  "source": "https://www.wikidata.org/wiki/Q238#P2046",
+  "views_month": 104184
+ },
+ {
+  "id": "w0108",
+  "category": "country_area",
+  "prompt": "What is the area of Jordan?",
+  "answer": 89341,
+  "unit": "km²",
+  "source": "https://www.wikidata.org/wiki/Q810#P2046",
+  "views_month": 116255
+ },
+ {
+  "id": "w0109",
+  "category": "country_area",
+  "prompt": "What is the area of Taiwan?",
+  "answer": 36193,
+  "unit": "km²",
+  "source": "https://www.wikidata.org/wiki/Q865#P2046",
+  "views_month": 244405
+ },
+ {
+  "id": "w0110",
+  "category": "country_area",
+  "prompt": "What is the area of Botswana?",
+  "answer": 581737,
+  "unit": "km²",
+  "source": "https://www.wikidata.org/wiki/Q963#P2046",
+  "views_month": 74850
+ },
+ {
+  "id": "w0111",
+  "category": "country_area",
+  "prompt": "What is the area of Bolivia?",
+  "answer": 1098581,
+  "unit": "km²",
+  "source": "https://www.wikidata.org/wiki/Q750#P2046",
+  "views_month": 95014
+ },
+ {
+  "id": "w0112",
+  "category": "country_area",
+  "prompt": "What is the area of Ivory Coast?",
+  "answer": 322463,
+  "unit": "km²",
+  "source": "https://www.wikidata.org/wiki/Q1008#P2046",
+  "views_month": 108402
+ },
+ {
+  "id": "w0113",
+  "category": "country_area",
+  "prompt": "What is the area of Uganda?",
+  "answer": 241038,
+  "unit": "km²",
+  "source": "https://www.wikidata.org/wiki/Q1036#P2046",
+  "views_month": 109918
+ },
+ {
+  "id": "w0114",
+  "category": "country_area",
+  "prompt": "What is the area of Cuba?",
+  "answer": 109884,
+  "unit": "km²",
+  "source": "https://www.wikidata.org/wiki/Q241#P2046",
+  "views_month": 125372
+ },
+ {
+  "id": "w0115",
+  "category": "country_area",
+  "prompt": "What is the area of Mali?",
+  "answer": 1240192,
+  "unit": "km²",
+  "source": "https://www.wikidata.org/wiki/Q912#P2046",
+  "views_month": 96957
+ },
+ {
+  "id": "w0116",
+  "category": "country_area",
+  "prompt": "What is the area of North Korea?",
+  "answer": 120540,
+  "unit": "km²",
+  "source": "https://www.wikidata.org/wiki/Q423#P2046",
+  "views_month": 198145
+ },
+ {
+  "id": "w0117",
+  "category": "country_area",
+  "prompt": "What is the area of Paraguay?",
+  "answer": 406756,
+  "unit": "km²",
+  "source": "https://www.wikidata.org/wiki/Q733#P2046",
+  "views_month": 154354
+ },
+ {
+  "id": "w0118",
+  "category": "country_area",
+  "prompt": "What is the area of Uzbekistan?",
+  "answer": 448978,
+  "unit": "km²",
+  "source": "https://www.wikidata.org/wiki/Q265#P2046",
+  "views_month": 157723
+ },
+ {
+  "id": "w0120",
+  "category": "country_area",
+  "prompt": "What is the area of Burkina Faso?",
+  "answer": 274200,
+  "unit": "km²",
+  "source": "https://www.wikidata.org/wiki/Q965#P2046",
+  "views_month": 136845
+ },
+ {
+  "id": "w0121",
+  "category": "country_area",
+  "prompt": "What is the area of Senegal?",
+  "answer": 196722,
+  "unit": "km²",
+  "source": "https://www.wikidata.org/wiki/Q1041#P2046",
+  "views_month": 145171
+ },
+ {
+  "id": "w0122",
+  "category": "country_area",
+  "prompt": "What is the area of Sri Lanka?",
+  "answer": 65610,
+  "unit": "km²",
+  "source": "https://www.wikidata.org/wiki/Q854#P2046",
+  "views_month": 182708
+ },
+ {
+  "id": "w0123",
+  "category": "country_area",
+  "prompt": "What is the area of Benin?",
+  "answer": 114763,
+  "unit": "km²",
+  "source": "https://www.wikidata.org/wiki/Q962#P2046",
+  "views_month": 76648
+ },
+ {
+  "id": "w0124",
+  "category": "country_area",
+  "prompt": "What is the area of Eritrea?",
+  "answer": 117600,
+  "unit": "km²",
+  "source": "https://www.wikidata.org/wiki/Q986#P2046",
+  "views_month": 123060
+ },
+ {
+  "id": "w0125",
+  "category": "country_area",
+  "prompt": "What is the area of Tajikistan?",
+  "answer": 143100,
+  "unit": "km²",
+  "source": "https://www.wikidata.org/wiki/Q863#P2046",
+  "views_month": 90029
+ },
+ {
+  "id": "w0127",
+  "category": "country_area",
+  "prompt": "What is the area of Kuwait?",
+  "answer": 17818,
+  "unit": "km²",
+  "source": "https://www.wikidata.org/wiki/Q817#P2046",
+  "views_month": 96133
+ },
+ {
+  "id": "w0128",
+  "category": "country_area",
+  "prompt": "What is the area of Mauritania?",
+  "answer": 1030700,
+  "unit": "km²",
+  "source": "https://www.wikidata.org/wiki/Q1025#P2046",
+  "views_month": 103831
+ },
+ {
+  "id": "w0129",
+  "category": "country_area",
+  "prompt": "What is the area of Bhutan?",
+  "answer": 38394,
+  "unit": "km²",
+  "source": "https://www.wikidata.org/wiki/Q917#P2046",
+  "views_month": 116641
+ },
+ {
+  "id": "w0133",
+  "category": "country_area",
+  "prompt": "What is the area of Panama?",
+  "answer": 74177,
+  "unit": "km²",
+  "source": "https://www.wikidata.org/wiki/Q804#P2046",
+  "views_month": 71604
+ },
+ {
+  "id": "w0134",
+  "category": "country_area",
+  "prompt": "What is the area of Togo?",
+  "answer": 56785,
+  "unit": "km²",
+  "source": "https://www.wikidata.org/wiki/Q945#P2046",
+  "views_month": 63881
+ },
+ {
+  "id": "w0135",
+  "category": "country_area",
+  "prompt": "What is the area of Burundi?",
+  "answer": 27834,
+  "unit": "km²",
+  "source": "https://www.wikidata.org/wiki/Q967#P2046",
+  "views_month": 67658
+ },
+ {
+  "id": "w0136",
+  "category": "country_area",
+  "prompt": "What is the area of Guinea?",
+  "answer": 245857,
+  "unit": "km²",
+  "source": "https://www.wikidata.org/wiki/Q1006#P2046",
+  "views_month": 59794
+ },
+ {
+  "id": "w0137",
+  "category": "country_area",
+  "prompt": "What is the area of Mozambique?",
+  "answer": 801590,
+  "unit": "km²",
+  "source": "https://www.wikidata.org/wiki/Q1029#P2046",
+  "views_month": 78050
+ },
+ {
+  "id": "w0138",
+  "category": "country_area",
+  "prompt": "What is the area of the Central African Republic?",
+  "answer": 622984,
+  "unit": "km²",
+  "source": "https://www.wikidata.org/wiki/Q929#P2046",
+  "views_month": 76083
+ },
+ {
+  "id": "w0139",
+  "category": "country_area",
+  "prompt": "What is the area of The Gambia?",
+  "answer": 11300,
+  "unit": "km²",
+  "source": "https://www.wikidata.org/wiki/Q1005#P2046",
+  "views_month": 71788
+ },
+ {
+  "id": "w0140",
+  "category": "country_area",
+  "prompt": "What is the area of the Republic of the Congo?",
+  "answer": 342000,
+  "unit": "km²",
+  "source": "https://www.wikidata.org/wiki/Q971#P2046",
+  "views_month": 78029
+ },
+ {
+  "id": "w0141",
+  "category": "country_area",
+  "prompt": "What is the area of Djibouti?",
+  "answer": 23200,
+  "unit": "km²",
+  "source": "https://www.wikidata.org/wiki/Q977#P2046",
+  "views_month": 75205
+ },
+ {
+  "id": "w0142",
+  "category": "country_area",
+  "prompt": "What is the area of Turkmenistan?",
+  "answer": 491210,
+  "unit": "km²",
+  "source": "https://www.wikidata.org/wiki/Q874#P2046",
+  "views_month": 113162
+ },
+ {
+  "id": "w0143",
+  "category": "country_area",
+  "prompt": "What is the area of Guinea-Bissau?",
+  "answer": 36125,
+  "unit": "km²",
+  "source": "https://www.wikidata.org/wiki/Q1007#P2046",
+  "views_month": 70142
+ },
+ {
+  "id": "w0145",
+  "category": "country_area",
+  "prompt": "What is the area of Honduras?",
+  "answer": 112492,
+  "unit": "km²",
+  "source": "https://www.wikidata.org/wiki/Q783#P2046",
+  "views_month": 65390
+ },
+ {
+  "id": "w0146",
+  "category": "country_area",
+  "prompt": "What is the area of Brunei?",
+  "answer": 5765,
+  "unit": "km²",
+  "source": "https://www.wikidata.org/wiki/Q921#P2046",
+  "views_month": 116980
+ },
+ {
+  "id": "w0147",
+  "category": "country_area",
+  "prompt": "What is the area of Oman?",
+  "answer": 309500,
+  "unit": "km²",
+  "source": "https://www.wikidata.org/wiki/Q842#P2046",
+  "views_month": 133892
+ },
+ {
+  "id": "w0148",
+  "category": "country_area",
+  "prompt": "What is the area of Gabon?",
+  "answer": 267667,
+  "unit": "km²",
+  "source": "https://www.wikidata.org/wiki/Q1000#P2046",
+  "views_month": 57548
+ },
+ {
+  "id": "w0149",
+  "category": "country_area",
+  "prompt": "What is the area of Sierra Leone?",
+  "answer": 71740,
+  "unit": "km²",
+  "source": "https://www.wikidata.org/wiki/Q1044#P2046",
+  "views_month": 81823
+ },
+ {
+  "id": "w0150",
+  "category": "country_area",
+  "prompt": "What is the area of Liberia?",
+  "answer": 111369,
+  "unit": "km²",
+  "source": "https://www.wikidata.org/wiki/Q1014#P2046",
+  "views_month": 112736
+ },
+ {
+  "id": "w0151",
+  "category": "country_area",
+  "prompt": "What is the area of Timor-Leste?",
+  "answer": 14919,
+  "unit": "km²",
+  "source": "https://www.wikidata.org/wiki/Q574#P2046",
+  "views_month": 89196
+ },
+ {
+  "id": "w0153",
+  "category": "country_area",
+  "prompt": "What is the area of Cape Verde?",
+  "answer": 4033,
+  "unit": "km²",
+  "source": "https://www.wikidata.org/wiki/Q1011#P2046",
+  "views_month": 1092890
+ },
+ {
+  "id": "w0154",
+  "category": "country_area",
+  "prompt": "What is the area of Qatar?",
+  "answer": 11437,
+  "unit": "km²",
+  "source": "https://www.wikidata.org/wiki/Q846#P2046",
+  "views_month": 120389
+ },
+ {
+  "id": "w0155",
+  "category": "country_area",
+  "prompt": "What is the area of the Maldives?",
+  "answer": 298,
+  "unit": "km²",
+  "source": "https://www.wikidata.org/wiki/Q826#P2046",
+  "views_month": 131511
+ },
+ {
+  "id": "w0156",
+  "category": "country_area",
+  "prompt": "What is the area of Suriname?",
+  "answer": 163270,
+  "unit": "km²",
+  "source": "https://www.wikidata.org/wiki/Q730#P2046",
+  "views_month": 117834
+ },
+ {
+  "id": "w0157",
+  "category": "country_area",
+  "prompt": "What is the area of El Salvador?",
+  "answer": 21041,
+  "unit": "km²",
+  "source": "https://www.wikidata.org/wiki/Q792#P2046",
+  "views_month": 107371
+ },
+ {
+  "id": "w0158",
+  "category": "country_area",
+  "prompt": "What is the area of Eswatini?",
+  "answer": 17364,
+  "unit": "km²",
+  "source": "https://www.wikidata.org/wiki/Q1050#P2046",
+  "views_month": 117535
+ },
+ {
+  "id": "w0159",
+  "category": "country_area",
+  "prompt": "What is the area of Guyana?",
+  "answer": 214970,
+  "unit": "km²",
+  "source": "https://www.wikidata.org/wiki/Q734#P2046",
+  "views_month": 140478
+ },
+ {
+  "id": "w0160",
+  "category": "country_area",
+  "prompt": "What is the area of Papua New Guinea?",
+  "answer": 462840,
+  "unit": "km²",
+  "source": "https://www.wikidata.org/wiki/Q691#P2046",
+  "views_month": 127518
+ },
+ {
+  "id": "w0161",
+  "category": "country_area",
+  "prompt": "What is the area of the Comoros?",
+  "answer": 2034,
+  "unit": "km²",
+  "source": "https://www.wikidata.org/wiki/Q970#P2046",
+  "views_month": 54833
+ },
+ {
+  "id": "w0162",
+  "category": "country_area",
+  "prompt": "What is the area of Equatorial Guinea?",
+  "answer": 28051,
+  "unit": "km²",
+  "source": "https://www.wikidata.org/wiki/Q983#P2046",
+  "views_month": 138148
+ },
+ {
+  "id": "w0163",
+  "category": "country_area",
+  "prompt": "What is the area of Mauritius?",
+  "answer": 2040,
+  "unit": "km²",
+  "source": "https://www.wikidata.org/wiki/Q1027#P2046",
+  "views_month": 194105
+ },
+ {
+  "id": "w0164",
+  "category": "country_area",
+  "prompt": "What is the area of Kosovo?",
+  "answer": 10909,
+  "unit": "km²",
+  "source": "https://www.wikidata.org/wiki/Q1246#P2046",
+  "views_month": 180694
+ },
+ {
+  "id": "w0165",
+  "category": "country_area",
+  "prompt": "What is the area of Nicaragua?",
+  "answer": 120340,
+  "unit": "km²",
+  "source": "https://www.wikidata.org/wiki/Q811#P2046",
+  "views_month": 108794
+ },
+ {
+  "id": "w0166",
+  "category": "country_area",
+  "prompt": "What is the area of Belize?",
+  "answer": 22966,
+  "unit": "km²",
+  "source": "https://www.wikidata.org/wiki/Q242#P2046",
+  "views_month": 96499
+ },
+ {
+  "id": "w0167",
+  "category": "country_area",
+  "prompt": "What is the area of Jamaica?",
+  "answer": 10992,
+  "unit": "km²",
+  "source": "https://www.wikidata.org/wiki/Q766#P2046",
+  "views_month": 104466
+ },
+ {
+  "id": "w0168",
+  "category": "country_area",
+  "prompt": "What is the area of Guatemala?",
+  "answer": 108889,
+  "unit": "km²",
+  "source": "https://www.wikidata.org/wiki/Q774#P2046",
+  "views_month": 86510
+ },
+ {
+  "id": "w0170",
+  "category": "country_area",
+  "prompt": "What is the area of Lesotho?",
+  "answer": 30355,
+  "unit": "km²",
+  "source": "https://www.wikidata.org/wiki/Q1013#P2046",
+  "views_month": 72140
+ },
+ {
+  "id": "w0172",
+  "category": "country_area",
+  "prompt": "What is the area of The Bahamas?",
+  "answer": 13878,
+  "unit": "km²",
+  "source": "https://www.wikidata.org/wiki/Q778#P2046",
+  "views_month": 98167
+ },
+ {
+  "id": "w0174",
+  "category": "country_area",
+  "prompt": "What is the area of the Seychelles?",
+  "answer": 459,
+  "unit": "km²",
+  "source": "https://www.wikidata.org/wiki/Q1042#P2046",
+  "views_month": 115540
+ },
+ {
+  "id": "w0175",
+  "category": "country_area",
+  "prompt": "What is the area of Barbados?",
+  "answer": 439,
+  "unit": "km²",
+  "source": "https://www.wikidata.org/wiki/Q244#P2046",
+  "views_month": 89905
+ },
+ {
+  "id": "w0176",
+  "category": "country_area",
+  "prompt": "What is the area of São Tomé and Príncipe?",
+  "answer": 1001,
+  "unit": "km²",
+  "source": "https://www.wikidata.org/wiki/Q1039#P2046",
+  "views_month": 64963
+ },
+ {
+  "id": "w0178",
+  "category": "country_area",
+  "prompt": "What is the area of Nauru?",
+  "answer": 21.0,
+  "unit": "km²",
+  "source": "https://www.wikidata.org/wiki/Q697#P2046",
+  "views_month": 160537
+ },
+ {
+  "id": "w0179",
+  "category": "country_area",
+  "prompt": "What is the area of Vanuatu?",
+  "answer": 12190,
+  "unit": "km²",
+  "source": "https://www.wikidata.org/wiki/Q686#P2046",
+  "views_month": 89894
+ },
+ {
+  "id": "w0180",
+  "category": "country_area",
+  "prompt": "What is the area of Dominica?",
+  "answer": 751,
+  "unit": "km²",
+  "source": "https://www.wikidata.org/wiki/Q784#P2046",
+  "views_month": 63799
+ },
+ {
+  "id": "w0181",
+  "category": "country_area",
+  "prompt": "What is the area of Samoa?",
+  "answer": 2842,
+  "unit": "km²",
+  "source": "https://www.wikidata.org/wiki/Q683#P2046",
+  "views_month": 67681
+ },
+ {
+  "id": "w0182",
+  "category": "country_area",
+  "prompt": "What is the area of Tonga?",
+  "answer": 749,
+  "unit": "km²",
+  "source": "https://www.wikidata.org/wiki/Q678#P2046",
+  "views_month": 60491
+ },
+ {
+  "id": "w0183",
+  "category": "country_area",
+  "prompt": "What is the area of Palau?",
+  "answer": 466,
+  "unit": "km²",
+  "source": "https://www.wikidata.org/wiki/Q695#P2046",
+  "views_month": 74219
+ },
+ {
+  "id": "w0184",
+  "category": "country_area",
+  "prompt": "What is the area of Greenland?",
+  "answer": 2166086,
+  "unit": "km²",
+  "source": "https://www.wikidata.org/wiki/Q223#P2046",
+  "views_month": 148720
+ },
+ {
+  "id": "w0185",
+  "category": "country_area",
+  "prompt": "What is the area of Tuvalu?",
+  "answer": 25.1,
+  "unit": "km²",
+  "source": "https://www.wikidata.org/wiki/Q672#P2046",
+  "views_month": 65024
+ },
+ {
+  "id": "w0186",
+  "category": "country_area",
+  "prompt": "What is the area of Trinidad and Tobago?",
+  "answer": 5128,
+  "unit": "km²",
+  "source": "https://www.wikidata.org/wiki/Q754#P2046",
+  "views_month": 89354
+ },
+ {
+  "id": "w0187",
+  "category": "country_area",
+  "prompt": "What is the area of Grenada?",
+  "answer": 348,
+  "unit": "km²",
+  "source": "https://www.wikidata.org/wiki/Q769#P2046",
+  "views_month": 65038
+ },
+ {
+  "id": "w0188",
+  "category": "country_area",
+  "prompt": "What is the area of Kiribati?",
+  "answer": 811,
+  "unit": "km²",
+  "source": "https://www.wikidata.org/wiki/Q710#P2046",
+  "views_month": 143795
+ },
+ {
+  "id": "w0189",
+  "category": "country_area",
+  "prompt": "What is the area of the Solomon Islands?",
+  "answer": 28400,
+  "unit": "km²",
+  "source": "https://www.wikidata.org/wiki/Q685#P2046",
+  "views_month": 51286
+ },
+ {
+  "id": "w0190",
+  "category": "country_area",
+  "prompt": "What is the area of Saint Kitts and Nevis?",
+  "answer": 269,
+  "unit": "km²",
+  "source": "https://www.wikidata.org/wiki/Q763#P2046",
+  "views_month": 58519
+ },
+ {
+  "id": "w0192",
+  "category": "country_area",
+  "prompt": "What is the area of the Marshall Islands?",
+  "answer": 181,
+  "unit": "km²",
+  "source": "https://www.wikidata.org/wiki/Q709#P2046",
+  "views_month": 62053
+ },
+ {
+  "id": "w0193",
+  "category": "country_area",
+  "prompt": "What is the area of Saint Lucia?",
+  "answer": 617,
+  "unit": "km²",
+  "source": "https://www.wikidata.org/wiki/Q760#P2046",
+  "views_month": 60483
+ },
+ {
+  "id": "w0194",
+  "category": "country_area",
+  "prompt": "What is the area of Macau?",
+  "answer": 115,
+  "unit": "km²",
+  "source": "https://www.wikidata.org/wiki/Q14773#P2046",
+  "views_month": 106644
+ },
+ {
+  "id": "w0196",
+  "category": "country_area",
+  "prompt": "What is the area of Puerto Rico?",
+  "answer": 9104,
+  "unit": "km²",
+  "source": "https://www.wikidata.org/wiki/Q1183#P2046",
+  "views_month": 155745
+ },
+ {
+  "id": "w0197",
+  "category": "country_area",
+  "prompt": "What is the area of Gibraltar?",
+  "answer": 6.84,
+  "unit": "km²",
+  "source": "https://www.wikidata.org/wiki/Q1410#P2046",
+  "views_month": 144391
+ },
+ {
+  "id": "w0198",
+  "category": "country_area",
+  "prompt": "What is the area of French Guiana?",
+  "answer": 83534,
+  "unit": "km²",
+  "source": "https://www.wikidata.org/wiki/Q3769#P2046",
+  "views_month": 75477
+ },
+ {
+  "id": "w0200",
+  "category": "country_area",
+  "prompt": "What is the area of the Faroe Islands?",
+  "answer": 1399,
+  "unit": "km²",
+  "source": "https://www.wikidata.org/wiki/Q4628#P2046",
+  "views_month": 134801
+ },
+ {
+  "id": "w0201",
+  "category": "country_area",
+  "prompt": "What is the area of the Falkland Islands?",
+  "answer": 12200,
+  "unit": "km²",
+  "source": "https://www.wikidata.org/wiki/Q9648#P2046",
+  "views_month": 560542
+ },
+ {
+  "id": "w0203",
+  "category": "country_area",
+  "prompt": "What is the area of Aruba?",
+  "answer": 179,
+  "unit": "km²",
+  "source": "https://www.wikidata.org/wiki/Q21203#P2046",
+  "views_month": 82419
+ },
+ {
+  "id": "w0204",
+  "category": "country_area",
+  "prompt": "What is the area of Guam?",
+  "answer": 544,
+  "unit": "km²",
+  "source": "https://www.wikidata.org/wiki/Q16635#P2046",
+  "views_month": 95664
+ },
+ {
+  "id": "w0205",
+  "category": "country_area",
+  "prompt": "What is the area of Bermuda?",
+  "answer": 53.0,
+  "unit": "km²",
+  "source": "https://www.wikidata.org/wiki/Q23635#P2046",
+  "views_month": 94830
+ },
+ {
+  "id": "w0206",
+  "category": "country_area",
+  "prompt": "What is the area of New Caledonia?",
+  "answer": 18576,
+  "unit": "km²",
+  "source": "https://www.wikidata.org/wiki/Q33788#P2046",
+  "views_month": 76331
+ },
+ {
+  "id": "w0207",
+  "category": "country_area",
+  "prompt": "What is the area of Martinique?",
+  "answer": 1128,
+  "unit": "km²",
+  "source": "https://www.wikidata.org/wiki/Q17054#P2046",
+  "views_month": 61972
+ },
+ {
+  "id": "w0208",
+  "category": "country_area",
+  "prompt": "What is the area of the Cook Islands?",
+  "answer": 240,
+  "unit": "km²",
+  "source": "https://www.wikidata.org/wiki/Q26988#P2046",
+  "views_month": 56289
+ },
+ {
+  "id": "w0209",
+  "category": "country_area",
+  "prompt": "What is the area of Réunion?",
+  "answer": 2512,
+  "unit": "km²",
+  "source": "https://www.wikidata.org/wiki/Q17070#P2046",
+  "views_month": 62501
+ },
+ {
+  "id": "w0210",
+  "category": "country_area",
+  "prompt": "What is the area of Guadeloupe?",
+  "answer": 1628,
+  "unit": "km²",
+  "source": "https://www.wikidata.org/wiki/Q17012#P2046",
+  "views_month": 69791
+ },
+ {
+  "id": "w0211",
+  "category": "country_area",
+  "prompt": "What is the area of American Samoa?",
+  "answer": 199,
+  "unit": "km²",
+  "source": "https://www.wikidata.org/wiki/Q16641#P2046",
+  "views_month": 58318
+ },
+ {
+  "id": "w0213",
+  "category": "country_area",
+  "prompt": "What is the area of Isle of Man?",
+  "answer": 572,
+  "unit": "km²",
+  "source": "https://www.wikidata.org/wiki/Q9676#P2046",
+  "views_month": 132830
+ },
+ {
+  "id": "w0214",
+  "category": "country_area",
+  "prompt": "What is the area of the Cayman Islands?",
+  "answer": 264,
+  "unit": "km²",
+  "source": "https://www.wikidata.org/wiki/Q5785#P2046",
+  "views_month": 62099
+ },
+ {
+  "id": "w0215",
+  "category": "country_area",
+  "prompt": "What is the area of French Polynesia?",
+  "answer": 4167,
+  "unit": "km²",
+  "source": "https://www.wikidata.org/wiki/Q30971#P2046",
+  "views_month": 53453
+ },
+ {
+  "id": "w0217",
+  "category": "country_area",
+  "prompt": "What is the area of Curaçao?",
+  "answer": 444,
+  "unit": "km²",
+  "source": "https://www.wikidata.org/wiki/Q25279#P2046",
+  "views_month": 172488
+ },
+ {
+  "id": "w0222",
+  "category": "country_area",
+  "prompt": "What is the area of Montserrat?",
+  "answer": 102,
+  "unit": "km²",
+  "source": "https://www.wikidata.org/wiki/Q13353#P2046",
+  "views_month": 54659
+ },
+ {
+  "id": "w0223",
+  "category": "country_area",
+  "prompt": "What is the area of the Pitcairn Islands?",
+  "answer": 47.0,
+  "unit": "km²",
+  "source": "https://www.wikidata.org/wiki/Q35672#P2046",
+  "views_month": 73712
+ },
+ {
+  "id": "w0225",
+  "category": "country_area",
+  "prompt": "What is the area of the United States Virgin Islands?",
+  "answer": 346,
+  "unit": "km²",
+  "source": "https://www.wikidata.org/wiki/Q11703#P2046",
+  "views_month": 52288
+ },
+ {
+  "id": "w0226",
+  "category": "country_area",
+  "prompt": "What is the area of the Turks and Caicos Islands?",
+  "answer": 417,
+  "unit": "km²",
+  "source": "https://www.wikidata.org/wiki/Q18221#P2046",
+  "views_month": 55005
+ },
+ {
+  "id": "w0230",
+  "category": "country_area",
+  "prompt": "What is the area of Saint Pierre and Miquelon?",
+  "answer": 242,
+  "unit": "km²",
+  "source": "https://www.wikidata.org/wiki/Q34617#P2046",
+  "views_month": 94779
+ },
+ {
+  "id": "w0238",
+  "category": "mountain_elevation",
+  "prompt": "How high is K2 above sea level?",
+  "answer": 8611,
+  "unit": "m",
+  "source": "https://www.wikidata.org/wiki/Q43512#P2044",
+  "views_month": 104764
+ },
+ {
+  "id": "w0243",
+  "category": "mountain_elevation",
+  "prompt": "How high is Mount Rushmore above sea level?",
+  "answer": 1745,
+  "unit": "m",
+  "source": "https://www.wikidata.org/wiki/Q83497#P2044",
+  "views_month": 158544
+ },
+ {
+  "id": "w0245",
+  "category": "mountain_elevation",
+  "prompt": "How high is Mount Kailash above sea level?",
+  "answer": 6638,
+  "unit": "m",
+  "source": "https://www.wikidata.org/wiki/Q229107#P2044",
+  "views_month": 110459
+ },
+ {
+  "id": "w0264",
+  "category": "mountain_elevation",
+  "prompt": "How high is Broad Peak above sea level?",
+  "answer": 8051,
+  "unit": "m",
+  "source": "https://www.wikidata.org/wiki/Q180996#P2044",
+  "views_month": 96201
+ },
+ {
+  "id": "w0278",
+  "category": "mountain_elevation",
+  "prompt": "How high is Mount Rainier above sea level?",
+  "answer": 4389,
+  "unit": "m",
+  "source": "https://www.wikidata.org/wiki/Q194057#P2044",
+  "views_month": 52388
+ },
+ {
+  "id": "w0297",
+  "category": "mountain_elevation",
+  "prompt": "How high is Mount Whitney above sea level?",
+  "answer": 4421,
+  "unit": "m",
+  "source": "https://www.wikidata.org/wiki/Q235539#P2044",
+  "views_month": 56571
+ },
+ {
+  "id": "w0631",
+  "category": "lake",
+  "prompt": "What is the surface area of the Caspian Sea?",
+  "answer": 386400,
+  "unit": "km²",
+  "source": "https://www.wikidata.org/wiki/Q5484#P2046",
+  "views_month": 89803
+ },
+ {
+  "id": "w0632",
+  "category": "lake",
+  "prompt": "What is the surface area of Lake Baikal?",
+  "answer": 31722,
+  "unit": "km²",
+  "source": "https://www.wikidata.org/wiki/Q5513#P2046",
+  "views_month": 89990
+ },
+ {
+  "id": "w0637",
+  "category": "lake",
+  "prompt": "What is the surface area of Lake Ontario?",
+  "answer": 18529,
+  "unit": "km²",
+  "source": "https://www.wikidata.org/wiki/Q1062#P2046",
+  "views_month": 413821
+ },
+ {
+  "id": "w0748",
+  "category": "lake",
+  "prompt": "How deep is Lake Superior at its deepest point?",
+  "answer": 406,
+  "unit": "m",
+  "source": "https://www.wikidata.org/wiki/Q1066#P4511",
+  "views_month": 54182
+ },
+ {
+  "id": "w0749",
+  "category": "lake",
+  "prompt": "How deep is Lake Ontario at its deepest point?",
+  "answer": 244,
+  "unit": "m",
+  "source": "https://www.wikidata.org/wiki/Q1062#P4511",
+  "views_month": 413821
+ },
+ {
+  "id": "w1224",
+  "category": "solar_system_distance",
+  "prompt": "On average, how far is Earth from the Sun?",
+  "answer": 150,
+  "unit": "million km",
+  "source": "https://www.wikidata.org/wiki/Q2#P2233",
+  "views_month": 252978
+ },
+ {
+  "id": "w1234",
+  "category": "solar_system_distance",
+  "prompt": "On average, how far is the Moon from Earth?",
+  "answer": 384400,
+  "unit": "km",
+  "source": "https://www.wikidata.org/wiki/Q405#P2233",
+  "views_month": 143262
+ },
+ {
+  "id": "w1235",
+  "category": "solar_system_distance",
+  "prompt": "On average, how far is Titan from Saturn?",
+  "answer": 1221870,
+  "unit": "km",
+  "source": "https://www.wikidata.org/wiki/Q2565#P2233",
+  "views_month": 55479
+ },
+ {
+  "id": "w1364",
+  "category": "city_population",
+  "prompt": "What was the population of Tokyo in 2022?",
+  "answer": 14264798,
+  "unit": "people",
+  "source": "https://www.wikidata.org/wiki/Q1490#P1082",
+  "views_month": 123812
+ },
+ {
+  "id": "w1378",
+  "category": "city_population",
+  "prompt": "What was the population of Ho Chi Minh City in 2024?",
+  "answer": 14002598,
+  "unit": "people",
+  "source": "https://www.wikidata.org/wiki/Q1854#P1082",
+  "views_month": 65667
+ },
+ {
+  "id": "w1397",
+  "category": "city_population",
+  "prompt": "What was the population of Cape Town in 2021?",
+  "answer": 3776313,
+  "unit": "people",
+  "source": "https://www.wikidata.org/wiki/Q5465#P1082",
+  "views_month": 60897
+ },
+ {
+  "id": "w1609",
+  "category": "first_flight",
+  "prompt": "In what year did the Boeing 737 first fly?",
+  "answer": 1967,
+  "unit": "year",
+  "source": "https://www.wikidata.org/wiki/Q6387#P606",
+  "views_month": 74009
+ },
+ {
+  "id": "w1612",
+  "category": "first_flight",
+  "prompt": "In what year did the General Dynamics F-16 Fighting Falcon first fly?",
+  "answer": 1974,
+  "unit": "year",
+  "source": "https://www.wikidata.org/wiki/Q100026#P606",
+  "views_month": 101418
+ },
+ {
+  "id": "w1614",
+  "category": "first_flight",
+  "prompt": "In what year did the Boeing 777 first fly?",
+  "answer": 1994,
+  "unit": "year",
+  "source": "https://www.wikidata.org/wiki/Q6425#P606",
+  "views_month": 95360
+ },
+ {
+  "id": "w1615",
+  "category": "first_flight",
+  "prompt": "In what year did the Lockheed Martin F-35 Lightning II first fly?",
+  "answer": 2006,
+  "unit": "year",
+  "source": "https://www.wikidata.org/wiki/Q29261#P606",
+  "views_month": 165627
+ },
+ {
+  "id": "w1617",
+  "category": "first_flight",
+  "prompt": "In what year did the Northrop B-2 Spirit first fly?",
+  "answer": 1989,
+  "unit": "year",
+  "source": "https://www.wikidata.org/wiki/Q180285#P606",
+  "views_month": 82454
+ },
+ {
+  "id": "w1618",
+  "category": "first_flight",
+  "prompt": "In what year did the Mikoyan MiG-29 first fly?",
+  "answer": 1977,
+  "unit": "year",
+  "source": "https://www.wikidata.org/wiki/Q130681#P606",
+  "views_month": 61510
+ },
+ {
+  "id": "w1619",
+  "category": "first_flight",
+  "prompt": "In what year did the Boeing 707 first fly?",
+  "answer": 1957,
+  "unit": "year",
+  "source": "https://www.wikidata.org/wiki/Q6394#P606",
+  "views_month": 53638
+ },
+ {
+  "id": "w1620",
+  "category": "first_flight",
+  "prompt": "In what year did the Mikoyan-Gurevich MiG-21 first fly?",
+  "answer": 1956,
+  "unit": "year",
+  "source": "https://www.wikidata.org/wiki/Q150609#P606",
+  "views_month": 60012
+ },
+ {
+  "id": "w1623",
+  "category": "first_flight",
+  "prompt": "In what year did the Dassault Rafale first fly?",
+  "answer": 1986,
+  "unit": "year",
+  "source": "https://www.wikidata.org/wiki/Q190973#P606",
+  "views_month": 73558
+ },
+ {
+  "id": "w1625",
+  "category": "first_flight",
+  "prompt": "In what year did the Hughes AH-64 Apache first fly?",
+  "answer": 1975,
+  "unit": "year",
+  "source": "https://www.wikidata.org/wiki/Q171468#P606",
+  "views_month": 53708
+ },
+ {
+  "id": "w1628",
+  "category": "first_flight",
+  "prompt": "In what year did the Lockheed C-130 Hercules first fly?",
+  "answer": 1954,
+  "unit": "year",
+  "source": "https://www.wikidata.org/wiki/Q182027#P606",
+  "views_month": 62339
+ },
+ {
+  "id": "w1630",
+  "category": "first_flight",
+  "prompt": "In what year did the McDonnell Douglas F-15 Eagle first fly?",
+  "answer": 1972,
+  "unit": "year",
+  "source": "https://www.wikidata.org/wiki/Q29251#P606",
+  "views_month": 70568
+ },
+ {
+  "id": "w1631",
+  "category": "first_flight",
+  "prompt": "In what year did the Eurofighter Typhoon first fly?",
+  "answer": 1994,
+  "unit": "year",
+  "source": "https://www.wikidata.org/wiki/Q151384#P606",
+  "views_month": 80768
+ },
+ {
+  "id": "w1635",
+  "category": "first_flight",
+  "prompt": "In what year did the Boeing B-17 Flying Fortress first fly?",
+  "answer": 1935,
+  "unit": "year",
+  "source": "https://www.wikidata.org/wiki/Q185000#P606",
+  "views_month": 51141
+ },
+ {
+  "id": "w1636",
+  "category": "first_flight",
+  "prompt": "In what year did the Boeing 767 first fly?",
+  "answer": 1981,
+  "unit": "year",
+  "source": "https://www.wikidata.org/wiki/Q6423#P606",
+  "views_month": 64325
+ },
+ {
+  "id": "w1640",
+  "category": "first_flight",
+  "prompt": "In what year did the McDonnell Douglas F/A-18 Hornet first fly?",
+  "answer": 1978,
+  "unit": "year",
+  "source": "https://www.wikidata.org/wiki/Q46397#P606",
+  "views_month": 61645
+ },
+ {
+  "id": "w1642",
+  "category": "first_flight",
+  "prompt": "In what year did the Grumman F-14 Tomcat first fly?",
+  "answer": 1970,
+  "unit": "year",
+  "source": "https://www.wikidata.org/wiki/Q34945#P606",
+  "views_month": 65746
+ },
+ {
+  "id": "w1643",
+  "category": "first_flight",
+  "prompt": "In what year did the Air Force One first fly?",
+  "answer": 1987,
+  "unit": "year",
+  "source": "https://www.wikidata.org/wiki/Q179969#P606",
+  "views_month": 61614
+ },
+ {
+  "id": "w1644",
+  "category": "first_flight",
+  "prompt": "In what year did the Tupolev Tu-95 first fly?",
+  "answer": 1952,
+  "unit": "year",
+  "source": "https://www.wikidata.org/wiki/Q181815#P606",
+  "views_month": 55213
+ },
+ {
+  "id": "w1648",
+  "category": "first_flight",
+  "prompt": "In what year did the Airbus A350 first fly?",
+  "answer": 2013,
+  "unit": "year",
+  "source": "https://www.wikidata.org/wiki/Q6484#P606",
+  "views_month": 90628
+ },
+ {
+  "id": "w1649",
+  "category": "first_flight",
+  "prompt": "In what year did the Saab JAS 39 Gripen first fly?",
+  "answer": 1988,
+  "unit": "year",
+  "source": "https://www.wikidata.org/wiki/Q150088#P606",
+  "views_month": 60932
+ },
+ {
+  "id": "w1650",
+  "category": "first_flight",
+  "prompt": "In what year did the McDonnell Douglas F-4 Phantom II first fly?",
+  "answer": 1958,
+  "unit": "year",
+  "source": "https://www.wikidata.org/wiki/Q151432#P606",
+  "views_month": 73393
+ },
+ {
+  "id": "w1651",
+  "category": "first_flight",
+  "prompt": "In what year did the Boeing B-29 Superfortress first fly?",
+  "answer": 1942,
+  "unit": "year",
+  "source": "https://www.wikidata.org/wiki/Q184870#P606",
+  "views_month": 63281
+ },
+ {
+  "id": "w1653",
+  "category": "first_flight",
+  "prompt": "In what year did the Sukhoi Su-35 first fly?",
+  "answer": 2008,
+  "unit": "year",
+  "source": "https://www.wikidata.org/wiki/Q245275#P606",
+  "views_month": 51310
+ },
+ {
+  "id": "w1665",
+  "category": "first_flight",
+  "prompt": "In what year did the North American P-51 Mustang first fly?",
+  "answer": 1940,
+  "unit": "year",
+  "source": "https://www.wikidata.org/wiki/Q192075#P606",
+  "views_month": 50885
+ },
+ {
+  "id": "w1666",
+  "category": "first_flight",
+  "prompt": "In what year did the Sukhoi Su-57 first fly?",
+  "answer": 2010,
+  "unit": "year",
+  "source": "https://www.wikidata.org/wiki/Q194455#P606",
+  "views_month": 79942
+ },
+ {
+  "id": "w1668",
+  "category": "first_flight",
+  "prompt": "In what year did the Starship first fly?",
+  "answer": 2023,
+  "unit": "year",
+  "source": "https://www.wikidata.org/wiki/Q62833385#P606",
+  "views_month": 63678
+ },
+ {
+  "id": "w1679",
+  "category": "first_flight",
+  "prompt": "In what year did the Fairchild Republic A-10 Thunderbolt II first fly?",
+  "answer": 1972,
+  "unit": "year",
+  "source": "https://www.wikidata.org/wiki/Q192443#P606",
+  "views_month": 63627
+ },
+ {
+  "id": "w1691",
+  "category": "first_flight",
+  "prompt": "In what year did the Boeing F/A-18 Super Hornet first fly?",
+  "answer": 1995,
+  "unit": "year",
+  "source": "https://www.wikidata.org/wiki/Q223318#P606",
+  "views_month": 53496
+ },
+ {
+  "id": "w1705",
+  "category": "first_flight",
+  "prompt": "In what year did the Boeing C-17 Globemaster III first fly?",
+  "answer": 1991,
+  "unit": "year",
+  "source": "https://www.wikidata.org/wiki/Q211369#P606",
+  "views_month": 74600
+ },
+ {
+  "id": "w1709",
+  "category": "first_flight",
+  "prompt": "In what year did the MQ-9 Reaper first fly?",
+  "answer": 2001,
+  "unit": "year",
+  "source": "https://www.wikidata.org/wiki/Q816695#P606",
+  "views_month": 69061
+ },
+ {
+  "id": "w1710",
+  "category": "first_flight",
+  "prompt": "In what year did the Lockheed C-5 Galaxy first fly?",
+  "answer": 1968,
+  "unit": "year",
+  "source": "https://www.wikidata.org/wiki/Q182012#P606",
+  "views_month": 50035
+ },
+ {
+  "id": "w1713",
+  "category": "first_flight",
+  "prompt": "In what year did the Boeing CH-47 Chinook first fly?",
+  "answer": 1961,
+  "unit": "year",
+  "source": "https://www.wikidata.org/wiki/Q209613#P606",
+  "views_month": 60929
+ },
+ {
+  "id": "w1753",
+  "category": "first_flight",
+  "prompt": "In what year did the Chengdu J-20 first fly?",
+  "answer": 2011,
+  "unit": "year",
+  "source": "https://www.wikidata.org/wiki/Q560319#P606",
+  "views_month": 51977
+ },
+ {
+  "id": "w1775",
+  "category": "first_flight",
+  "prompt": "In what year did the Northrop F-5 first fly?",
+  "answer": 1959,
+  "unit": "year",
+  "source": "https://www.wikidata.org/wiki/Q308940#P606",
+  "views_month": 58779
+ },
+ {
+  "id": "w1786",
+  "category": "first_flight",
+  "prompt": "In what year did the Boeing 737 MAX first fly?",
+  "answer": 2016,
+  "unit": "year",
+  "source": "https://www.wikidata.org/wiki/Q139289#P606",
+  "views_month": 79742
+ },
+ {
+  "id": "w1816",
+  "category": "university_founded",
+  "prompt": "In what year was Cornell University founded?",
+  "answer": 1865,
+  "unit": "year",
+  "source": "https://www.wikidata.org/wiki/Q49115#P571",
+  "views_month": 77086
+ },
+ {
+  "id": "w1817",
+  "category": "university_founded",
+  "prompt": "In what year was Columbia University founded?",
+  "answer": 1754,
+  "unit": "year",
+  "source": "https://www.wikidata.org/wiki/Q49088#P571",
+  "views_month": 66650
+ },
+ {
+  "id": "w1828",
+  "category": "university_founded",
+  "prompt": "In what year was the University of Pennsylvania founded?",
+  "answer": 1740,
+  "unit": "year",
+  "source": "https://www.wikidata.org/wiki/Q49117#P571",
+  "views_month": 52809
+ },
+ {
+  "id": "w1938",
+  "category": "first_ascent",
+  "prompt": "In what year was Broad Peak first climbed?",
+  "answer": 1957,
+  "unit": "year",
+  "source": "https://www.wikidata.org/wiki/Q180996#P793",
+  "views_month": 96201
+ },
+ {
+  "id": "w1947",
+  "category": "first_ascent",
+  "prompt": "In what year was Mount Rainier first climbed?",
+  "answer": 1870,
+  "unit": "year",
+  "source": "https://www.wikidata.org/wiki/Q194057#P793",
+  "views_month": 52388
+ },
+ {
+  "id": "w2365",
+  "category": "country_population",
+  "prompt": "What was the population of Japan in 2024?",
+  "answer": 123802000,
+  "unit": "people",
+  "source": "https://www.wikidata.org/wiki/Q17#P1082",
+  "views_month": 312902
+ },
+ {
+  "id": "w2371",
+  "category": "country_population",
+  "prompt": "What was the population of People's Republic of China in 2025?",
+  "answer": 1404890000,
+  "unit": "people",
+  "source": "https://www.wikidata.org/wiki/Q148#P1082",
+  "views_month": 370568
+ },
+ {
+  "id": "w2379",
+  "category": "country_population",
+  "prompt": "What was the population of Ukraine in 2022?",
+  "answer": 41167335,
+  "unit": "people",
+  "source": "https://www.wikidata.org/wiki/Q212#P1082",
+  "views_month": 189255
+ },
+ {
+  "id": "w2392",
+  "category": "country_population",
+  "prompt": "What was the population of Sweden in 2025?",
+  "answer": 10609460,
+  "unit": "people",
+  "source": "https://www.wikidata.org/wiki/Q34#P1082",
+  "views_month": 187340
+ },
+ {
+  "id": "w2393",
+  "category": "country_population",
+  "prompt": "What was the population of Denmark in 2020?",
+  "answer": 5822863,
+  "unit": "people",
+  "source": "https://www.wikidata.org/wiki/Q35#P1082",
+  "views_month": 150767
+ },
+ {
+  "id": "w2399",
+  "category": "country_population",
+  "prompt": "What was the population of Bulgaria in 2025?",
+  "answer": 6423207,
+  "unit": "people",
+  "source": "https://www.wikidata.org/wiki/Q219#P1082",
+  "views_month": 128981
+ },
+ {
+  "id": "w2415",
+  "category": "country_population",
+  "prompt": "What was the population of Saudi Arabia in 2018?",
+  "answer": 33000000,
+  "unit": "people",
+  "source": "https://www.wikidata.org/wiki/Q851#P1082",
+  "views_month": 227630
+ },
+ {
+  "id": "w2416",
+  "category": "country_population",
+  "prompt": "What was the population of Nigeria in 2021?",
+  "answer": 211400708,
+  "unit": "people",
+  "source": "https://www.wikidata.org/wiki/Q1033#P1082",
+  "views_month": 164737
+ },
+ {
+  "id": "w2417",
+  "category": "country_population",
+  "prompt": "What was the population of New Zealand in 2024?",
+  "answer": 5307800,
+  "unit": "people",
+  "source": "https://www.wikidata.org/wiki/Q664#P1082",
+  "views_month": 221681
+ },
+ {
+  "id": "w2486",
+  "category": "country_population",
+  "prompt": "What was the population of Tajikistan in 2021?",
+  "answer": 9504000,
+  "unit": "people",
+  "source": "https://www.wikidata.org/wiki/Q863#P1082",
+  "views_month": 90029
+ },
+ {
+  "id": "w2488",
+  "category": "country_population",
+  "prompt": "What was the population of Kuwait in 2020?",
+  "answer": 4464000,
+  "unit": "people",
+  "source": "https://www.wikidata.org/wiki/Q817#P1082",
+  "views_month": 96133
+ },
+ {
+  "id": "w2489",
+  "category": "country_population",
+  "prompt": "What was the population of Mauritania in 2022?",
+  "answer": 4736139,
+  "unit": "people",
+  "source": "https://www.wikidata.org/wiki/Q1025#P1082",
+  "views_month": 103831
+ },
+ {
+  "id": "w2491",
+  "category": "country_population",
+  "prompt": "What was the population of Rwanda in 2025?",
+  "answer": 14569341,
+  "unit": "people",
+  "source": "https://www.wikidata.org/wiki/Q1037#P1082",
+  "views_month": 95723
+ },
+ {
+  "id": "w2521",
+  "category": "country_population",
+  "prompt": "What was the population of Papua New Guinea in 2020?",
+  "answer": 8935000,
+  "unit": "people",
+  "source": "https://www.wikidata.org/wiki/Q691#P1082",
+  "views_month": 127518
+ },
+ {
+  "id": "w2532",
+  "category": "country_population",
+  "prompt": "What was the population of Fiji in 2018?",
+  "answer": 926276,
+  "unit": "people",
+  "source": "https://www.wikidata.org/wiki/Q712#P1082",
+  "views_month": 116601
+ },
+ {
+  "id": "w2542",
+  "category": "country_population",
+  "prompt": "What was the population of Samoa in 2021?",
+  "answer": 200010,
+  "unit": "people",
+  "source": "https://www.wikidata.org/wiki/Q683#P1082",
+  "views_month": 67681
+ },
+ {
+  "id": "w2546",
+  "category": "country_population",
+  "prompt": "What was the population of Tuvalu in 2022?",
+  "answer": 10643,
+  "unit": "people",
+  "source": "https://www.wikidata.org/wiki/Q672#P1082",
+  "views_month": 65024
+ },
+ {
+  "id": "w2562",
+  "category": "country_population",
+  "prompt": "What was the population of the Falkland Islands in 2018?",
+  "answer": 4550,
+  "unit": "people",
+  "source": "https://www.wikidata.org/wiki/Q9648#P1082",
+  "views_month": 560542
+ },
+ {
+  "id": "w2608",
+  "category": "company_founded",
+  "prompt": "In what year was McDonald's founded?",
+  "answer": 1940,
+  "unit": "year",
+  "source": "https://www.wikidata.org/wiki/Q38076#P571",
+  "views_month": 106564
+ },
+ {
+  "id": "w2609",
+  "category": "company_founded",
+  "prompt": "In what year was IMDb founded?",
+  "answer": 1990,
+  "unit": "year",
+  "source": "https://www.wikidata.org/wiki/Q37312#P571",
+  "views_month": 50482
+ },
+ {
+  "id": "w2611",
+  "category": "company_founded",
+  "prompt": "In what year was Mercedes-Benz founded?",
+  "answer": 1926,
+  "unit": "year",
+  "source": "https://www.wikidata.org/wiki/Q36008#P571",
+  "views_month": 62043
+ },
+ {
+  "id": "w2612",
+  "category": "company_founded",
+  "prompt": "In what year was BMW founded?",
+  "answer": 1916,
+  "unit": "year",
+  "source": "https://www.wikidata.org/wiki/Q26678#P571",
+  "views_month": 81362
+ },
+ {
+  "id": "w2617",
+  "category": "company_founded",
+  "prompt": "In what year was Ford Motor Company founded?",
+  "answer": 1903,
+  "unit": "year",
+  "source": "https://www.wikidata.org/wiki/Q44294#P571",
+  "views_month": 74852
+ },
+ {
+  "id": "w2618",
+  "category": "company_founded",
+  "prompt": "In what year was IBM founded?",
+  "answer": 1911,
+  "unit": "year",
+  "source": "https://www.wikidata.org/wiki/Q37156#P571",
+  "views_month": 68703
+ },
+ {
+  "id": "w2619",
+  "category": "company_founded",
+  "prompt": "In what year was Nokia founded?",
+  "answer": 1865,
+  "unit": "year",
+  "source": "https://www.wikidata.org/wiki/Q1418#P571",
+  "views_month": 53542
+ },
+ {
+  "id": "w2620",
+  "category": "company_founded",
+  "prompt": "In what year was Tesla founded?",
+  "answer": 2003,
+  "unit": "year",
+  "source": "https://www.wikidata.org/wiki/Q478214#P571",
+  "views_month": 87176
+ },
+ {
+  "id": "w2625",
+  "category": "company_founded",
+  "prompt": "In what year was KFC founded?",
+  "answer": 1930,
+  "unit": "year",
+  "source": "https://www.wikidata.org/wiki/Q524757#P571",
+  "views_month": 52426
+ },
+ {
+  "id": "w2627",
+  "category": "company_founded",
+  "prompt": "In what year was Ferrari founded?",
+  "answer": 1947,
+  "unit": "year",
+  "source": "https://www.wikidata.org/wiki/Q27586#P571",
+  "views_month": 63434
+ },
+ {
+  "id": "w2629",
+  "category": "company_founded",
+  "prompt": "In what year was East India Company founded?",
+  "answer": 1600,
+  "unit": "year",
+  "source": "https://www.wikidata.org/wiki/Q83164#P571",
+  "views_month": 103893
+ },
+ {
+  "id": "w2632",
+  "category": "company_founded",
+  "prompt": "In what year was Nestlé founded?",
+  "answer": 1866,
+  "unit": "year",
+  "source": "https://www.wikidata.org/wiki/Q160746#P571",
+  "views_month": 65347
+ },
+ {
+  "id": "w2633",
+  "category": "company_founded",
+  "prompt": "In what year was WWE founded?",
+  "answer": 1952,
+  "unit": "year",
+  "source": "https://www.wikidata.org/wiki/Q35339#P571",
+  "views_month": 148263
+ },
+ {
+  "id": "w2634",
+  "category": "company_founded",
+  "prompt": "In what year was Porsche founded?",
+  "answer": 1931,
+  "unit": "year",
+  "source": "https://www.wikidata.org/wiki/Q40993#P571",
+  "views_month": 50918
+ },
+ {
+  "id": "w2638",
+  "category": "company_founded",
+  "prompt": "In what year was Dutch East India Company founded?",
+  "answer": 1602,
+  "unit": "year",
+  "source": "https://www.wikidata.org/wiki/Q159766#P571",
+  "views_month": 60263
+ },
+ {
+  "id": "w2640",
+  "category": "company_founded",
+  "prompt": "In what year was Nike founded?",
+  "answer": 1964,
+  "unit": "year",
+  "source": "https://www.wikidata.org/wiki/Q483915#P571",
+  "views_month": 71931
+ },
+ {
+  "id": "w2645",
+  "category": "company_founded",
+  "prompt": "In what year was Lamborghini founded?",
+  "answer": 1948,
+  "unit": "year",
+  "source": "https://www.wikidata.org/wiki/Q35886#P571",
+  "views_month": 54832
+ },
+ {
+  "id": "w2655",
+  "category": "company_founded",
+  "prompt": "In what year was United Airlines founded?",
+  "answer": 1926,
+  "unit": "year",
+  "source": "https://www.wikidata.org/wiki/Q174769#P571",
+  "views_month": 91135
+ },
+ {
+  "id": "w2660",
+  "category": "company_founded",
+  "prompt": "In what year was Oracle Corporation founded?",
+  "answer": 1977,
+  "unit": "year",
+  "source": "https://www.wikidata.org/wiki/Q19900#P571",
+  "views_month": 80865
+ },
+ {
+  "id": "w2663",
+  "category": "company_founded",
+  "prompt": "In what year was Metro-Goldwyn-Mayer founded?",
+  "answer": 1924,
+  "unit": "year",
+  "source": "https://www.wikidata.org/wiki/Q179200#P571",
+  "views_month": 65273
+ },
+ {
+  "id": "w2664",
+  "category": "company_founded",
+  "prompt": "In what year was Rotten Tomatoes founded?",
+  "answer": 1998,
+  "unit": "year",
+  "source": "https://www.wikidata.org/wiki/Q105584#P571",
+  "views_month": 74424
+ },
+ {
+  "id": "w2676",
+  "category": "company_founded",
+  "prompt": "In what year was Alphabet Inc. founded?",
+  "answer": 2015,
+  "unit": "year",
+  "source": "https://www.wikidata.org/wiki/Q20800404#P571",
+  "views_month": 89678
+ },
+ {
+  "id": "w2684",
+  "category": "company_founded",
+  "prompt": "In what year was Yandex founded?",
+  "answer": 2000,
+  "unit": "year",
+  "source": "https://www.wikidata.org/wiki/Q5281#P571",
+  "views_month": 557439
+ },
+ {
+  "id": "w2688",
+  "category": "company_founded",
+  "prompt": "In what year was Electronic Arts founded?",
+  "answer": 1982,
+  "unit": "year",
+  "source": "https://www.wikidata.org/wiki/Q173941#P571",
+  "views_month": 60906
+ },
+ {
+  "id": "w2698",
+  "category": "company_founded",
+  "prompt": "In what year was Lockheed Martin founded?",
+  "answer": 1995,
+  "unit": "year",
+  "source": "https://www.wikidata.org/wiki/Q7240#P571",
+  "views_month": 55948
+ },
+ {
+  "id": "w2699",
+  "category": "company_founded",
+  "prompt": "In what year was Volkswagen Group founded?",
+  "answer": 1937,
+  "unit": "year",
+  "source": "https://www.wikidata.org/wiki/Q156578#P571",
+  "views_month": 60015
+ },
+ {
+  "id": "w2714",
+  "category": "company_founded",
+  "prompt": "In what year was PepsiCo founded?",
+  "answer": 1961,
+  "unit": "year",
+  "source": "https://www.wikidata.org/wiki/Q334800#P571",
+  "views_month": 50595
+ },
+ {
+  "id": "w2726",
+  "category": "company_founded",
+  "prompt": "In what year was Ultimate Fighting Championship founded?",
+  "answer": 1993,
+  "unit": "year",
+  "source": "https://www.wikidata.org/wiki/Q186471#P571",
+  "views_month": 95672
+ },
+ {
+  "id": "w2749",
+  "category": "company_founded",
+  "prompt": "In what year was Bank of America founded?",
+  "answer": 1998,
+  "unit": "year",
+  "source": "https://www.wikidata.org/wiki/Q487907#P571",
+  "views_month": 52520
+ },
+ {
+  "id": "w2756",
+  "category": "product_released",
+  "prompt": "In what year did Windows first come out?",
+  "answer": 1985,
+  "unit": "year",
+  "source": "https://www.wikidata.org/wiki/Q1406#P577",
+  "views_month": 76160
+ },
+ {
+  "id": "w2757",
+  "category": "product_released",
+  "prompt": "In what year did Instagram first come out?",
+  "answer": 2010,
+  "unit": "year",
+  "source": "https://www.wikidata.org/wiki/Q209330#P577",
+  "views_month": 794541
+ },
+ {
+  "id": "w2758",
+  "category": "product_released",
+  "prompt": "In what year did Minecraft first come out?",
+  "answer": 2011,
+  "unit": "year",
+  "source": "https://www.wikidata.org/wiki/Q49740#P577",
+  "views_month": 157856
+ },
+ {
+  "id": "w2761",
+  "category": "product_released",
+  "prompt": "In what year did TikTok first come out?",
+  "answer": 2016,
+  "unit": "year",
+  "source": "https://www.wikidata.org/wiki/Q48938223#P577",
+  "views_month": 237571
+ },
+ {
+  "id": "w2762",
+  "category": "product_released",
+  "prompt": "In what year did WhatsApp first come out?",
+  "answer": 2009,
+  "unit": "year",
+  "source": "https://www.wikidata.org/wiki/Q1049511#P577",
+  "views_month": 391029
+ },
+ {
+  "id": "w2770",
+  "category": "product_released",
+  "prompt": "In what year did Spotify first come out?",
+  "answer": 2006,
+  "unit": "year",
+  "source": "https://www.wikidata.org/wiki/Q689141#P571",
+  "views_month": 85780
+ },
+ {
+  "id": "w2779",
+  "category": "product_released",
+  "prompt": "In what year did the Xbox 360 first come out?",
+  "answer": 2005,
+  "unit": "year",
+  "source": "https://www.wikidata.org/wiki/Q48263#P577",
+  "views_month": 52583
+ },
+ {
+  "id": "w2780",
+  "category": "product_released",
+  "prompt": "In what year did the PlayStation 4 first come out?",
+  "answer": 2013,
+  "unit": "year",
+  "source": "https://www.wikidata.org/wiki/Q5014725#P577",
+  "views_month": 68962
+ },
+ {
+  "id": "w2782",
+  "category": "product_released",
+  "prompt": "In what year did the PlayStation 3 first come out?",
+  "answer": 2006,
+  "unit": "year",
+  "source": "https://www.wikidata.org/wiki/Q10683#P577",
+  "views_month": 63023
+ },
+ {
+  "id": "w2791",
+  "category": "product_released",
+  "prompt": "In what year did the PlayStation first come out?",
+  "answer": 1994,
+  "unit": "year",
+  "source": "https://www.wikidata.org/wiki/Q10677#P577",
+  "views_month": 54859
+ },
+ {
+  "id": "w2807",
+  "category": "product_released",
+  "prompt": "In what year did Red Bull first come out?",
+  "answer": 1987,
+  "unit": "year",
+  "source": "https://www.wikidata.org/wiki/Q51482#P571",
+  "views_month": 63366
+ },
+ {
+  "id": "w2823",
+  "category": "product_released",
+  "prompt": "In what year did the Ford Mustang first come out?",
+  "answer": 1964,
+  "unit": "year",
+  "source": "https://www.wikidata.org/wiki/Q183476#P571",
+  "views_month": 53828
+ },
+ {
+  "id": "w2982",
+  "category": "landmark_height",
+  "prompt": "How tall is Taj Mahal?",
+  "answer": 73.0,
+  "unit": "m",
+  "source": "https://www.wikidata.org/wiki/Q9141#P2048",
+  "views_month": 116420
+ },
+ {
+  "id": "w2984",
+  "category": "landmark_height",
+  "prompt": "How tall is Colossus of Rhodes?",
+  "answer": 33.0,
+  "unit": "m",
+  "source": "https://www.wikidata.org/wiki/Q41553#P2048",
+  "views_month": 57544
+ },
+ {
+  "id": "w2985",
+  "category": "landmark_height",
+  "prompt": "How tall is Neuschwanstein Castle?",
+  "answer": 65.0,
+  "unit": "m",
+  "source": "https://www.wikidata.org/wiki/Q4152#P2048",
+  "views_month": 64553
+ },
+ {
+  "id": "w3077",
+  "category": "landmark_built",
+  "prompt": "In what year was Colosseum built?",
+  "answer": 82,
+  "unit": "year",
+  "source": "https://www.wikidata.org/wiki/Q10285#P571",
+  "views_month": 93483
+ },
+ {
+  "id": "w3078",
+  "category": "landmark_built",
+  "prompt": "In what year was Palace of Versailles built?",
+  "answer": 1661,
+  "unit": "year",
+  "source": "https://www.wikidata.org/wiki/Q2946#P571",
+  "views_month": 54881
+ },
+ {
+  "id": "w3079",
+  "category": "landmark_built",
+  "prompt": "In what year was Forbidden City built?",
+  "answer": 1420,
+  "unit": "year",
+  "source": "https://www.wikidata.org/wiki/Q80290#P571",
+  "views_month": 51338
+ },
+ {
+  "id": "w3083",
+  "category": "landmark_built",
+  "prompt": "In what year was Colossus of Rhodes built?",
+  "answer": -283,
+  "unit": "year",
+  "source": "https://www.wikidata.org/wiki/Q41553#P571",
+  "views_month": 57544
+ },
+ {
+  "id": "w3084",
+  "category": "landmark_built",
+  "prompt": "In what year was Christ the Redeemer built?",
+  "answer": 1920,
+  "unit": "year",
+  "source": "https://www.wikidata.org/wiki/Q79961#P571",
+  "views_month": 56679
+ },
+ {
+  "id": "w3085",
+  "category": "landmark_built",
+  "prompt": "In what year was Neuschwanstein Castle built?",
+  "answer": 1869,
+  "unit": "year",
+  "source": "https://www.wikidata.org/wiki/Q4152#P571",
+  "views_month": 64553
+ },
+ {
+  "id": "w3088",
+  "category": "landmark_built",
+  "prompt": "In what year was Tower of London built?",
+  "answer": 1066,
+  "unit": "year",
+  "source": "https://www.wikidata.org/wiki/Q62378#P571",
+  "views_month": 50741
+ },
+ {
+  "id": "w3096",
+  "category": "landmark_built",
+  "prompt": "In what year was Church of the Holy Sepulchre built?",
+  "answer": 335,
+  "unit": "year",
+  "source": "https://www.wikidata.org/wiki/Q187702#P571",
+  "views_month": 51584
+ },
+ {
+  "id": "w3177",
+  "category": "landmark_built",
+  "prompt": "In what year was the Gillette Stadium built?",
+  "answer": 2002,
+  "unit": "year",
+  "source": "https://www.wikidata.org/wiki/Q373355#P571",
+  "views_month": 60075
+ }
+]

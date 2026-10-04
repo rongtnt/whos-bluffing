@@ -25,7 +25,7 @@ test('scheduled() posts the question once per day to every install whose UTC hou
   await runCron(env, `${DATE}T15:00:00Z`);
   assert.deepEqual(posted(), ['C1', 'C2']);
   const [post] = slackCalls(calls, 'chat.postMessage');
-  assert.equal(post.body.text, 'HowSure · Which is longer: the Nile or the Danube?');
+  assert.equal(post.body.text, "Who's Bluffing? · Which is longer: the Nile or the Danube?");
   const blocks = JSON.parse(post.body.blocks);
   const buttons = blocks.find((b) => b.type === 'actions').elements;
   assert.deepEqual(buttons.map((b) => [b.action_id, b.text.text]), [['pick:0', 'A · the Nile'], ['pick:1', 'B · the Danube']]);
@@ -33,7 +33,7 @@ test('scheduled() posts the question once per day to every install whose UTC hou
   assert.match(blocks.at(-1).elements[0].text, /before the reveal at 22:00 UTC\.$/);
   const [question] = apiCalls(calls, '/api/round/daily-question');
   assert.equal(question.query.date, DATE);
-  assert.equal(question.headers['x-howsure-bot'], BOT_KEY);
+  assert.equal(question.headers['x-bluff-bot'], BOT_KEY);
   assert.deepEqual(env.DB.rows("SELECT item_id, prompt, a, b FROM posts WHERE team_id = 'T1'"),
     [{ item_id: QUESTION.item_id, prompt: QUESTION.prompt, a: QUESTION.a, b: QUESTION.b }]);
 
@@ -130,9 +130,9 @@ test('two overlapping cron runs still post, reveal and recap once each (the clai
   assert.equal(slackCalls(calls, 'chat.update').length, 1);
   await both('2026-11-02T14:00:00Z'); // Monday: one recap, one new question
   assert.deepEqual(slackCalls(calls, 'chat.postMessage').map((c) => c.body.text.split('\n')[0]), [
-    'HowSure · Which is longer: the Nile or the Danube?',
-    '*HowSure · last week in this workspace* (Oct 26 – Nov 1)',
-    'HowSure · Which is longer: the Nile or the Danube?',
+    "Who's Bluffing? · Which is longer: the Nile or the Danube?",
+    "*Who's Bluffing? · last week in this workspace* (Oct 26 – Nov 1)",
+    "Who's Bluffing? · Which is longer: the Nile or the Danube?",
   ]);
 });
 
@@ -146,7 +146,7 @@ test('a reveal delayed past yesterday still happens, drawn from the stored quest
   const calls = mockFetch();
   await runCron(env, '2026-11-03T10:00:00Z'); // three days on; before T1's post hour, so no new question either
   assert.equal(slackCalls(calls, 'chat.update').length, 1);
-  assert.match(JSON.parse(slackCalls(calls, 'chat.update')[0].body.blocks)[0].text.text, /^\*HowSure\* · Which is longer: the Nile or the Danube\?\n/);
+  assert.match(JSON.parse(slackCalls(calls, 'chat.update')[0].body.blocks)[0].text.text, /^\*Who's Bluffing\?\* · Which is longer: the Nile or the Danube\?\n/);
   assert.equal(apiCalls(calls, '/api/round/daily-question').length, 0);
   assert.equal(apiCalls(calls, '/api/round/reveal')[0].query.date, DATE);
 });

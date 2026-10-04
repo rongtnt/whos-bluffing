@@ -10,10 +10,10 @@ STRINGS = {
     "en": {
         "not_sure": "Not sure",
         "certain": "Certain",
-        "bar_title": "How sure are you?",
+        "bar_title": "Say how sure you are.",
         "key_hint": "Key {key}",
-        "menu": "HowSure: my calibration",
-        "dlg_title": "HowSure — my calibration",
+        "menu": "Who's Bluffing: my calibration",
+        "dlg_title": "Who's Bluffing? — my calibration",
         "empty": "No ratings yet. While reviewing, press 1–5 on the question side "
                  "(or click a button) to say how sure you are.",
         "summary": "{n} rated answers · {unrated} answers without a rating",
@@ -37,8 +37,8 @@ STRINGS = {
         "export": "Export CSV",
         "open_folder": "Open data folder",
         "exported": "Exported {n} rows.",
-        "share_menu": "HowSure: share anonymous data…",
-        "consent_title": "HowSure — share anonymous data",
+        "share_menu": "Who's Bluffing: share anonymous data…",
+        "consent_title": "Who's Bluffing? — share anonymous data",
         "consent_body": "Your ratings can help a public study of how well people judge what they will remember. "
                         "Nothing is sent until you press Accept, and you can stop at any time.\n\n"
                         "If you turn it on, the add-on sends: {fields}.\n\n"
@@ -48,7 +48,7 @@ STRINGS = {
                         "and every 6 hours. "
                         "It covers the ratings of every Anki profile on this computer. The data becomes part of a "
                         "public anonymous research dataset.\n\n"
-                        "\"Delete my data\" on the HowSure dashboard (Tools → HowSure: my calibration) removes "
+                        "\"Delete my data\" on the Who's Bluffing dashboard (Tools → Who's Bluffing: my calibration) removes "
                         "everything stored under your installation id. If you remove the add-on, press it first: "
                         "removing the add-on also removes the installation id needed to find your data.",
         "accept": "Accept",
@@ -63,21 +63,21 @@ STRINGS = {
         "d_ago": "{n} d ago",
         "stop_sharing": "Stop sharing",
         "delete_data": "Delete my data",
-        "delete_confirm": "Delete every rating this add-on has shared from the HowSure server? Sharing will be "
+        "delete_confirm": "Delete every rating this add-on has shared from the Who's Bluffing server? Sharing will be "
                           "turned off. The ratings on this computer stay.",
-        "deleted": "Deleted {n} ratings from the HowSure server. Sharing is off.",
-        "delete_failed": "Could not reach the HowSure server, so nothing was deleted yet. Sharing is off. "
+        "deleted": "Deleted {n} ratings from the Who's Bluffing server. Sharing is off.",
+        "delete_failed": "Could not reach the Who's Bluffing server, so nothing was deleted yet. Sharing is off. "
                          "Please try Delete my data again later.",
-        "share_gone": "The HowSure server says the data from this computer was deleted, so sharing is now off. "
-                      "You can turn it on again from Tools → HowSure: share anonymous data….",
+        "share_gone": "The Who's Bluffing server says the data from this computer was deleted, so sharing is now off. "
+                      "You can turn it on again from Tools → Who's Bluffing: share anonymous data….",
     },
     "zh": {
         "not_sure": "没把握",
         "certain": "很有把握",
         "bar_title": "你有多大把握？",
         "key_hint": "按键 {key}",
-        "menu": "HowSure：我的校准",
-        "dlg_title": "HowSure — 我的校准",
+        "menu": "Who's Bluffing：我的校准",
+        "dlg_title": "Who's Bluffing? — 我的校准",
         "empty": "还没有评分。复习时在问题面按 1–5（或点按钮）说出你有多大把握。",
         "summary": "已评分 {n} 次 · 未评分作答 {unrated} 次",
         "overall": "整体过度自信：{pp}",
@@ -100,8 +100,8 @@ STRINGS = {
         "export": "导出 CSV",
         "open_folder": "打开数据文件夹",
         "exported": "已导出 {n} 行。",
-        "share_menu": "HowSure：分享匿名数据…",
-        "consent_title": "HowSure — 分享匿名数据",
+        "share_menu": "Who's Bluffing：分享匿名数据…",
+        "consent_title": "Who's Bluffing? — 分享匿名数据",
         "consent_body": "你的评分可以帮助一项公开研究：人们判断自己能否记住时有多准。"
                         "按“同意”之前不会发送任何数据，你也可以随时停止。\n\n"
                         "打开后，插件会发送：一个随机的安装 ID、卡片和牌组的哈希标识（从不发送卡片文字）、你的评分、"
@@ -111,7 +111,7 @@ STRINGS = {
                         "插件从不发送卡片文字、你的姓名或邮箱，也不发送 Anki 自己的卡片 ID。已经做过的评分也会包括在内。"
                         "每条评分带一个序号（1、2、3……），上传中断后可以接着传。同意后马上上传，之后在打开用户配置时和每 6 小时上传一次。"
                         "这包括这台电脑上所有 Anki 用户配置的评分。数据会成为公开的匿名研究数据集的一部分。\n\n"
-                        "HowSure 面板（工具 → HowSure：我的校准）上的“删除我的数据”会删除你的安装 ID 下保存的全部数据。"
+                        "Who's Bluffing 面板（工具 → Who's Bluffing：我的校准）上的“删除我的数据”会删除你的安装 ID 下保存的全部数据。"
                         "如果要卸载插件，请先点它：卸载会同时删掉用来找到这些数据的安装 ID。",
         "accept": "同意",
         "not_now": "以后再说",
@@ -125,11 +125,11 @@ STRINGS = {
         "d_ago": "{n} 天前",
         "stop_sharing": "停止分享",
         "delete_data": "删除我的数据",
-        "delete_confirm": "从 HowSure 服务器删除这个插件分享过的全部评分？分享会关闭。本机上的评分保留。",
-        "deleted": "已从 HowSure 服务器删除 {n} 条评分。分享已关闭。",
-        "delete_failed": "连不上 HowSure 服务器，还没有删除任何数据。分享已关闭。请稍后再点一次“删除我的数据”。",
-        "share_gone": "HowSure 服务器表示这台电脑分享的数据已被删除，所以分享已关闭。"
-                      "可以从 工具 → HowSure：分享匿名数据… 重新打开。",
+        "delete_confirm": "从 Who's Bluffing 服务器删除这个插件分享过的全部评分？分享会关闭。本机上的评分保留。",
+        "deleted": "已从 Who's Bluffing 服务器删除 {n} 条评分。分享已关闭。",
+        "delete_failed": "连不上 Who's Bluffing 服务器，还没有删除任何数据。分享已关闭。请稍后再点一次“删除我的数据”。",
+        "share_gone": "Who's Bluffing 服务器表示这台电脑分享的数据已被删除，所以分享已关闭。"
+                      "可以从 工具 → Who's Bluffing：分享匿名数据… 重新打开。",
     },
 }
 

@@ -1,10 +1,10 @@
--- HowSure for Slack. Stores only: team id, bot token, channel id, post hour, post timestamps,
+-- Who's Bluffing for Slack. Stores only: team id, bot token, channel id, post hour, post timestamps,
 -- and per-day hits keyed by the salted member hash. No message text, names, emails or raw member ids.
 
 CREATE TABLE installs (
   team_id TEXT PRIMARY KEY,
   bot_token TEXT NOT NULL,
-  channel_id TEXT,                    -- NULL until /howsure setup
+  channel_id TEXT,                    -- NULL until /bluff setup
   post_hour_utc INTEGER NOT NULL,
   installed_at TEXT NOT NULL
 );

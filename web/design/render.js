@@ -23,7 +23,7 @@ const PAGES = ['/', '/slack', '/teachers', '/research', '/support', '/docs/api',
 const sleep = (ms) => new Promise((r) => setTimeout(r, ms));
 
 async function launch() {
-  const profile = mkdtempSync(join(tmpdir(), 'howsure-render-'));
+  const profile = mkdtempSync(join(tmpdir(), 'whosbluffing-render-'));
   const chrome = spawn(CHROME, ['--headless=new', `--remote-debugging-port=${DEBUG_PORT}`, `--user-data-dir=${profile}`,
     '--no-first-run', '--no-default-browser-check', '--hide-scrollbars', '--force-color-profile=srgb', 'about:blank'], { stdio: 'ignore' });
   chrome.on('exit', () => rmSync(profile, { recursive: true, force: true }));
@@ -142,7 +142,7 @@ async function roundScreens(cdp, base) {
       const theme = dark ? 'dark' : 'light';
       const file = (name) => join(WEB, `design/screens/rounds-${name}-${w}-${theme}.png`);
       await open(cdp, `${base}/support`, { width: w, height: h, dark }); // a fresh player in this browser
-      await evaluate(cdp, `localStorage.clear(); localStorage.setItem('hs_anon', ${JSON.stringify(JSON.stringify(`shot${theme}${w}`.padEnd(22, 'y')))}); true`);
+      await evaluate(cdp, `localStorage.clear(); localStorage.setItem('whosbluffing_anon', ${JSON.stringify(JSON.stringify(`shot${theme}${w}`.padEnd(22, 'y')))}); true`);
       await open(cdp, `${base}/`, { width: w, height: h, dark });
       await evaluate(cdp, `(async () => { document.getElementById('play').click(); (${waitFor('button.pick')}).click(); ${waitFor('#conf:not([hidden]) [data-conf="80"]')}; return true; })()`);
       await sleep(300);

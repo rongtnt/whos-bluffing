@@ -1,16 +1,16 @@
-# Slack app manifest for HowSure. Replace YOUR-WORKER-HOST (3 places) with your Worker's host,
-# e.g. howsure-slack.your-subdomain.workers.dev, then paste this at https://api.slack.com/apps
+# Slack app manifest for Who's Bluffing. Replace YOUR-WORKER-HOST (3 places) with your Worker's host,
+# e.g. whosbluffing-slack.your-subdomain.workers.dev, then paste this at https://api.slack.com/apps
 # -> Create New App -> From an app manifest.
 display_information:
-  name: HowSure
+  name: "Who's Bluffing?"
   description: One question a day in your channel. Pick A or B, say how sure you are, and see who was bluffing at the reveal.
   background_color: "#1d1c1d"
 features:
   bot_user:
-    display_name: HowSure
+    display_name: whosbluffing # the @handle members use: /invite @whosbluffing
     always_online: true
   slash_commands:
-    - command: /howsure
+    - command: /bluff
       url: https://YOUR-WORKER-HOST/slack/events
       description: Post today's question, reveal the answer, set the channel, or see the leaderboard
       usage_hint: "[setup #channel hour roast on|off | reveal | stats]"

@@ -1,6 +1,6 @@
-# Builder notes: HowSure for Slack v0.2
+# Builder notes: Who's Bluffing? for Slack v0.2
 
-v0.2 replaces the v0.1 modal game (Play button, 5-range modal, day board, `/api/daily` client) with one in-channel question a day, a private confidence picker, a reveal, a Monday recap and `/howsure reveal`.
+v0.2 replaces the v0.1 modal game (Play button, 5-range modal, day board, `/api/daily` client) with one in-channel question a day, a private confidence picker, a reveal, a Monday recap and `/bluff reveal`.
 
 ## Brief vs contract: the contract (`docs/api-rounds.md`) was followed
 
@@ -8,12 +8,12 @@ v0.2 replaces the v0.1 modal game (Play button, 5-range modal, day board, `/api/
 2. **community.** The brief says "team hash"; the contract says `slack:<team hash>`. Sent as `slack:` + `sha256(team_id:SALT)`.
 3. **Revisions.** A later answer before the reveal carries `revision: true` (sent only on a change of mind, when a stored answer exists; a first answer has no `revision`). The API refuses with 409 (locked: the question's day is over) or 404 (unknown round or item): the member sees "You're already locked in: B at 80%." for a change, "This question is closed." for a first answer. 400, 429, 5xx and timeouts show "taking a break" and keep the picker.
 4. **No points before the reveal.** Answers to `dq-` rounds return `{locked: true, points_pending: true}`, no truth or points. The Worker stores A or B and the confidence and shows "Locked in" without points. At the reveal it scores the day's answers against the reveal's `correct` with the contract's formula, 100 − 400·(c − y)², computed in whole numbers as 100 − (conf − 100·y)² / 25 (exact for multiples of 10).
-5. **Bot key.** Every call to the web API sends `x-howsure-bot: <BOT_KEY>` (new secret). Without `BOT_KEY` no call is made: members see "taking a break" and the log says `BOT_KEY is not set`.
+5. **Bot key.** Every call to the web API sends `x-bluff-bot: <BOT_KEY>` (new secret). Without `BOT_KEY` no call is made: members see "taking a break" and the log says `BOT_KEY is not set`.
 
 ## Deviations from the brief
 
 1. **Stored beyond the brief's list**, each needed for a behaviour asked for, none personal:
-   - `posts.item_id, prompt, a, b`: the day's question as served, saved at post time (coordinator request, as in the Discord bot). The reveal draws from it and never calls `daily-question`, which only serves today and yesterday. HowSure's own text, never member messages.
+   - `posts.item_id, prompt, a, b`: the day's question as served, saved at post time (coordinator request, as in the Discord bot). The reveal draws from it and never calls `daily-question`, which only serves today and yesterday. The app's own text, never member messages.
    - `answers.correct`, `answers.points`: filled in at the reveal. The recap's accuracy per confidence level needs `correct`: at 50% the points are 0 whether right or wrong.
    - `posts.channel_id`: the reveal edits the post where it is, even if setup moves the channel later that day.
    - `installs.recap_week` (a Monday date): the recap posts once per week, also when that day's question was posted by hand.
@@ -21,11 +21,11 @@ v0.2 replaces the v0.1 modal game (Play button, 5-range modal, day board, `/api/
 2. **Reveal time** = max(post hour, the hour the day's post actually went up) + 8 h. Same as the brief's "post_hour + reveal_delay" for every scheduled post; a late post (set up after the hour) gets the full 8 h instead of minutes. One function (`game.revealAt`) feeds the post, the "Locked in" reply and the cron. The post time is the Slack message `ts` (epoch seconds).
 3. **Reveal delay is a constant (8 h).** The brief says "default 8 h" but gives no command to change it.
 4. **A failed reveal is retried hourly for up to 7 days** (the reveal endpoint serves any past date and the question is stored), instead of stopping after the question's next day.
-5. **Roast off also leaves members with ≤ 0 points out of the named points list** (reveal and `/howsure stats`). Otherwise roast-off would still name people next to a loss. Roast on shows the plain top 5 / top 10.
+5. **Roast off also leaves members with ≤ 0 points out of the named points list** (reveal and `/bluff stats`). Otherwise roast-off would still name people next to a loss. Roast on shows the plain top 5 / top 10.
 6. **Bluff line:** "Someone was 90% sure it was B (the Danube). It wasn't." The brief's "the Nile is shorter" needs the opposite of the prompt's comparative, which the contract does not provide.
 7. **Buttons read "A · the Nile" and "B · the Danube"** (brief: A / B), so nobody has to map letters to names. The letters still drive "Locked in: B at 80%" and "% A · % B".
 8. **Migration `0002_daily_question.sql` is additive** (ALTERs plus `answers`), so it applies whether or not 0001 was ever applied. The v0.1 table `scores` stays, unused; drop it with a later migration if wanted. Not dropped here: unrequested destructive DDL.
-9. **Not built:** `/howsure play` (full rounds in chat). The contract and PREREG mention it; the Slack brief does not list it.
+9. **Not built:** `/bluff play` (full rounds in chat). The contract and PREREG mention it; the Slack brief does not list it.
 
 ## Definitions the brief left open
 
@@ -37,10 +37,10 @@ v0.2 replaces the v0.1 modal game (Play button, 5-range modal, day board, `/api/
 - **rt_ms** = time from the A/B tap to the confidence tap (the picker carries the tap time). Not comparable with web timing; PREREG's response-time exclusions apply to the web only.
 - **Revealed days only:** stats, recap and streak count only revealed (and so scored) days.
 - **Open window:** answers are taken while the day is unrevealed, and only for today's or yesterday's question (the API's own rule; a 20:00 post is revealed at 04:00 the next day). After the reveal, A/B taps and leftover pickers are refused locally, without calling the API (the API does not know each workspace's reveal hour).
-- **The day's post:** `/howsure` in the chosen channel, or anywhere while no channel is chosen, becomes the day's post (the reveal edits it; the cron skips the day). A second `/howsure` in the day's post's channel says the question is already up instead of posting twice. Elsewhere it posts a copy whose answers count the same; copies are not edited at the reveal. `/howsure` after the day's reveal posts nothing.
+- **The day's post:** `/bluff` in the chosen channel, or anywhere while no channel is chosen, becomes the day's post (the reveal edits it; the cron skips the day). A second `/bluff` in the day's post's channel says the question is already up instead of posting twice. Elsewhere it posts a copy whose answers count the same; copies are not edited at the reveal. `/bluff` after the day's reveal posts nothing.
 - **Question text** = "{prompt without the question mark}: {a} or {b}?", unless the prompt already names both options (the contract does not say which form `prompt` takes).
 - **Values:** a unit containing "year" prints without thousands separators or unit (1903); other values as "6,650 km". Sources print when the reveal carries them.
-- **Failures:** a failed reveal or recap releases its claim and is retried at the next hourly run; `/howsure reveal` also retries. The confidence picker is kept on an outage so the member can tap again.
+- **Failures:** a failed reveal or recap releases its claim and is retried at the next hourly run; `/bluff reveal` also retries. The confidence picker is kept on an outage so the member can tap again.
 - **Confidence picker** labels: "50% · coin flip", 60%, 70%, 80%, 90%, "100% · stake it all" (the brief names only the two ends).
 
 ## Acceptance (re-runnable)

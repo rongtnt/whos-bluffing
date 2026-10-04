@@ -6,7 +6,7 @@ import {
 
 const [G1, G2, G3, G4] = ['770000000000000011', '770000000000000012', '770000000000000013', '770000000000000014'];
 const [C1, C2, C3] = ['660000000000000011', '660000000000000012', '660000000000000013'];
-const questionPosts = (calls) => channelPosts(calls).filter((c) => c.body.content.startsWith('**HowSure** · '));
+const questionPosts = (calls) => channelPosts(calls).filter((c) => c.body.content.startsWith("**Who's Bluffing?** · "));
 const posted = (calls) => questionPosts(calls).map(channelOfPost).sort();
 
 test('posts the daily question once per server per day, as soon as its UTC hour has come', async () => {
@@ -24,7 +24,7 @@ test('posts the daily question once per server per day, as soon as its UTC hour 
   const [post] = questionPosts(calls);
   assert.equal(post.headers.authorization, 'Bot bot-token');
   assert.match(post.headers['user-agent'], /^DiscordBot \(https:\/\/api\.test, 0\.1\)$/);
-  assert.equal(post.body.content, '**HowSure** · Which is longer: the Nile or the Danube?\n-# Tap A or B, then say how sure you are. Answer at 22:00 UTC.');
+  assert.equal(post.body.content, "**Who's Bluffing?** · Which is longer: the Nile or the Danube?\n-# Tap A or B, then say how sure you are. Answer at 22:00 UTC.");
   assert.deepEqual(post.body.components[0].components.map((b) => [b.label, b.custom_id]), [
     ['A · the Nile', 'q:2026-10-06:dq-2026-10-06:p00042:0'],
     ['B · the Danube', 'q:2026-10-06:dq-2026-10-06:p00042:1'],
@@ -54,7 +54,7 @@ test('reveals each post once, at the first tick after post time + 8 hours', asyn
   await runCron(env, '2026-10-06T22:00:00Z');
   await runCron(env, '2026-10-06T23:00:00Z');
   assert.deepEqual(messageEdits(calls).map((c) => c.path), [`/api/v10/channels/${C1}/messages/9001`]);
-  assert.match(messageEdits(calls)[0].body.content, /^\*\*HowSure\*\* · Which is longer: the Nile or the Danube\?\n/);
+  assert.match(messageEdits(calls)[0].body.content, /^\*\*Who's Bluffing\?\*\* · Which is longer: the Nile or the Danube\?\n/);
   assert.deepEqual(env.DB.rows('SELECT revealed, prompt, a, b FROM posts'), [
     { revealed: 1, prompt: 'Which is longer: the Nile or the Danube?', a: 'the Nile', b: 'the Danube' },
   ]);
@@ -114,11 +114,11 @@ test('Monday recap: once per server at its hour, before the question; skipped wh
   await runCron(env, '2026-10-12T14:00:00Z');
   await runCron(env, '2026-10-12T15:00:00Z');
 
-  const recaps = channelPosts(calls).filter((c) => c.body.content.startsWith('**HowSure · last week'));
+  const recaps = channelPosts(calls).filter((c) => c.body.content.startsWith("**Who's Bluffing? · last week"));
   assert.equal(recaps.length, 1);
   assert.equal(channelOfPost(recaps[0]), C1);
   assert.equal(recaps[0].body.content, [
-    '**HowSure · last week in this server**',
+    "**Who's Bluffing? · last week in this server**",
     '9 answers from 3 members. Streak: 6 days in a row.',
     '50% sure: right 50% of the time (2 answers)',
     '60% sure: right 100% of the time (1 answer)',
@@ -129,8 +129,8 @@ test('Monday recap: once per server at its hour, before the question; skipped wh
     'Most calibrated: Maya, 75% right at 83% sure.',
     'Bluffs (80%+ sure and wrong): 2',
   ].join('\n'));
-  assert.deepEqual(channelPosts(calls).map((c) => [channelOfPost(c), c.body.content.slice(0, 12)]), [
-    [C1, '**HowSure · '], [C1, '**HowSure** '], [C2, '**HowSure** '],
+  assert.deepEqual(channelPosts(calls).map((c) => [channelOfPost(c), c.body.content.slice(0, 20)]), [
+    [C1, "**Who's Bluffing? · "], [C1, "**Who's Bluffing?** "], [C2, "**Who's Bluffing?** "],
   ]);
   assert.deepEqual(env.DB.rows('SELECT guild_id, last_recap FROM installs ORDER BY guild_id'), [
     { guild_id: G1, last_recap: '2026-10-12' },
@@ -138,5 +138,5 @@ test('Monday recap: once per server at its hour, before the question; skipped wh
   ]);
 
   await runCron(env, '2026-10-13T14:00:00Z'); // Tuesday: questions only
-  assert.equal(channelPosts(calls).filter((c) => c.body.content.startsWith('**HowSure · last week')).length, 1);
+  assert.equal(channelPosts(calls).filter((c) => c.body.content.startsWith("**Who's Bluffing? · last week")).length, 1);
 });

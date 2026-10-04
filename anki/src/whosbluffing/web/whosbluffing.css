@@ -1,5 +1,5 @@
-/* HowSure rating bar, fixed to the bottom of the card area. Uses Anki's theme variables. */
-#howsure-bar {
+/* Who's Bluffing rating bar, fixed to the bottom of the card area. Uses Anki's theme variables. */
+#whosbluffing-bar {
   position: fixed;
   left: 0;
   right: 0;
@@ -14,21 +14,21 @@
   border-top: 1px solid var(--border, #ccc);
   font-size: 14px;
 }
-#howsure-bar[hidden] {
+#whosbluffing-bar[hidden] {
   display: none;
 }
-#howsure-bar .howsure-end {
+#whosbluffing-bar .whosbluffing-end {
   margin: 0 6px;
   opacity: 0.75;
 }
-#howsure-bar button {
+#whosbluffing-bar button {
   min-width: 2.6em;
 }
-#howsure-bar button.howsure-on {
+#whosbluffing-bar button.whosbluffing-on {
   outline: 2px solid var(--fg, #000);
 }
 /* Keep the last line of a long card above the bar. :has() rather than a body class,
    because Anki resets body.className on every question. */
-body:has(> #howsure-bar:not([hidden])) {
+body:has(> #whosbluffing-bar:not([hidden])) {
   padding-bottom: 56px;
 }

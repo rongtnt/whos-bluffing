@@ -70,12 +70,12 @@ export const roundItems = () => Array.from({ length: 10 }, (_, k) => ({ id: `i${
 export const REVEAL = { n: 0, pct_a: 0, pct_b: 0, correct: 0, ...TRUTH, biggest_bluff: null };
 export const COMPLETE = {
   score: 260, accuracy: 50, mean_conf: 75, overconfidence: 25, brier: 0.2, type: 'Bluffer', streak: 3,
-  challenge_url: '/c/r1/tok1234567', share_text: 'HowSure · Bluffer · 260 pts', roast: 'The Nile would like a word.',
+  challenge_url: '/c/r1/tok1234567', share_text: "Who's Bluffing? · Bluffer · 260 pts", roast: 'The Nile would like a word.',
 };
 
 // Installs a fetch mock. `discord(call)` may return {status, body} to override Discord; `api[path](call)` overrides the
 // API with data, or with a Response to set the status; `slow` delays every API answer (to make taps overlap).
-// Like the real API: every call needs x-howsure-bot (403 otherwise), daily `dq-` answers come back locked with points
+// Like the real API: every call needs x-bluff-bot (403 otherwise), daily `dq-` answers come back locked with points
 // pending, and quick-round answers are idempotent per (anon_id, round_id, item_id).
 export function mockFetch({ discord = () => undefined, api = {}, apiDown = false, slow = 0 } = {}) {
   const calls = [];
@@ -94,7 +94,7 @@ export function mockFetch({ discord = () => undefined, api = {}, apiDown = false
       return json({});
     }
     if (slow) await new Promise((resolve) => setTimeout(resolve, slow));
-    if (call.headers['x-howsure-bot'] !== BOT_KEY) return json({ error: 'bot key' }, 403);
+    if (call.headers['x-bluff-bot'] !== BOT_KEY) return json({ error: 'bot key' }, 403);
     if (apiDown) return json({ error: 'down' }, 503);
     if (api[call.path]) {
       const out = api[call.path](call);
@@ -149,7 +149,7 @@ const base = ({ guild = GUILD, user = USER, channel = CHANNEL, permissions = '0'
 });
 
 export const commandPayload = (sub, options = [], who = {}) =>
-  ({ ...base(who), type: 2, data: { name: 'howsure', type: 1, options: [{ type: 1, name: sub, options }] } });
+  ({ ...base(who), type: 2, data: { name: 'bluff', type: 1, options: [{ type: 1, name: sub, options }] } });
 
 // `messageId` is the message the button sits on; its snowflake time is when that message was shown.
 export const buttonPayload = (customId, { messageId = snowflake(Date.now() - 1000), ...who } = {}) =>

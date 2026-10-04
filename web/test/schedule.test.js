@@ -142,7 +142,7 @@ test('nightly review print (npm run tomorrow): the ranked ten and the chat quest
     { id: 'p00002', a_id: 'w0003', b_id: 'w0004', truth: 0, prompt: 'Which came first?', category: 'first_flight', difficulty_hint: 'easy' },
   ];
   const text = reviewRounds(pool, pairs, { '2026-10-20': { ranked: ['p00001'], question: 'p00002' } }, '2026-10-20');
-  assert.ok(text.startsWith('HowSure ranked round · 2026-10-20 (UTC)\n'), text);
+  assert.ok(text.startsWith("Who's Bluffing? ranked round · 2026-10-20 (UTC)\n"), text);
   assert.match(text, /1\. p00001 \[river_length, medium\] Which is longer\?\n {3}A the Danube: 2,850 km · https:\/\/www\.wikidata\.org\/wiki\/Q1653#P2043\n {3}B the Nile: 6,650 km · https:\/\/www\.wikidata\.org\/wiki\/Q3392#P2043\n {3}answer: B \(the Nile\)/);
   assert.match(text, /Slack and Discord question of the day:\nQ\. p00002 \[first_flight, easy\] Which came first\?\n {3}A the Concorde: 1969 · /);
   assert.throws(() => reviewRounds(pool, pairs, {}, '2026-10-21'), /no ranked round for 2026-10-21/);
@@ -156,11 +156,11 @@ test('legacy daily review print: number (#0 before launch), date, answers with u
   ];
   const day2 = addDays(EPOCH, 1);
   const text = review(pool, { [day2]: ['w0001', 'w0002'] }, day2);
-  assert.ok(text.startsWith(`HowSure #2 · ${day2} (UTC)\n`), text);
+  assert.ok(text.startsWith(`Who's Bluffing? #2 · ${day2} (UTC)\n`), text);
   assert.match(text, /1\. w0001 \[bridge_length\] How long is the Mackinac Bridge\?\n {3}answer: 8,038 m\n {3}source: https:\/\/www\.wikidata\.org\/wiki\/Q12568#P2043/);
   assert.match(text, /answer: 1954\n/);
   const preview = addDays(EPOCH, -5);
-  assert.ok(review(pool, { [preview]: ['w0002'] }, preview).startsWith(`HowSure #0 · ${preview} (UTC)\n`));
+  assert.ok(review(pool, { [preview]: ['w0002'] }, preview).startsWith(`Who's Bluffing? #0 · ${preview} (UTC)\n`));
   assert.throws(() => review(pool, {}, '2026-10-22'), /nothing scheduled for 2026-10-22/);
   assert.throws(() => review(pool, { '2026-10-22': ['w0009'] }, '2026-10-22'), /w0009/);
   assert.equal(addDays('2026-10-20', 1), '2026-10-21');

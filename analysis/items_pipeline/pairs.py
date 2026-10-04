@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""Comparison pairs for HowSure rounds (items/pairs.json) and the daily ranked rounds and chat questions
+"""Comparison pairs for Who's Bluffing rounds (items/pairs.json) and the daily ranked rounds and chat questions
 (daily/rounds.json). Python 3.9+, standard library only. From the repo root:
 
     python3 analysis/items_pipeline/pairs.py

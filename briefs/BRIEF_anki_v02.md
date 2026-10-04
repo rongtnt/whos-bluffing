@@ -1,6 +1,6 @@
-# Builder brief — HowSure for Anki v0.2: opt-in anonymous data sharing
+# Builder brief — Who's Bluffing? for Anki v0.2: opt-in anonymous data sharing
 
-You are the executor. Repo /Users/ethan/howsure. Read first: anki/README.md, anki/NOTES.md, anki/src/howsure/*.py, PRIVACY.md (the "Anki add-on" section lists the exact fields you may send), prereg/PREREG.md (Study B), docs/design-v4-scale.md, web/README.md and web/NOTES.md (D1 conventions: bounded reads, aggregate tables), web/migrations/*.sql.
+You are the executor. Repo /Users/ethan/howsure. Read first: anki/README.md, anki/NOTES.md, anki/src/whosbluffing/*.py, PRIVACY.md (the "Anki add-on" section lists the exact fields you may send), prereg/PREREG.md (Study B), docs/design-v4-scale.md, web/README.md and web/NOTES.md (D1 conventions: bounded reads, aggregate tables), web/migrations/*.sql.
 
 Hard rules: no git commands; no deploy/login/purchases. Edit only anki/ and, in web/, only new files plus the smallest additions to web/test/smoke.sh, web/README.md, web/NOTES.md and a new migration. Keep every existing test green (web 48+14 unit, 65 smoke; anki 31; slack 21). Add-on runtime = stdlib + aqt only; uploads use `urllib` in a background task, never on the UI thread. Sharing is OFF by default and nothing is sent before explicit consent. Never send card content, names, emails or raw card ids. Plain English copy; no mention of AI.
 
@@ -12,8 +12,8 @@ Hard rules: no git commands; no deploy/login/purchases. Edit only anki/ and, in 
 - Bounded reads: nothing scans `anki_rows` on a request path. Smoke: submit 3 rows twice (second call all duplicates), stats reflect it, delete removes them and a later submit returns 410.
 
 ## Add-on side
-- Config: `share_data: false`, `api_base: "https://howsure.me"`, `consent_version` recorded on accept.
-- Tools → "HowSure: share anonymous data…" opens a consent dialog whose field list is copied verbatim from PRIVACY.md's Anki section, with Accept / Not now. Accepting stores consent timestamp + version and turns sharing on. The dashboard gets a status line ("Sharing on · 1,240 ratings uploaded · last 2 h ago") with buttons: Stop sharing, Delete my data (calls `/api/anki/delete`, turns sharing off, confirms the count).
+- Config: `share_data: false`, `api_base: "https://whosbluffing.com"`, `consent_version` recorded on accept.
+- Tools → "Who's Bluffing: share anonymous data…" opens a consent dialog whose field list is copied verbatim from PRIVACY.md's Anki section, with Accept / Not now. Accepting stores consent timestamp + version and turns sharing on. The dashboard gets a status line ("Sharing on · 1,240 ratings uploaded · last 2 h ago") with buttons: Stop sharing, Delete my data (calls `/api/anki/delete`, turns sharing off, confirms the count).
 - Upload: on profile open and then every 6 hours (`QTimer`), in `mw.taskman.run_in_background`, send rows with `row_id > last_uploaded_row_id` in batches of 500; on success advance the cursor (stored in `meta`). Network errors are silent retries next time; a 410 turns sharing off with a one-time message. The install_id is the existing per-install salt hashed again (so the salt itself never leaves the machine).
 - Tests (headless): payload builder respects the field whitelist and never includes card text or raw ids; cursor advances only on success (mock urlopen); no upload attempted when `share_data` is false; delete clears cursor and flips the flag; consent dialog text equals the PRIVACY.md field list (read the file in the test).
 - Bump `addon_version` to 0.2.0; update README, CHANGELOG, TESTING (GUI steps for consent, upload, delete).

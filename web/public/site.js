@@ -6,7 +6,7 @@ const SLACK_INSTALL_URL = 'https://YOUR-WORKER-HOST/slack/oauth/start';
 
 (() => {
   const root = document.documentElement;
-  const THEME_KEY = 'hs_theme';
+  const THEME_KEY = 'whosbluffing_theme';
   const APP_REVEAL_MS = 4000; // app pages show their footer by then even if app.js never finishes its first render
   const prefersDark = matchMedia('(prefers-color-scheme: dark)');
   try {

@@ -7,7 +7,7 @@ import { SECRET, makeEnv, mockFetch, send, signedRequest, slashBody } from './he
 const sign = (ts, body, secret = SECRET) => `v0=${createHmac('sha256', secret).update(`v0:${ts}:${body}`).digest('hex')}`;
 const NOW = 1_790_000_000_000;
 const TS = String(NOW / 1000);
-const BODY = 'command=%2Fhowsure&text=';
+const BODY = 'command=%2Fbluff&text=';
 
 test('signature: valid passes; tampered body, wrong secret, malformed header, missing timestamp fail', async () => {
   assert.equal(await verifySlack(SECRET, TS, sign(TS, BODY), BODY, NOW), true);

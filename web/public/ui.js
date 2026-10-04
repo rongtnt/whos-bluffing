@@ -42,11 +42,11 @@ let anon = null;
 // blocked). Sent with daily answers and full assessments so a repeat visitor counts once (PRIVACY.md).
 export function anonId() {
   if (anon) return anon;
-  const saved = store.get('hs_anon', null);
+  const saved = store.get('whosbluffing_anon', null);
   anon = typeof saved === 'string' && /^[A-Za-z0-9_-]{22}$/.test(saved)
     ? saved
     : Array.from(crypto.getRandomValues(new Uint8Array(22)), (b) => ANON_ALPHABET[b % 64]).join('');
-  store.set('hs_anon', anon);
+  store.set('whosbluffing_anon', anon);
   return anon;
 }
 

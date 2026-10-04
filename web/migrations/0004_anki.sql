@@ -1,4 +1,4 @@
--- HowSure for Anki v0.2: opt-in anonymous rating uploads (POST /api/anki/submit, /api/anki/delete, GET /api/anki/stats).
+-- Who's Bluffing for Anki v0.2: opt-in anonymous rating uploads (POST /api/anki/submit, /api/anki/delete, GET /api/anki/stats).
 -- Request paths touch only the request's own rows, the install's anki_installs row and two anki_agg rows; nothing on a
 -- request path scans anki_rows.
 

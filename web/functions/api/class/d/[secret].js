@@ -47,7 +47,7 @@ export function toCsv(a) {
 
 const CSV_HEADERS = {
   'content-type': 'text/csv; charset=utf-8',
-  'content-disposition': 'attachment; filename="howsure-class.csv"',
+  'content-disposition': 'attachment; filename="whosbluffing-class.csv"',
   'cache-control': 'no-store',
 };
 

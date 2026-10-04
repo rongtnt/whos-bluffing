@@ -24,9 +24,9 @@ const MAX_CUSTOM_ID = 100;
 const [SUB, STRING, INTEGER, CHANNEL] = [1, 3, 4, 7];
 const GUILD_TEXT_CHANNELS = [0, 5]; // text and announcement channels
 
-// One global /howsure command; guild installs and server channels only.
+// One global /bluff command; guild installs and server channels only.
 export const COMMANDS = [{
-  name: 'howsure',
+  name: 'bluff',
   description: 'One question a day: pick A or B and say how sure you are',
   type: 1,
   integration_types: [0],
@@ -51,13 +51,13 @@ export const COMMANDS = [{
       ],
     },
     { type: SUB, name: 'reveal', description: "Reveal today's answer now (Manage Server)" },
-    { type: SUB, name: 'help', description: 'How HowSure works' },
-    { type: SUB, name: 'invite', description: 'Get a link to add HowSure to another server' },
+    { type: SUB, name: 'help', description: "How Who's Bluffing works" },
+    { type: SUB, name: 'invite', description: "Get a link to add Who's Bluffing to another server" },
   ],
 }];
 
 // Logs a short reason only: never request bodies, tokens or env values.
-export const logError = (where, err) => console.error(`howsure-discord ${where}: ${err?.message ?? err}`);
+export const logError = (where, err) => console.error(`whosbluffing-discord ${where}: ${err?.message ?? err}`);
 
 export const installUrl = (env) =>
   `https://discord.com/oauth2/authorize?${new URLSearchParams({
@@ -287,7 +287,7 @@ async function setup(env, i, opts) {
     post_hour_utc: opts.hour ?? install.post_hour_utc,
     roast: opts.roast === undefined ? install.roast : Number(opts.roast === 'on'),
   };
-  // A new channel gets a short hello, which is also the check that HowSure may post there.
+  // A new channel gets a short hello, which is also the check that Who's Bluffing may post there.
   if (next.channel_id !== install.channel_id) {
     const res = await discord(env, 'POST', `/channels/${next.channel_id}/messages`, game.channelHello(next.post_hour_utc));
     if (!res.ok) return { content: GONE.has(res.status) ? game.CANT_POST : game.FAIL_TEXT };
@@ -316,7 +316,7 @@ export async function postRecap(env, install, date) {
   return true;
 }
 
-// ---- /howsure play ------------------------------------------------------------------------------------------
+// ---- /bluff play ------------------------------------------------------------------------------------------
 
 // The member's state for this button's round; null when the button belongs to an older or finished round.
 async function playFor(env, i, roundId) {

@@ -1,4 +1,4 @@
-// HowSure for Anki v0.2 endpoint logic (functions/_anki.js) on a real SQLite database (test/d1.js).
+// Who's Bluffing for Anki v0.2 endpoint logic (functions/_anki.js) on a real SQLite database (test/d1.js).
 // HTTP wiring is covered by test/smoke.sh.
 import { test } from 'node:test';
 import assert from 'node:assert/strict';

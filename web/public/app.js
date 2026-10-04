@@ -99,7 +99,7 @@ async function boot() {
     strings = en;
     items = bank.items;
   } catch {
-    app.innerHTML = html`<p class="msg">Couldn't load HowSure. Check your connection and reload.</p>`;
+    app.innerHTML = html`<p class="msg">Couldn't load Who's Bluffing. Check your connection and reload.</p>`;
     ready();
     return;
   }

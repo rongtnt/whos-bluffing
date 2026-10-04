@@ -1,11 +1,11 @@
 {
-  "name": "howsure-web",
+  "name": "whosbluffing-web",
   "private": true,
   "type": "module",
   "scripts": {
     "sync-items": "node scripts/sync-items.js",
     "dev": "npm run sync-items && wrangler pages dev --ip 127.0.0.1 --port 8788",
-    "migrate:local": "wrangler d1 migrations apply howsure --local",
+    "migrate:local": "wrangler d1 migrations apply whosbluffing --local",
     "pretest": "npm run sync-items",
     "test": "node --disable-warning=ExperimentalWarning --test test/*.test.js && npm run test:pool",
     "smoke": "bash test/smoke.sh",

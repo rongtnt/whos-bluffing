@@ -1,24 +1,24 @@
 // Message and component builders (Discord) and all user-facing copy. Pure: no I/O.
 
-export const FAIL_TEXT = 'HowSure is taking a break, try again in a minute.';
-export const GUILD_ONLY = 'HowSure works inside a server. Use /howsure invite to add it to one.';
+export const FAIL_TEXT = "Who's Bluffing is taking a break, try again in a minute.";
+export const GUILD_ONLY = "Who's Bluffing works inside a server. Use /bluff invite to add it to one.";
 export const NEED_MANAGE = 'Only members with the Manage Server permission can do that.';
 export const CANT_POST =
-  "I can't post in that channel. Give HowSure the View Channel and Send Messages permissions there, or pick another channel.";
+  "I can't post in that channel. Give Who's Bluffing the View Channel and Send Messages permissions there, or pick another channel.";
 export const TOO_LATE = 'Too late: answers for this question are closed.';
-export const NOTHING_TO_REVEAL = "There is no question waiting for its answer. Type /howsure question to post today's.";
+export const NOTHING_TO_REVEAL = "There is no question waiting for its answer. Type /bluff question to post today's.";
 export const REVEALED = 'Revealed. The answer is on the question post.';
-export const PLAY_ENDED = 'This round has ended. Type /howsure play for a new one.';
+export const PLAY_ENDED = 'This round has ended. Type /bluff play for a new one.';
 export const HELP = [
-  "**HowSure** posts one question a day. Tap A or B, then say how sure you are. The answer and this server's top 5 come out 8 hours later. Every Monday brings last week's recap.",
+  "**Who's Bluffing** posts one question a day. Tap A or B, then say how sure you are. The answer and this server's top 5 come out 8 hours later. Every Monday brings last week's recap.",
   'Points reward honest confidence: 50% scores 0; 100% scores +100 if right and -300 if wrong.',
   '',
-  "`/howsure question` post today's question in this channel now",
-  '`/howsure play` play a private 10-question round',
-  "`/howsure stats` this server's leaderboard for the last 30 days",
-  '`/howsure invite` get a link to add HowSure to another server',
-  '`/howsure setup` set the daily channel, hour (UTC) and roast mode (Manage Server)',
-  "`/howsure reveal` reveal today's answer now (Manage Server)",
+  "`/bluff question` post today's question in this channel now",
+  '`/bluff play` play a private 10-question round',
+  "`/bluff stats` this server's leaderboard for the last 30 days",
+  "`/bluff invite` get a link to add Who's Bluffing to another server",
+  '`/bluff setup` set the daily channel, hour (UTC) and roast mode (Manage Server)',
+  "`/bluff reveal` reveal today's answer now (Manage Server)",
 ].join('\n');
 
 export const BLUFF_CONF = 80; // a wrong answer at this confidence or more counts as a bluff
@@ -39,7 +39,7 @@ const TYPE_LINES = {
   Modest: 'a bit less sure than right',
   Hedger: 'much less sure than right',
 };
-const ROUND = '**HowSure quick round**';
+const ROUND = "**Who's Bluffing? quick round**";
 const MIN_CALIBRATED_ANSWERS = 3;
 const MAX_LABEL = 80; // Discord's button label limit
 
@@ -79,14 +79,14 @@ function side(q, truth, i) {
 // The day's question in the channel. Button ids carry what an answer needs: date, round, item, choice.
 export function questionPost(q, date, revealAt) {
   return {
-    content: `**HowSure** · ${esc(q.prompt)}\n-# Tap A or B, then say how sure you are. Answer at ${utc(revealAt)}.`,
+    content: `**Who's Bluffing?** · ${esc(q.prompt)}\n-# Tap A or B, then say how sure you are. Answer at ${utc(revealAt)}.`,
     components: abButtons(q, (choice) => `q:${date}:${q.round_id}:${q.item_id}:${choice}`),
     allowed_mentions: NO_PINGS,
   };
 }
 
 export const confidencePicker = (date, roundId, itemId, choice) => ({
-  content: `You picked **${LETTERS[choice]}**. How sure are you?`,
+  content: `You picked **${LETTERS[choice]}**. Say how sure you are.`,
   components: confButtons((conf) => `c:${date}:${roundId}:${itemId}:${choice}:${conf}`),
 });
 
@@ -108,7 +108,7 @@ export function bluffLine(q, bluff, name) {
 
 // The question post after the reveal: both values with sources, this server's split, top 5 and the bluff line.
 export function revealMessage({ q, r, top, names, bluff, roast }) {
-  const lines = [`**HowSure** · ${esc(q.prompt)}`, side(q, r, 0), side(q, r, 1)];
+  const lines = [`**Who's Bluffing?** · ${esc(q.prompt)}`, side(q, r, 0), side(q, r, 1)];
   if (!r.n) {
     lines.push('Nobody here answered this one.');
   } else {
@@ -131,20 +131,20 @@ export const alreadyPosted = (guildId, post) =>
 // ---- Setup, stats, recap -------------------------------------------------------------------------------------
 
 export const channelHello = (hour) => ({
-  content: `HowSure will post a question here every day at ${hourText(hour)}. Tap A or B, then say how sure you are.`,
+  content: `Who's Bluffing will post a question here every day at ${hourText(hour)}. Tap A or B, then say how sure you are.`,
   allowed_mentions: NO_PINGS,
 });
 
 export const setupDone = (s) =>
-  `Done. HowSure posts a question in <#${s.channel_id}> every day at ${hourText(s.post_hour_utc)} and reveals the answer ` +
+  `Done. Who's Bluffing posts a question in <#${s.channel_id}> every day at ${hourText(s.post_hour_utc)} and reveals the answer ` +
   `${plural(s.reveal_delay_h, 'hour')} later. Roast mode is ${s.roast ? 'on: the reveal names the biggest bluffer' : 'off: the bluffer stays anonymous'}.`;
 
-export const invite = (url) => `Add HowSure to a server: ${url}`;
+export const invite = (url) => `Add Who's Bluffing to a server: ${url}`;
 
 // The 30-day leaderboard and participation.
 export function statsMessage(board, names) {
-  if (!board.answers) return { content: "No answers in the last 30 days yet. Type /howsure question to post today's question." };
-  const head = `**HowSure, last 30 days:** ${plural(board.players, 'member')} answered ${plural(board.answers, 'time')} on ${plural(board.days, 'day')}.`;
+  if (!board.answers) return { content: "No answers in the last 30 days yet. Type /bluff question to post today's question." };
+  const head = `**Who's Bluffing, last 30 days:** ${plural(board.players, 'member')} answered ${plural(board.answers, 'time')} on ${plural(board.days, 'day')}.`;
   const lines = board.top.map((r, i) => `${i + 1}. ${nameOf(names, r.anon_id)} — ${plural(r.points, 'point')} from ${plural(r.answers, 'answer')}`);
   return { content: [head, ...lines].join('\n'), allowed_mentions: NO_PINGS };
 }
@@ -169,7 +169,7 @@ export function streak(days, lastDay) {
 export function recapMessage(week, best, names) {
   const streakText = week.streak ? ` Streak: ${plural(week.streak, 'day')} in a row.` : '';
   const lines = [
-    '**HowSure · last week in this server**',
+    "**Who's Bluffing? · last week in this server**",
     `${plural(week.answers, 'answer')} from ${plural(week.players, 'member')}.${streakText}`,
     ...week.levels.map((l) => `${l.conf}% sure: right ${pct(l.hits, l.n)}% of the time (${plural(l.n, 'answer')})`),
   ];
@@ -180,7 +180,7 @@ export function recapMessage(week, best, names) {
   return { content: lines.join('\n'), allowed_mentions: NO_PINGS };
 }
 
-// ---- /howsure play (private, one message edited in place) ----------------------------------------------------
+// ---- /bluff play (private, one message edited in place) ----------------------------------------------------
 
 const progress = (state, step) => `${ROUND} · Question ${step + 1} of ${state.items.length} · ${plural(state.total, 'point')}`;
 
@@ -195,7 +195,7 @@ export function playQuestion(state, step) {
 export function playConfidence(state, step, choice) {
   const it = state.items[step];
   return {
-    content: `${progress(state, step)}\n${esc(it.prompt)}\nYou picked **${option(it, choice)}**. How sure are you?`,
+    content: `${progress(state, step)}\n${esc(it.prompt)}\nYou picked **${option(it, choice)}**. Say how sure you are.`,
     components: confButtons((conf) => `pc:${state.round_id}:${step}:${choice}:${conf}`),
   };
 }
@@ -232,6 +232,6 @@ export function playEnd(done, challengeId) {
 
 // Public, because the player pressed Challenge. Their display name comes from that button press and is not stored.
 export const challengePost = (name, score, url) => ({
-  content: `${esc(name)} scored ${plural(score, 'point')} in a HowSure round. Can you beat that? ${url}`,
+  content: `${esc(name)} scored ${plural(score, 'point')} in a Who's Bluffing round. Can you beat that? ${url}`,
   allowed_mentions: NO_PINGS,
 });

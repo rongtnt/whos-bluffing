@@ -64,7 +64,7 @@ def payload(install: str, rows: list[dict], addon_version: str) -> dict:
 def post(url: str, body: dict, addon_version: str) -> dict:
     request = urllib.request.Request(
         url, data=json.dumps(body).encode(), method="POST",
-        headers={"Content-Type": "application/json", "User-Agent": f"HowSure-Anki/{addon_version}"})
+        headers={"Content-Type": "application/json", "User-Agent": f"WhosBluffing-Anki/{addon_version}"})
     try:
         with urllib.request.urlopen(request, timeout=TIMEOUT_S) as response:
             return json.load(response)
@@ -108,7 +108,7 @@ def upload_pending(db_path: str, api_base: str, addon_version: str, stop: thread
                     forget(conn)
                 return {"sent": sent, "gone": True}
             except (OSError, ValueError) as e:  # unreachable, timeout, HTTP 4xx/5xx (all OSError), bad JSON
-                print(f"HowSure: upload paused until the next try ({e})")
+                print(f"Who's Bluffing: upload paused until the next try ({e})")
                 break
             with closing(store.connect(db_path)) as conn:
                 store.set_meta(conn, CURSOR, rows[-1]["row_id"])

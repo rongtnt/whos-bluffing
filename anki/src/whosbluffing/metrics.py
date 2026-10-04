@@ -1,4 +1,4 @@
-"""Calibration metrics for HowSure. Pure stdlib so the analysis code can import it later.
+"""Calibration metrics for Who's Bluffing. Pure stdlib so the analysis code can import it later.
 
 Must reproduce analysis/test_vectors.json: conf is a probability in [0.5, 1.0],
 correct is 0/1, AUROC counts ties as 0.5 and is None with only one class,

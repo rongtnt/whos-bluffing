@@ -1,4 +1,4 @@
-/* HowSure: one stylesheet for every page. Mobile-first, system fonts only.
+/* Who's Bluffing: one stylesheet for every page. Mobile-first, system fonts only.
    Tokens: light by default; dark from prefers-color-scheme unless the visitor chose light, or from the stored toggle
    (site.js sets data-theme). The two dark blocks must stay identical; web/design/contrast.js checks every
    text/background pair below. --hit/--miss are fills (squares, bars, borders); text uses --hit-ink/--miss-ink. */

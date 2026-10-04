@@ -35,11 +35,11 @@ def test_builds_two_decks_from_two_choice_items(tmp_path):
     built = make_deck.build(bank, tmp_path / "dist")
     assert set(built) == {"en", "zh"}
     for lang, (path, count) in built.items():
-        assert path.name == f"HowSure-Calibration-Deck-{lang}.apkg"
+        assert path.name == f"WhosBluffing-Calibration-Deck-{lang}.apkg"
         n, tags, decks, models = read_apkg(path, tmp_path)
         assert n == count == 2  # the interval item is not a two-alternative item
-        assert all("howsure::public" in t for t in tags)
-        assert any("howsure::x001" in t for t in tags)
+        assert all("whosbluffing::public" in t for t in tags)
+        assert any("whosbluffing::x001" in t for t in tags)
         assert str(make_deck.DECK_IDS[lang]) in decks and str(make_deck.MODEL_ID) in models
 
 

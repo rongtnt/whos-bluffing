@@ -19,14 +19,14 @@ async function answer(env, calls, round, k) {
   return lastEdit(calls);
 }
 
-test('/howsure play: a private 10-question round in one message, from the first question to the challenge post', async () => {
+test('/bluff play: a private 10-question round in one message, from the first question to the challenge post', async () => {
   const env = makeEnv();
   const calls = mockFetch();
   const start = await send(env, signedRequest(commandPayload('play')));
   assert.deepEqual(await start.json(), { type: 5, data: { flags: 64 } });
   assert.equal(apiCalls(calls, '/api/round')[0].url.search, '?mode=quick');
   let msg = lastEdit(calls);
-  assert.equal(msg.content, '**HowSure quick round** · Question 1 of 10 · 0 points\nQuestion 1?');
+  assert.equal(msg.content, "**Who's Bluffing? quick round** · Question 1 of 10 · 0 points\nQuestion 1?");
   assert.deepEqual(labels(msg), ['A · Alpha 0', 'B · Beta 0']);
   assert.deepEqual(ids(msg), ['pa:r1:0:0', 'pa:r1:0:1']);
 
@@ -34,7 +34,7 @@ test('/howsure play: a private 10-question round in one message, from the first 
   const choose = await press(env, 'pa:r1:0:0');
   assert.deepEqual(await choose.json(), { type: 6 });
   msg = lastEdit(calls);
-  assert.equal(msg.content, '**HowSure quick round** · Question 1 of 10 · 0 points\nQuestion 1?\nYou picked **A · Alpha 0**. How sure are you?');
+  assert.equal(msg.content, "**Who's Bluffing? quick round** · Question 1 of 10 · 0 points\nQuestion 1?\nYou picked **A · Alpha 0**. Say how sure you are.");
   assert.deepEqual(ids(msg), [50, 60, 70, 80, 90, 100].map((c) => `pc:r1:0:0:${c}`));
 
   // Confidence -> the answer goes to the API; the reveal shows points, both values with sources, and Next.
@@ -46,7 +46,7 @@ test('/howsure play: a private 10-question round in one message, from the first 
   assert.ok(Number.isInteger(first.body.rt_ms) && first.body.rt_ms >= 0);
   msg = lastEdit(calls);
   assert.equal(msg.content, [
-    '**HowSure quick round** · Question 1 of 10',
+    "**Who's Bluffing? quick round** · Question 1 of 10",
     'Question 1?',
     'Right at 90%: **+96** · total 96 points',
     `✅ **A · Alpha 0**: 6,650 km ([source](<${TRUTH.a_source}>))`,
@@ -63,10 +63,10 @@ test('/howsure play: a private 10-question round in one message, from the first 
   // Questions 2-10.
   for (let k = 1; k < 10; k += 1) {
     await press(env, `pn:r1:${k}`);
-    assert.match(lastEdit(calls).content, new RegExp(`^\\*\\*HowSure quick round\\*\\* · Question ${k + 1} of 10 · `));
+    assert.match(lastEdit(calls).content, new RegExp(`^\\*\\*Who's Bluffing\\? quick round\\*\\* · Question ${k + 1} of 10 · `));
     msg = await answer(env, calls, 'r1', k);
   }
-  assert.match(msg.content, /^\*\*HowSure quick round\*\* · Question 10 of 10\nQuestion 10\?\nWrong at 60%: \*\*-44\*\* · total 260 points\n/);
+  assert.match(msg.content, /^\*\*Who's Bluffing\? quick round\*\* · Question 10 of 10\nQuestion 10\?\nWrong at 60%: \*\*-44\*\* · total 260 points\n/);
   assert.match(msg.content, /\n✅ \*\*A · Alpha 9\*\*: 6,650 km \(.*\)\nB · Beta 9: 2,850 km \(/);
   assert.deepEqual([ids(msg), labels(msg)], [['pn:r1:10'], ['See your score']]);
   assert.ok(!JSON.stringify(env.DB.rows('SELECT * FROM play_state')).includes(USER), 'raw user id stored');
@@ -78,7 +78,7 @@ test('/howsure play: a private 10-question round in one message, from the first 
   ]);
   msg = lastEdit(calls);
   assert.equal(msg.content, [
-    '**HowSure quick round** · **260 points**',
+    "**Who's Bluffing? quick round** · **260 points**",
     'Bluffer: much more sure than right. 50% right at 75% sure.',
     'The Nile would like a word.',
     'Streak: 3 days.',
@@ -90,7 +90,7 @@ test('/howsure play: a private 10-question round in one message, from the first 
   const challenge = await press(env, 'px:260:/c/r1/tok1234567');
   assert.deepEqual(await challenge.json(), {
     type: 4,
-    data: { allowed_mentions: { parse: [] }, content: `user${USER} scored 260 points in a HowSure round. Can you beat that? https://api.test/c/r1/tok1234567` },
+    data: { allowed_mentions: { parse: [] }, content: `user${USER} scored 260 points in a Who's Bluffing round. Can you beat that? https://api.test/c/r1/tok1234567` },
   });
 });
 
@@ -123,7 +123,7 @@ test('a button from an older round says the round has ended; Play again starts a
   assert.deepEqual(ids(lastEdit(calls)), ['pa:r2:0:0', 'pa:r2:0:1']);
 
   await press(env, 'pa:r1:0:0');
-  assert.deepEqual(lastEdit(calls), { allowed_mentions: { parse: [] }, content: 'This round has ended. Type /howsure play for a new one.', components: [] });
+  assert.deepEqual(lastEdit(calls), { allowed_mentions: { parse: [] }, content: 'This round has ended. Type /bluff play for a new one.', components: [] });
   assert.deepEqual(env.DB.rows('SELECT round_id, step FROM play_state'), [{ round_id: 'r2', step: 0 }]);
 });
 
@@ -138,11 +138,11 @@ test('if the score cannot be fetched, the round stays finished-but-unscored and 
   calls = mockFetch({ apiDown: true });
   await press(env, 'pn:r1:10');
   assert.equal(originalEdits(calls).length, 0);
-  assert.equal(followUps(calls)[0].body.content, 'HowSure is taking a break, try again in a minute.');
+  assert.equal(followUps(calls)[0].body.content, "Who's Bluffing is taking a break, try again in a minute.");
   assert.equal(env.DB.rows('SELECT step FROM play_state')[0].step, 10);
 
   calls = mockFetch();
   await press(env, 'pn:r1:10');
   assert.equal(apiCalls(calls, '/api/round/complete').length, 1);
-  assert.match(lastEdit(calls).content, new RegExp(`^\\*\\*HowSure quick round\\*\\* · \\*\\*${COMPLETE.score} points\\*\\*`));
+  assert.match(lastEdit(calls).content, new RegExp(`^\\*\\*Who's Bluffing\\? quick round\\*\\* · \\*\\*${COMPLETE.score} points\\*\\*`));
 });

@@ -32,7 +32,7 @@ test('30-day board: top 10 by total points, ties by more answers, unrevealed and
   assert.equal(board.answers, 21);
 });
 
-test('/howsure stats posts the 30-day board in the channel; names via channel members only; roast off hides negative totals', async () => {
+test('/bluff stats posts the 30-day board in the channel; names via channel members only; roast off hides negative totals', async () => {
   const env = makeEnv();
   await install(env);
   const today = new Date().toISOString().slice(0, 10);
@@ -53,7 +53,7 @@ test('/howsure stats posts the 30-day board in the channel; names via channel me
   const [reply] = replies(calls);
   assert.equal(reply.body.response_type, 'in_channel');
   assert.equal(reply.body.text, [
-    '*HowSure, last 30 days:* 4 members gave 5 answers.',
+    "*Who's Bluffing, last 30 days:* 4 members gave 5 answers.",
     '1. Maya — 160 points in 2 answers',
     '2. Sam &lt;b&gt; — 100 points in 1 answer',
     '3. a teammate — 36 points in 1 answer',
@@ -65,10 +65,10 @@ test('/howsure stats posts the 30-day board in the channel; names via channel me
   assert.ok(!JSON.stringify(env.DB.rows('SELECT * FROM answers')).match(/U1|U2|Maya|Sam|Lee/));
 });
 
-test('/howsure stats with no revealed answers yet', async () => {
+test('/bluff stats with no revealed answers yet', async () => {
   const env = makeEnv();
   await install(env);
   const calls = mockFetch();
   await send(env, signedRequest(slashBody({ text: 'stats' })));
-  assert.equal(replies(calls)[0].body.text, "No revealed answers in the last 30 days yet. Type /howsure to post today's question.");
+  assert.equal(replies(calls)[0].body.text, "No revealed answers in the last 30 days yet. Type /bluff to post today's question.");
 });

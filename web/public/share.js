@@ -63,7 +63,7 @@ export function drawCard(kind, { t, lines, url }) {
   g.fillStyle = COLORS.bg;
   g.fillRect(0, 0, z.w, z.h);
   g.textBaseline = 'top';
-  drawLines(g, ['HowSure'], z.pad, z.pad, z.brand, 700, COLORS.accent);
+  drawLines(g, ["Who's Bluffing?"], z.pad, z.pad, z.brand, 700, COLORS.accent);
   drawQr(g, url, z.w - z.pad - z.qr, z.h - z.pad - z.qr, z.qr);
 
   // Footer, bottom-aligned left of the QR: call to action, then the site address on the last line.
@@ -126,7 +126,7 @@ export function renderShare(ctx, el, lines) {
     download() {
       const a = document.createElement('a');
       a.href = img.src;
-      a.download = `howsure-${kind}.png`;
+      a.download = `whosbluffing-${kind}.png`;
       document.body.append(a);
       a.click();
       a.remove();
@@ -161,7 +161,7 @@ export function drawRoundCard(kind, { lines, url }) {
   g.fillStyle = COLORS.bg;
   g.fillRect(0, 0, z.w, z.h);
   g.textBaseline = 'top';
-  drawLines(g, ['HowSure'], z.pad, z.pad, z.brand, 700, COLORS.accent);
+  drawLines(g, ["Who's Bluffing?"], z.pad, z.pad, z.brand, 700, COLORS.accent);
   drawQr(g, url, z.w - z.pad - z.qr, z.h - z.pad - z.qr, z.qr);
   const textW = z.w - 2 * z.pad - (kind === 'wide' ? z.qr + z.pad : 0);
   let y = z.pad + z.brand * 2;
@@ -214,7 +214,7 @@ export function renderRoundShare(ctx, el, { lines, copy, url, onShare }) {
     download() {
       const a = document.createElement('a');
       a.href = img.src;
-      a.download = `howsure-${kind}.png`;
+      a.download = `whosbluffing-${kind}.png`;
       document.body.append(a);
       a.click();
       a.remove();

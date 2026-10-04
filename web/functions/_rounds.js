@@ -105,7 +105,7 @@ export function scoreRound(answers) {
 }
 
 export const shareText = ({ type, score, accuracy, mean_conf: meanConf }, url) =>
-  `HowSure · ${type} · ${score} pts · ${Math.round(accuracy)}% right at ${Math.round(meanConf)}% sure · ${url}`;
+  `Who's Bluffing? · ${type} · ${score} pts · ${Math.round(accuracy)}% right at ${Math.round(meanConf)}% sure · ${url}`;
 
 // Twenty roast lines for the most confident miss. {right}/{wrong}: the options as named; {more}/{less}: the pair's
 // template phrases ("was longer" / "was shorter"); a capital letter = the name with its first letter capitalised.

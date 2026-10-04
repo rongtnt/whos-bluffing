@@ -1,4 +1,4 @@
-"""Reference calibration metrics for HowSure. The JS (web) and Python (anki)
+"""Reference calibration metrics for Who's Bluffing. The JS (web) and Python (anki)
 implementations must reproduce analysis/test_vectors.json, which this file generates.
 conf is a probability in [0.5, 1.0]; correct is 0/1."""
 import json, sys

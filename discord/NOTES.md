@@ -1,4 +1,4 @@
-# Builder notes: HowSure for Discord v0.1
+# Builder notes: Who's Bluffing? for Discord v0.1
 
 ## Ed25519 check (the brief asked: vendor a verifier only if Workers cannot verify)
 
@@ -10,7 +10,7 @@ run them under Node 22 against a real key pair.
 
 ## Deviations from the brief
 
-1. **`/howsure question` instead of a bare `/howsure`.** Discord cannot run a command that has subcommands without
+1. **`/bluff question` instead of a bare `/bluff`.** Discord cannot run a command that has subcommands without
    one, so "post today's question now" is a subcommand. Everything else matches: `play`, `setup`, `stats`, `reveal`,
    `help`, `invite`.
 2. **Response types.** Anything with I/O defers: commands with type 5 (private, except `stats`); button presses with
@@ -23,7 +23,7 @@ run them under Node 22 against a real key pair.
    - `posts.reveal_at`: the hourly tick at or after post time + `reveal_delay_h` (14:00 → 22:00; a 14:37 manual post → 23:00).
    - `posts.prompt`, `posts.a`, `posts.b`: the day's question as the API served it (the same for every server). Without
      these, a reveal delayed past yesterday could never be drawn, because `daily-question` only serves today and
-     yesterday. This is HowSure's own text, never member messages.
+     yesterday. This is the app's own text, never member messages.
    - `answers.correct`: needed for calibration. At 50% confidence, points are 0 whether right or wrong.
      `answers.points` and `answers.correct` are NULL until the reveal settles them (see below).
    - `play_state.items`: the round's 10 questions (prompt and options only). No API call returns a round by id.
@@ -54,7 +54,7 @@ run them under Node 22 against a real key pair.
 
 ## Contract follow-ups applied (coordinator message 2, 2026-10-03)
 
-- **Bot key:** every call to the web API carries `x-howsure-bot: <BOT_KEY>` (new secret). It is required for
+- **Bot key:** every call to the web API carries `x-bluff-bot: <BOT_KEY>` (new secret). It is required for
   same-day reveals and exempt from the `/api/*` rate limit. If BOT_KEY is missing, the worker fails fast: no call is
   sent, the log says `BOT_KEY is not set`, and members see "taking a break". The test mock answers 403 to any API call
   without the header, so every test checks it.
@@ -74,28 +74,28 @@ run them under Node 22 against a real key pair.
 - **community** = `"discord:" + hex sha256(guild_id + ":" + SALT)`, sent with every answer and `complete`.
 - **rt_ms, daily question:** picker shown → confidence tap, from the two Discord snowflake timestamps (picker message
   id, interaction id). It leaves out reading the question and the A/B tap, so it is a partial decision time.
-- **rt_ms, `/howsure play`:** question shown → confidence tap, from the worker clock. It includes the A/B tap and one
+- **rt_ms, `/bluff play`:** question shown → confidence tap, from the worker clock. It includes the A/B tap and one
   round trip.
 - **Revisions:** a member who changes their mind before the reveal gets `revision: true` on the second and later
   answers, and their stored row is replaced. The first answer never carries the flag.
-- **One post per server per day.** `/howsure question` posts in the current channel only when the server has no post
+- **One post per server per day.** `/bluff question` posts in the current channel only when the server has no post
   today; otherwise it links to the existing one. A manual post before the server's hour becomes the day's post, and the
   hourly tick skips that day.
 - **Posts and reveals** use the bot token and plain channel messages (`POST`/`PATCH /channels/{id}/messages`), never
   interaction responses, because those cannot reliably be edited 8 hours later. The reveal removes the A/B buttons.
 - **Setup:** every option is optional; a missing one keeps its value. A server with no channel gets the current
-  channel. A new channel gets a one-line hello, which is also the check that HowSure may post there (403/404 →
+  channel. A new channel gets a one-line hello, which is also the check that Who's Bluffing may post there (403/404 →
   "I can't post in that channel", nothing saved). There is no command for `reveal_delay_h` (default 8). The column
   exists for a later version.
 - **A lost channel:** when the daily post gets 403 or 404, the server's channel is cleared and posting stops until
-  someone runs `/howsure setup` again. Other failures (429, 5xx) release the day's claim and retry the next hour.
+  someone runs `/bluff setup` again. Other failures (429, 5xx) release the day's claim and retry the next hour.
 - **Weekly recap:** Mondays at the server's hour, before that day's question. It covers the 7 days before. It is
   skipped when nobody answered, and is best effort (a failed recap is not retried that week). "Most calibrated" is
   the member with 3 or more answers and the smallest gap between average confidence and hit rate; ties go to more
   answers, then more points. The streak is consecutive days with at least one answer, ending Sunday.
-- **`/howsure stats`** is a public reply (Slack does the same): top 10 by points over 30 days, ties to more answers,
+- **`/bluff stats`** is a public reply (Slack does the same): top 10 by points over 30 days, ties to more answers,
   plus members, answers and active days.
-- **`/howsure play`:** one active round per member per server, and Play again replaces it. A button from an older
+- **`/bluff play`:** one active round per member per server, and Play again replaces it. A button from an older
   round says the round has ended. Two taps landing at once count once: conditional `UPDATE … WHERE step = ?`. The
   final "See your score" claims the round before calling `complete`, so a double tap never completes twice; a failed
   `complete` releases the claim. No `seen` list is sent, so repeats are possible but rare among 20,000+ pairs. No
@@ -121,7 +121,7 @@ run them under Node 22 against a real key pair.
   setting, its own daily posts, and per-day answers (choice, confidence, points) keyed by a salted hash of the member
   id. It never stores messages, usernames or member ids. Display names are fetched from Discord only while drawing a
   leaderboard."
-- Resolved by the contract follow-ups: the rate-limit concern (the `x-howsure-bot` header is exempt) and early
+- Resolved by the contract follow-ups: the rate-limit concern (the `x-bluff-bot` header is exempt) and early
   peeking (`dq-` answers no longer return the truth).
 - **PREREG's MAU definition** lists "an in-channel Slack answer". `docs/api-rounds.md` counts a Discord in-channel
   answer as a play too, so the definition should say Slack or Discord.

@@ -43,7 +43,7 @@ test('reveal, roast off: the post becomes the answer with values and sources, co
   const blocks = JSON.parse(update.body.blocks);
   assert.ok(!blocks.some((b) => b.type === 'actions'), 'the revealed post keeps no buttons');
   assert.equal(updatedText(calls), [
-    '*HowSure* · Which is longer: the Nile or the Danube?',
+    "*Who's Bluffing?* · Which is longer: the Nile or the Danube?",
     '*Answer: A, the Nile.* the Nile: 6,650 km (<https://www.wikidata.org/wiki/Q3392|source>) · the Danube: 2,850 km (<https://www.wikidata.org/wiki/Q1653|source>)',
     '5 answered · 60% A · 40% B',
     '*Points:* 1. Maya +96 · 2. a teammate +64 · 3. Lee +36',
@@ -55,7 +55,7 @@ test('reveal, roast off: the post becomes the answer with values and sources, co
   assert.deepEqual(slackCalls(calls, 'users.info').map((c) => c.body.user).sort(), ['U1', 'U8']);
   const [revealCall] = apiCalls(calls, '/api/round/reveal');
   assert.deepEqual(revealCall.query, { date: DATE, community: `slack:${sha256(`T1:${SALT}`)}` });
-  assert.equal(revealCall.headers['x-howsure-bot'], BOT_KEY);
+  assert.equal(revealCall.headers['x-bluff-bot'], BOT_KEY);
   // Points come from the revealed answer (A) by the contract's formula.
   const scored = env.DB.rows('SELECT anon_id, correct, points FROM answers');
   const byUser = (user) => scored.find((row) => row.anon_id === anon('T1', user));
@@ -100,18 +100,18 @@ test('reveal happens once; a bluff line only for a wrong answer at 80% or more; 
   assert.deepEqual(updatedText(calls).split('\n').slice(2), ['Nobody answered this one.']);
 });
 
-test('/howsure reveal with no open question says so; a failed reveal stays open for a retry', async (t) => {
+test('/bluff reveal with no open question says so; a failed reveal stays open for a retry', async (t) => {
   at(t, `${DATE}T16:00:00Z`);
   const empty = makeEnv();
   await install(empty, 'T1', { channel: 'C1' });
   let calls = mockFetch();
   await send(empty, signedRequest(slashBody({ text: 'reveal' })));
-  assert.equal(replies(calls)[0].body.text, "There is no open question to reveal. Type /howsure to post today's question.");
+  assert.equal(replies(calls)[0].body.text, "There is no open question to reveal. Type /bluff to post today's question.");
 
   const env = await setup();
   calls = mockFetch({ apiDown: true });
   await send(env, signedRequest(slashBody({ text: 'reveal' })));
-  assert.equal(replies(calls)[0].body.text, 'HowSure is taking a break, try again in a minute.');
+  assert.equal(replies(calls)[0].body.text, "Who's Bluffing is taking a break, try again in a minute.");
   assert.equal(slackCalls(calls, 'chat.update').length, 0);
   assert.deepEqual(env.DB.rows('SELECT revealed FROM posts'), [{ revealed: 0 }]);
 

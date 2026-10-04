@@ -1,4 +1,4 @@
-Title: Show HN: HowSure – a 30-second game that finds out who's bluffing
+Title: Show HN: Who's Bluffing? – a 30-second game that finds out who's bluffing
 
 Ten comparison questions ("Which is longer, the Nile or the Danube?"). You pick one, then stake how sure you are: 50% to 100%. The scoring rule is the quadratic one from forecasting: 50% scores zero either way, 100% right is +100, 100% wrong is −300, so honest confidence maximizes expected points. Most people discover their "90% sure" is right about 70% of the time.
 

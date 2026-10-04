@@ -1,12 +1,12 @@
 // The daily game at /: five range questions (the same for everyone each UTC day), feedback after each answer,
 // then the result with today's histogram, streak, 30-day hit rate and a share card. Scoring is server-side
-// (docs/api-daily.md). Local state: hs_anon (ui.js) and hs_daily = {date: play}, so a reload resumes the game.
+// (docs/api-daily.md). Local state: whosbluffing_anon (ui.js) and whosbluffing_daily = {date: play}, so a reload resumes the game.
 // The page's hero holds the "Play today's game" button; ctx.setPlay(label, action) tells it what to do.
 import { html, api, store, anonId } from './ui.js';
 import { showRange } from './test.js';
 import { renderShare } from './share.js';
 
-const PLAYS_KEY = 'hs_daily';
+const PLAYS_KEY = 'whosbluffing_daily';
 const KEEP_DAYS = 400; // local plays older than this are dropped
 const DAY_MS = 86400000;
 const shiftDay = (date, n) => new Date(Date.parse(`${date}T00:00:00Z`) + n * DAY_MS).toISOString().slice(0, 10);

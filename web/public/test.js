@@ -136,15 +136,15 @@ function showDemographics(ctx, onDone) {
 async function submit(ctx, run) {
   const { app, t } = ctx;
   app.innerHTML = html`<p class="muted" role="status">${t('submit.sending')}</p>`;
-  const first = store.get('hs_first', null);
+  const first = store.get('whosbluffing_first', null);
   const body = { lang: 'en', answers: run.answers, website: run.website || '', anon_id: anonId() };
   if (run.classCode) body.class_code = run.classCode;
   if (first) body.first_session_id = first;
   if (run.demographics) body.demographics = run.demographics;
   const r = await api('/api/submit', { method: 'POST', body });
   if (r.ok) {
-    if (!first) store.set('hs_first', r.data.session_id);
-    store.set('hs_seen', [...new Set([...store.get('hs_seen', []), ...run.session.map((i) => i.id)])]);
+    if (!first) store.set('whosbluffing_first', r.data.session_id);
+    store.set('whosbluffing_seen', [...new Set([...store.get('whosbluffing_seen', []), ...run.session.map((i) => i.id)])]);
     showResults(ctx, r.data, run);
     return;
   }
@@ -157,7 +157,7 @@ async function submit(ctx, run) {
 export function startTest(ctx, opts) {
   ctx.chrome(false);
   window.scrollTo(0, 0);
-  const session = buildSession(ctx.items, new Set(store.get('hs_seen', [])));
+  const session = buildSession(ctx.items, new Set(store.get('whosbluffing_seen', [])));
   const answers = [];
   const next = () => {
     window.scrollTo(0, 0);

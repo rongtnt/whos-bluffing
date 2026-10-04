@@ -26,10 +26,10 @@ test('GET /install redirects to Discord with bot + applications.commands, minima
   });
 });
 
-test('one guild-only /howsure command with the brief\'s subcommands', () => {
+test('one guild-only /bluff command with the brief\'s subcommands', () => {
   assert.equal(COMMANDS.length, 1);
   const [cmd] = COMMANDS;
-  assert.deepEqual([cmd.name, cmd.integration_types, cmd.contexts], ['howsure', [0], [0]]);
+  assert.deepEqual([cmd.name, cmd.integration_types, cmd.contexts], ['bluff', [0], [0]]);
   assert.deepEqual(cmd.options.map((o) => o.name), ['question', 'play', 'stats', 'setup', 'reveal', 'help', 'invite']);
   const setup = cmd.options.find((o) => o.name === 'setup');
   assert.deepEqual(setup.options.map((o) => [o.name, o.type, o.required ?? false]), [['channel', 7, false], ['hour', 4, false], ['roast', 3, false]]);
@@ -47,9 +47,9 @@ test('setup: Manage Server only; sets channel, hour and roast; a new channel get
   assert.deepEqual(await res.json(), { type: 5, data: { flags: 64 } });
   const [hello] = channelPosts(calls);
   assert.equal(channelOfPost(hello), C2);
-  assert.equal(hello.body.content, 'HowSure will post a question here every day at 09:00 UTC. Tap A or B, then say how sure you are.');
+  assert.equal(hello.body.content, "Who's Bluffing will post a question here every day at 09:00 UTC. Tap A or B, then say how sure you are.");
   assert.equal(lastReply(calls),
-    `Done. HowSure posts a question in <#${C2}> every day at 09:00 UTC and reveals the answer 8 hours later. Roast mode is on: the reveal names the biggest bluffer.`);
+    `Done. Who's Bluffing posts a question in <#${C2}> every day at 09:00 UTC and reveals the answer 8 hours later. Roast mode is on: the reveal names the biggest bluffer.`);
   const row = () => env.DB.rows('SELECT channel_id, post_hour_utc, reveal_delay_h, roast FROM installs')[0];
   assert.deepEqual(row(), { channel_id: C2, post_hour_utc: 9, reveal_delay_h: 8, roast: 1 });
 
@@ -58,7 +58,7 @@ test('setup: Manage Server only; sets channel, hour and roast; a new channel get
   assert.deepEqual(row(), { channel_id: C2, post_hour_utc: 9, reveal_delay_h: 8, roast: 0 });
   assert.match(lastReply(calls), /Roast mode is off: the bluffer stays anonymous\.$/);
 
-  // A channel HowSure cannot post in is refused and nothing changes.
+  // A channel Who's Bluffing cannot post in is refused and nothing changes.
   calls = mockFetch({ discord: (c) => (c.method === 'POST' ? { status: 403, body: { code: 50013 } } : undefined) });
   await setupAs(env, [{ name: 'channel', type: 7, value: C3 }]);
   assert.match(lastReply(calls), /^I can't post in that channel\./);
@@ -75,7 +75,7 @@ test('setup with no options in a fresh server picks the current channel and the 
   ]);
 });
 
-test("/howsure question posts today's question here with the bot token, once; later calls link to it", async () => {
+test("/bluff question posts today's question here with the bot token, once; later calls link to it", async () => {
   const env = makeEnv();
   let calls = mockFetch();
   const res = await run(env, 'question');
@@ -83,7 +83,7 @@ test("/howsure question posts today's question here with the bot token, once; la
   const [post] = channelPosts(calls);
   assert.equal(channelOfPost(post), CHANNEL);
   assert.equal(post.headers.authorization, 'Bot bot-token');
-  assert.match(post.body.content, /^\*\*HowSure\*\* · Which is longer: the Nile or the Danube\?\n/);
+  assert.match(post.body.content, /^\*\*Who's Bluffing\?\*\* · Which is longer: the Nile or the Danube\?\n/);
   const [row] = env.DB.rows('SELECT date, channel_id, message_id, reveal_at, revealed FROM posts');
   assert.deepEqual({ ...row, reveal_at: undefined }, { date: today(), channel_id: CHANNEL, message_id: '9001', reveal_at: undefined, revealed: 0 });
   const hours = (Date.parse(row.reveal_at) - Date.now()) / 3_600_000;
@@ -94,7 +94,7 @@ test("/howsure question posts today's question here with the bot token, once; la
   assert.equal(channelPosts(calls).length, 1);
   assert.equal(lastReply(calls), `Today's question is already up: https://discord.com/channels/${GUILD}/${CHANNEL}/9001`);
 
-  // In a channel HowSure cannot post in: a clear reply and no claimed day.
+  // In a channel Who's Bluffing cannot post in: a clear reply and no claimed day.
   const env2 = makeEnv();
   calls = mockFetch({ discord: (c) => (c.method === 'POST' ? { status: 403, body: { code: 50001 } } : undefined) });
   await run(env2, 'question');
@@ -102,7 +102,7 @@ test("/howsure question posts today's question here with the bot token, once; la
   assert.equal(env2.DB.rows('SELECT * FROM posts').length, 0);
 });
 
-test('/howsure stats is public: the 30-day board by points (revealed answers) with names looked up live, plus participation', async () => {
+test('/bluff stats is public: the 30-day board by points (revealed answers) with names looked up live, plus participation', async () => {
   const env = makeEnv();
   await install(env);
   const [MAYA, SAM, ANA] = ['880000000000000031', '880000000000000032', '880000000000000033'];
@@ -121,24 +121,24 @@ test('/howsure stats is public: the 30-day board by points (revealed answers) wi
   const res = await run(env, 'stats');
   assert.deepEqual(await res.json(), { type: 5, data: {} });
   assert.equal(lastReply(calls), [
-    '**HowSure, last 30 days:** 3 members answered 4 times on 2 days.',
+    "**Who's Bluffing, last 30 days:** 3 members answered 4 times on 2 days.",
     '1. Sam — 100 points from 1 answer',
     '2. Maya — 52 points from 2 answers',
     '3. a member — 0 points from 1 answer',
   ].join('\n'));
 });
 
-test('help and invite answer at once; a DM is told HowSure lives in servers', async () => {
+test("help and invite answer at once; a DM is told Who's Bluffing lives in servers", async () => {
   const env = makeEnv();
   const calls = mockFetch();
   const help = await (await run(env, 'help')).json();
   assert.equal(help.type, 4);
   assert.equal(help.data.flags, 64);
-  assert.match(help.data.content, /`\/howsure play` play a private 10-question round/);
+  assert.match(help.data.content, /`\/bluff play` play a private 10-question round/);
   const invite = await (await run(env, 'invite')).json();
-  assert.match(invite.data.content, /^Add HowSure to a server: https:\/\/discord\.com\/oauth2\/authorize\?client_id=424242&/);
+  assert.match(invite.data.content, /^Add Who's Bluffing to a server: https:\/\/discord\.com\/oauth2\/authorize\?client_id=424242&/);
   const dm = await (await send(env, signedRequest({ ...commandPayload('help'), guild_id: undefined, member: undefined, user: { id: '1' } }))).json();
-  assert.equal(dm.data.content, 'HowSure works inside a server. Use /howsure invite to add it to one.');
+  assert.equal(dm.data.content, "Who's Bluffing works inside a server. Use /bluff invite to add it to one.");
   assert.equal(calls.length, 0);
 });
 

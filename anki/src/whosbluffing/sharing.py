@@ -52,7 +52,7 @@ def _upload_done(future) -> None:
     try:
         result = future.result()
     except Exception as e:  # noqa: BLE001 - a failed upload must never disturb reviewing; the next run retries
-        print(f"HowSure: upload failed ({e!r})")
+        print(f"Who's Bluffing: upload failed ({e!r})")
         return
     if result["gone"]:
         _write_config(share_data=False)
@@ -84,7 +84,7 @@ def consent_text(lang: str) -> str:
 
 
 def show_consent() -> None:
-    """Tools > HowSure: share anonymous data... Accept turns sharing on; Not now changes nothing."""
+    """Tools > Who's Bluffing: share anonymous data... Accept turns sharing on; Not now changes nothing."""
     lang = hooks.lang()
     t = partial(i18n.t, lang)
     box = QMessageBox(mw)
@@ -124,7 +124,7 @@ def delete_my_data(parent: QWidget, done: Callable[[], None]) -> None:
         try:
             n = future.result()
         except Exception as e:  # noqa: BLE001 - shown to the user; the button stays so they can try again
-            print(f"HowSure: delete failed ({e!r})")
+            print(f"Who's Bluffing: delete failed ({e!r})")
             showWarning(t("delete_failed"), parent=mw)
         else:
             showInfo(t("deleted", n=f"{n:,}"), parent=mw)

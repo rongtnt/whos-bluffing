@@ -1,19 +1,19 @@
 // Message builders (Slack Block Kit), game rules and all user-facing copy.
 
-export const FAIL_TEXT = 'HowSure is taking a break, try again in a minute.';
-export const NOT_INSTALLED = "HowSure isn't installed in this workspace. Please install it again from the Add to Slack link.";
-export const CANT_POST = "I can't post in that channel. If it is private, invite me with /invite @HowSure and try again.";
+export const FAIL_TEXT = "Who's Bluffing is taking a break, try again in a minute.";
+export const NOT_INSTALLED = "Who's Bluffing isn't installed in this workspace. Please install it again from the Add to Slack link.";
+export const CANT_POST = "I can't post in that channel. If it is private, invite me with /invite @whosbluffing and try again.";
 export const CLOSED = 'This question is closed. A new one comes tomorrow.';
 export const ALREADY_OUT = "Today's answer is already out. A new question comes tomorrow.";
 export const ALREADY_UP = "Today's question is already up in this channel.";
-export const NOTHING_TO_REVEAL = "There is no open question to reveal. Type /howsure to post today's question.";
+export const NOTHING_TO_REVEAL = "There is no open question to reveal. Type /bluff to post today's question.";
 export const USAGE = [
-  '*HowSure commands*',
-  "`/howsure` post today's question in this channel",
-  '`/howsure setup #channel [hour] [roast on|off]` post the question in #channel every day at that hour, in UTC (default 14)',
-  '`/howsure setup roast on|off` roast on: the reveal names the biggest bluffer (off by default)',
-  '`/howsure reveal` reveal the answer now',
-  "`/howsure stats` this workspace's points for the last 30 days",
+  "*Who's Bluffing? commands*",
+  "`/bluff` post today's question in this channel",
+  '`/bluff setup #channel [hour] [roast on|off]` post the question in #channel every day at that hour, in UTC (default 14)',
+  '`/bluff setup roast on|off` roast on: the reveal names the biggest bluffer (off by default)',
+  '`/bluff reveal` reveal the answer now',
+  "`/bluff stats` this workspace's points for the last 30 days",
 ].join('\n');
 
 export const PICK = 'pick'; // action ids pick:0 (A) and pick:1 (B)
@@ -60,9 +60,9 @@ export function questionText(q) {
 export function questionMessage(q, date, revealMs) {
   const value = JSON.stringify({ r: q.round_id, i: q.item_id, d: date });
   return {
-    text: `HowSure · ${questionText(q)}`,
+    text: `Who's Bluffing? · ${questionText(q)}`,
     blocks: [
-      section(`*HowSure* · ${esc(questionText(q))}`),
+      section(`*Who's Bluffing?* · ${esc(questionText(q))}`),
       { type: 'actions', elements: [0, 1].map((c) => button(`${PICK}:${c}`, `${LETTERS[c]} · ${option(q, c)}`, value)) },
       context(`Tap A or B, then say how sure you are. Nobody sees your answer before the reveal at ${hour(revealMs)}.`),
     ],
@@ -74,9 +74,9 @@ export function pickerMessage(pick, label, existing) {
   const value = JSON.stringify(pick);
   const again = existing ? ` You are locked in at ${LETTERS[existing.choice]}, ${existing.conf}%. Pick again to change it.` : '';
   return {
-    text: `You picked ${label}. How sure are you?`,
+    text: `You picked ${label}. Say how sure you are.`,
     blocks: [
-      section(`You picked *${esc(label)}*. How sure are you?${again}`),
+      section(`You picked *${esc(label)}*. Say how sure you are.${again}`),
       { type: 'actions', elements: CONFS.map((c) => button(`${CONF}:${c}`, CONF_LABELS[c] ? `${c}% · ${CONF_LABELS[c]}` : `${c}%`, value)) },
     ],
   };
@@ -87,8 +87,8 @@ export const alreadyLockedIn = (a, revealMs) => `You're already locked in: ${LET
 
 export function setupDone({ channel_id: channel, post_hour_utc: postHour, roast }) {
   const where = channel
-    ? `HowSure will post the daily question in <#${channel}> every day at ${hour(postHour * HOUR_MS)} and reveal the answer ${REVEAL_DELAY_H} hours later.`
-    : 'Choose the channel with /howsure setup #channel.';
+    ? `Who's Bluffing will post the daily question in <#${channel}> every day at ${hour(postHour * HOUR_MS)} and reveal the answer ${REVEAL_DELAY_H} hours later.`
+    : 'Choose the channel with /bluff setup #channel.';
   return `Done. ${where} Roast mode is ${roast ? 'on: the reveal names the biggest bluffer' : 'off'}.`;
 }
 
@@ -104,7 +104,7 @@ export function revealMessage(q, r, top, names, bluff) {
   const values = [0, 1].map((c) =>
     `${esc(option(q, c))}: ${valueText(c === 0 ? r.a_value : r.b_value, r.unit)}${sourceLink(c === 0 ? r.a_source : r.b_source)}`);
   const lines = [
-    `*HowSure* · ${esc(questionText(q))}`,
+    `*Who's Bluffing?* · ${esc(questionText(q))}`,
     `*Answer: ${LETTERS[r.correct]}, ${esc(option(q, r.correct))}.* ${values.join(' · ')}`,
     r.n ? `${r.n} answered · ${Math.round(r.pct_a)}% A · ${Math.round(r.pct_b)}% B` : 'Nobody answered this one.',
   ];
@@ -119,8 +119,8 @@ export function revealMessage(q, r, top, names, bluff) {
 
 // The 30-day workspace leaderboard. `rows` = the rows to name.
 export function statsMessage(board, rows, names) {
-  if (!board.answers) return { text: "No revealed answers in the last 30 days yet. Type /howsure to post today's question." };
-  const head = `*HowSure, last 30 days:* ${plural(board.players, 'member')} gave ${plural(board.answers, 'answer')}.`;
+  if (!board.answers) return { text: "No revealed answers in the last 30 days yet. Type /bluff to post today's question." };
+  const head = `*Who's Bluffing, last 30 days:* ${plural(board.players, 'member')} gave ${plural(board.answers, 'answer')}.`;
   const lines = rows.map((r, i) => `${i + 1}. ${nameOf(names, r.anon_id)} — ${plural(r.points, 'point')} in ${plural(r.answers, 'answer')}`);
   return { text: [head, ...lines].join('\n') };
 }
@@ -128,7 +128,7 @@ export function statsMessage(board, rows, names) {
 // The Monday recap of the week from `from` to `to`.
 export function recapMessage(week, names) {
   const lines = [
-    `*HowSure · last week in this workspace* (${dayLabel(week.from)} – ${dayLabel(week.to)})`,
+    `*Who's Bluffing? · last week in this workspace* (${dayLabel(week.from)} – ${dayLabel(week.to)})`,
     '*How often each confidence level was right*',
     ...week.levels.map((l) => `${l.conf}% sure: ${l.n_right} of ${l.n} right (${percent(l.n_right, l.n)}%)`),
   ];

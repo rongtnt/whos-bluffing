@@ -21,7 +21,7 @@ export const communityId = async (env, teamId) => `slack:${await sha256Hex(`${te
 // Every call carries the bot key (the API needs it for same-day reveals; the WAF exempts it from rate limits).
 // Throws on any non-2xx; err.status carries the HTTP status (absent on timeouts and network errors).
 async function call(env, path, body) {
-  const headers = { 'x-howsure-bot': secret(env, 'BOT_KEY') };
+  const headers = { 'x-bluff-bot': secret(env, 'BOT_KEY') };
   const init = body
     ? { method: 'POST', headers: { ...headers, 'content-type': 'application/json' }, body: JSON.stringify(body) }
     : { headers };

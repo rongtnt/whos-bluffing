@@ -65,7 +65,7 @@ const DAYS = {
 };
 const DATA = loadRounds({ items }, COMPACT, DAYS);
 const NOW = new Date(`${DAY}T12:00:00Z`);
-const ORIGIN = 'https://howsure.example';
+const ORIGIN = 'https://whosbluffing.example';
 const anon = (k) => `anon-${k}`.padEnd(22, 'x');
 const seeded = (seed) => { let s = seed; return () => ((s = (s * 1103515245 + 12345) % 2147483648) / 2147483648); };
 
@@ -99,7 +99,7 @@ test('types: overconfidence = mean confidence - accuracy; boundaries at exactly 
     ['Bluffer', 'Hot-headed', 'Hot-headed', 'Calibrated', 'Calibrated', 'Calibrated', 'Modest', 'Modest', 'Hedger']);
   const s = scoreRound([{ conf: 90, correct: 1, points: 96 }, { conf: 70, correct: 0, points: -96 }]);
   assert.deepEqual(s, { score: 0, accuracy: 50, mean_conf: 80, overconfidence: 30, brier: 0.25, type: 'Bluffer', exact_overconf: 30 });
-  assert.equal(shareText(s, 'https://h/c/X/Y'), 'HowSure · Bluffer · 0 pts · 50% right at 80% sure · https://h/c/X/Y');
+  assert.equal(shareText(s, 'https://h/c/X/Y'), "Who's Bluffing? · Bluffer · 0 pts · 50% right at 80% sure · https://h/c/X/Y");
 });
 
 test('round ids: rk-/dq- dates and 12-character quick ids; everything else is invalid', () => {
@@ -213,7 +213,7 @@ test('complete: every pair first; scores, type, share text, challenge link; coun
   const token = r.body.challenge_url.split('/').at(-1);
   assert.deepEqual({ ...r.body, roast: undefined, today: undefined }, {
     score: -228, accuracy: 70, mean_conf: 93, overconfidence: 23, brier: 0.307, type: 'Bluffer', streak: 1,
-    challenge_url: `${ORIGIN}/c/rk-${DAY}/${token}`, share_text: `HowSure · Bluffer · -228 pts · 70% right at 93% sure · ${ORIGIN}/c/rk-${DAY}/${token}`,
+    challenge_url: `${ORIGIN}/c/rk-${DAY}/${token}`, share_text: `Who's Bluffing? · Bluffer · -228 pts · 70% right at 93% sure · ${ORIGIN}/c/rk-${DAY}/${token}`,
     rank_today: 1, players_today: 1, roast: undefined, today: undefined,
   });
   assert.deepEqual([r.body.today.players, r.body.today.score_hist[Math.floor((-228 + 3000) / 100)], r.body.today.mean_overconfidence], [1, 1, 23]);
@@ -319,7 +319,7 @@ test('reveal: today and yesterday need the bot header (403), older days are publ
 });
 
 test('bot header: constant-time match against BOT_KEY; no key configured refuses everyone', async () => {
-  const req = (key) => new Request('https://h/api/round/reveal', { headers: key ? { 'x-howsure-bot': key } : {} });
+  const req = (key) => new Request('https://h/api/round/reveal', { headers: key ? { 'x-bluff-bot': key } : {} });
   assert.equal(await isBot(req('k1'), { BOT_KEY: 'k1' }), true);
   assert.equal(await isBot(req('k2'), { BOT_KEY: 'k1' }), false);
   assert.equal(await isBot(req(null), { BOT_KEY: 'k1' }), false);
@@ -443,9 +443,9 @@ test('challenge page: per-link Open Graph tags, noindex, the app, escaped nickna
   const title = 'Sam &quot;&lt;b&gt;&quot; scored 640. Can you beat them?';
   assert.ok(page.includes(`<title>${title}</title>`));
   assert.ok(page.includes(`<meta property="og:title" content="${title}">`));
-  assert.ok(page.includes('<meta property="og:description" content="Calibrated: 80% right at 82% sure. Play the same ten questions on HowSure.">'));
-  assert.ok(page.includes('<meta property="og:image" content="https://howsure.me/og.png">'));
-  assert.ok(page.includes('<meta property="og:url" content="https://howsure.me/c/ABCDEFGHJK23/Tok_en-123">'));
+  assert.ok(page.includes('<meta property="og:description" content="Calibrated: 80% right at 82% sure. Play the same ten questions on Who&#39;s Bluffing.">')); // esc() turns ' into &#39;
+  assert.ok(page.includes('<meta property="og:image" content="https://whosbluffing.com/og.png">'));
+  assert.ok(page.includes('<meta property="og:url" content="https://whosbluffing.com/c/ABCDEFGHJK23/Tok_en-123">'));
   assert.ok(page.includes('<meta name="robots" content="noindex">'));
   assert.ok(page.includes('<script src="/site.js"></script>\n<script type="module" src="/app.js"></script>'));
   assert.ok(page.includes(`<h1 id="hero-title">${title}</h1>`));

@@ -4,7 +4,7 @@ Before posting, check two claims: "source published" only once the GitHub repo i
 the data (not "is published") until the data is out. Replace {URL} with the site and {INVITE} with
 `https://<worker host>/install`.
 
-Name: HowSure · Prefix: `/` (slash commands only) · Invite: {INVITE} · Website: {URL} · Support: GitHub issues ·
+Name: Who's Bluffing? · Prefix: `/` (slash commands only) · Invite: {INVITE} · Website: {URL} · Support: GitHub issues ·
 Privacy policy: {URL}/privacy · Terms: {URL}/terms
 
 ## Short description (≤ 120 characters)
@@ -13,9 +13,9 @@ One question a day: pick A or B, say how sure you are, and see who in your serve
 
 ## Long description (top.gg, Markdown)
 
-**HowSure is a daily game about how sure you really are.**
+**Who's Bluffing is a daily game about how sure you really are.**
 
-Every day HowSure posts one question in your channel, like "Which is longer: the Nile or the Danube?" Tap **A** or
+Every day Who's Bluffing posts one question in your channel, like "Which is longer: the Nile or the Danube?" Tap **A** or
 **B**, then say how sure you are, from 50% ("coin flip") to 100% ("stake it all"). Eight hours later the post turns
 into the answer:
 
@@ -28,12 +28,12 @@ Points reward honest confidence. Saying 50% scores 0. Saying 100% scores +100 if
 wrong. Being sure only pays when you are right.
 
 **Commands**
-- `/howsure setup` pick the channel, the hour (UTC) and roast mode (Manage Server)
-- `/howsure question` post today's question now
-- `/howsure play` a private 10-question round, with a Challenge button to share your score
-- `/howsure stats` your server's leaderboard for the last 30 days
-- `/howsure reveal` reveal today's answer early (Manage Server)
-- `/howsure help` · `/howsure invite`
+- `/bluff setup` pick the channel, the hour (UTC) and roast mode (Manage Server)
+- `/bluff question` post today's question now
+- `/bluff play` a private 10-question round, with a Challenge button to share your score
+- `/bluff stats` your server's leaderboard for the last 30 days
+- `/bluff reveal` reveal today's answer early (Manage Server)
+- `/bluff help` · `/bluff invite`
 
 **Roast mode** is off by default, so the bluffer stays anonymous. Turn it on and the reveal names them.
 
@@ -51,7 +51,7 @@ Free, independent, no ads. Source published for transparency.
 One question a day in your channel: "Which is longer: the Nile or the Danube?" Tap A or B, then say how sure you are,
 from 50% to 100%. Eight hours later the post shows the answer with sources, how your server split, today's top 5,
 and the bluff of the day. Points reward honest confidence: 50% scores 0; 100% scores +100 if right and −300 if wrong.
-Play a private 10-question round with `/howsure play` and challenge friends. Roast mode, off by default, names the
+Play a private 10-question round with `/bluff play` and challenge friends. Roast mode, off by default, names the
 biggest bluffer. A recap arrives every Monday. No messages, usernames or user ids are stored with answers.
 
 ## Tags
@@ -61,5 +61,5 @@ App Directory: Games · Entertainment · Education
 
 ## Note to reviewers (top.gg)
 
-HowSure answers over HTTP interactions and does not connect to the gateway, so it shows as offline in member lists.
-All commands work. Start with `/howsure setup`, then `/howsure question`, or `/howsure play` for a private round.
+Who's Bluffing answers over HTTP interactions and does not connect to the gateway, so it shows as offline in member lists.
+All commands work. Start with `/bluff setup`, then `/bluff question`, or `/bluff play` for a private round.

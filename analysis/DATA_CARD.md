@@ -1,6 +1,6 @@
-# HowSure data card (template — filled at first release)
+# Who's Bluffing? data card (template — filled at first release)
 
-**Dataset.** Anonymous row-level sessions from the HowSure web test (and, from add-on v0.2, opt-in rows from HowSure for Anki). Released on OSF, Hugging Face and Kaggle under CC BY-NC 4.0.
+**Dataset.** Anonymous row-level sessions from the Who's Bluffing web test (and, from add-on v0.2, opt-in rows from Who's Bluffing for Anki). Released on OSF, Hugging Face and Kaggle under CC BY-NC 4.0.
 
 **Collection.** Self-selected visitors to a free web page, recruited through social posts (English: Hacker News, Reddit; Chinese: 小红书, 知乎, 微博, B站) and instructors' classroom codes. Dates: [start]–[end]. Languages: en, zh. Consent line shown before the test; no account; no IP stored; country at ISO-country level from the hosting provider.
 

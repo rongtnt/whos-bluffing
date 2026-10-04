@@ -1,4 +1,4 @@
-# Builder brief — HowSure web v4: daily game, English only, MAU plumbing
+# Builder brief — Who's Bluffing? web v4: daily game, English only, MAU plumbing
 
 You are the executor. Repo /Users/ethan/howsure. Read first: docs/design-v4-scale.md, docs/api-daily.md, prereg/PREREG.md (metric definitions), web/README.md, web/NOTES.md, items/schema.json. The existing v0.1 web app (web/) passes 24 unit + 30 smoke tests; keep them green and extend them.
 
@@ -11,7 +11,7 @@ Remove zh from the shipped surface: zh strings, the language toggle, zh item fie
 - Route `/` becomes the daily game; the 20-item test moves to `/test` ("full assessment"); `/class`, `/stats` stay.
 - UTC day. Day number = days since 2026-10-20 (#1). Items for a day come from `daily/schedule.json` (`{"2026-10-20":["w0123","w0456",...5 ids]}`), generated 120 days ahead by `npm run schedule` from the pool (see C); never changes an already-played past day.
 - Play: 5 interval items, one at a time. Each: prompt + unit, low/high inputs, "Lock in" → immediate feedback card: truth with source link, your range, inside/outside, and a one-line calibration note. After 5: result screen with hits (0–5), today's average and histogram from `/api/daily/stats`, streak, personal 30-day hit rate, share.
-- Share text (one tap copy): `HowSure #12 🟩🟩🟥🟩🟩 4/5 at 90%\nToday's average 2.8/5\n{URL}` plus the PNG card (reuse share.js, English only). Grid uses 🟩 hit / 🟥 miss.
+- Share text (one tap copy): `Who's Bluffing? #12 🟩🟩🟥🟩🟩 4/5 at 90%\nToday's average 2.8/5\n{URL}` plus the PNG card (reuse share.js, English only). Grid uses 🟩 hit / 🟥 miss.
 - Local state (localStorage): anon_id (random 22 chars), plays by date, streak, personal stats. Server state per docs/api-daily.md.
 - Implement the daily API exactly as docs/api-daily.md: `GET /api/daily`, `POST /api/daily/answer` (idempotent; server computes hit from the pool, never trusts the client), `POST /api/daily/complete`, `GET /api/daily/stats`, `POST /api/flag` (3 distinct anon_ids retire the item: mark `retired_at`, and `/api/daily/stats` for that day recomputes on the remaining items), `GET /api/kpi`.
 - D1 migration 0003_daily.sql: `players(anon_id PK, surface, first_seen, last_seen, plays)`, `plays(anon_id, date, surface, hits, n, completed_at, PRIMARY KEY(anon_id,date,surface))`, `daily_answers(anon_id, date, item_id, low, high, hit, rt_ms, answered_at, PRIMARY KEY(anon_id,date,item_id))`, `daily_agg(date, surface, players, hits_hist TEXT(JSON 6 ints), PRIMARY KEY(date,surface))` maintained on complete, `item_flags(item_id, anon_id, reason, created_at, PRIMARY KEY(item_id,anon_id))`, `items_runtime(item_id PK, retired_at, n_answers, n_hits, mean_log_err)` updated on answer, `kpi(as_of PK, mau, dau, mau_web, mau_slack, mau_classroom, workspaces, classrooms, computed_at)`.

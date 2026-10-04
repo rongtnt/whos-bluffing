@@ -18,7 +18,7 @@ def make_row(salt, **over):
 
 
 def test_insert_query_export_roundtrip(tmp_path):
-    path = tmp_path / "user_files" / "howsure.sqlite"
+    path = tmp_path / "user_files" / "whosbluffing.sqlite"
     with closing(store.connect(path)) as conn:
         salt = store.salt(conn)
         full = make_row(salt)

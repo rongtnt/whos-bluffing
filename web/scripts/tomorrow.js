@@ -13,7 +13,7 @@ export function review(pool, schedule, date) {
   const ids = schedule[date];
   if (!ids) throw new Error(`nothing scheduled for ${date}: run npm run schedule`);
   const items = new Map(pool.map((i) => [i.id, i]));
-  const lines = [`HowSure #${dayNumber(date)} · ${date} (UTC)`, ''];
+  const lines = [`Who's Bluffing? #${dayNumber(date)} · ${date} (UTC)`, ''];
   ids.forEach((id, k) => {
     const it = items.get(id);
     if (!it) throw new Error(`${id} (${date}) is not in items/pool.json`);
@@ -39,7 +39,7 @@ export function reviewRounds(pool, pairs, rounds, date) {
       `   B ${b.name}: ${fmt(b.answer, b.en.unit)} · ${b.source}`,
       `   answer: ${'AB'[p.truth]} (${p.truth === 0 ? a.name : b.name})`, ''];
   };
-  return [`HowSure ranked round · ${date} (UTC)`, '', ...day.ranked.flatMap((id, k) => pair(id, `${k + 1}.`)),
+  return [`Who's Bluffing? ranked round · ${date} (UTC)`, '', ...day.ranked.flatMap((id, k) => pair(id, `${k + 1}.`)),
     'Slack and Discord question of the day:', ...pair(day.question, 'Q.'),
     'Swap a pair: replace its id in daily/rounds.json with another referenced pair, then npm run sync-items and deploy.'].join('\n');
 }

@@ -79,7 +79,7 @@ field() { printf '%s' "$BODY" | node -e 'process.stdout.write(String(JSON.parse(
 
 echo "== setup: sync items, migrate a fresh local D1 in $STATE"
 node scripts/sync-items.js
-"${WRANGLER[@]}" d1 migrations apply howsure --local --persist-to "$STATE" > "$STATE/migrate.log" 2>&1 \
+"${WRANGLER[@]}" d1 migrations apply whosbluffing --local --persist-to "$STATE" > "$STATE/migrate.log" 2>&1 \
   || { cat "$STATE/migrate.log"; fail "migrations apply --local"; }
 pass "local D1 migrated"
 
@@ -108,7 +108,7 @@ content /test '<title>Full assessment' 'full assessment shell'
 content /stats '<title>Live stats' 'stats shell'
 content /class '<title>Create a class code' 'class shell'
 content /class/d/AAAAAAAAAAAAAAAAAAAAAAAA '<script type="module" src="/app.js">' 'class dashboard (rewritten to the class shell, URL kept)'
-content /slack '<h1 id="slack-title">HowSure for Slack</h1>' 'Slack page'
+content /slack "<h1 id=\"slack-title\">Who's Bluffing? for Slack</h1>" 'Slack page'
 content /teachers '<a class="button primary" href="/class">' 'teachers page'
 content /research '<h2 id="numbers">Numbers we publish</h2>' 'research page (definitions checked against PREREG in test/site.test.js)'
 content /support 'What to include in a bug report' 'support page'
@@ -118,9 +118,9 @@ content /docs/api '<code>GET /api/daily?date=YYYY-MM-DD</code>' 'API docs (gener
 content /tests/overconfidence-test '<title>Overconfidence test' 'SEO page'
 content /tests/estimation-test '<title>Estimation test' 'SEO page'
 content /tests/calibration-test '<title>Calibration test' 'SEO page'
-content /sitemap.xml '<loc>https://howsure.me/tests/calibration-test</loc>' 'sitemap'
-content /sitemap.xml '<loc>https://howsure.me/slack</loc>' 'sitemap lists the new pages'
-content /robots.txt 'Sitemap: https://howsure.me/sitemap.xml' 'robots.txt'
+content /sitemap.xml '<loc>https://whosbluffing.com/tests/calibration-test</loc>' 'sitemap'
+content /sitemap.xml '<loc>https://whosbluffing.com/slack</loc>' 'sitemap lists the new pages'
+content /robots.txt 'Sitemap: https://whosbluffing.com/sitemap.xml' 'robots.txt'
 req GET /no-such-page
 [ "$STATUS" = 404 ] && [[ "$BODY" == *'<h1>Page not found</h1>'* ]] || fail "unknown path -> branded 404 (status $STATUS)" "$BODY"
 pass "GET /no-such-page -> 404 with the branded 404.html"
@@ -210,7 +210,7 @@ expect "probe session gets a percentile" 200 'r.percentile !== null'
 printf '%s' "$BODY" > "$STATE/probe.json"
 # /api/stats is cached for 60 s per URL; asking through another host name returns a fresh read of the aggregates.
 curl -s "http://localhost:$PORT/api/stats" > "$STATE/fresh.json"
-"${WRANGLER[@]}" d1 execute howsure --local --persist-to "$STATE" --json --command \
+"${WRANGLER[@]}" d1 execute whosbluffing --local --persist-to "$STATE" --json --command \
   "SELECT id, lang, country, n_2afc, n_interval, overconf, int_hit, passed_attention, answers FROM sessions; EXPLAIN QUERY PLAN SELECT overconf, int_hit, answers FROM sessions WHERE class_code = 'ABC234'" \
   > "$STATE/direct.json" 2>/dev/null || fail "d1 execute (direct read of the sessions table)"
 DIRECT=$(node -e '
@@ -318,7 +318,7 @@ expect "answer -> server-computed hit, truth, Wikidata source, log ratio error" 
 FIRST_ANSWER=$BODY
 play "$ANON_A" web 11011
 expect "complete (web, 4 hits) -> 4/5, streak 1, share text in the brief's format" 200 \
-  'r.hits === 4 && r.n === 5 && r.streak === 1 && /^HowSure #-?\d+ 🟩🟩🟥🟩🟩 4\/5 at 90%\nToday\x27s average 4\.0\/5\nhttp:\/\/127\.0\.0\.1:\d+\/$/.test(r.share_text) && r.today.players === 1'
+  'r.hits === 4 && r.n === 5 && r.streak === 1 && /^Who\x27s Bluffing\? #-?\d+ 🟩🟩🟥🟩🟩 4\/5 at 90%\nToday\x27s average 4\.0\/5\nhttp:\/\/127\.0\.0\.1:\d+\/$/.test(r.share_text) && r.today.players === 1'
 play "$ANON_B" web 10010
 expect "complete (web, 2 hits)" 200 'r.hits === 2 && r.today.players === 2'
 play "$ANON_C" slack 00000 smoke-team-hash
@@ -428,7 +428,7 @@ expect "complete before the last answer -> 400" 400 'r.error === "answer every q
 play_round "$STATE/quick.json" "$HOST" web 1111111000 90 # the first pair keeps its stored answer (right at 80%)
 req POST /api/round/complete "$(cbody "$QROUND" "$HOST" web '{"nickname":"Smoke Host"}')"
 expect "complete -> -12 points, Bluffer, 70% right at 89% sure, streak 1, challenge link, share text, roast" 200 \
-  'r.score === -12 && r.type === "Bluffer" && r.accuracy === 70 && r.mean_conf === 89 && r.overconfidence === 19 && r.streak === 1 && r.challenge_url.startsWith(`http://127.0.0.1:${process.env.PORT}/c/`) && r.share_text === `HowSure · Bluffer · -12 pts · 70% right at 89% sure · ${r.challenge_url}` && typeof r.roast === "string" && r.roast.includes("90%") && !("rank_today" in r)'
+  'r.score === -12 && r.type === "Bluffer" && r.accuracy === 70 && r.mean_conf === 89 && r.overconfidence === 19 && r.streak === 1 && r.challenge_url.startsWith(`http://127.0.0.1:${process.env.PORT}/c/`) && r.share_text === `Who\x27s Bluffing? · Bluffer · -12 pts · 70% right at 89% sure · ${r.challenge_url}` && typeof r.roast === "string" && r.roast.includes("90%") && !("rank_today" in r)'
 TOKEN=$(field challenge_url | sed 's#.*/##')
 [[ "$TOKEN" =~ ^[A-Za-z0-9_-]{10}$ ]] && [ "$TOKEN" != "$HOST" ] || fail "public token: 10 characters, never the anon_id" "$TOKEN"
 pass "challenge token is a 10-character public token, not the anon_id"
@@ -437,7 +437,7 @@ expect "second complete -> the same play and token" 200 "r.score === -12 && r.ch
 curl -s -D "$STATE/c_headers.txt" -o "$STATE/c_page.html" -w '%{http_code}' "$BASE/c/$QROUND/$TOKEN" > "$STATE/c_status.txt"
 CPAGE=$(cat "$STATE/c_page.html")
 [ "$(cat "$STATE/c_status.txt")" = 200 ] && [[ "$CPAGE" == *'<meta property="og:title" content="Smoke Host scored -12. Can you beat them?">'* ]] \
-  && [[ "$CPAGE" == *'<meta property="og:description" content="Bluffer: 70% right at 89% sure.'* ]] && [[ "$CPAGE" == *'<meta property="og:image" content="https://howsure.me/og.png">'* ]] \
+  && [[ "$CPAGE" == *'<meta property="og:description" content="Bluffer: 70% right at 89% sure.'* ]] && [[ "$CPAGE" == *'<meta property="og:image" content="https://whosbluffing.com/og.png">'* ]] \
   && [[ "$CPAGE" == *'<meta name="robots" content="noindex">'* ]] && [[ "$CPAGE" == *'<script type="module" src="/app.js"></script>'* ]] \
   || fail "GET /c/<round>/<token> -> 200 with per-link Open Graph tags" "$(head -c 400 "$STATE/c_page.html")"
 pass "GET /c/<round>/<token> -> 200, per-link og:title \"Smoke Host scored -12. Can you beat them?\", og:description, og:image, noindex"
@@ -556,16 +556,16 @@ req POST /api/round/answer "$(rbody "dq-$TWO_AGO" "$DQ_OLD" "$SLACK1" slack 1 70
 expect "answer to the question of two days ago -> 409 locked" 409 'r.error === "locked"'
 req GET "/api/round/reveal?community=$TEAM"
 expect "today's reveal without the bot header -> 403" 403 'r.error'
-req GET "/api/round/reveal?community=$TEAM" '' "x-howsure-bot: wrong-key"
+req GET "/api/round/reveal?community=$TEAM" '' "x-bluff-bot: wrong-key"
 expect "today's reveal with a wrong bot key -> 403" 403 'r.error'
-req GET "/api/round/reveal?community=$TEAM" '' "x-howsure-bot: $BOT_KEY"
+req GET "/api/round/reveal?community=$TEAM" '' "x-bluff-bot: $BOT_KEY"
 expect "reveal (bot header) -> 2 answers in the workspace, split, values, sources, biggest bluff = the 100% miss" 200 \
   "r.n === 2 && r.pct_a + r.pct_b === 100 && (r.correct === 0 || r.correct === 1) && typeof r.a_value === 'number' && /^https:/.test(r.a_source) && /^https:/.test(r.b_source) && r.unit && r.biggest_bluff.anon_id === '$SLACK2' && r.biggest_bluff.conf === 100"
-req GET "/api/round/reveal?community=$GUILD" '' "x-howsure-bot: $BOT_KEY"
+req GET "/api/round/reveal?community=$GUILD" '' "x-bluff-bot: $BOT_KEY"
 expect "reveal per community (the Discord server) -> 1 answer, no bluff" 200 'r.n === 1 && r.biggest_bluff === null'
 req GET "/api/round/reveal?date=$YESTERDAY&community=$TEAM"
 expect "yesterday's reveal without the bot header -> 403 (that question still takes answers)" 403 '/bot header/.test(r.error)'
-req GET "/api/round/reveal?date=$YESTERDAY&community=$TEAM" '' "x-howsure-bot: $BOT_KEY"
+req GET "/api/round/reveal?date=$YESTERDAY&community=$TEAM" '' "x-bluff-bot: $BOT_KEY"
 expect "yesterday's reveal with the bot header -> 200" 200 'r.n === 0'
 req GET "/api/round/reveal?date=$TWO_AGO&community=$TEAM"
 expect "the reveal of two days ago is public (no header) -> 200" 200 'r.n === 0 && (r.correct === 0 || r.correct === 1)'
@@ -597,7 +597,7 @@ expect "GET /api/kpi -> the stored row with surfaces, platforms and engagement" 
   'r.as_of === process.env.TODAY && r.mau === 7 && r.mau_by_surface.web === 4 && r.mau_by_surface.discord === 1 && r.communities.workspaces === 1 && r.communities.guilds === 1 && r.communities.classrooms === 1 && r.rounds_per_player_day === 1.25 && r.share_rate === 0.2'
 
 echo "== daily tables: counts, idempotency, no IP or user agent, request queries use indexes"
-"${WRANGLER[@]}" d1 execute howsure --local --persist-to "$STATE" --json --command \
+"${WRANGLER[@]}" d1 execute whosbluffing --local --persist-to "$STATE" --json --command \
   "SELECT (SELECT COUNT(*) FROM daily_answers) AS answers, (SELECT COUNT(*) FROM plays) AS plays, (SELECT n_answers FROM items_runtime WHERE item_id = '$(node -e 'process.stdout.write(JSON.parse(require("fs").readFileSync(process.env.DAILY, "utf8")).items[0].id)')') AS first_item_answers, (SELECT community FROM players WHERE surface = 'slack') AS team;
    SELECT name, sql FROM sqlite_master WHERE type = 'table' AND name NOT LIKE 'sqlite_%' AND name NOT LIKE '_cf_%';
    EXPLAIN QUERY PLAN SELECT surface, players, hits_hist, patterns FROM daily_agg WHERE date = '2026-10-20';
@@ -623,7 +623,7 @@ CHECK=$(node -e '
 pass "daily tables ($CHECK)"
 
 echo "== rounds tables: stored once, points settled at reveal, request queries use indexes"
-"${WRANGLER[@]}" d1 execute howsure --local --persist-to "$STATE" --json --command \
+"${WRANGLER[@]}" d1 execute whosbluffing --local --persist-to "$STATE" --json --command \
   "SELECT (SELECT COUNT(*) FROM round_answers WHERE round_id = '$QROUND') AS quick_answers, (SELECT COUNT(*) FROM round_plays) AS plays, (SELECT n FROM pair_runtime WHERE pair_id = '$QFIRST') AS first_pair_n, (SELECT points FROM round_answers WHERE anon_id = '$SLACK1') AS slack1_points, (SELECT points FROM round_answers WHERE anon_id = '$SLACK2') AS slack2_points, (SELECT COUNT(*) FROM items_runtime WHERE retired_at IS NOT NULL) AS retired_items, (SELECT COUNT(*) FROM rounds) AS quick_rounds;
    EXPLAIN QUERY PLAN SELECT mode, date, items FROM rounds WHERE round_id = 'x';
    EXPLAIN QUERY PLAN SELECT choice, conf, correct, points FROM round_answers WHERE anon_id = 'x' AND round_id = 'y' AND item_id = 'z';
@@ -692,7 +692,7 @@ STATUS=$(curl -s -o "$STATE/anki_stats.json" -w '%{http_code}' "http://localhost
 expect "stats after the delete -> only the 2,000-row install is left" 200 'r.installs_30d === 1 && r.rows_total === 2000'
 req POST /api/anki/submit "$(anki_body "$ANKI_ID")"
 expect "submit after delete -> 410" 410 'r.error === "data deleted for this installation"'
-"${WRANGLER[@]}" d1 execute howsure --local --persist-to "$STATE" --json --command \
+"${WRANGLER[@]}" d1 execute whosbluffing --local --persist-to "$STATE" --json --command \
   "SELECT (SELECT COUNT(*) FROM anki_rows WHERE install_id = '$ANKI_ID') AS rows_left, (SELECT SUM(installs) FROM anki_agg) AS installs, (SELECT SUM(rows) FROM anki_agg) AS agg_rows, (SELECT rows FROM anki_installs WHERE install_id = '$ANKI_ID') AS install_rows, (SELECT deleted_at IS NOT NULL AND first_seen IS NULL AND consent_version IS NULL FROM anki_installs WHERE install_id = '$ANKI_ID') AS tombstone_only, (SELECT COUNT(*) FROM anki_rows) AS all_rows" \
   > "$STATE/anki_db.json" 2>/dev/null || fail "d1 execute (anki tables)"
 CHECK=$(node -e '

@@ -1,10 +1,10 @@
--- HowSure for Discord. Stores only: server id, chosen channel, post hour, reveal delay, roast flag, the bot's own
+-- Who's Bluffing for Discord. Stores only: server id, chosen channel, post hour, reveal delay, roast flag, the bot's own
 -- daily posts (message id and the day's question as the API served it), and per-day answers keyed by a salted hash
 -- of the member id. No member messages, names or raw member ids.
 
 CREATE TABLE installs (
   guild_id TEXT PRIMARY KEY,
-  channel_id TEXT,                          -- NULL until /howsure setup, or after the channel stops accepting posts
+  channel_id TEXT,                          -- NULL until /bluff setup, or after the channel stops accepting posts
   post_hour_utc INTEGER NOT NULL DEFAULT 14,
   reveal_delay_h INTEGER NOT NULL DEFAULT 8,
   roast INTEGER NOT NULL DEFAULT 0,         -- 1 = the reveal names the biggest bluffer
@@ -21,7 +21,7 @@ CREATE TABLE posts (
   reveal_at TEXT NOT NULL,                  -- ISO time of the hourly tick that reveals it
   revealed INTEGER NOT NULL DEFAULT 0,
   -- The day's question as the API served it (the same for every server). Kept so a late reveal can still be drawn:
-  -- daily-question only serves today and yesterday. HowSure's own text, never member messages.
+  -- daily-question only serves today and yesterday. The app's own text, never member messages.
   prompt TEXT NOT NULL,
   a TEXT NOT NULL,
   b TEXT NOT NULL,
@@ -42,7 +42,7 @@ CREATE TABLE answers (
   PRIMARY KEY (guild_id, date, anon_id)
 );
 
--- The member's current /howsure play round (one per member per server).
+-- The member's current /bluff play round (one per member per server).
 CREATE TABLE play_state (
   anon_id TEXT PRIMARY KEY,
   round_id TEXT NOT NULL,

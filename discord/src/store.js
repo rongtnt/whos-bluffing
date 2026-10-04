@@ -75,7 +75,7 @@ export const openPost = (db, guildId) =>
   db.prepare(`${POST_WITH_ROAST} WHERE p.guild_id = ? AND p.revealed = 0 AND p.message_id IS NOT NULL ORDER BY p.date DESC LIMIT 1`)
     .bind(guildId).first();
 
-// True when this call took the reveal, so the cron and /howsure reveal never both reveal.
+// True when this call took the reveal, so the cron and /bluff reveal never both reveal.
 export async function claimReveal(db, guildId, date) {
   return changedOne(await db.prepare('UPDATE posts SET revealed = 1 WHERE guild_id = ? AND date = ? AND revealed = 0')
     .bind(guildId, date).run());
@@ -153,7 +153,7 @@ export async function answerDays(db, guildId, from, to) {
   return results.map((r) => r.date);
 }
 
-// ---- /howsure play ------------------------------------------------------------------------------------------
+// ---- /bluff play ------------------------------------------------------------------------------------------
 
 export async function getPlay(db, anonId) {
   const row = await db.prepare('SELECT * FROM play_state WHERE anon_id = ?').bind(anonId).first();
