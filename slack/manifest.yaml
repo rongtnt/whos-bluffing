@@ -2,7 +2,7 @@
 # e.g. whosbluffing-slack.your-subdomain.workers.dev, then paste this at https://api.slack.com/apps
 # -> Create New App -> From an app manifest.
 display_information:
-  name: "Who's Bluffing?"
+  name: "Who's Bluffing"
   description: One question a day in your channel. Pick A or B, say how sure you are, and see who was bluffing at the reveal.
   background_color: "#1d1c1d"
 features:
