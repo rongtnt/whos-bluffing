@@ -59,6 +59,7 @@
    cd ~/howsure/discord && npx wrangler deploy
    ```
 5. 回到 **General Information** → **Interactions Endpoint URL** 填 `https://whosbluffing-discord.rongaijun41.workers.dev/interactions` → Save Changes（Discord 当场发两条请求验签，所以第 4 步必须先做完）。
+   同一页往下 **Webhook Events**：Endpoint URL 填 `https://whosbluffing-discord.rongaijun41.workers.dev/events`，勾上 `APPLICATION_AUTHORIZED`（有 `APPLICATION_DEAUTHORIZED` 也勾）→ Save。作用：服务器一装 bot 就登记并发一条欢迎语，不用等有人先敲命令（细节 `discord/README.md`）。
 6. 注册命令（App ID 和 Token 只在这一条命令里用，不会存盘）：
    ```bash
    cd ~/howsure/discord && DISCORD_APP_ID=<application id> DISCORD_BOT_TOKEN=<bot token> npm run register
@@ -66,8 +67,8 @@
 7. **Installation** 页：Install Link 选 **Discord Provided Link**，勾 Guild Install，scopes `bot` + `applications.commands`，权限按 `discord/README.md` 的表；用这个链接先装进你自己的测试服务器，试一下 `/bluff`。
 8. 网站上的 "Add to Discord" 按钮已经指向 Worker 的 `/install`（它会跳到 Discord 的安装页），第 4 步做完它就通了，不用发我链接。
 
-## E. 社区 Discord 服务器（5 分钟）
-discord.com → 新建服务器 `Who's Bluffing` → 频道 `#announcements`、`#daily-reveal`、`#play`、`#feedback` → 把上面的 bot 装进去，`/bluff setup #daily-reveal 14` → 生成永久邀请链接发给我（我填进 `COMMUNITY_INVITE_URL`）。
+## E. 社区 Discord 服务器（10 分钟）
+discord.com → 新建服务器 `Who's Bluffing? Community` → 频道按 `docs/GROWTH_PLAYBOOK.md` 的 "Support-server structure"（至少 `#announcements`、`#daily-reveal`、`#play`、`#feedback`）→ 把上面的 bot 装进去，`/bluff setup #daily-reveal 14` → 打开服务器的 Onboarding 和 Community 功能（Truth or Dare 的社区服就是靠 Server Discovery 当"找人一起玩"的入口，2.2 万人）→ 生成永久邀请链接发给我（我填进 `COMMUNITY_INVITE_URL`）。
 
 ## F. 邮箱 hello@whosbluffing.com（3 分钟）
 Cloudflare 控制台 → whosbluffing.com → **Email** → **Email Routing** → 启用 → Custom addresses 新建 `hello` → 转发到你的 Gmail → 去 Gmail 点确认邮件。网站页脚已经写的是这个地址，所以这步做完邮件就通了。
@@ -76,7 +77,9 @@ Cloudflare 控制台 → whosbluffing.com → **Email** → **Email Routing** �
 Cloudflare 控制台 → **Analytics & Logs** → **Web Analytics** → 找到 whosbluffing.com → 关闭 automatic setup（或直接移除该站点）。原因：我们承诺无第三方脚本，页面的 CSP 本来就拦着它，留着只会在控制台报错。
 
 ## G. 上架 + 发帖（都是你发；文案在 `posts/`，改成自己的话）
-- **周日**：top.gg 提交（`posts/topgg-listing.md`）、discordbotlist.com（`posts/discordbotlist.md`）；Discord App Directory 要等 bot 进了足够多服务器再提（`posts/discord-app-directory.md`）。顺序和原因见 `docs/GROWTH_PLAYBOOK.md`。
+研究结论先说一句：Truth or Dare Bot 不是靠发帖火的，是靠 Discord 内部的发现机制（bot 列表、App Directory、社区服、每个服务器里的自然扩散），而且它接手时已有 15.7 万个服务器。所以我们的重心是 D/E 两步做扎实、列表尽早提交、每个服务器里的体验好到有人愿意拉朋友；发帖是加分项。全文 `docs/GROWTH_PLAYBOOK.md`（(b) 16 条机制、(d) 30 天日程、(e) 可直接粘贴的英文清单）。
+- **周日**：top.gg 提交（`posts/topgg-listing.md`；我们的 bot 是纯 HTTP、不显示在线，审核备注里已写明让审核员直接敲 `/bluff`；审核约一周）、discordbotlist.com 和 discords.com（`posts/discordbotlist.md`）；Discord App Directory 要等 bot 进了 75+ 个服务器通过验证后再提（`posts/discord-app-directory.md`）。
+- 里程碑仪式（抄他们的）：到 100 / 1,000 / 10,000 个服务器时先发预告、再发里程碑帖并捐一笔小钱给慈善；模板在 playbook 的 "Milestone posts"。
 - **周一 09:00 纽约**：Show HN（`posts/show-hn.md`）→ r/InternetIsBeautiful + r/samplesize（`posts/reddit-samplesize.md`）→ X 线程（`posts/x-launch-thread.md`）→ r/Discord_Bots（`posts/reddit-discordbots.md`）→ LessWrong / EA Forum 短帖（`posts/lesswrong.md`）→ 给 newsletter 发邮件（`posts/newsletter-email.md`）。前 6 小时每条评论都回。
 - **周二**：r/Professors（`posts/reddit-professors.md`）+ 发给你认识的 3 位老师（`posts/instructor-pitch.txt`）。
 - 之后 30 天按 `docs/GROWTH_PLAYBOOK.md` 的日程走；11 月 Product Hunt（`posts/producthunt.md`）。
