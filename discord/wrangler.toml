@@ -1,0 +1,23 @@
+name = "howsure-discord"
+main = "src/index.js"
+compatibility_date = "2026-09-01"
+
+# Hourly: each run reveals what is due, posts Monday recaps, and posts the daily question to every server whose
+# UTC hour has come (once per server per day).
+[triggers]
+crons = ["0 * * * *"]
+
+[[d1_databases]]
+binding = "DB"
+database_name = "howsure-discord"
+# Placeholder. Replace it with the id printed by `npx wrangler d1 create howsure-discord`.
+database_id = "00000000-0000-0000-0000-000000000000"
+
+[vars]
+# Origin of the web deployment that serves /api/round (no trailing slash, no /api).
+API_BASE = "https://howsure.pages.dev"
+# Developer Portal -> your app -> General Information -> Application ID (public, not a secret).
+DISCORD_APP_ID = "REPLACE_WITH_APPLICATION_ID"
+
+# Secrets (set with `npx wrangler secret put NAME`, never in this file):
+# DISCORD_PUBLIC_KEY, DISCORD_BOT_TOKEN, SALT

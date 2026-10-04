@@ -18,3 +18,6 @@ Clarifications (2026-10-03, after the Slack build):
 - Daily chat question rounds `dq-<date>` accept answers and revisions while `<date>` is today or yesterday (UTC); later → 409 `{error:"locked"}`. A revision without `revision: true` for an item already answered returns the first result (idempotent). The server does not know each community's reveal hour; bots refuse answers after their own reveal.
 - `GET /api/round/daily-question?date=` accepts today or yesterday and returns that day's question; `GET /api/round/reveal` works for any past date.
 - Status codes: 400 invalid body; 404 unknown round or item; 409 locked; 429 rate limited.
+- Bot identity: the Slack and Discord workers send `x-howsure-bot: <BOT_KEY>` on every call (BOT_KEY is a shared secret set on the web project and on each bot). The WAF rate-limit rule on `/api/*` exempts requests carrying the right header.
+- No early peeking: answers to `dq-<date>` rounds return `{locked:true, points_pending:true}` with no truth or points, whatever the surface; points are computed at reveal time. `GET /api/round/reveal` for today's date requires the bot header (403 otherwise); past dates are public.
+

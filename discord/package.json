@@ -1,0 +1,12 @@
+{
+  "name": "howsure-discord",
+  "private": true,
+  "type": "module",
+  "scripts": {
+    "test": "node --test --disable-warning=ExperimentalWarning test/*.test.js",
+    "register": "node scripts/register-commands.mjs"
+  },
+  "devDependencies": {
+    "wrangler": "^4.147.0"
+  }
+}

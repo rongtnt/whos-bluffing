@@ -38,7 +38,7 @@ Status: draft. The final version is committed **before** the public launch of th
 **Models.** Mixed-effects logistic regression: recall ~ rating + log(days since last review) + (1 + rating | user).
 
 ## Metric definitions (for any public number)
-- **MAU**: anonymous ids with ≥ 1 play — a completed round of 10 (ranked or quick), a completed full assessment, or an in-channel Slack answer — in the trailing 30 days, summed across web and Slack without cross-surface deduplication (a person who plays on both counts twice; stated wherever MAU is reported). **DAU** likewise for one UTC day.
+- **MAU**: anonymous ids with ≥ 1 play — a completed round of 10 (ranked or quick), a completed full assessment, or an in-channel Slack or Discord answer to the daily question — in the trailing 30 days, summed across web and Slack without cross-surface deduplication (a person who plays on both counts twice; stated wherever MAU is reported). **DAU** likewise for one UTC day.
 - **Communities**: Slack workspaces, Discord servers and rooms with ≥ 1 play in the trailing 30 days, plus classrooms with ≥ 5 finished assessments; reported per platform and summed.
 - Computed once a day by a scheduled job into a `kpi` table; the public stats page and any application text use only that table.
 
