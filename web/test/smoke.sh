@@ -566,7 +566,7 @@ expect "bots host with a wrong key -> 403" 403 'r.error === "bot host requires k
 STATUS=$(curl -s -o "$STATE/bots.json" -w '%{http_code}' -H 'Host: bots.whosbluffing.com' -H "x-bluff-bot: $BOT_KEY" "$BASE/api/kpi"); BODY=$(cat "$STATE/bots.json")
 expect "bots host with the key -> the API" 200 'typeof r.mau === "number"'
 STATUS=$(curl -s -o "$STATE/bots.json" -w '%{http_code}' -H 'Host: bots.whosbluffing.com' -H "x-bluff-bot: $BOT_KEY" "$BASE/discord"); BODY=$(cat "$STATE/bots.json")
-expect "bots host, a page -> 404 even with the key" 404 'r.error === "not found"'
+[ "$STATUS" = 200 ] && grep -qi "<html" "$STATE/bots.json" || fail "bots host, a page -> the static page (public/_routes.json runs Functions only on /api/* and /c/*)" "$STATUS"; pass "bots host, a page -> the static page (Functions only on /api/* and /c/*)"
 STATUS=$(curl -s -o /dev/null -w '%{http_code}' -H 'Host: whosbluffing.com' "$BASE/api/kpi")
 [ "$STATUS" = 200 ] || fail "normal host without a key -> unchanged (200)" "$STATUS"; pass "normal host without a key -> unchanged (200)"
 

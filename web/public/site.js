@@ -3,14 +3,14 @@
 // tabs, list filters and the logo mark's pop. No dependencies.
 
 // Addresses that exist only once the owner has set them up. An empty string hides whatever depends on it.
-const SLACK_INSTALL_URL = 'https://YOUR-WORKER-HOST/slack/oauth/start'; // the Slack Worker's install URL (slack/README.md, step 8)
-const DISCORD_INSTALL_URL = 'https://YOUR-WORKER-HOST/install'; // the Discord Worker's /install (discord/README.md, step 8)
+const SLACK_INSTALL_URL = 'https://whosbluffing-slack.rongaijun41.workers.dev/slack/oauth/start'; // the Slack Worker's install URL (slack/README.md, step 8)
+const DISCORD_INSTALL_URL = 'https://whosbluffing-discord.rongaijun41.workers.dev/install'; // the Discord Worker's /install (discord/README.md, step 8)
 const COMMUNITY_INVITE_URL = ''; // invite link to the Who's Bluffing Discord server (/community shows "opening soon" until set)
-const CONTACT_EMAIL = ''; // e.g. hello@whosbluffing.com once email routing works (hidden until set)
+const CONTACT_EMAIL = 'hello@whosbluffing.com'; // e.g. hello@whosbluffing.com once email routing works (hidden until set)
 const GITHUB_URL = 'https://github.com/rongtnt/whos-bluffing';
 const X_URL = ''; // e.g. https://x.com/<handle>
 const BLUESKY_URL = ''; // e.g. https://bsky.app/profile/<handle>
-const ACTIONS_URL = ''; // the repository's GitHub Actions page, once the repository is public (/status links to it)
+const ACTIONS_URL = 'https://github.com/rongtnt/whos-bluffing/actions'; // the repository's GitHub Actions page, once the repository is public (/status links to it)
 
 (() => {
   const root = document.documentElement;

@@ -9,7 +9,8 @@ answer and both source links, plus flags for what deserves a second look:
              event chosen (another year is named in its note)
   stale      a population or speaker count from before 2020, or the two figures of a pair from years 5+ apart
   ambiguous  the name is shared by another entity in the pool
-  repeat     an entity also appears on another ranked day less than 7 days away (twice in one week)
+  near-identical  the same fact (same item) is asked again on a day less than 7 days away
+  repeat     the same entity, through another fact, on a day less than 7 days away
   close      a hard pair compared on estimated figures (populations, speakers)
 """
 import argparse
@@ -48,7 +49,11 @@ def norm_name(name):
     return re.sub(r"^the ", "", name.strip().lower())
 
 
-def flags_for(pair, a, b, date, uses_by_entity, entities_by_name):
+def within_week(d, date):
+    return d != date and abs((datetime.date.fromisoformat(d) - datetime.date.fromisoformat(date)).days) < WEEK
+
+
+def flags_for(pair, a, b, date, uses_by_entity, entities_by_name, uses_by_item):
     out = []
     for it in (a, b):
         notes = it.get("notes") or ""
@@ -60,9 +65,12 @@ def flags_for(pair, a, b, date, uses_by_entity, entities_by_name):
             out.append(f"contested: {it['name']}: {notes.split(' | ')[-1][:160]}")
         if len(entities_by_name.get(norm_name(it["name"]), ())) > 1:
             out.append(f"ambiguous: another entity in the pool is also called {it['name']}")
-        other_days = sorted(d for d in uses_by_entity.get(entity(it), ()) if d != date and abs((datetime.date.fromisoformat(d) - datetime.date.fromisoformat(date)).days) < WEEK)
-        if other_days:
-            out.append(f"repeat: {it['name']} also on {', '.join(other_days)}")
+        same = sorted(d for d in uses_by_item.get(it["id"], ()) if within_week(d, date))
+        other = sorted(d for d in uses_by_entity.get(entity(it), ()) if within_week(d, date) and d not in same)
+        if same:
+            out.append(f"near-identical: {it['name']} ({pair['category']}) asked again on {', '.join(same)}")
+        if other:
+            out.append(f"repeat: {it['name']} also on {', '.join(other)} (another fact)")
     if pair["category"] in ESTIMATES:
         ya, yb = stated_year(a), stated_year(b)
         old = [f"{it['name']} {y}" for it, y in ((a, ya), (b, yb)) if y and y < STALE_BEFORE]
@@ -79,12 +87,13 @@ def review(pool, pairs, rounds, start, end):
     """The markdown text for the ranked days from start to end (inclusive)."""
     items = {it["id"]: it for it in pool}
     by_id = {p["id"]: p for p in pairs}
-    uses = {}
+    uses, item_uses = {}, {}
     for d, e in rounds.items():
         for pid in list(e["ranked"]) + [e["question"]]:
             p = by_id[pid]
             for i in (p["a_id"], p["b_id"]):
                 uses.setdefault(entity(items[i]), set()).add(d)
+                item_uses.setdefault(i, set()).add(d)
     names = {}
     for it in pool:
         names.setdefault(norm_name(it.get("name") or ""), set()).add(entity(it))
@@ -94,7 +103,7 @@ def review(pool, pairs, rounds, start, end):
     def row(n, pid, date):
         p = by_id[pid]
         a, b = items[p["a_id"]], items[p["b_id"]]
-        fl = flags_for(p, a, b, date, uses, names)
+        fl = flags_for(p, a, b, date, uses, names, item_uses)
         for f in fl:
             counts[f.split(":")[0]] = counts.get(f.split(":")[0], 0) + 1
         right = "AB"[p["truth"]]
@@ -115,7 +124,8 @@ def review(pool, pairs, rounds, start, end):
             f"**{len(days)} days, flags:** " + (", ".join(f"{k} {v}" for k, v in sorted(counts.items())) or "none") + ".", "",
             "Flags: **contested** sources disagree, the definition varies, or a launch year depends on the event chosen; "
             f"**stale** population or speaker figures from before {STALE_BEFORE} or from years {YEARS_APART}+ apart; **ambiguous** the "
-            f"name is shared by another entity in the pool; **repeat** the entity is asked again less than {WEEK} days away; "
+            f"name is shared by another entity in the pool; **near-identical** the same fact is asked again less than {WEEK} days "
+            f"away; **repeat** the same entity comes back through another fact less than {WEEK} days away; "
             "**close** a hard pair on estimated figures.", ""]
     return "\n".join(head + body) + "\n"
 

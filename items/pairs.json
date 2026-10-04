@@ -1,6 +1,7 @@
 {
  "version": 1,
  "generated_at": "2026-10-04",
+ "next_number": 36635,
  "templates": [
   {
    "category": "country_area",
@@ -36778,5 +36779,8 @@
   {"id": "p36632", "a_id": "w2955", "b_id": "w2936", "truth": 0, "ratio": 5.615, "prompt": "Which language has more native speakers?", "a": "Bugis", "b": "Newar", "unit": "people", "category": "language_speakers", "difficulty_hint": "easy", "ref_quality": "none", "fame": 1400},
   {"id": "p36633", "a_id": "w3215", "b_id": "w3133", "truth": 1, "ratio": null, "gap": 459, "prompt": "Which is older?", "a": "Niedersachsenstadion", "b": "Tomb of Askia", "unit": "year", "category": "landmark_built", "difficulty_hint": "easy", "ref_quality": "imported", "fame": 1291},
   {"id": "p36634", "a_id": "w2921", "b_id": "w2877", "truth": 1, "ratio": 6.37, "prompt": "Which language has more native speakers?", "a": "Greenlandic", "b": "Icelandic", "unit": "people", "category": "language_speakers", "difficulty_hint": "easy", "ref_quality": "imported", "fame": 10850}
+ ],
+ "absent": [
+
  ]
 }

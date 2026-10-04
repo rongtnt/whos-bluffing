@@ -63,14 +63,17 @@
    ```bash
    cd ~/howsure/discord && DISCORD_APP_ID=<application id> DISCORD_BOT_TOKEN=<bot token> npm run register
    ```
-7. **Installation** 页：Install Link 选 **Discord Provided Link**，勾 Guild Install，scopes `bot` + `applications.commands`，权限按 `discord/README.md` 的表；复制这个链接，先装进你自己的测试服务器，试一下 `/bluff`。
-8. 把这个安装链接发给我，我填进网站的 "Add to Discord" 按钮。
+7. **Installation** 页：Install Link 选 **Discord Provided Link**，勾 Guild Install，scopes `bot` + `applications.commands`，权限按 `discord/README.md` 的表；用这个链接先装进你自己的测试服务器，试一下 `/bluff`。
+8. 网站上的 "Add to Discord" 按钮已经指向 Worker 的 `/install`（它会跳到 Discord 的安装页），第 4 步做完它就通了，不用发我链接。
 
 ## E. 社区 Discord 服务器（5 分钟）
 discord.com → 新建服务器 `Who's Bluffing` → 频道 `#announcements`、`#daily-reveal`、`#play`、`#feedback` → 把上面的 bot 装进去，`/bluff setup #daily-reveal 14` → 生成永久邀请链接发给我（我填进 `COMMUNITY_INVITE_URL`）。
 
 ## F. 邮箱 hello@whosbluffing.com（3 分钟）
-Cloudflare 控制台 → whosbluffing.com → **Email** → **Email Routing** → 启用 → Custom addresses 新建 `hello` → 转发到你的 Gmail → 去 Gmail 点确认邮件。发我一句"好了"，我填进 `CONTACT_EMAIL`。
+Cloudflare 控制台 → whosbluffing.com → **Email** → **Email Routing** → 启用 → Custom addresses 新建 `hello` → 转发到你的 Gmail → 去 Gmail 点确认邮件。网站页脚已经写的是这个地址，所以这步做完邮件就通了。
+
+## F2. 关掉 Cloudflare 自动注入的统计脚本（1 分钟）
+Cloudflare 控制台 → **Analytics & Logs** → **Web Analytics** → 找到 whosbluffing.com → 关闭 automatic setup（或直接移除该站点）。原因：我们承诺无第三方脚本，页面的 CSP 本来就拦着它，留着只会在控制台报错。
 
 ## G. 上架 + 发帖（都是你发；文案在 `posts/`，改成自己的话）
 - **周日**：top.gg 提交（`posts/topgg-listing.md`）、discordbotlist.com（`posts/discordbotlist.md`）；Discord App Directory 要等 bot 进了足够多服务器再提（`posts/discord-app-directory.md`）。顺序和原因见 `docs/GROWTH_PLAYBOOK.md`。

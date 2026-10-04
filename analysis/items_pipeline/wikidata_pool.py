@@ -507,12 +507,12 @@ def dedupe(items):
 CARRIED = ("enwiki", "views_month")  # written by pageviews.py; kept until its next run
 
 
-def assign_ids(items, previous):
-    """Reuses the id of a statement already in the pool (keyed by source); new statements get the next free ids.
+def assign_ids(items, previous, next_number=1):
+    """Reuses the id of a statement already in the pool (keyed by source); new statements get the next free ids, from
+    next_number up (the pool's high-water mark: pairs and live answers store item ids, so an id is never reused).
     Pageview fields of a statement already in the pool are carried over."""
     old_items = {it["source"]: it for it in previous}
-    used = {it["id"] for it in previous}
-    next_n = max([int(i[1:]) for i in used] + [0]) + 1
+    next_n = max([int(it["id"][1:]) + 1 for it in previous] + [next_number])
     out = []
     for it in items:
         prev = old_items.get(it["source"])
@@ -572,8 +572,9 @@ def curated_items(entries, generated_at):
             for e in entries]
 
 
-def build_pool(responses, previous_items=(), scheduled_ids=(), generated_at=None, curated=()):
-    """responses: {category name: SPARQL JSON}; curated: items/launch_years.json entries. Returns (pool dict, report)."""
+def build_pool(responses, previous_items=(), scheduled_ids=(), generated_at=None, curated=(), next_number=1):
+    """responses: {category name: SPARQL JSON}; curated: items/launch_years.json entries; next_number: the last pool's
+    `next_number` (ids of dropped items are never handed out again). Returns (pool dict, report)."""
     generated_at = generated_at or datetime.date.today().isoformat()
     previous_items = list(previous_items)
     all_items, report = [], {}
@@ -598,14 +599,15 @@ def build_pool(responses, previous_items=(), scheduled_ids=(), generated_at=None
     pinned, all_items = pin([it for it in previous_items if it["source"] not in cur_sources], all_items)
     pinned = [p for p in pinned if twin_key(p) not in cur_keys]
     all_items = [it for it in all_items if twin_key(it) not in cur_keys] + cur
-    pool_items = assign_ids(all_items, previous_items) + pinned
+    pool_items = assign_ids(all_items, previous_items, next_number) + pinned
     # Scheduled items must keep resolving even if a later run no longer returns them.
     present = {it["id"] for it in pool_items}
     carried = [it for it in previous_items if it["id"] in set(scheduled_ids) - present]
     pool_items = sorted(pool_items + carried, key=lambda it: it["id"])
     report["_total"] = {"kept": len(pool_items), "carried_scheduled": len(carried), "cross_category_duplicates": cross_dupes,
                         "pinned": len(pinned), "curated": len(cur)}
-    return {"version": 1, "generated_at": generated_at, "items": pool_items}, report
+    high = max([next_number] + [int(it["id"][1:]) + 1 for it in pool_items + previous_items])
+    return {"version": 1, "generated_at": generated_at, "next_number": high, "items": pool_items}, report
 
 
 def sparql(query, retries=3):
@@ -701,13 +703,15 @@ def main(argv=None):
             print(f"error: Wikidata SPARQL is unreachable ({e}). The pool was not changed; "
                   "run again later or use --fixture.", file=sys.stderr)
             return 2
-    previous = read_json(args.out, {"items": []})["items"]
+    last = read_json(args.out, {"items": []})
+    previous = last["items"]
     scheduled = {i for ids in read_json(args.schedule, {}).values() for i in ids}
     pair_items = {p["id"]: (p["a_id"], p["b_id"]) for p in read_json(args.pairs, {"pairs": []})["pairs"]}
     for day in read_json(args.rounds, {}).values():
         for pid in list(day["ranked"]) + [day["question"]]:
             scheduled.update(pair_items.get(pid, ()))
-    pool, report = build_pool(responses, previous, scheduled, curated=read_json(args.curated, {"items": []})["items"])
+    pool, report = build_pool(responses, previous, scheduled, curated=read_json(args.curated, {"items": []})["items"],
+                              next_number=last.get("next_number", 1))
     with open(args.out, "w") as f:
         json.dump(pool, f, ensure_ascii=False, indent=1)
         f.write("\n")

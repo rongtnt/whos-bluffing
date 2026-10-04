@@ -5,9 +5,9 @@ Legend: ✅ have · 🔧 being built (rounds builder) · ➕ to build next (brie
 | Theirs | Ours | Status | Better because |
 |---|---|---|---|
 | Hero + two CTAs (Add bot / Find other players) | Hero: Play now / Add to Discord / Add to Slack | ✅ | playable in one tap without installing anything |
-| Social proof: "thousands of questions, a million communities" | live counters from the KPI job (players, countries, servers + workspaces), shown once ≥ 100 players; "20,000+ questions, every one with a source" | ✅ | numbers are live and defined in a pre-registration |
+| Social proof: "thousands of questions, a million communities" | live counters from the KPI job (players, countries, servers + workspaces), shown once ≥ 100 players; "17,000+ questions, every one with a source" | ✅ | numbers are live and defined in a pre-registration |
 | Multiple games and modes (4 games × PG/PG13/R) | ranked round, quick round, full assessment, daily chat question, classroom; **packs** (Geography, Space, Elements, History, Buildings, Bridges, Lakes, Rivers, Mountains) × **difficulty** (Easy / Normal / Brutal) | ✅ | modes are about difficulty and topic, not maturity ratings |
-| Thousands of questions | 2,074 sourced facts → 20,000+ comparison pairs; players flag bad ones; nightly review | ✅ | every answer links to its source |
+| Thousands of questions | 2,074 sourced facts → 17,000+ comparison pairs; players flag bad ones; nightly review | ✅ | every answer links to its source |
 | Commands page with search + "commands not working?" | `/commands`: Discord + Slack tabs, search, options, troubleshooting per platform | ✅ | one page for both platforms |
 | Premium (custom questions etc.) | everything free; **custom packs** for teams and classes (upload your own facts) | ➕ phase 2 (after launch) | free, and the pack stays private to the room |
 | Support: community Discord server | `/community`: Who's Bluffing Discord server (play, support, feedback) + GitHub issues + email | 👤 create the server, ✅ page | same, plus public issue tracker |

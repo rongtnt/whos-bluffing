@@ -288,6 +288,18 @@ class Pool(unittest.TestCase):
         new = w.assign_ids([{"source": "https://www.wikidata.org/wiki/Q9#P1", "en": {}}], first["items"])
         self.assertEqual(new[0]["id"], "w0022")
 
+    def test_ids_of_dropped_items_are_never_handed_out_again(self):
+        first, _ = w.build_pool(RAW, generated_at="2026-10-03")
+        top = max(first["items"], key=lambda it: it["id"])
+        self.assertEqual(first["next_number"], int(top["id"][1:]) + 1)
+        without = {k: v for k, v in RAW.items() if k != top["category"]}
+        second, _ = w.build_pool(without, first["items"], next_number=first["next_number"], generated_at="2026-10-04")
+        third, _ = w.build_pool(without, second["items"], next_number=second["next_number"], generated_at="2026-10-05")
+        self.assertNotIn(top["id"], [it["id"] for it in third["items"]])
+        self.assertEqual(third["next_number"], first["next_number"])  # the dropped item's id stays taken
+        new = w.assign_ids([{"source": "https://www.wikidata.org/wiki/Q9#P1", "en": {}}], third["items"], third["next_number"])
+        self.assertEqual(new[0]["id"], f"w{first['next_number']:04d}")
+
     def test_hand_corrected_items_are_pinned_and_their_generated_twins_dropped(self):
         first, _ = w.build_pool(RAW, generated_at="2026-10-03")
         by_source = {it["source"]: it for it in first["items"]}
