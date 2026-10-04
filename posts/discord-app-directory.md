@@ -23,7 +23,7 @@ Saying 50% scores 0. Saying 100% scores +100 if you are right and −300 if you 
 are right, so the leaderboard rewards people who know what they know.
 
 **THE REVEAL**
-Eight hours after the question, the post turns into the answer: both numbers with their sources, how the server split,
+At reveal time (the server picks the window) the post turns into the answer: both numbers with their sources, how the server split,
 today's top 5, and the bluff of the day ("Someone was 90% sure the Danube is longer. It isn't."). Roast mode, off by
 default, names the bluffer.
 

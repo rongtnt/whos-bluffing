@@ -22,7 +22,7 @@ Smarter than your server? One question a day: pick A or B, say how sure, and see
 **One question a day that gets your server talking.**
 
 Who's Bluffing posts one question a day in your channel: "Which is longer: the Nile or the Danube?" Tap A or B, then
-say how sure you are, from 50% to 100%. Eight hours later the post shows the answer with its sources, how your server
+say how sure you are, from 50% to 100%. At reveal time the post shows the answer with its sources, how your server
 split, today's top 5 and the bluff of the day.
 
 **Bluffing costs points:** 50% scores 0; 100% scores +100 if you are right and −300 if you are wrong.
