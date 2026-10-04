@@ -461,6 +461,33 @@ expect "compare -> side by side (me 640, them Smoke Host -12)" 200 \
 req GET "/api/round/$QROUND/compare?me=$FRIEND&them=BBBBBBBBBB"
 expect "compare with an unknown token -> 404" 404 'r.error'
 
+echo "== rounds: difficulty (fame bands from items/pairs.json via functions/_pairs.json)"
+# bands ROUND_JSON... -> per round "band:ref:level" for each pair (band 2 famous, 1 known, 0 obscure; level 0 easy)
+bands() {
+  node -e '
+    const pairs = new Map(require("./functions/_pairs.json").pairs.map((p) => ["p" + String(p[0]).padStart(5, "0"), p]));
+    for (const f of process.argv.slice(1)) {
+      const r = JSON.parse(require("fs").readFileSync(f, "utf8"));
+      console.log(r.items.map((i) => { const p = pairs.get(i.id); return `${p[5]}:${p[6]}:${p[4]}`; }).join(" "));
+    }' "$@"
+}
+for k in 1 2 3; do
+  for d in brutal normal easy; do
+    req GET "/api/round?mode=quick&difficulty=$d"; [ "$STATUS" = 200 ] || fail "GET quick difficulty=$d" "$BODY"; printf '%s' "$BODY" > "$STATE/q-$d-$k.json"
+  done
+  req GET "/api/round?mode=quick"; printf '%s' "$BODY" > "$STATE/q-default-$k.json"
+done
+BRUTAL=$(bands "$STATE"/q-brutal-*.json); DEFAULT=$(bands "$STATE"/q-default-*.json); EASY=$(bands "$STATE"/q-easy-*.json)
+[[ "$BRUTAL" == *"0:1:"* ]] && ! [[ "$BRUTAL" == *":0:"* ]] || fail "difficulty=brutal -> referenced pairs, obscure ones included" "$BRUTAL"
+pass "difficulty=brutal -> only referenced pairs, and obscure ones among them"
+node -e 'const rows = process.argv[1].trim().split("\n").map((l) => l.split(" ").map((x) => Number(x[0]))); process.exit(rows.length === 3 && rows.every((r) => r.length === 10 && !r.includes(0) && r.filter((b) => b === 1).length <= 1) ? 0 : 1)' "$DEFAULT" \
+  || fail "default (normal) -> no obscure pair, at most one under 50,000 views" "$DEFAULT"
+pass "default difficulty (normal) -> no obscure pair, at most one under 50,000 views per round"
+node -e 'process.exit(process.argv[1].trim().split(/\s+/).every((x) => x[0] === "2" && x.endsWith(":0")) ? 0 : 1)' "$EASY" || fail "difficulty=easy -> famous and far apart" "$EASY"
+pass "difficulty=easy -> both items famous and the pair easy"
+req GET "/api/round?mode=quick&difficulty=nightmare"
+expect "unknown difficulty -> 400" 400 'r.error === "difficulty must be easy, normal or brutal"'
+
 echo "== rounds: today's ranked round, rank, stats"
 req GET /api/round?mode=ranked
 expect "GET /api/round?mode=ranked -> today's 10, the same for everyone" 200 "r.round_id === 'rk-$TODAY' && r.mode === 'ranked' && r.items.length === 10"

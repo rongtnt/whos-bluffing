@@ -9,7 +9,7 @@ import { validateSubmit, DEMOGRAPHICS } from '../functions/_util.js';
 import { wrap } from '../public/share.js';
 import { html } from '../public/ui.js';
 import { fmtValue, fmtNumber, noteKey, personalStats, hitsChart } from '../public/daily.js';
-import { addSeen, scoreChart, fmtPoints, typeKey } from '../public/rounds.js';
+import { addSeen, scoreChart, fmtPoints, typeKey, fmtValue as roundValue } from '../public/rounds.js';
 import { TYPES } from '../functions/_rounds.js';
 import { classAggregate, toCsv } from '../functions/api/class/d/[secret].js';
 import { overconfBin, intHitBin, histPercentile, percentiles, aggregateWrites, MIN_PERCENTILE_N } from '../functions/_aggregates.js';
@@ -275,6 +275,7 @@ test('rounds UI: the newest 300 seen pairs, oldest first; signed points; a strin
   assert.deepEqual(next.slice(-7), ['p00003', 'p90001', 'p90002', 'p90003', 'p90004', 'p90005', 'p90006']); // replayed ids move to the end
   assert.equal(next[0], 'p00002'); // the oldest fell off
   assert.deepEqual([fmtPoints(84), fmtPoints(0), fmtPoints(-156)], ['+84', '0', '−156']);
+  assert.deepEqual([roundValue(-2560, 'year'), roundValue(1889, 'year'), roundValue(6650, 'km')], ['2560 BC', '1889', '6,650 km']);
   for (const type of TYPES) assert.equal(typeof at(en, typeKey(type)), 'string', type);
   assert.equal(new Set(TYPES.map(typeKey)).size, 5);
   const stats = { score_hist: Array.from({ length: 41 }, (_, k) => (k === 30 ? 4 : k === 35 ? 1 : 0)), bin_from: -3000, bin_width: 100 };

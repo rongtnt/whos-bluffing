@@ -6,7 +6,7 @@ import { readFileSync } from 'node:fs';
 import { fileURLToPath } from 'node:url';
 import { addDays, dayNumber, todayUTC, isDate } from '../functions/_daily.js';
 
-const fmt = (value, unit) => (unit === 'year' ? String(value) : `${value.toLocaleString('en-US', { maximumFractionDigits: 3 })} ${unit}`);
+const fmt = (value, unit) => (unit === 'year' ? (value < 0 ? `${-value} BC` : String(value)) : `${value.toLocaleString('en-US', { maximumFractionDigits: 3 })} ${unit}`);
 
 // The daily range game's review for one date (throws if nothing is scheduled).
 export function review(pool, schedule, date) {

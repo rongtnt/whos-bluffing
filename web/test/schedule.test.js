@@ -104,7 +104,7 @@ test('the real pool and schedule pass the sync checks; the browser copy has no a
   const pool = read('../../items/pool.json');
   const schedule = read('../../daily/schedule.json');
   assert.deepEqual(validatePool(pool), []);
-  assert.ok(pool.items.length >= 1500 && pool.items.length <= 3000, `pool size ${pool.items.length}`);
+  assert.ok(pool.items.length >= 1500 && pool.items.length <= 4000, `pool size ${pool.items.length}`); // 3,261 with the relatable categories
   assert.deepEqual(validateSchedule(schedule, new Set(pool.items.map((i) => i.id))), []);
   const pub = read('../public/pool.json');
   assert.deepEqual(pub, publicPool(pool));

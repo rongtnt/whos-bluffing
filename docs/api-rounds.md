@@ -32,3 +32,7 @@ Additions (2026-10-04, from the web build; all backward compatible):
 - Daily-question points are settled at the reveal (that community's pending answers, in the same request) or by the daily KPI run (questions that no longer take answers, up to 35 days back); until then the stored `correct` and `points` are null.
 - `challenge_view` is counted by the challenge page itself on every HTML load; clients send `share` (once per share action) and `play_again`.
 
+Familiarity (2026-10-04): every item carries `views_month` (average monthly English Wikipedia pageviews by users over the last 3 full months); a pair's fame = the lesser of its two items'.
+- `GET /api/round?mode=quick&difficulty=easy|normal|brutal` (default `normal`; anything else 400): `normal` = both items ≥ 20,000 views/month, at most one pair per round under 50,000, mix 3 easy / 4 medium / 3 hard; `easy` = both ≥ 50,000 and an easy pair (ratio ≥ 3, or ≥ 50 years apart), 10 of them; `brutal` = any pair whose items are both referenced or fact-checked (obscure allowed), 4 medium + 6 hard. The body adds `difficulty`; the quick round stores it. Ranked rounds and challenge links ignore it.
+- Ranked rounds and the daily chat question use only pairs whose items are both ≥ 50,000 views/month and referenced or fact-checked.
+

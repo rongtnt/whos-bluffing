@@ -8,7 +8,7 @@ import { openD1 } from './d1.js';
 import { addDays } from '../functions/_daily.js';
 import {
   loadRounds, points, typeOf, scoreRound, shareText, parseRoundId, getRound, answer, complete, compare, roundStats,
-  dailyQuestion, reveal, recordEvent, flagPair, settleQuestions, newToken, binHist, histIndex, ROASTS, MIX,
+  dailyQuestion, reveal, recordEvent, flagPair, settleQuestions, newToken, binHist, histIndex, ROASTS, MIX, DIFFICULTIES,
 } from '../functions/_rounds.js';
 import { challengePage, challengeTitle, HEADERS } from '../functions/_challenge.js';
 import { computeKpi, runKpi, latestKpi } from '../functions/_kpi.js';
@@ -44,7 +44,9 @@ CATS.forEach((c, ci) => {
       const vx = items[x - 1].answer;
       const vy = items[y - 1].answer;
       const truth = earlierWins ? (vx < vy ? 0 : 1) : (vx > vy ? 0 : 1);
-      pairRows.push([pairRows.length + 1, x, y, truth, step === 4 ? 0 : (k % 2 ? 1 : 2)]);
+      const n = pairRows.length + 1;
+      const band = n % 5 === 0 ? 0 : n % 5 === 1 ? 1 : 2; // obscure, known, famous
+      pairRows.push([n, x, y, truth, step === 4 ? 0 : (k % 2 ? 1 : 2), band, n % 7 === 0 ? 0 : 1]);
     }
   }
 });
@@ -127,13 +129,14 @@ test('GET quick: 3 easy + 4 medium + 3 hard, unseen first, never today\'s pairs,
   const db = openD1();
   const level = (id) => DATA.pairs.get(id).level;
   const avoid = new Set([...RANKED, DAYS[DAY].question]);
+  const [s1, s2] = DATA.lists.normal.easy.filter((id) => !avoid.has(id)); // plenty of easy pairs: no fallback to seen ones
   for (let seed = 1; seed <= 25; seed += 1) {
-    const r = await getRound(db, DATA, { mode: 'quick', seen: 'p00003,p00005,bogus' }, NOW, seeded(seed));
+    const r = await getRound(db, DATA, { mode: 'quick', seen: `${s1},${s2},bogus` }, NOW, seeded(seed));
     assert.equal(r.status, 200);
     const ids = r.body.items.map((i) => i.id);
     assert.equal(ids.length, 10);
     assert.deepEqual(['easy', 'medium', 'hard'].map((lv) => ids.filter((id) => level(id) === lv).length), [MIX.easy, MIX.medium, MIX.hard]);
-    assert.ok(!ids.some((id) => avoid.has(id) || id === 'p00003' || id === 'p00005'), ids.join());
+    assert.ok(!ids.some((id) => avoid.has(id) || id === s1 || id === s2), ids.join());
     const ents = ids.flatMap((id) => [DATA.pairs.get(id).a_id, DATA.pairs.get(id).b_id]).map((i) => DATA.entity.get(i));
     assert.equal(new Set(ents).size, ents.length); // w0001 and w0017 share an entity: never together
     assert.match(r.body.round_id, /^[A-Z2-9]{12}$/);
@@ -142,6 +145,32 @@ test('GET quick: 3 easy + 4 medium + 3 hard, unseen first, never today\'s pairs,
   }
   const again = await getRound(db, DATA, { round_id: (await db.prepare('SELECT round_id FROM rounds LIMIT 1').first()).round_id }, NOW);
   assert.equal(again.body.items.length, 10); // a challenge link loads the same round
+});
+
+test('difficulty: normal by default (known pairs, at most one under 50,000), easy = famous and far apart, brutal = referenced, close', async () => {
+  const db = openD1();
+  const of = (id) => DATA.pairs.get(id);
+  const draw = async (difficulty, seed) => (await getRound(db, DATA, { mode: 'quick', difficulty }, NOW, seeded(seed))).body;
+  let obscureInBrutal = 0;
+  for (let seed = 1; seed <= 20; seed += 1) {
+    const normal = await draw(undefined, seed);
+    const n = normal.items.map((i) => of(i.id));
+    assert.equal(normal.difficulty, 'normal');
+    assert.equal(n.length, 10);
+    assert.ok(n.every((p) => p.band >= 1), 'no obscure pair in a normal round');
+    assert.ok(n.filter((p) => p.band === 1).length <= 1, 'at most one pair under 50,000 views');
+    const easy = (await draw('easy', seed)).items.map((i) => of(i.id));
+    assert.ok(easy.length === 10 && easy.every((p) => p.band === 2 && p.level === 'easy'), `easy seed ${seed}`);
+    const brutal = (await draw('brutal', seed)).items.map((i) => of(i.id));
+    assert.ok(brutal.length === 10 && brutal.every((p) => p.ref === 1), `brutal seed ${seed}`);
+    assert.deepEqual(['easy', 'medium', 'hard'].map((lv) => brutal.filter((p) => p.level === lv).length), [0, 4, 6]);
+    obscureInBrutal += brutal.filter((p) => p.band === 0).length;
+  }
+  assert.ok(obscureInBrutal > 0, 'brutal rounds include obscure pairs');
+  const row = await db.prepare("SELECT difficulty, COUNT(*) AS n FROM rounds GROUP BY difficulty ORDER BY difficulty").all();
+  assert.deepEqual(row.results, [{ difficulty: 'brutal', n: 20 }, { difficulty: 'easy', n: 20 }, { difficulty: 'normal', n: 20 }]);
+  assert.deepEqual(await getRound(db, DATA, { mode: 'quick', difficulty: 'nightmare' }, NOW), { status: 400, body: { error: 'difficulty must be easy, normal or brutal' } });
+  assert.deepEqual(Object.keys(DIFFICULTIES), ['easy', 'normal', 'brutal']);
 });
 
 test('answer: server scores it; the first answer is final; 404 for a pair outside the round or an unknown round', async () => {
@@ -435,7 +464,7 @@ test('roasts: twenty lines that read for every comparison and none of the forbid
 });
 
 // The real files: the PREREG rule and the shapes sync-items enforces, plus the scheduling rules pairs.py promises.
-test('real items/pairs.json and daily/rounds.json: valid, referenced-only ranked days, rules hold, bundle loads', () => {
+test('real items/pairs.json and daily/rounds.json: valid; ranked days famous and referenced; rules hold; bundle loads', () => {
   const read = (p) => JSON.parse(readFileSync(new URL(p, import.meta.url), 'utf8'));
   const pool = read('../../items/pool.json');
   const doc = read('../../items/pairs.json');
@@ -444,6 +473,9 @@ test('real items/pairs.json and daily/rounds.json: valid, referenced-only ranked
   const byId = new Map(doc.pairs.map((p) => [p.id, p]));
   assert.deepEqual(validateRounds(rounds, byId, pool.items), []);
   assert.ok(doc.pairs.length >= 20000, `${doc.pairs.length} pairs`);
+  const views = new Map(pool.items.map((i) => [i.id, i.views_month]));
+  assert.ok(pool.items.every((i) => Number.isInteger(i.views_month)), 'every item has views_month');
+  for (const p of doc.pairs.slice(0, 2000)) assert.equal(p.fame, Math.min(views.get(p.a_id), views.get(p.b_id)), p.id);
   const degree = new Map();
   for (const p of doc.pairs) for (const i of [p.a_id, p.b_id]) degree.set(i, (degree.get(i) ?? 0) + 1);
   assert.ok(Math.max(...degree.values()) <= 25);
@@ -454,11 +486,12 @@ test('real items/pairs.json and daily/rounds.json: valid, referenced-only ranked
   const lastPair = new Map();
   const lastItem = new Map();
   const days = Object.keys(rounds).sort();
-  assert.ok(days.length >= 121, `${days.length} days`);
+  assert.ok(days.length >= 60, `${days.length} days`); // famous, referenced supply; the coordinator accepts 60
   for (const date of days) {
     const ps = [...rounds[date].ranked, rounds[date].question].map((id) => byId.get(id));
+    for (const p of ps) assert.ok(views.get(p.a_id) >= 50000 && views.get(p.b_id) >= 50000 && p.ref_quality === 'referenced', `${date} ${p.id}`);
     const cats = ps.slice(0, 10).map((p) => p.category);
-    assert.ok(cats.every((c) => cats.filter((x) => x === c).length <= 2), date);
+    assert.ok(cats.every((c) => cats.filter((x) => x === c).length <= 4), date); // the ladder's floor (2 while it works)
     assert.deepEqual(['easy', 'medium', 'hard'].map((lv) => ps.slice(0, 10).filter((p) => p.difficulty_hint === lv).length), [3, 4, 3], date);
     assert.equal(new Set(ps.flatMap((p) => [entity(p.a_id), entity(p.b_id)])).size, 22, date);
     const t = Date.parse(date) / 86400000;
@@ -466,7 +499,7 @@ test('real items/pairs.json and daily/rounds.json: valid, referenced-only ranked
       assert.ok(!lastPair.has(p.id) || t - lastPair.get(p.id) >= 180, `${date} ${p.id}`);
       lastPair.set(p.id, t);
       for (const i of [p.a_id, p.b_id]) {
-        assert.ok(!lastItem.has(i) || t - lastItem.get(i) >= 25, `${date} ${i}`);
+        assert.ok(!lastItem.has(i) || t - lastItem.get(i) >= 5, `${date} ${i}`); // the ladder's floor (25 while it works)
         lastItem.set(i, t);
       }
     }

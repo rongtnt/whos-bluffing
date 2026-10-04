@@ -78,7 +78,7 @@ print("schedule OK")
 PY
 
 
-say "daily rounds: live-file guard (10 ranked + 1 question per date, referenced or fact-checked items, category and difficulty mix, reuse windows)"
+say "daily rounds: live-file guard (10 ranked + 1 question, famous + referenced/fact-checked, 3/4/3 difficulty, ≤4 per category, 180d pair / 5d item reuse)"
 python3 - "$root" <<'PY' || fail=1
 import json, sys, datetime as dt, collections
 root = sys.argv[1]
@@ -87,7 +87,8 @@ item = {i["id"]: i for i in items}
 pairs = json.load(open(f"{root}/items/pairs.json")); plist = pairs["pairs"] if isinstance(pairs, dict) else pairs
 pair = {p["id"]: p for p in plist}
 rounds = json.load(open(f"{root}/daily/rounds.json"))
-ok_item = lambda i: item[i].get("ref_quality") == "referenced" or item[i].get("fact_checked")
+FAME, CAT_MAX, ITEM_GAP, PAIR_GAP = 50000, 4, 5, 180
+ok_item = lambda i: (item[i].get("ref_quality") == "referenced" or item[i].get("fact_checked")) and (item[i].get("views_month") or 0) >= FAME
 entity = lambda i: item[i].get("replaces") or item[i].get("source")
 last_pair, last_item, bad = {}, {}, []
 for d in sorted(rounds):
@@ -99,16 +100,16 @@ for d in sorted(rounds):
     ents = []
     for pid in ids:
         a, b = pair[pid]["a_id"], pair[pid]["b_id"]
-        if not (ok_item(a) and ok_item(b)): bad.append((d, f"{pid} not referenced/fact-checked"))
+        if not (ok_item(a) and ok_item(b)): bad.append((d, f"{pid} not famous+referenced"))
         ents += [entity(a), entity(b)]
         for it in (a, b):
-            if it in last_item and (day - last_item[it]).days < 25: bad.append((d, f"item {it} reused <25d"))
+            if it in last_item and (day - last_item[it]).days < ITEM_GAP: bad.append((d, f"item {it} reused <{ITEM_GAP}d"))
             last_item[it] = day
-        if pid in last_pair and (day - last_pair[pid]).days < 180: bad.append((d, f"pair {pid} reused <180d"))
+        if pid in last_pair and (day - last_pair[pid]).days < PAIR_GAP: bad.append((d, f"pair {pid} reused <{PAIR_GAP}d"))
         last_pair[pid] = day
     if len(set(ents)) != 22: bad.append((d, "entities not distinct"))
     cats = collections.Counter(pair[pid]["category"] for pid in ranked)
-    if max(cats.values()) > 2: bad.append((d, "category >2"))
+    if max(cats.values()) > CAT_MAX: bad.append((d, f"category >{CAT_MAX}"))
     diff = collections.Counter(pair[pid]["difficulty_hint"] for pid in ranked)
     if (diff.get("easy"), diff.get("medium"), diff.get("hard")) != (3, 4, 3): bad.append((d, f"difficulty mix {dict(diff)}"))
 print(len(rounds), "ranked days checked")

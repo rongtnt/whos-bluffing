@@ -15,25 +15,27 @@ import pairs as P  # noqa: E402
 
 UNITS = {"river_length": "km", "mountain_elevation": "m", "building_height": "m", "bridge_length": "m", "country_area": "km²",
          "element_melting_point": "°C", "first_flight": "year", "first_ascent": "year", "city_population": "people",
-         "university_founded": "year", "solar_system_size": "km"}
+         "university_founded": "year", "solar_system_size": "km", "country_population": "people", "company_founded": "year",
+         "product_released": "year", "language_speakers": "people", "landmark_height": "m", "landmark_built": "year"}
+FAMOUS = 100000  # monthly views of a fixture item unless a test says otherwise
 
 
-def item(n, category, answer, ref="referenced", unit=None, **extra):
+def item(n, category, answer, ref="referenced", unit=None, views=FAMOUS, **extra):
     unit = unit or UNITS[category]
     it = {"id": f"w{n:04d}", "category": category, "en": {"prompt": f"Question {n}?", "unit": unit}, "answer": answer,
-          "name": f"thing {n}", "ref_quality": ref, "fact_checked": False, "volatile": False}
+          "name": f"thing {n}", "ref_quality": ref, "fact_checked": False, "volatile": False, "views_month": views}
     it.update(extra)
     return it
 
 
-def spread_pool(categories, per_category, start=1, ref="referenced"):
+def spread_pool(categories, per_category, start=1, ref="referenced", views=FAMOUS):
     """Values 1.06^k apart within each category: every difficulty class has plenty of pairs."""
     items, n = [], start
     for c in categories:
         for k in range(per_category):
             unit = UNITS[c]
             answer = 1800 + k if unit == "year" else round(100 * 1.06 ** k, 2)
-            items.append(item(n, c, answer, ref))
+            items.append(item(n, c, answer, ref, views=views))
             n += 1
     return items
 
@@ -124,12 +126,54 @@ class Rules(unittest.TestCase):
                  item(3, "river_length", 1233, "none", name="the Rhine", fact_checked=True)]
         ps = {frozenset((p["a_id"], p["b_id"])): p for p in pairs_of(items)}
         p = ps[frozenset(("w0001", "w0002"))]
-        self.assertEqual(set(p), {"id", "a_id", "b_id", "truth", "ratio", "prompt", "a", "b", "unit", "category", "difficulty_hint", "ref_quality"})
+        self.assertEqual(set(p), {"id", "a_id", "b_id", "truth", "ratio", "prompt", "a", "b", "unit", "category", "difficulty_hint", "ref_quality", "fame"})
         self.assertEqual({p["a"], p["b"]}, {"the Nile", "the Danube"})
         self.assertEqual((p["prompt"], p["unit"], p["category"], p["ratio"], p["difficulty_hint"]), ("Which is longer?", "km", "river_length", 2.333, "medium"))
         self.assertEqual(p["ref_quality"], "imported")  # the weaker item
         self.assertEqual(ps[frozenset(("w0001", "w0003"))]["ref_quality"], "referenced")  # fact-checked counts as referenced
         self.assertRegex(p["id"], r"^p\d{5}$")
+
+    def test_fame_is_the_lesser_items_views_and_bands_split_at_50000_and_20000(self):
+        ps = pairs_of([item(1, "river_length", 6650, views=75236), item(2, "river_length", 2850, views=30516)])
+        self.assertEqual(ps[0]["fame"], 30516)
+        self.assertEqual([P.band(v) for v in (50000, 49999, 20000, 19999, 0)], [2, 1, 1, 0, 0])
+        self.assertFalse(P.ranked_ok(ps[0]))  # referenced, but only "known"
+        self.assertTrue(P.ranked_ok(dict(ps[0], fame=50000)))
+        self.assertFalse(P.ranked_ok(dict(ps[0], fame=90000, ref_quality="imported")))  # famous, not referenced (PREREG)
+
+    def test_famous_items_spend_their_slots_on_famous_partners_first(self):
+        famous = [item(n, "river_length", 100 * 2 ** n) for n in range(1, 5)]
+        obscure = [item(n, "river_length", 100 * 2 ** n + 7, views=900) for n in range(5, 12)]
+        cands = P.candidates(famous + obscure)
+        chosen = P.select(cands, cap=3)
+        famous_ids = {it["id"] for it in famous}
+        for f in famous_ids:
+            partners = [b if a == f else a for (a, b), *_ in chosen if f in (a, b)]
+            self.assertEqual(len(partners), 3)
+            self.assertTrue(all(x in famous_ids for x in partners), (f, partners))  # 3 famous partners exist for each
+        self.assertEqual([P.tier(f, r) for f, r in ((60000, True), (60000, False), (30000, True), (900, True), (900, False))], [0, 1, 2, 3, 4])
+
+    def test_countries_need_20000_views_to_be_compared(self):
+        countries = [item(1, "country_population", 5e6, views=19999), item(2, "country_population", 9e6), item(3, "country_population", 4e7)]
+        ids = {i for p in pairs_of(countries) for i in (p["a_id"], p["b_id"])}
+        self.assertEqual(ids, {"w0002", "w0003"})
+
+    def test_new_categories_have_their_questions_and_the_right_answer(self):
+        prompts = {k: v[0] for k, v in P.TEMPLATES.items()}
+        self.assertEqual(prompts[("company_founded", "year")], "Which company was founded first?")
+        self.assertEqual(prompts[("product_released", "year")], "Which came out first?")
+        self.assertEqual(prompts[("country_population", "people")], "Which country has more people?")
+        self.assertEqual(prompts[("language_speakers", "people")], "Which language has more native speakers?")
+        self.assertEqual(prompts[("landmark_height", "m")], "Which is taller?")
+        self.assertEqual(prompts[("landmark_built", "year")], "Which is older?")
+        walkman, iphone = item(1, "product_released", 1979, name="the Walkman"), item(2, "product_released", 2007, name="the iPhone")
+        p = pairs_of([walkman, iphone])[0]
+        self.assertEqual(([p["a"], p["b"]][p["truth"]], p["difficulty_hint"]), ("the Walkman", "medium"))  # earlier wins; 28 years
+        self.assertEqual(pairs_of([item(3, "language_speakers", 379e6), item(4, "language_speakers", 485e6)]), [])  # 1.28: too close
+        langs = pairs_of([item(3, "language_speakers", 485e6, name="Spanish"), item(4, "language_speakers", 64.8e6, name="Italian")])
+        self.assertEqual([langs[0]["a"], langs[0]["b"]][langs[0]["truth"]], "Spanish")
+        built = pairs_of([item(5, "landmark_built", -2560, name="the Great Pyramid"), item(6, "landmark_built", 1889, name="the Eiffel Tower")])
+        self.assertEqual([built[0]["a"], built[0]["b"]][built[0]["truth"]], "the Great Pyramid")  # BCE years compare as numbers
 
 
 class Stability(unittest.TestCase):
@@ -197,14 +241,24 @@ class Rounds(unittest.TestCase):
                 self.assertGreaterEqual(P.days_between(a, b), P.ITEM_NO_REUSE_DAYS, i)
         self.assertEqual(P.ITEM_NO_REUSE_DAYS, 25)
 
-    def test_unreferenced_pairs_never_enter_and_too_few_pairs_is_an_error(self):
-        mixed = spread_pool(self.CATS, 120, ref="imported")
-        mixed_pairs = pairs_of(mixed)
-        with self.assertRaises(ValueError):
-            P.extend_rounds(mixed_pairs, {}, "2026-10-03", days=1)
-        tiny = pairs_of(spread_pool(self.CATS[:2], 30))
-        with self.assertRaisesRegex(ValueError, "not enough eligible"):
-            P.extend_rounds(tiny, {}, "2026-10-03", days=60)
+    def test_unreferenced_or_obscure_pairs_never_enter_and_short_supply_fills_fewer_days(self):
+        self.assertEqual(P.extend_rounds(pairs_of(spread_pool(self.CATS, 120, ref="imported")), {}, "2026-10-03", days=5), {})
+        self.assertEqual(P.extend_rounds(pairs_of(spread_pool(self.CATS, 120, views=49999)), {}, "2026-10-03", days=5), {})  # "known" only
+        tiny = P.extend_rounds(pairs_of(spread_pool(self.CATS[:5], 30)), {}, "2026-10-03", days=60, ladder=[(25, 2)])
+        self.assertTrue(0 < len(tiny) < 61, len(tiny))
+        self.assertEqual(sorted(tiny), [P.add_days("2026-10-03", k) for k in range(len(tiny))])  # consecutive from today
+
+    def test_a_day_the_strict_rules_cannot_fill_steps_down_the_ladder(self):
+        small = pairs_of(spread_pool(self.CATS[:5], 30))
+        strict = P.extend_rounds(small, {}, "2026-10-03", days=40, ladder=[(25, 2)])
+        log = {}
+        laddered = P.extend_rounds(small, {}, "2026-10-03", days=40, ladder=[(25, 2), (5, 4)], log=log)
+        self.assertGreater(len(laddered), len(strict))
+        first_relaxed = min(d for d, rung in log.items() if rung == [5, 4])
+        self.assertTrue(all(log[d] == [25, 2] for d in log if d < first_relaxed))  # strict while it works
+        self.assertEqual(first_relaxed, P.add_days("2026-10-03", len(strict)))
+        self.assertEqual(P.RULE_LADDER[0], (25, 2))
+        self.assertEqual(P.RULE_LADDER[-1], (5, 4))
 
     def test_append_only_existing_days_are_kept_and_count_for_reuse(self):
         existing = {d: e for d, e in self.rounds.items() if d <= "2026-10-05"}

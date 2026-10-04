@@ -20,8 +20,14 @@ their source links; fix or drop a bad item by editing `items/pool.json` (or swap
 | first_flight | 268 | 1047 | bounds: 2, conflict: 3, label: 6, precision: 1; capped 767 |
 | university_founded | 114 | 118 | conflict: 2, label: 1, precision: 1 |
 | first_ascent | 171 | 331 | bounds: 4, conflict: 1, label: 2, same_name: 1; capped 152 |
+| country_population | 244 | 254 | bounds: 3, volatile: 5; capped 2 |
+| company_founded | 148 | 168 | conflict: 12, label: 8 |
+| product_released | 96 | 97 | conflict: 1 |
+| language_speakers | 135 | 446 | bounds: 7, conflict: 4, no_first_language: 300 |
+| landmark_height | 101 | 113 | bounds: 2, conflict: 10 |
+| landmark_built | 187 | 217 | bounds: 1, conflict: 5, label: 1, precision: 23 |
 
-**Total: 2359 items** (0 cross-category duplicates dropped, 0 scheduled items carried over from the previous pool).
+**Total: 3261 items** (9 cross-category duplicates dropped, 0 scheduled items carried over from the previous pool).
 
 ## 30 random samples
 
@@ -32,28 +38,28 @@ their source links; fix or drop a bad item by editing `items/pool.json` (or swap
 - [ ] `w0269` How high is Table Mountain above sea level? → **1,085 m** · https://www.wikidata.org/wiki/Q213360#P2044
 - [ ] `w0336` How high is Devils Tower above sea level? → **1,558 m** · https://www.wikidata.org/wiki/Q306201#P2044
 - [ ] `w0370` How high is Avachinsky above sea level? → **2,741 m** · https://www.wikidata.org/wiki/Q791652#P2044
-- [ ] `w0467` How long is the Orinoco River? → **2,140 km** · https://www.wikidata.org/wiki/Q131792#P2043
 - [ ] `w0607` How long is the Karun River? → **950 km** · https://www.wikidata.org/wiki/Q461557#P2043
 - [ ] `w0630` How long is the Ebola River? → **250 km** · https://www.wikidata.org/wiki/Q934455#P2043
-- [ ] `w0649` What is the surface area of Lake Garda? → **370 km²** · https://www.wikidata.org/wiki/Q6414#P2046
 - [ ] `w0834` How deep is Bosten Lake at its deepest point? → **17.0 m** · https://www.wikidata.org/wiki/Q611206#P4511
-- [ ] `w0846` How tall is Burj Khalifa? → **828 m** · https://www.wikidata.org/wiki/Q12495#P2048
 - [ ] `w0872` How tall is the Trump Tower? → **202 m** · https://www.wikidata.org/wiki/Q868772#P2048
 - [ ] `w0877` How tall is the Woolworth Building? → **241 m** · https://www.wikidata.org/wiki/Q217652#P2048
 - [ ] `w0913` How tall is the Princess Tower? → **414 m** · https://www.wikidata.org/wiki/Q19492#P2048
 - [ ] `w1010` How tall is Torre Ejecutiva Pemex? → **214 m** · https://www.wikidata.org/wiki/Q948178#P2048
-- [ ] `w1105` How long is the Dragon Bridge? → **45.0 m** · https://www.wikidata.org/wiki/Q660029#P2043
-- [ ] `w1128` How long is the Glenfinnan Viaduct? → **380 m** · https://www.wikidata.org/wiki/Q1155735#P2043
 - [ ] `w1287` At what temperature does titanium melt? → **1,670 °C** · https://www.wikidata.org/wiki/Q716#P2101
 - [ ] `w1323` At what temperature does yttrium melt? → **1,500 °C** · https://www.wikidata.org/wiki/Q941#P2101
-- [ ] `w1669` In what year did the Ilyushin Il-76 first fly? → **1971** · https://www.wikidata.org/wiki/Q142549#P606
 - [ ] `w1751` In what year did the Tupolev Tu-204 first fly? → **1989** · https://www.wikidata.org/wiki/Q466590#P606
 - [ ] `w1885` In what year was the University of Cape Town founded? → **1829** · https://www.wikidata.org/wiki/Q951305#P571
-- [ ] `w1908` In what year was the University of Belgrade founded? → **1808** · https://www.wikidata.org/wiki/Q240631#P571
 - [ ] `w1973` In what year was Devils Tower first climbed? → **1893** · https://www.wikidata.org/wiki/Q306201#P793
 - [ ] `w2030` In what year was Großvenediger first climbed? → **1841** · https://www.wikidata.org/wiki/Q697907#P793
 - [ ] `w2084` How high is Acotango above sea level? → **6,052 m** · https://www.wikidata.org/wiki/Q117822#P2044
 - [ ] `w2163` How long is the Great Morava river? → **185 km** · https://www.wikidata.org/wiki/Q211328#P2043
 - [ ] `w2281` In what year did the North American XB-70 Valkyrie first fly? → **1964** · https://www.wikidata.org/wiki/Q729056#P606
+- [ ] `w2581` What was the population of Åland in 2025? → **30,836 people** · https://www.wikidata.org/wiki/Q5689#P1082
+- [ ] `w2667` In what year was Alfa Romeo founded? → **1910** · https://www.wikidata.org/wiki/Q26921#P571
+- [ ] `w2671` In what year was Bank of England founded? → **1694** · https://www.wikidata.org/wiki/Q183231#P571
+- [ ] `w2749` In what year was Bank of America founded? → **1998** · https://www.wikidata.org/wiki/Q487907#P571
+- [ ] `w3054` How tall is Chiang Kai-shek Memorial Hall? → **76.0 m** · https://www.wikidata.org/wiki/Q540794#P2048
+- [ ] `w3173` In what year was the Mbombela Stadium built? → **2007** · https://www.wikidata.org/wiki/Q187087#P571
+- [ ] `w3261` In what year was Conwy Castle built? → **1283** · https://www.wikidata.org/wiki/Q756830#P571
 
 Not generated: independence years. Wikidata has no consistent property for them ("inception" often records a different event, e.g. Mexico 1810, Nigeria 1963), so they were left out rather than guessed.

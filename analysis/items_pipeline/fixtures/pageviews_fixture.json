@@ -1,0 +1,105 @@
+{
+ "window": [
+  "2026070100",
+  "2026093000"
+ ],
+ "wbgetentities": {
+  "entities": {
+   "Q3392": {
+    "type": "item",
+    "id": "Q3392",
+    "sitelinks": {
+     "enwiki": {
+      "site": "enwiki",
+      "title": "Nile"
+     }
+    }
+   },
+   "Q3123": {
+    "type": "item",
+    "id": "Q3123",
+    "sitelinks": {
+     "enwiki": {
+      "site": "enwiki",
+      "title": "Io (moon)"
+     }
+    }
+   },
+   "Q15": {
+    "type": "item",
+    "id": "Q15",
+    "sitelinks": {
+     "enwiki": {
+      "site": "enwiki",
+      "title": "Africa"
+     }
+    }
+   }
+  },
+  "success": 1
+ },
+ "pageviews": {
+  "Nile": {
+   "items": [
+    {
+     "project": "en.wikipedia",
+     "article": "Nile",
+     "granularity": "monthly",
+     "timestamp": "2026070100",
+     "access": "all-access",
+     "agent": "user",
+     "views": 109062
+    },
+    {
+     "project": "en.wikipedia",
+     "article": "Nile",
+     "granularity": "monthly",
+     "timestamp": "2026080100",
+     "access": "all-access",
+     "agent": "user",
+     "views": 55778
+    },
+    {
+     "project": "en.wikipedia",
+     "article": "Nile",
+     "granularity": "monthly",
+     "timestamp": "2026090100",
+     "access": "all-access",
+     "agent": "user",
+     "views": 60868
+    }
+   ]
+  },
+  "Io (moon)": {
+   "items": [
+    {
+     "project": "en.wikipedia",
+     "article": "Io_(moon)",
+     "granularity": "monthly",
+     "timestamp": "2026070100",
+     "access": "all-access",
+     "agent": "user",
+     "views": 30493
+    },
+    {
+     "project": "en.wikipedia",
+     "article": "Io_(moon)",
+     "granularity": "monthly",
+     "timestamp": "2026080100",
+     "access": "all-access",
+     "agent": "user",
+     "views": 30450
+    },
+    {
+     "project": "en.wikipedia",
+     "article": "Io_(moon)",
+     "granularity": "monthly",
+     "timestamp": "2026090100",
+     "access": "all-access",
+     "agent": "user",
+     "views": 30604
+    }
+   ]
+  }
+ }
+}

@@ -23,7 +23,7 @@ const TYPES = { Bluffer: 'bluffer', 'Hot-headed': 'hot_headed', Calibrated: 'cal
 
 const todayUTC = () => new Date().toISOString().slice(0, 10);
 const reducedMotion = () => matchMedia('(prefers-reduced-motion: reduce)').matches;
-export const fmtValue = (v, unit) => (unit === 'year' ? String(v) : `${v.toLocaleString('en-US', { maximumFractionDigits: 3 })} ${unit}`);
+export const fmtValue = (v, unit) => (unit === 'year' ? (v < 0 ? `${-v} BC` : String(v)) : `${v.toLocaleString('en-US', { maximumFractionDigits: 3 })} ${unit}`);
 export const fmtPoints = (p) => (p > 0 ? `+${p}` : p < 0 ? `−${-p}` : '0');
 const fmtTotal = (n) => (n < 0 ? `−${-n}` : String(n));
 export const typeKey = (type) => `rounds.type_${TYPES[type] ?? 'calibrated'}`;

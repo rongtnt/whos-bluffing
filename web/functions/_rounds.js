@@ -11,6 +11,14 @@ export const SURFACES = ['web', 'slack', 'discord', 'room'];
 export const CONFS = [50, 60, 70, 80, 90, 100];
 export const LEVELS = ['easy', 'medium', 'hard'];
 export const MIX = { easy: 3, medium: 4, hard: 3 };
+// Quick-round difficulty (GET /api/round?difficulty=): which pairs, and how many of each level. normal (the default):
+// both items known (>= 20,000 monthly English Wikipedia views), at most one pair under 50,000; easy: both famous
+// (>= 50,000) and far apart (ratio >= 3, or 50+ years); brutal: any pair of referenced items, close ones preferred.
+export const DIFFICULTIES = {
+  easy: { mix: { easy: 10, medium: 0, hard: 0 }, ok: (p) => p.band === 2 },
+  normal: { mix: MIX, ok: (p) => p.band >= 1, maxKnown: 1 },
+  brutal: { mix: { easy: 0, medium: 4, hard: 6 }, ok: (p) => p.ref === 1 },
+};
 export const MAX_SEEN = 300;
 export const TYPES = ['Bluffer', 'Hot-headed', 'Calibrated', 'Modest', 'Hedger'];
 export const EVENT_TYPES = ['share', 'challenge_view', 'play_again'];
@@ -39,17 +47,17 @@ const pairId = (n) => `p${String(n).padStart(5, '0')}`;
 const itemId = (n) => `w${String(n).padStart(4, '0')}`;
 const cap = (s) => s.charAt(0).toUpperCase() + s.slice(1);
 
-// pool: items/pool.json; compact: functions/_pairs.json ({templates, pairs: [[n, a, b, truth, level]]}, written by
-// sync-items); rounds: daily/rounds.json ({date: {ranked: [10 ids], question: id}}).
+// pool: items/pool.json; compact: functions/_pairs.json ({templates, pairs: [[n, a, b, truth, level, band, ref]]},
+// written by sync-items); rounds: daily/rounds.json ({date: {ranked: [10 ids], question: id}}).
 export function loadRounds(pool, compact, rounds) {
   const items = new Map(pool.items.map((i) => [i.id, i]));
   const templates = new Map(compact.templates.map((t) => [`${t.category}|${t.unit}`, t]));
   const pairs = new Map();
-  const byLevel = { easy: [], medium: [], hard: [] };
-  for (const [n, a, b, truth, level] of compact.pairs) {
-    const p = { id: pairId(n), a_id: itemId(a), b_id: itemId(b), truth, level: LEVELS[level] };
+  const lists = Object.fromEntries(Object.keys(DIFFICULTIES).map((d) => [d, { easy: [], medium: [], hard: [] }]));
+  for (const [n, a, b, truth, level, band = 0, ref = 0] of compact.pairs) {
+    const p = { id: pairId(n), a_id: itemId(a), b_id: itemId(b), truth, level: LEVELS[level], band, ref };
     pairs.set(p.id, p);
-    byLevel[p.level].push(p.id);
+    for (const [d, spec] of Object.entries(DIFFICULTIES)) if (spec.ok(p)) lists[d][p.level].push(p.id);
   }
   const entity = new Map([...items.values()].map((i) => [i.id, (i.replaces || i.source).match(/\/(Q\d+)#/)?.[1] ?? i.id]));
   const rankedDatesByItem = new Map(); // for the recompute after a retirement
@@ -59,7 +67,7 @@ export function loadRounds(pool, compact, rounds) {
       for (const i of [p.a_id, p.b_id]) rankedDatesByItem.set(i, [...(rankedDatesByItem.get(i) ?? []), date]);
     }
   }
-  return { items, pairs, templates, byLevel, rounds, entity, rankedDatesByItem };
+  return { items, pairs, templates, lists, rounds, entity, rankedDatesByItem };
 }
 
 // --- scoring ------------------------------------------------------------------------------------------------------
@@ -223,13 +231,16 @@ async function liveIds(db, data, ids) {
 
 // --- GET /api/round -----------------------------------------------------------------------------------------------
 
-// MIX pairs per difficulty, then SPARE more of each, none in `avoid`, unseen first, no item or entity twice in the
-// round. [{id, level}] in pick order, so the main slots come first.
-export function sampleQuick(data, avoid, seen, rand) {
+// The difficulty's mix of pairs per level, then SPARE more of each level it uses, none in `avoid`, unseen first, no item
+// or entity twice in the round, and (normal) at most one pair under 50,000 views. [{id, level}] in pick order, so the
+// main slots come first.
+export function sampleQuick(data, avoid, seen, rand, difficulty = 'normal') {
+  const spec = DIFFICULTIES[difficulty];
   const picked = [];
   const entities = new Set();
-  for (const [level, count] of [...LEVELS.map((l) => [l, MIX[l]]), ...LEVELS.map((l) => [l, SPARE])]) {
-    const ids = data.byLevel[level];
+  let known = 0;
+  for (const [level, count] of [...LEVELS.map((l) => [l, spec.mix[l]]), ...LEVELS.map((l) => [l, spec.mix[l] ? SPARE : 0])]) {
+    const ids = data.lists[difficulty][level];
     let need = count;
     for (let tries = 0; need > 0 && tries < 600 && ids.length; tries += 1) {
       const id = ids[Math.floor(rand() * ids.length)];
@@ -237,8 +248,10 @@ export function sampleQuick(data, avoid, seen, rand) {
       const ents = [data.entity.get(p.a_id), data.entity.get(p.b_id)];
       const unseenOnly = tries < 400; // a player who has seen nearly everything still gets a round
       if (avoid.has(id) || picked.some((x) => x.id === id) || ents.some((e) => entities.has(e)) || (unseenOnly && seen.has(id))) continue;
+      if (spec.maxKnown != null && p.band < 2 && known >= spec.maxKnown) continue;
       picked.push({ id, level });
       ents.forEach((e) => entities.add(e));
+      if (p.band < 2) known += 1;
       need -= 1;
     }
   }
@@ -256,7 +269,8 @@ const shuffle = (xs, rand) => {
 
 const parseSeen = (s) => new Set((typeof s === 'string' ? s.split(',') : []).filter((x) => PAIR_RE.test(x)).slice(-MAX_SEEN));
 
-// params: {mode, seen, round_id}. round_id (an addition to the contract) loads an existing round, for challenge links.
+// params: {mode, seen, round_id, difficulty}. round_id (an addition to the contract) loads an existing round, for
+// challenge links; difficulty applies to quick rounds (default normal).
 export async function getRound(db, data, params, now, rand = Math.random) {
   const today = todayUTC(now);
   if (params.round_id != null) {
@@ -274,15 +288,18 @@ export async function getRound(db, data, params, now, rand = Math.random) {
     return ok({ round_id: `rk-${today}`, mode: 'ranked', date: today, items: ids.map((id) => pairView(data, id)) });
   }
   if (params.mode !== 'quick') return err(400, 'mode must be ranked or quick');
+  const difficulty = params.difficulty || 'normal';
+  if (!Object.hasOwn(DIFFICULTIES, difficulty)) return err(400, 'difficulty must be easy, normal or brutal');
   const day = data.rounds[today];
   const avoid = new Set(day ? [...day.ranked, day.question] : []); // never today's ranked pairs or chat question
-  const candidates = sampleQuick(data, avoid, parseSeen(params.seen), rand);
+  const candidates = sampleQuick(data, avoid, parseSeen(params.seen), rand, difficulty);
   const live = new Set(await liveIds(db, data, candidates.map((c) => c.id)));
-  const ids = shuffle(LEVELS.flatMap((level) => candidates.filter((c) => c.level === level && live.has(c.id)).slice(0, MIX[level]).map((c) => c.id)), rand);
+  const mix = DIFFICULTIES[difficulty].mix;
+  const ids = shuffle(LEVELS.flatMap((level) => candidates.filter((c) => c.level === level && live.has(c.id)).slice(0, mix[level]).map((c) => c.id)), rand);
   const roundId = randomString(12, CODE_ALPHABET);
-  await db.prepare('INSERT INTO rounds (round_id, mode, date, items, created_at) VALUES (?, ?, ?, ?, ?)')
-    .bind(roundId, 'quick', today, JSON.stringify(ids), now.toISOString()).run();
-  return ok({ round_id: roundId, mode: 'quick', date: today, items: ids.map((id) => pairView(data, id)) });
+  await db.prepare('INSERT INTO rounds (round_id, mode, date, items, created_at, difficulty) VALUES (?, ?, ?, ?, ?, ?)')
+    .bind(roundId, 'quick', today, JSON.stringify(ids), now.toISOString(), difficulty).run();
+  return ok({ round_id: roundId, mode: 'quick', difficulty, date: today, items: ids.map((id) => pairView(data, id)) });
 }
 
 // --- POST /api/round/answer ---------------------------------------------------------------------------------------

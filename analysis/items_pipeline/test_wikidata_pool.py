@@ -129,6 +129,51 @@ class Filters(unittest.TestCase):
         self.assertNotIn("entity", CAT["mountain_elevation"])  # the label as it is: "Mont Blanc"
 
 
+class NewKinds(unittest.TestCase):
+    def dated(self, prop, t, precision="11", rank=NORMAL, **kw):
+        return {"prop": prop, "time": t, "precision": precision, "rank": rank, **kw}
+
+    def test_launch_year_is_the_first_release_anywhere_then_service_entry_then_one_inception(self):
+        rows = [self.dated("P577", "1989-04-21T00:00:00Z"), self.dated("P577", "1990-09-28T00:00:00Z"), self.dated("P571", "1987-01-01T00:00:00Z", "9")]
+        answer, extra = w.select_release(rows)
+        self.assertEqual((answer, extra["source_prop"]), (1989, "P577"))  # publication date wins over inception
+        self.assertEqual(w.select_release([self.dated("P729", "1938-01-01T00:00:00Z", "9")])[0], 1938)  # car models
+        self.assertEqual(w.select_release([self.dated("P571", "1997-01-01T00:00:00Z", "9"), self.dated("P571", "1998-01-01T00:00:00Z", "9")]),
+                         (None, "conflict"))
+        self.assertEqual(w.select_release([self.dated("P577", "1990-01-01T00:00:00Z", "8")]), (None, "precision"))  # decade only
+        normal_and_preferred = [self.dated("P577", "2009-05-17T00:00:00Z"), self.dated("P577", "2011-11-18T00:00:00Z", rank=PREFERRED)]
+        self.assertEqual(w.select_release(normal_and_preferred)[0], 2011)  # a preferred date hides the others
+
+    def test_speakers_count_first_language_statements_only_latest_year(self):
+        part = {"part": w.FIRST_LANGUAGE}
+        rows = [{"amount": "379007140", "time": "2019-01-01T00:00:00Z", "precision": "9", "rank": NORMAL, **part},
+                {"amount": "753359540", "time": "2019-01-01T00:00:00Z", "precision": "9", "rank": PREFERRED, "part": WD + "Q125421"},
+                {"amount": "339370920", "time": "2011-01-01T00:00:00Z", "precision": "9", "rank": NORMAL, **part},
+                {"amount": "1132366680", "time": "2019-01-01T00:00:00Z", "precision": "9", "rank": NORMAL}]
+        answer, extra = w.select_speakers(rows)
+        self.assertEqual((answer, extra["year"]), (379007140, 2019))  # not the preferred second-language count
+        self.assertEqual(w.select_speakers(rows[3:]), (None, "no_first_language"))
+        clash = [{"amount": a, "time": "2019-01-01T00:00:00Z", "precision": "9", "rank": PREFERRED, **part} for a in ("221000000", "254300000")]
+        self.assertEqual(w.select_speakers(clash), (None, "conflict"))
+
+    def test_curated_product_names_and_the_source_property(self):
+        items, _ = w.build_category(CAT["product_released"], [
+            binding("Q621427", "Q621427", 54, prop="P577", time="2007-06-29T00:00:00Z", precision="11", rank=NORMAL, referenced="true", imported="false"),
+        ], "2026-10-04")
+        it = items[0]
+        self.assertEqual((it["name"], it["answer"], it["source"]), ("the iPhone", 2007, "https://www.wikidata.org/wiki/Q621427#P577"))
+        self.assertEqual(it["en"]["prompt"], "In what year did the iPhone first come out?")
+        self.assertIn("Q186437", w.PRODUCTS)  # the Game Boy
+        for name in ("country_population", "company_founded", "product_released", "language_speakers", "landmark_height", "landmark_built"):
+            self.assertIn(name, CAT)
+
+    def test_regeneration_keeps_pageviews_until_the_next_pageviews_run(self):
+        first, _ = w.build_pool(RAW, generated_at="2026-10-03")
+        previous = [dict(it, enwiki="X", views_month=123) for it in first["items"]]
+        second, _ = w.build_pool(RAW, previous, generated_at="2026-10-04")
+        self.assertTrue(all((it["enwiki"], it["views_month"]) == ("X", 123) for it in second["items"]))
+
+
 class References(unittest.TestCase):
     def row(self, referenced, imported, rank=NORMAL):
         return {"referenced": referenced, "imported": imported, "rank": rank}

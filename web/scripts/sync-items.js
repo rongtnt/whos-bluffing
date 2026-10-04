@@ -3,7 +3,7 @@
 //   items/pool.json     -> web/public/pool.json (prompts only: no answers, no sources) and web/functions/_pool.json
 //                          (only the fields the API reads)
 //   daily/schedule.json -> web/functions/_schedule.json                         (daily range game)
-//   items/pairs.json    -> web/functions/_pairs.json (compact: [n, a, b, truth, level] per pair)   (rounds)
+//   items/pairs.json    -> web/functions/_pairs.json (compact: [n, a, b, truth, level, band, ref] per pair) (rounds)
 //   daily/rounds.json   -> web/functions/_rounds.json                           (ranked rounds, daily questions)
 //   web/scripts/page.html -> web/functions/_page.json                          (template of the challenge page)
 //   PRIVACY.md, TERMS.md, docs/api-daily.md -> web/public/privacy.html, terms.html, docs/api.html (sync-docs.js)
@@ -150,9 +150,12 @@ export function validateRounds(rounds, pairsById, poolItems) {
   return errs;
 }
 
+// band: 2 = both items famous (>= 50,000 monthly views), 1 = known (>= 20,000), 0 = obscure; ref: 1 = both referenced.
+export const fameBand = (fame = 0) => (fame >= 50000 ? 2 : fame >= 20000 ? 1 : 0);
 export const compactPairs = (doc) => ({
   templates: doc.templates,
-  pairs: doc.pairs.map((p) => [num(p.id), num(p.a_id), num(p.b_id), p.truth, LEVELS_R.indexOf(p.difficulty_hint)]),
+  pairs: doc.pairs.map((p) => [num(p.id), num(p.a_id), num(p.b_id), p.truth, LEVELS_R.indexOf(p.difficulty_hint), fameBand(p.fame),
+    p.ref_quality === 'referenced' ? 1 : 0]),
 });
 
 function readOptional(path, fallback) {

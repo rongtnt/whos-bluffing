@@ -65,30 +65,63 @@ MOON_NAMES = ["Moon", "Phobos", "Deimos", "Io", "Europa", "Ganymede", "Callisto"
 MOONS = (f"VALUES ?parent {{ {PLANETS} wd:Q339 }} VALUES ?name {{ {' '.join(f'{chr(34)}{n}{chr(34)}@en' for n in MOON_NAMES)} }} "
          "?item rdfs:label ?name ; wdt:P397 ?parent .")
 DWARF_PLANETS = "wd:Q339 wd:Q596 wd:Q1471 wd:Q1765 wd:Q1770"
-# Famous products and launches by English label ("Which came out first?"). A label can name several things, so films,
-# people, songs, albums, TV series and books are excluded and the best-known match wins (one entity per name).
-PRODUCT_NAMES = [
-    "iPhone", "iPad", "iPod", "Macintosh", "Apple II", "Apple Watch", "AirPods", "Walkman", "Game Boy", "Game Boy Advance",
-    "Nintendo Entertainment System", "Super Nintendo Entertainment System", "Nintendo 64", "GameCube", "Wii", "Nintendo Switch",
-    "Nintendo DS", "PlayStation", "PlayStation 2", "PlayStation 3", "PlayStation 4", "PlayStation 5", "PlayStation Portable",
-    "Xbox", "Xbox 360", "Xbox One", "Sega Genesis", "Atari 2600", "Commodore 64", "ZX Spectrum", "IBM Personal Computer",
-    "BlackBerry", "Nokia 3310", "Amazon Kindle", "Tamagotchi", "Rubik's Cube", "Furby", "Barbie", "Lego", "Monopoly",
-    "Scrabble", "Frisbee", "Slinky", "Post-it Note", "Compact disc", "DVD", "Blu-ray", "Floppy disk", "USB flash drive",
-    "Ford Model T", "Volkswagen Beetle", "Fiat 500", "Toyota Corolla", "Ford Mustang", "Chevrolet Corvette", "Porsche 911",
-    "Toyota Prius", "Tesla Model S", "Tesla Model 3", "Citroën 2CV", "Volkswagen Golf", "Honda Civic", "Land Rover Defender",
-    "Microsoft Windows", "Windows 95", "Windows XP", "Linux", "Android", "iOS", "Google Search", "Gmail", "YouTube",
-    "Facebook", "Twitter", "Instagram", "WhatsApp", "TikTok", "Snapchat", "Wikipedia", "Netflix", "Spotify", "Google Maps",
-    "Skype", "Tetris", "Pac-Man", "Super Mario Bros.", "The Legend of Zelda", "Minecraft", "Fortnite", "World of Warcraft",
-    "The Sims", "Space Invaders", "Pong", "Grand Theft Auto V", "Street Fighter II", "Coca-Cola", "Pepsi", "Big Mac", "Nutella",
-    "Kit Kat", "Red Bull", "Concorde", "Boeing 747", "Airbus A380", "Sputnik 1", "Hubble Space Telescope", "Space Shuttle",
-]
-PRODUCTS = (f"VALUES ?name {{ {' '.join(chr(34) + n.replace(chr(34), '') + chr(34) + '@en' for n in PRODUCT_NAMES)} }} ?item rdfs:label ?name . "
-            "FILTER NOT EXISTS { VALUES ?no { wd:Q11424 wd:Q5 wd:Q134556 wd:Q482994 wd:Q7366 wd:Q5398426 wd:Q7725634 wd:Q506240 } ?item wdt:P31 ?no }")
-LANGUAGES = "VALUES ?cls { wd:Q34770 wd:Q1288568 wd:Q33742 } ?item wdt:P31 ?cls ."
+# Famous products and launches ("Which came out first?"): enwiki article titles resolved to Wikidata ids through the
+# Wikipedia API (pageprops, redirects followed) on 2026-10-04, with the name as it reads in a question. Labels alone
+# picked films, re-releases and renamed items ("Twitter" is now "X"), so the list is by id.
+PRODUCTS = {
+    "Q621427": "the iPhone", "Q59802": "the iPad", "Q9479": "the iPod", "Q1137478": "the Macintosh",
+    "Q201652": "the Apple II", "Q18010946": "the Apple Watch", "Q26936286": "AirPods", "Q622493": "the Walkman",
+    "Q186437": "the Game Boy", "Q188642": "the Game Boy Advance", "Q172742": "the Nintendo Entertainment System",
+    "Q183259": "the Super Nintendo", "Q184839": "the Nintendo 64", "Q182172": "the GameCube", "Q8079": "the Wii",
+    "Q19610114": "the Nintendo Switch", "Q170323": "the Nintendo DS", "Q10677": "the PlayStation",
+    "Q10680": "the PlayStation 2", "Q10683": "the PlayStation 3", "Q5014725": "the PlayStation 4",
+    "Q63184502": "the PlayStation 5", "Q170325": "the PlayStation Portable", "Q132020": "the Xbox",
+    "Q48263": "the Xbox 360", "Q13361286": "the Xbox One", "Q10676": "the Sega Genesis", "Q206261": "the Atari 2600",
+    "Q99775": "the Commodore 64", "Q23882": "the ZX Spectrum", "Q202712": "the IBM PC", "Q219691": "the Nokia 3310",
+    "Q136469": "the Kindle", "Q207786": "the Tamagotchi", "Q47043": "the Rubik's Cube", "Q932209": "the Furby",
+    "Q167447": "Barbie", "Q170484": "Lego", "Q17243": "Monopoly", "Q170436": "Scrabble", "Q131689": "the Frisbee",
+    "Q1118802": "the Slinky", "Q181331": "the Post-it note", "Q34467": "the CD", "Q5294": "the DVD",
+    "Q47770": "Blu-ray", "Q5293": "the floppy disk", "Q1647694": "the USB flash drive", "Q182323": "the Ford Model T",
+    "Q152946": "the Volkswagen Beetle", "Q467767": "the Fiat 500", "Q243543": "the Toyota Corolla",
+    "Q183476": "the Ford Mustang", "Q56166": "the Chevrolet Corvette", "Q219357": "the Porsche 911",
+    "Q213115": "the Toyota Prius", "Q1463050": "the Tesla Model S", "Q7705507": "the Tesla Model 3",
+    "Q326015": "the Citroën 2CV", "Q247": "the Volkswagen Golf", "Q216747": "the Honda Civic",
+    "Q908027": "the Land Rover Defender", "Q1406": "Windows", "Q83370": "Windows 95", "Q11248": "Windows XP",
+    "Q388": "Linux", "Q94": "Android", "Q48493": "iOS", "Q9366": "Google Search", "Q9334": "Gmail", "Q866": "YouTube",
+    "Q355": "Facebook", "Q918": "Twitter", "Q209330": "Instagram", "Q1049511": "WhatsApp", "Q48938223": "TikTok",
+    "Q333618": "Snapchat", "Q52": "Wikipedia", "Q907311": "Netflix", "Q689141": "Spotify", "Q12013": "Google Maps",
+    "Q40984": "Skype", "Q71910": "Tetris", "Q173626": "Pac-Man", "Q11168": "Super Mario Bros.",
+    "Q12395": "The Legend of Zelda", "Q49740": "Minecraft", "Q349375": "Fortnite", "Q131007": "World of Warcraft",
+    "Q184816": "The Sims", "Q220665": "Space Invaders", "Q216293": "Pong", "Q17452": "Grand Theft Auto V",
+    "Q1133204": "Street Fighter II", "Q637137": "Pokémon Red and Blue", "Q189784": "Doom",
+    "Q37123": "Sonic the Hedgehog", "Q4558721": "Angry Birds", "Q8768018": "Candy Crush Saga", "Q96417649": "Among Us",
+    "Q20966579": "Pokémon Go", "Q2813": "Coca-Cola", "Q47719": "Pepsi", "Q506796": "the Big Mac", "Q212193": "Nutella",
+    "Q367251": "Kit Kat", "Q51482": "Red Bull", "Q138585": "Oreo", "Q528187": "Pringles", "Q206978": "Sprite",
+    "Q9935": "Fanta", "Q739550": "M&M's", "Q714179": "Snickers", "Q215707": "Toblerone",
+}
+PRODUCT_ITEMS = f"VALUES ?item {{ {' '.join('wd:' + q for q in PRODUCTS)} }}"
+# language, modern language, natural language, human language, standard language, macrolanguage, register (Hindi)
+LANGUAGE_CLASSES = ["Q34770", "Q1288568", "Q33742", "Q20162172", "Q399495", "Q152559", "Q286576"]
 FIRST_LANGUAGE = WD + "Q36870"  # P518 "applies to part": first language
-COMPANIES = "VALUES ?cls { wd:Q891723 wd:Q4830453 wd:Q6881511 wd:Q783794 wd:Q167037 } ?item wdt:P31 ?cls ."
-# statue, tower, cathedral, church building, monument, lighthouse, obelisk, mosque (+ stadium for the year built)
-LANDMARKS = "wd:Q179700 wd:Q12518 wd:Q2977 wd:Q16970 wd:Q4989906 wd:Q39715 wd:Q170980 wd:Q32815"
+COMPANIES = ("VALUES ?cls { wd:Q891723 wd:Q4830453 wd:Q6881511 wd:Q783794 wd:Q167037 } ?item wdt:P31 ?cls . "
+             "FILTER NOT EXISTS { VALUES ?club { wd:Q476028 wd:Q847017 } ?item wdt:P31 ?club }")  # not football or sports clubs
+# Landmarks: statue, colossal statue, tower, observation tower, bell tower, clock tower, cathedral, basilica, church
+# building, mausoleum, amphitheatre, opera house, pyramid, castle, palace, temple, monument, lighthouse, obelisk (+ stadium
+# for the year built). The well-known ones are picked in a subquery that runs first (UNION of constant classes, sitelinks
+# filter): with VALUES ?cls the public endpoint times out.
+LANDMARK_CLASSES = ["Q179700", "Q1779653", "Q12518", "Q1440300", "Q200334", "Q2869004", "Q2977", "Q163687", "Q16970", "Q162875",
+                    "Q54831", "Q153562", "Q12516", "Q23413", "Q16560", "Q44539", "Q4989906", "Q39715", "Q170980"]
+
+
+def well_known(classes, min_sitelinks):
+    """Items of any of the classes with at least min_sitelinks Wikipedia articles, picked first (see LANDMARK_CLASSES)."""
+    union = " UNION ".join(f"{{ ?item wdt:P31 wd:{c} . }}" for c in classes)
+    return (f"{{ SELECT DISTINCT ?item WHERE {{ {union} ?item wikibase:sitelinks ?sl . FILTER(?sl >= {min_sitelinks}) "
+            f"FILTER NOT EXISTS {{ ?item wdt:P576 [] }} }} }} hint:Prior hint:runFirst true .")
+
+
+def landmarks(min_sitelinks, extra_classes=()):
+    return well_known(LANDMARK_CLASSES + list(extra_classes), min_sitelinks)
 
 
 # Reference quality of the statement ?st: a real reference (anything but P143 imported from / P4656 Wikimedia import
@@ -123,11 +156,11 @@ def population_query(where, min_sitelinks, prop="P1082", extra=""):
 
 
 def release_query(where, min_sitelinks):
-    """Launch years: publication date (P577) and inception (P571) statements, tagged by ?prop."""
+    """Launch years: publication date (P577), service entry (P729, car models) and inception (P571), tagged by ?prop."""
     return f"""SELECT DISTINCT ?item ?itemLabel ?sitelinks ?prop ?time ?precision ?rank ?referenced ?imported WHERE {{
   {where}
   ?item wikibase:sitelinks ?sitelinks . FILTER(?sitelinks >= {min_sitelinks})
-  VALUES (?p ?psv ?prop) {{ (p:P577 psv:P577 "P577") (p:P571 psv:P571 "P571") }}
+  VALUES (?p ?psv ?prop) {{ (p:P577 psv:P577 "P577") (p:P729 psv:P729 "P729") (p:P571 psv:P571 "P571") }}
   ?item ?p ?st . ?st wikibase:rank ?rank ; ?psv ?tv .
   ?tv wikibase:timeValue ?time ; wikibase:timePrecision ?precision .
   {REFS}
@@ -257,18 +290,17 @@ CATEGORIES = [
          query=year_query(COMPANIES, "?item p:P571 ?st . ?st wikibase:rank ?rank ; psv:P571 ?tv .", 60),
          prompt=lambda label, row: f"In what year was {label} founded?"),
     dict(name="product_released", domain="everyday", kind="release", prop="P577", unit="year", accept=[1800, CURRENT_YEAR], cap=150,
-         query=release_query(PRODUCTS, 20),
+         query=release_query(PRODUCT_ITEMS, 1), labels=PRODUCTS,
          prompt=lambda label, row: f"In what year did {label} first come out?"),
     dict(name="language_speakers", domain="everyday", kind="speakers", prop="P1098", unit="people", accept=[10000, 2000000000], cap=150,
-         query=population_query(LANGUAGES, 40, prop="P1098", extra="?part"),
+         query=population_query(well_known(LANGUAGE_CLASSES, 40), 40, prop="P1098", extra="?part"),
          prompt=lambda label, row: f"How many people spoke {label} as a first language in {row['year']}?"),
     dict(name="landmark_height", domain="everyday", kind="quantity", prop="P2048", unit="m", accept=[1, 700], cap=200,
-         query=quantity_query(f"VALUES ?cls {{ {LANDMARKS} }} ?item wdt:P31 ?cls . FILTER NOT EXISTS {{ ?item wdt:P576 [] }}", "P2048", 30),
+         query=quantity_query(landmarks(30), "P2048", 30),
          prompt=lambda label, row: f"How tall is {article(label, LANDMARK_NOUNS)}{label}?",
          entity=lambda label, row: f"{article(label, LANDMARK_NOUNS)}{label}"),
     dict(name="landmark_built", domain="history", kind="year", prop="P571", unit="year", accept=[-3000, CURRENT_YEAR], cap=200,
-         query=year_query(f"VALUES ?cls {{ {LANDMARKS} wd:Q483110 }} ?item wdt:P31 ?cls . FILTER NOT EXISTS {{ ?item wdt:P576 [] }}",
-                          "?item p:P571 ?st . ?st wikibase:rank ?rank ; psv:P571 ?tv .", 40),
+         query=year_query(landmarks(40, ["Q483110"]), "?item p:P571 ?st . ?st wikibase:rank ?rank ; psv:P571 ?tv .", 40),
          prompt=lambda label, row: f"In what year was {article(label, LANDMARK_NOUNS)}{label} built?",
          entity=lambda label, row: f"{article(label, LANDMARK_NOUNS)}{label}"),
 ]
@@ -332,8 +364,9 @@ def ref_quality(rows):
 
 
 def select_release(rows):
-    """Launch year: the earliest best-ranked publication date (first release anywhere), else a single inception year."""
-    for prop in ("P577", "P571"):
+    """Launch year: the earliest best-ranked publication date (first release anywhere), else the earliest service entry,
+    else a single inception year."""
+    for prop in ("P577", "P729", "P571"):
         stated = best_rank([r for r in rows if r.get("prop") == prop])
         dated = [r for r in stated if int(r["precision"]) >= 9]
         if not stated:
@@ -413,7 +446,7 @@ def build_category(category, bindings, generated_at):
         skipped[reason] = skipped.get(reason, 0) + 1
 
     for q, rows in by_item.items():
-        label = rows[0].get("itemLabel", "")
+        label = category.get("labels", {}).get(q) or rows[0].get("itemLabel", "")  # curated names win (products)
         if not label or re.fullmatch(r"Q\d+", label) or not LATIN_LABEL.match(label):
             skip("label")
             continue
