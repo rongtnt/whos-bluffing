@@ -17,19 +17,11 @@
    ```bash
    gh repo edit rongtnt/whos-bluffing --visibility public --accept-visibility-change-consequences
    ```
-3. **Cloudflare**（免费账号即可）：
-   ```bash
-   cd ~/howsure/web && npx wrangler login
-   npx wrangler d1 create whosbluffing   # 把输出的 database_id 粘进 wrangler.toml 的 [[d1_databases]]
-   npx wrangler d1 migrations apply whosbluffing --remote
-   npm run sync-items                    # 题库同步到 public/ 和 functions/
-   npx wrangler pages deploy public --project-name whosbluffing
-   ```
-   然后在 Cloudflare 控制台给 `/api/*` 加一条免费的 rate-limit 规则（例如每 IP 每分钟 20 次），表达式里豁免带机器人密钥头的请求：`(http.request.uri.path contains "/api/") and not (any(http.request.headers["x-bluff-bot"][*] eq "<BOT_KEY>"))`。BOT_KEY 用 `openssl rand -hex 32` 生成，设在 Pages（`npx wrangler pages secret put BOT_KEY`）和 Slack、Discord 两个 Worker 上（`npx wrangler secret put BOT_KEY`）。这不经过我们的数据库，不存 IP。
-   KPI 任务：`openssl rand -hex 32` 生成一个 KPI_KEY，**设两次**——Pages 项目的 secret（`npx wrangler pages secret put KPI_KEY`）和 `web/kpi-worker/` 的 Worker secret；然后 `cd web/kpi-worker && npx wrangler deploy`（它每天调用一次 `/api/kpi/run`，统计页的 MAU 从这里来）。
-   域名：站点里写死了 `whosbluffing.com`（sitemap、robots、分享文案）和 `whosbluffing.pages.dev`（KPI Worker 的 RUN_URL）；买了别的域名就全局替换这两处。
-   域名 whosbluffing.com 已买（见第 0 项）：在 Cloudflare 里绑定到 Pages 项目。
-   规模：免费层每天约 7,500 份完成卷（写入是瓶颈：每份约 8–13 行）；一天超过这个量就开 Workers Paid（5 美元/月）。读取已做成常数级，不会因为样本变大而崩。
+3. **Cloudflare — 大部分已做完（2026-10-04）**：D1 数据库 whosbluffing 已建并迁移、Pages 项目 whosbluffing 已部署（https://whosbluffing.pages.dev 在线）、KPI_KEY / BOT_KEY 已设（本机副本在 `web/.dev.vars`，已 git-ignore，别提交别外传）。还差 3 个控制台动作（约 5 分钟）：
+   - **Workers 子域名（必须，KPI 定时任务和 Slack/Discord 两个 Worker 都靠它）**：Workers & Pages → Overview → 右侧 "Subdomain" → Set up → 填 `whosbluffing` → 保存。做完告诉我，我重新部署 KPI Worker。
+   - **绑定域名**：Workers & Pages → whosbluffing → Custom domains → Set up a custom domain → `whosbluffing.com` → Activate（DNS 自动建）。再加一次 `www.whosbluffing.com`。
+   - **限流规则**：Security → WAF → Rate limiting rules → Create：表达式 `(http.request.uri.path contains "/api/") and not (any(http.request.headers["x-bluff-bot"][*] eq "<BOT_KEY 的值，在 web/.dev.vars 里>"))`，120 次/分钟/IP，Block 60 秒。
+   规模：免费层每天约 7,500 份完成局（写入是瓶颈）；超过就开 Workers Paid（5 美元/月）。
 4. **校对题库**：`items/REVIEW.md` 逐条核对打勾（约 3–4 小时）。改错直接改 `items/items.json`，然后 `cd web && npm run sync-items`。这是你必须亲手做的部分：每道题的事实你要能当场说出来源。
    **每晚 2 分钟的仪式（上线后天天做）**：`cd ~/howsure/web && npm run tomorrow` 打印明天的 5 题和来源；有问题的题直接改 `daily/schedule.json` 里那一天的 id（从 `items/pool.json` 挑同类别、未排期的替换），提交。Wikidata 数据有脏的（已知例子：某些桥的长度、法国面积含海外省、某大学建校年份有争议），这一步就是质量门。上线前两周（10/17–10/31）的 75 题我已经替换过明显有问题的。
 5. **AnkiWeb 账号**（上传插件那天）：https://ankiweb.net/shared/addons/ → 上传 `anki/dist/whosbluffing.ankiaddon`。
