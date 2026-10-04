@@ -59,7 +59,7 @@
    cd ~/howsure/discord && npx wrangler deploy
    ```
 5. 回到 **General Information** → **Interactions Endpoint URL** 填 `https://whosbluffing-discord.rongaijun41.workers.dev/interactions` → Save Changes（Discord 当场发两条请求验签，所以第 4 步必须先做完）。
-   然后左侧 **Webhooks** 页：Endpoint URL 填 `https://whosbluffing-discord.rongaijun41.workers.dev/events`，打开 Events，勾 `APPLICATION_AUTHORIZED`（有 `APPLICATION_DEAUTHORIZED` 也勾）→ Save Changes（Discord 同样会先发一条验签请求）。作用：服务器一装 bot 就登记并发一条欢迎语，不用等有人先敲命令（细节 `discord/README.md` 第 7 步）。
+   然后左侧 **Webhooks** 页：Endpoint URL 填 `https://whosbluffing-discord.rongaijun41.workers.dev/events`，打开 Events，勾 `APPLICATION_AUTHORIZED`（有 `APPLICATION_DEAUTHORIZED` 也勾）→ Save Changes（Discord 同样会先发一条验签请求）。作用：服务器一装 bot 就登记并发一条欢迎语，不用等有人先敲命令（细节 `discord/README.md` 第 7 步）。这一步没在真实 Discord 上验过：如果 Save 报错，跳过它照常往下做，告诉我一声，其余功能不受影响。
 6. 注册命令（App ID 和 Token 只在这一条命令里用，不会存盘）：
    ```bash
    cd ~/howsure/discord && DISCORD_APP_ID=<application id> DISCORD_BOT_TOKEN=<bot token> npm run register
