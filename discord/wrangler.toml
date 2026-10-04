@@ -17,7 +17,7 @@ database_id = "2fbd2b5d-f54f-4d4c-b569-172a4949a8ef"
 # Origin of the web deployment that serves /api/round (no trailing slash, no /api).
 API_BASE = "https://bots.whosbluffing.com"
 # Developer Portal -> your app -> General Information -> Application ID (public, not a secret).
-DISCORD_APP_ID = "REPLACE_WITH_APPLICATION_ID"
+DISCORD_APP_ID = "1556371051439587461"
 
 # Secrets (set with `npx wrangler secret put NAME`, never in this file):
 # DISCORD_PUBLIC_KEY, DISCORD_BOT_TOKEN, SALT, BOT_KEY
