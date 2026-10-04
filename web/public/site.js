@@ -8,7 +8,7 @@ const DISCORD_INSTALL_URL = 'https://discord.com/oauth2/authorize?client_id=1556
 const COMMUNITY_INVITE_URL = 'https://discord.gg/V5wcSC7cd'; // invite link to the Who's Bluffing Discord server (/community shows "opening soon" until set)
 const CONTACT_EMAIL = 'hello@whosbluffing.com'; // e.g. hello@whosbluffing.com once email routing works (hidden until set)
 const GITHUB_URL = 'https://github.com/rongtnt/whos-bluffing';
-const X_URL = ''; // e.g. https://x.com/<handle>
+const X_URL = 'https://x.com/whos_bluffing'; // e.g. https://x.com/<handle>
 const BLUESKY_URL = ''; // e.g. https://bsky.app/profile/<handle>
 const ACTIONS_URL = 'https://github.com/rongtnt/whos-bluffing/actions'; // the repository's GitHub Actions page, once the repository is public (/status links to it)
 
