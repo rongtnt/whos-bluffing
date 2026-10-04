@@ -6,7 +6,7 @@ import { startTest } from './test.js';
 import { renderRounds, renderChallenge } from './rounds.js';
 import { renderStats } from './stats.js';
 import { renderClassCreate, renderDashboard } from './class.js';
-import { renderProof } from './home.js';
+import { renderProof, renderLive } from './home.js';
 
 const app = document.getElementById('app');
 
@@ -81,7 +81,7 @@ function route() {
   const p = location.pathname;
   const dash = p.match(/^\/class\/d\/([A-Za-z0-9_-]{24})\/?$/);
   const challenge = p.match(/^\/c\/((?:rk-\d{4}-\d{2}-\d{2})|[A-Z2-9]{12})\/([A-Za-z0-9_-]{10})\/?$/);
-  if (p === '/') return Promise.all([renderRounds(ctx), renderProof(document.getElementById('proof'))]);
+  if (p === '/') return Promise.all([renderRounds(ctx), renderProof(document.getElementById('proof')), renderLive(document.querySelector('[data-live]'))]);
   if (challenge) return renderChallenge(ctx, challenge[1], challenge[2]);
   if (/^\/test\/?$/.test(p)) return renderTestLanding();
   if (/^\/stats\/?$/.test(p)) return renderStats(ctx);

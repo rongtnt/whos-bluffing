@@ -8,7 +8,7 @@ import { openD1 } from './d1.js';
 import { addDays } from '../functions/_daily.js';
 import {
   loadRounds, points, typeOf, scoreRound, shareText, parseRoundId, getRound, answer, complete, compare, roundStats,
-  dailyQuestion, reveal, recordEvent, flagPair, settleQuestions, newToken, binHist, histIndex, ROASTS, MIX, DIFFICULTIES,
+  dailyQuestion, reveal, recordEvent, flagPair, settleQuestions, newToken, binHist, histIndex, ROASTS, MIX, DIFFICULTIES, CONFS,
 } from '../functions/_rounds.js';
 import { challengePage, challengeTitle, HEADERS } from '../functions/_challenge.js';
 import { computeKpi, runKpi, latestKpi } from '../functions/_kpi.js';
@@ -387,6 +387,47 @@ test('stats: ranked players, 100-point bins from -3000, mean overconfidence; yes
   assert.equal(s.score_hist[25], 1); // -440 is in [-500, -400)
   assert.equal((await roundStats(db, DATA, PREV, NOW)).body.players, 1);
   assert.equal((await roundStats(db, DATA, NEXT, NOW)).status, 404);
+});
+
+test('stats bluffs and calibration: the costliest misses at 90%+, one per pair, at most 3, most recent on a tie; none below 5 players; no ids; answers right per confidence; retired pairs drop out of both', async () => {
+  const db = openD1();
+  const round = (await getRound(db, DATA, { mode: 'ranked' }, NOW)).body;
+  const ids = round.items.map((i) => i.id);
+  const view = (k, conf) => {
+    const it = round.items[k];
+    return { prompt: it.prompt, pick: DATA.pairs.get(it.id).truth ? it.a : it.b, conf, points: points(conf, 0) };
+  };
+  // [who, minute, {question: confidence of a miss}]; every other answer is right at 80%. 80% and 70% misses are no bluffs.
+  const plays = [['b1', 0, { 0: 100, 1: 90 }], ['b2', 1, { 2: 100 }], ['b3', 2, { 1: 100, 3: 90 }], ['b4', 3, { 4: 80, 5: 70 }], ['b5', 4, {}]];
+  for (const [who, minute, miss] of plays) {
+    const at = new Date(NOW.getTime() + minute * 60000);
+    await playRound(db, who, `rk-${DAY}`, ids, ids.map((_, k) => !(k in miss)), { conf: (k) => miss[k] ?? 80, now: at });
+    const s = (await roundStats(db, DATA, DAY, at)).body;
+    if (s.players < 5) assert.deepEqual(s.bluffs, [], `${s.players} players: no bluffs yet`);
+  }
+  const s = (await roundStats(db, DATA, DAY, NOW)).body;
+  assert.equal(s.players, 5);
+  // -300 at 12:02 (question 1), 12:01 (2), 12:00 (0); then -224 (question 3) is the fourth and is left out
+  assert.deepEqual(s.bluffs, [view(1, 100), view(2, 100), view(0, 100)]);
+  for (const b of s.bluffs) assert.deepEqual(Object.keys(b).sort(), ['conf', 'pick', 'points', 'prompt']);
+  const calibration = (live) => CONFS.map((conf) => { // the plays above, counted over the live questions
+    const at = plays.flatMap(([, , miss]) => ids.map((_, k) => (live(k) && (miss[k] ?? 80) === conf ? [k in miss ? 0 : 1] : [])).flat());
+    return { conf, n: at.length, right: at.reduce((a, c) => a + c, 0) };
+  });
+  assert.deepEqual(s.calibration, calibration(() => true));
+  assert.deepEqual(s.calibration.find((c) => c.conf === 80), { conf: 80, n: 44, right: 43 });
+  assert.doesNotMatch(JSON.stringify(s.bluffs), /anon-|\bp\d{5}\b|\bw\d{4}\b/, 'no player, pair or item ids');
+  // Retire question 1: its misses (and those of any pair sharing one of its values) leave the list.
+  for (const who of ['b1', 'b2', 'b3']) await flagPair(db, DATA, { item_id: ids[1], round_id: `rk-${DAY}`, anon_id: anon(who), reason: 'wrong' }, NOW);
+  const gone = new Set([DATA.pairs.get(ids[1]).a_id, DATA.pairs.get(ids[1]).b_id]);
+  const live = (k) => ![DATA.pairs.get(ids[k]).a_id, DATA.pairs.get(ids[k]).b_id].some((i) => gone.has(i));
+  const after = (await roundStats(db, DATA, DAY, NOW)).body;
+  assert.deepEqual(after.bluffs, [[2, 100], [0, 100], [3, 90]].filter(([k]) => live(k)).map(([k, conf]) => view(k, conf)));
+  assert.deepEqual(after.calibration, calibration(live)); // rebuilt with the day's aggregates
+  // Five players whose misses are all under 90%: nothing to show.
+  const calm = openD1();
+  for (const who of ['c1', 'c2', 'c3', 'c4', 'c5']) await playRound(calm, who, `rk-${DAY}`, ids, ids.map((_, k) => k > 1), { conf: (k) => (k ? 80 : 70) });
+  assert.deepEqual((await roundStats(calm, DATA, DAY, NOW)).body.bluffs, []);
 });
 
 test('KPI: plays = completed rounds + daily-question answers + full assessments; communities per platform; engagement', async () => {

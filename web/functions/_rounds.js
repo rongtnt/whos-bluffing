@@ -35,6 +35,21 @@ export const HIST_MIN = -3000; // ten answers at 100% and wrong
 export const HIST_BUCKETS = 1001; // scores are multiples of 4 from -3000 to 1000
 export const BIN_WIDTH = 100; // /api/round/stats bins
 export const CONFIDENT_MISS = 70; // a wrong answer at this confidence or more can be roasted
+// /api/round/stats `bluffs`: the ranked round's costliest misses at 90% or surer (BLUFF_SQL and migration 0007 say 90),
+// one per pair, at most MAX_BLUFFS, shown only once MIN_BLUFF_PLAYERS have finished the round.
+export const MAX_BLUFFS = 3;
+export const MIN_BLUFF_PLAYERS = 5;
+// round_agg.calib: answers and right answers at each confidence, in CONFS order: [n50, right50, n60, right60, ...].
+export function calibOf(answers) {
+  const c = Array(2 * CONFS.length).fill(0);
+  for (const a of answers) {
+    const k = 2 * CONFS.indexOf(a.conf);
+    c[k] += 1;
+    c[k + 1] += a.correct ? 1 : 0;
+  }
+  return c;
+}
+const CALIB_ADD = Array.from({ length: 2 * CONFS.length }, (_, k) => `'$[${k}]', json_extract(calib, '$[${k}]') + json_extract(excluded.calib, '$[${k}]')`).join(', ');
 // A daily question is open on its UTC day and the next: it takes answers and revisions, and revealing it needs the bot
 // header (no peeking). Afterwards answers get 409 locked, the reveal is public and the KPI run settles leftover points.
 export const QUESTION_OPEN_DAYS = 2;
@@ -440,7 +455,7 @@ export async function settleQuestions(db, data, now, days = 35) {
 // --- POST /api/round/complete -------------------------------------------------------------------------------------
 
 const PLAY_SQL = 'SELECT score, nickname, public_token, day, surface FROM round_plays WHERE anon_id = ? AND round_id = ?';
-const AGG_SQL = 'SELECT surface, players, score_hist, sum_overconf FROM round_agg WHERE date = ?';
+const AGG_SQL = 'SELECT surface, players, score_hist, sum_overconf, calib FROM round_agg WHERE date = ?';
 
 function completeBodyError(b) {
   const bad = playerError(b);
@@ -536,10 +551,11 @@ export async function complete(db, data, b, now, origin) {
     const path = `$[${idx}]`;
     const fresh = JSON.stringify(Array.from({ length: HIST_BUCKETS }, (_, k) => (k === idx ? 1 : 0)));
     stmts.push(
-      db.prepare(`INSERT INTO round_agg (date, surface, players, score_hist, sum_overconf) VALUES (?, ?, 1, ?, ?)
+      db.prepare(`INSERT INTO round_agg (date, surface, players, score_hist, sum_overconf, calib) VALUES (?, ?, 1, ?, ?, ?)
         ON CONFLICT (date, surface) DO UPDATE SET players = players + 1,
-        score_hist = json_set(score_hist, ?, json_extract(score_hist, ?) + 1), sum_overconf = sum_overconf + excluded.sum_overconf`)
-        .bind(round.date, b.surface, fresh, s.exact_overconf, path, path),
+        score_hist = json_set(score_hist, ?, json_extract(score_hist, ?) + 1), sum_overconf = sum_overconf + excluded.sum_overconf,
+        calib = json_set(calib, ${CALIB_ADD})`)
+        .bind(round.date, b.surface, fresh, s.exact_overconf, JSON.stringify(calibOf(live.map((id) => byItem.get(id)))), path, path),
       db.prepare(AGG_SQL).bind(round.date),
     );
   }
@@ -610,12 +626,35 @@ const statsBody = (date, rows) => {
   return { date, players: s.players, score_hist: binHist(s.hist), bin_from: HIST_MIN, bin_width: BIN_WIDTH, mean_overconfidence: s.mean_overconfidence };
 };
 
+// One pair's costliest miss at 90% or surer, the most recent on a tie. The literal 90 (not a bound parameter) lets SQLite
+// use the partial index of migration 0007, so each lookup reads one entry. No player id is read.
+const BLUFF_SQL = `SELECT item_id, choice, conf, points, answered_at FROM round_answers
+  WHERE round_id = ? AND item_id = ? AND correct = 0 AND conf >= 90 ORDER BY points, answered_at DESC LIMIT 1`;
+
+// calibration: [{conf, n, right}] for 50, 60 ... 100% over the day's plays (round_agg). bluffs: up to MAX_BLUFFS of the
+// day's live pairs, costliest miss first (the most recent on a tie), each {prompt, pick, conf, points}; [] until
+// MIN_BLUFF_PLAYERS have finished the round.
 export async function roundStats(db, data, dateParam, now) {
   const date = dateParam || todayUTC(now);
   if (!isDate(date)) return err(400, 'date must be YYYY-MM-DD');
   if (date > todayUTC(now) || !data.rounds[date]) return err(404, 'no ranked round for that date');
-  const { results } = await db.prepare(AGG_SQL).bind(date).all();
-  return ok(statsBody(date, results));
+  const ids = data.rounds[date].ranked;
+  const [agg, pairRows, itemRows, ...misses] = await db.batch([
+    db.prepare(AGG_SQL).bind(date),
+    ...deadStatements(db, data, ids),
+    ...ids.map((id) => db.prepare(BLUFF_SQL).bind(`rk-${date}`, id)),
+  ]);
+  const body = statsBody(date, agg.results);
+  const calib = agg.results.reduce((sum, r) => JSON.parse(r.calib).map((c, k) => sum[k] + c), Array(2 * CONFS.length).fill(0));
+  body.calibration = CONFS.map((conf, k) => ({ conf, n: calib[2 * k], right: calib[2 * k + 1] }));
+  const dead = deadFrom(data, ids, [pairRows, itemRows]);
+  const worst = misses.flatMap((m) => m.results).filter((m) => !dead.has(m.item_id))
+    .sort((x, y) => x.points - y.points || (x.answered_at < y.answered_at) - (x.answered_at > y.answered_at)); // then the most recent
+  body.bluffs = body.players < MIN_BLUFF_PLAYERS ? [] : worst.slice(0, MAX_BLUFFS).map((m) => {
+    const p = data.pairs.get(m.item_id);
+    return { prompt: template(data, p).prompt, pick: data.items.get(m.choice ? p.b_id : p.a_id).name, conf: m.conf, points: m.points };
+  });
+  return ok(body);
 }
 
 // --- daily question and reveal (Slack, Discord) ---------------------------------------------------------------------
@@ -711,22 +750,31 @@ async function retirePair(db, data, p, now) {
 export async function recomputeRanked(db, data, date) {
   const live = await liveIds(db, data, data.rounds[date].ranked);
   const roundId = `rk-${date}`;
-  const rows = live.length ? (await db.prepare(`SELECT surface, score, COUNT(*) AS n, SUM(oc) AS soc FROM (
-      SELECT p.surface AS surface, SUM(a.points) AS score, AVG(a.conf) - 100.0 * AVG(a.correct) AS oc
-      FROM round_plays p JOIN round_answers a ON a.anon_id = p.anon_id AND a.round_id = p.round_id
-      WHERE p.round_id = ? AND p.day IN (?, ?) AND a.item_id IN (${qs(live.length)}) GROUP BY p.anon_id)
-    GROUP BY surface, score`).bind(roundId, date, addDays(date, 1), ...live).all()).results : [];
+  const binds = [roundId, date, addDays(date, 1), ...live];
+  const PLAYS = `FROM round_plays p JOIN round_answers a ON a.anon_id = p.anon_id AND a.round_id = p.round_id
+      WHERE p.round_id = ? AND p.day IN (?, ?) AND a.item_id IN (${qs(live.length)})`;
+  const [rows, confRows] = live.length ? (await db.batch([
+    db.prepare(`SELECT surface, score, COUNT(*) AS n, SUM(oc) AS soc FROM (
+      SELECT p.surface AS surface, SUM(a.points) AS score, AVG(a.conf) - 100.0 * AVG(a.correct) AS oc ${PLAYS} GROUP BY p.anon_id)
+    GROUP BY surface, score`).bind(...binds),
+    db.prepare(`SELECT p.surface AS surface, a.conf AS conf, COUNT(*) AS n, SUM(a.correct) AS r ${PLAYS} GROUP BY p.surface, a.conf`).bind(...binds),
+  ])).map((r) => r.results) : [[], []];
   const by = new Map();
   for (const r of rows) {
-    const s = by.get(r.surface) ?? { players: 0, hist: Array(HIST_BUCKETS).fill(0), overconf: 0 };
+    const s = by.get(r.surface) ?? { players: 0, hist: Array(HIST_BUCKETS).fill(0), overconf: 0, calib: Array(2 * CONFS.length).fill(0) };
     s.players += r.n;
     s.hist[histIndex(r.score)] += r.n;
     s.overconf += r.soc;
     by.set(r.surface, s);
   }
+  for (const r of confRows) {
+    const k = 2 * CONFS.indexOf(r.conf);
+    by.get(r.surface).calib[k] += r.n;
+    by.get(r.surface).calib[k + 1] += r.r;
+  }
   await db.batch([
     db.prepare('DELETE FROM round_agg WHERE date = ?').bind(date),
-    ...[...by].map(([surface, s]) => db.prepare('INSERT INTO round_agg (date, surface, players, score_hist, sum_overconf) VALUES (?, ?, ?, ?, ?)')
-      .bind(date, surface, s.players, JSON.stringify(s.hist), s.overconf)),
+    ...[...by].map(([surface, s]) => db.prepare('INSERT INTO round_agg (date, surface, players, score_hist, sum_overconf, calib) VALUES (?, ?, ?, ?, ?, ?)')
+      .bind(date, surface, s.players, JSON.stringify(s.hist), s.overconf, JSON.stringify(s.calib))),
   ]);
 }

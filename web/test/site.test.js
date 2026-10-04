@@ -4,7 +4,8 @@ import { test } from 'node:test';
 import assert from 'node:assert/strict';
 import { readFileSync, readdirSync } from 'node:fs';
 import { markdown, inline, renderPage, DOCS } from '../scripts/sync-docs.js';
-import { proofTiles, MIN_PLAYERS } from '../public/home.js';
+import { proofTiles, MIN_PLAYERS, MIN_ROOM, roomView, roomChart, receipt, EXAMPLE_ROOM, EXAMPLE_BLUFFS } from '../public/home.js';
+import { TYPES } from '../functions/_rounds.js';
 
 const PUBLIC = new URL('../public/', import.meta.url);
 const read = (u) => readFileSync(u, 'utf8');
@@ -74,4 +75,25 @@ test('social proof: nothing below 100 monthly players; tiles leave out numbers t
   assert.deepEqual(proofTiles(kpi, { n_countries: 1234 }, { players: 4040 }),
     [['100', 'monthly players'], ['1,234', 'countries'], ['6', 'communities'], ['4,040', 'played today’s ranked round']]);
   assert.deepEqual(proofTiles({ ...kpi, mau: 2500 }, null, { players: 0 }).map(([, label]) => label), ['monthly players', 'communities']);
+});
+
+test('live panel: the room chart from 20 players (today, else yesterday, else the grey example), stamped receipts, five type tiles', () => {
+  assert.equal(MIN_ROOM, 20);
+  const calibration = [50, 60, 70, 80, 90, 100].map((conf, k) => ({ conf, n: k ? 10 * k : 0, right: 4 * k }));
+  assert.equal(roomView(null, null), null); // the stats request failed: the page keeps its example
+  assert.equal(roomView({ players: 19, calibration }, { players: 19, calibration }), null);
+  assert.deepEqual(roomView({ players: 1204, calibration }, null), { points: calibration, cap: 'Today’s room · 1,204 played', live: true });
+  assert.deepEqual(roomView({ players: 3, calibration: [] }, { players: 25, calibration }), { points: calibration, cap: 'Yesterday’s room · 25 played', live: false });
+  const chart = String(roomChart(calibration));
+  assert.equal(chart.match(/<circle /g).length, 5, 'one dot per confidence with answers');
+  assert.match(chart, /^<svg class="room-chart" viewBox="0 0 200 160" role="img"/);
+  assert.match(chart, /<path class="room-ideal" d="M40 73L192 8"\/>/, 'the diagonal from 50% sure, 50% right to 100%, 100%');
+  assert.match(String(roomChart(EXAMPLE_ROOM, { example: true })), /^<svg class="room-chart is-example"/);
+  assert.equal(String(receipt({ prompt: 'Which came first?', pick: 'Tesla & Co', conf: 100, points: -300 })),
+    '<li class="receipt"><span class="receipt-q">Which came first?</span><span class="receipt-pick"><s>Tesla &amp; Co</s><b>−300</b></span><span class="stamp stamp-bluff" data-stake="100">BLUFF</span></li>');
+  const home = read(new URL('index.html', PUBLIC));
+  assert.ok(home.includes(`<div class="room-box" data-room-chart>${roomChart(EXAMPLE_ROOM, { example: true })}</div>`), 'the static example chart is the builder\'s');
+  assert.ok(home.includes(`<ol class="receipts is-example" data-receipts>${EXAMPLE_BLUFFS.map(receipt).join('')}</ol>`), 'the static example receipts are the builder\'s');
+  assert.equal([...home.matchAll(/<figcaption class="live-cap" data-(?:room|receipts)-cap>Example<\/figcaption>/g)].length, 2);
+  assert.deepEqual([...home.matchAll(/<button type="button" class="type-tile" data-type="[a-z-]+" aria-pressed="false"><svg [^>]+><path d="[^"]+"\/><\/svg><span>([^<]+)<\/span><span class="type-band" aria-hidden="true">(?:<i><\/i>){5}<\/span><span class="type-tip">[^<]+<\/span><\/button>/g)].map((m) => m[1]), TYPES);
 });

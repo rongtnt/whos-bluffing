@@ -785,4 +785,23 @@ CHECK=$(node -e '
 ' "$STATE/anki_db.json") || fail "anki tables after delete + 410" "$CHECK"
 pass "after delete and the refused upload: no rows for the install, aggregates exact, tombstone holds only the id ($CHECK)"
 
+# Last, so the two extra players leave the KPI checks above alone. A fresh host name skips the 60 s stats cache.
+echo "== rounds: biggest bluffs and calibration in GET /api/round/stats (bluffs from 5 players; one per pair, at most 3, no ids; CORS kept)"
+BLUFF1=smokeBluffOneBBBBBBBBBB
+BLUFF2=smokeBluffTwoBBBBBBBBBB
+play_round "$STATE/ranked.json" "$BLUFF1" web 0000000000 100
+req POST /api/round/complete "$(cbody "rk-$TODAY" "$BLUFF1" web)"
+expect "a fourth ranked player, every answer wrong at 100%" 200 'r.type === "Bluffer" && r.players_today === 4'
+play_round "$STATE/ranked.json" "$BLUFF2" web 1111111111 90
+req POST /api/round/complete "$(cbody "rk-$TODAY" "$BLUFF2" web)"
+expect "a fifth ranked player" 200 'r.players_today === 5'
+STATUS=$(curl -s -D "$STATE/bluffs.h" -o "$STATE/bluffs.json" -w '%{http_code}' -H 'Host: bluffs.localhost' "$BASE/api/round/stats?date=$TODAY"); BODY=$(cat "$STATE/bluffs.json")
+grep -qi '^access-control-allow-origin: \*' "$STATE/bluffs.h" || fail "GET /api/round/stats with bluffs keeps Access-Control-Allow-Origin: *" "$(cat "$STATE/bluffs.h")"
+expect "GET /api/round/stats -> 5 players, 3 bluffs {prompt, pick, conf, points} at 100% on 3 different pairs, no ids, CORS header" 200 \
+  'r.players === 5 && r.bluffs.length === 3 && r.bluffs.every((b) => Object.keys(b).sort().join() === "conf,pick,points,prompt" && b.conf === 100 && b.points === -300 && b.prompt && b.pick) && new Set(r.bluffs.map((b) => b.prompt + "|" + b.pick)).size === 3 && !/smoke|p\d{5}|w\d{4}/.test(JSON.stringify(r.bluffs))'
+# 9 live pairs each: the host 100% right, the Discord member 60% wrong, the ranker 80% (4 right), the two new players
+# 100% wrong and 90% right; the day was rebuilt without the retired pair, and the new plays were added without it.
+expect "GET /api/round/stats -> calibration per confidence: 45 answers, 18 at 100% (9 right), 9 at 90% (9), 9 at 80% (4), 9 at 60% (0)" 200 \
+  'r.calibration.map((c) => `${c.conf}:${c.n}/${c.right}`).join() === "50:0/0,60:9/0,70:0/0,80:9/4,90:9/9,100:18/9"'
+
 echo "smoke: $PASSED checks passed, 0 failed"

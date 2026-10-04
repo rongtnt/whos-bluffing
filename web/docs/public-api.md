@@ -6,7 +6,7 @@ Who's Bluffing runs on a small JSON API that the web game, the Slack and Discord
 
 Two endpoints are public reads: aggregate numbers with no ids in them, free to fetch from any site.
 
-- `GET /api/round/stats?date=YYYY-MM-DD` (date optional, default today, UTC): the ranked round of that day: players, the score histogram in 100-point bins from −3000, and the mean overconfidence. Cached for 60 seconds.
+- `GET /api/round/stats?date=YYYY-MM-DD` (date optional, default today, UTC): the ranked round of that day: players, the score histogram in 100-point bins from −3000, the mean overconfidence, `calibration` (for each confidence 50, 60 … 100%: `{conf, n, right}`, how many answers and how many of them right), and `bluffs`: up to three of the day's costliest misses at 90% or surer, one per question, each `{prompt, pick, conf, points}` (the question, the option picked, the confidence, the points it cost), empty until five people have finished the round. Cached for 60 seconds.
 - `GET /api/kpi`: the latest daily numbers: monthly and daily players per surface, communities per platform and the engagement rates, with the date they were computed for (`as_of`). Updated once a day after 00:10 UTC; cached for 5 minutes.
 
 Both answer with the header `Access-Control-Allow-Origin: *`, so a page on another site can read them with a plain `fetch`. Send simple GET requests (no custom headers). No key and no account are needed.
@@ -23,4 +23,4 @@ If you show these numbers, please credit **Who's Bluffing** with a link to [whos
 
 ## Open data
 
-Answers are never available through the API. The release plan is fixed in the pre-registration: anonymous row-level data for both studies, with every exclusion flag kept, will be published on OSF, Hugging Face and Kaggle under CC BY-NC 4.0, each release with a data card that describes how it was collected, its sample bias and what it should not be used for. Classroom sessions are pooled without class codes. Details: [Open data on the research page](/research#data) and the [pre-registration](https://github.com/rongtnt/whos-bluffing/blob/main/prereg/PREREG.md).
+Answers are never available through the API, apart from the three anonymous bluffs above (no id, no time, nothing about who). The release plan is fixed in the pre-registration: anonymous row-level data for both studies, with every exclusion flag kept, will be published on OSF, Hugging Face and Kaggle under CC BY-NC 4.0, each release with a data card that describes how it was collected, its sample bias and what it should not be used for. Classroom sessions are pooled without class codes. Details: [Open data on the research page](/research#data) and the [pre-registration](https://github.com/rongtnt/whos-bluffing/blob/main/prereg/PREREG.md).

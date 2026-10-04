@@ -46,8 +46,8 @@
 </header>
 <main id="main">
 <section class="hero" aria-labelledby="hero-title">
-  <div class="wrap hero-grid">
-    <div>
+  <div class="wrap hero-grid hero-home">
+    <div class="hero-main">
       <svg class="mark hero-mark anim" data-mark viewBox="0 0 38 44" aria-hidden="true" focusable="false"><g transform="rotate(-14 16.5 20)"><rect class="back" x="4.00" y="2.50" width="25" height="35" rx="5.5"/></g><g transform="rotate(9 22.5 24)"><rect class="front" x="10.00" y="6.50" width="25" height="35" rx="5.5"/><g transform="rotate(45 22.5 24)"><rect class="pip" x="17.75" y="19.25" width="9.5" height="9.5" rx="1.6"/></g></g></svg>
       <h1 id="hero-title">Who's bluffing?</h1>
       <p class="hero-sub">Think you know things? Ten questions, about a minute. Stake how sure you are: being sure only pays when you're right.</p>
@@ -86,18 +86,43 @@
         <a class="button" href="/discord"><svg class="i" viewBox="0 0 24 24" aria-hidden="true" focusable="false"><path d="M4 5.5h11a2 2 0 0 1 2 2V13a2 2 0 0 1-2 2H9l-4 3.5V15H4a2 2 0 0 1-2-2V7.5a2 2 0 0 1 2-2z"/><path d="M19.5 9.5H20a2 2 0 0 1 2 2V17a2 2 0 0 1-2 2h-1v3l-3.5-3H12"/></svg><span>Add to Discord</span></a>
         <a class="button" href="/slack"><svg class="i" viewBox="0 0 24 24" aria-hidden="true" focusable="false"><path d="M4.5 9h15M4.5 15h15M10 3.5 8 20.5M16 3.5l-2 17"/></svg><span>Add to Slack</span></a>
       </div>
-      <div class="proof" id="proof"><p class="proof-line"><span><!-- questions -->17,000+<!-- /questions --> questions, every one with a source</span></p></div>
     </div>
-    <figure class="hero-demo" aria-hidden="true">
-      <div class="demo">
-        <div class="demo-top"><span class="demo-bar"><i></i></span><span>4 of 10</span></div>
-        <p class="demo-q">Which is longer?</p>
-        <div class="demo-picks"><span class="is-true"><b>✓</b><span>The Nile<small>6,650 km</small></span></span><span><b>B</b><span>The Danube<small>2,850 km</small></span></span></div>
-        <div class="demo-conf"><span>50%</span><span>60%</span><span>70%</span><span class="on">80%</span><span>90%</span><span>100%</span></div>
-        <p class="demo-verdict">✓ Right at 80% sure · +84 points</p>
-      </div>
-      <figcaption>An example question</figcaption>
-    </figure>
+    <div class="hero-side">
+      <figure class="hero-demo" aria-hidden="true">
+        <div class="demo">
+          <div class="demo-top"><span class="demo-bar"><i></i></span><span>4 of 10</span></div>
+          <p class="demo-q">Which is longer?</p>
+          <div class="demo-picks"><span class="is-true"><b>✓</b><span>The Nile<small>6,650 km</small></span></span><span><b>B</b><span>The Danube<small>2,850 km</small></span></span></div>
+          <div class="demo-conf"><span>50%</span><span>60%</span><span>70%</span><span class="on">80%</span><span>90%</span><span>100%</span></div>
+          <p class="demo-verdict">✓ Right at 80% sure · +84 points</p>
+        </div>
+        <figcaption>An example question</figcaption>
+      </figure>
+      <section class="live" aria-labelledby="live-title" data-live>
+        <h2 class="sr-only" id="live-title">Today’s room</h2>
+        <div class="live-top" data-live-top>
+          <figure class="live-room">
+            <div class="room-box" data-room-chart><svg class="room-chart is-example" viewBox="0 0 200 160" role="img" aria-label="How sure against how often right"><path class="room-axis" d="M40 8V138H192"/><path class="room-ideal" d="M40 73L192 8"/><circle cx="40" cy="73" r="5.1"/><circle cx="70.4" cy="66.5" r="5.4"/><circle cx="100.8" cy="60" r="5.7"/><circle cx="131.2" cy="55.7" r="6"/><circle cx="161.6" cy="52.2" r="5.7"/><circle cx="192" cy="47" r="5.4"/><text x="35" y="15" text-anchor="end">100%</text><text x="35" y="138" text-anchor="end">0%</text><text x="40" y="154">50%</text><text x="116" y="154" text-anchor="middle">sure</text><text x="192" y="154" text-anchor="end">100%</text><text transform="rotate(-90)" x="-73" y="10" text-anchor="middle">right</text></svg></div>
+            <figcaption class="live-cap" data-room-cap>Example</figcaption>
+          </figure>
+          <figure class="live-bluffs">
+            <ol class="receipts is-example" data-receipts><li class="receipt"><span class="receipt-q">Which is longer?</span><span class="receipt-pick"><s>The Danube</s><b>−300</b></span><span class="stamp stamp-bluff" data-stake="100">BLUFF</span></li><li class="receipt"><span class="receipt-q">Which is higher?</span><span class="receipt-pick"><s>K2</s><b>−224</b></span><span class="stamp stamp-bluff" data-stake="90">BLUFF</span></li></ol>
+            <figcaption class="live-cap" data-receipts-cap>Example</figcaption>
+          </figure>
+        </div>
+        <div class="live-types">
+          <div class="type-tiles" role="group" aria-labelledby="types-title">
+            <button type="button" class="type-tile" data-type="bluffer" aria-pressed="false"><svg class="i" viewBox="0 0 24 24" aria-hidden="true" focusable="false"><path d="M12 3c3 3.5 5.5 6 5.5 10a5.5 5.5 0 0 1-11 0c0-2.2 1-4 2.6-5.5.3 1.6 1 2.6 2 3.2C11.3 8.6 11 5.6 12 3z"/></svg><span>Bluffer</span><span class="type-band" aria-hidden="true"><i></i><i></i><i></i><i></i><i></i></span><span class="type-tip">15 or more points surer than right.</span></button>
+            <button type="button" class="type-tile" data-type="hot-headed" aria-pressed="false"><svg class="i" viewBox="0 0 24 24" aria-hidden="true" focusable="false"><path d="M12 19V5M6 11l6-6 6 6"/></svg><span>Hot-headed</span><span class="type-band" aria-hidden="true"><i></i><i></i><i></i><i></i><i></i></span><span class="type-tip">5 to 15 points surer than right.</span></button>
+            <button type="button" class="type-tile" data-type="calibrated" aria-pressed="false"><svg class="i" viewBox="0 0 24 24" aria-hidden="true" focusable="false"><path d="M12 4v16M8 20h8M5 8h14M5 8l-3 6h6zM19 8l-3 6h6z"/></svg><span>Calibrated</span><span class="type-band" aria-hidden="true"><i></i><i></i><i></i><i></i><i></i></span><span class="type-tip">Within 5 points, either way.</span></button>
+            <button type="button" class="type-tile" data-type="modest" aria-pressed="false"><svg class="i" viewBox="0 0 24 24" aria-hidden="true" focusable="false"><path d="M12 5v14M6 13l6 6 6-6"/></svg><span>Modest</span><span class="type-band" aria-hidden="true"><i></i><i></i><i></i><i></i><i></i></span><span class="type-tip">5 to 15 points less sure than right.</span></button>
+            <button type="button" class="type-tile" data-type="hedger" aria-pressed="false"><svg class="i" viewBox="0 0 24 24" aria-hidden="true" focusable="false"><path d="M5 12h14"/></svg><span>Hedger</span><span class="type-band" aria-hidden="true"><i></i><i></i><i></i><i></i><i></i></span><span class="type-tip">15 or more points less sure than right.</span></button>
+          </div>
+          <p class="live-cap" id="types-title">Which one are you?</p>
+        </div>
+      </section>
+    </div>
+    <div class="proof" id="proof"><p class="proof-line"><span><!-- questions -->17,000+<!-- /questions --> questions, every one with a source</span></p></div>
   </div>
 </section>
 <div id="app"></div>
