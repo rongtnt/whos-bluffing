@@ -1,1 +1,1 @@
-Launch drafts (English only). Rewrite in your own words before posting; keep the facts, drop anything you would not say out loud. Replace {URL}. No "first/largest" claims, no mention of AI. Dates in USER_TODO.md.
+Launch drafts (English only). Rewrite in your own words before posting; keep the facts, drop anything you would not say out loud. Replace {URL}. No "first/largest" claims, never say or imply that AI built the product (questions about AI as a topic are fine). Dates in USER_TODO.md.
