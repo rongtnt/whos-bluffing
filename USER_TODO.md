@@ -28,7 +28,11 @@
 5. **AnkiWeb 账号**（上传插件那天）：https://ankiweb.net/shared/addons/ → 上传 `anki/dist/howsure.ankiaddon`。
 6. **Slack 应用注册**（只有你能做，约 15 分钟）：到 https://api.slack.com/apps → Create New App → From an app manifest → 粘贴 `slack/manifest.yaml` → 在 Basic Information 复制 Client ID / Client Secret / Signing Secret → 按 `slack/README.md` 用 `npx wrangler secret put` 写入四个密钥（SLACK_CLIENT_ID、SLACK_CLIENT_SECRET、SLACK_SIGNING_SECRET、SALT；**SALT 用 `openssl rand -hex 32` 生成，之后永远不能改**，改了所有成员都会被当成新用户）→ `wrangler.toml` 填 database_id 和 API_BASE → `manifest.yaml` 里 3 处 YOUR-WORKER-HOST 换成你的 Worker 域名 → 部署 → Slack 应用页 Manage Distribution → Activate Public Distribution → 用 "Add to Slack" 链接装进你自己的一个测试工作区。App Directory 上架是后话，不阻塞。
 7. **Discord 应用注册**（约 20 分钟，按 `discord/README.md`）：https://discord.com/developers → New Application → 复制 Application ID 和 Public Key → Bot 页拿 Token、打开 Server Members Intent → 密钥写入 Worker（DISCORD_PUBLIC_KEY、DISCORD_BOT_TOKEN、SALT、BOT_KEY）→ 部署 → 在 Portal 填 Interactions Endpoint URL → `node discord/scripts/register-commands.mjs` 注册命令 → 用 `/install` 链接装进你自己的测试服务器。上架 top.gg 和 App Directory 的文案在 `posts/discord-listing.md`。
-8. **发布日历**（都是你发；草稿在 `posts/`，改成自己的话）：
+8. **对标 Truth or Dare 站点还需要你开的三个账号**（各 5 分钟）：
+   - HowSure 社区 Discord 服务器：discord.com → 新建服务器 → 建 #daily-reveal、#feedback、#play 三个频道 → 生成永久邀请链接，发给我填进 `COMMUNITY_INVITE_URL`。
+   - 邮箱：Cloudflare 控制台 → Email Routing → 建 hello@howsure.me 转发到你的邮箱（域名绑定后），发我填进 `CONTACT_EMAIL`。
+   - 项目的 X 或 Bluesky 账号（可选）：建好把链接给我。
+9. **发布日历**（都是你发；草稿在 `posts/`，改成自己的话）：
    - 10/20（周二）Show HN（`posts/show-hn.md`）+ r/InternetIsBeautiful + r/samplesize（`posts/reddit-samplesize.md`）+ LessWrong / EA Forum 短帖（`posts/lesswrong.md`）+ 给 Astral Codex Ten / forecasting newsletter 发一封邮件（`posts/newsletter-email.md`）
    - 10/21 r/Professors 课堂帖（`posts/reddit-professors.md`）+ 发给你认识的 3 位老师（`posts/instructor-pitch.txt`）
    - 11/18（周二）Product Hunt 上线 Slack 应用 + 每日一局（`posts/producthunt.md`）；同日 r/slack、r/startups
