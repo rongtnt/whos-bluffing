@@ -68,7 +68,7 @@ You need a Cloudflare account (free plan is fine), a Slack workspace where you m
    ```bash
    npx wrangler d1 migrations apply whosbluffing-slack --remote
    ```
-3. **Point at the web API.** In `wrangler.toml` under `[vars]`, set `API_BASE` to the web deployment's origin. Default: `https://whosbluffing.pages.dev`. Use the custom domain once it exists. No trailing slash, no `/api`. The Worker calls `/api/round/daily-question`, `/api/round/answer` and `/api/round/reveal` (see `docs/api-rounds.md`).
+3. **Point at the web API.** In `wrangler.toml` under `[vars]`, set `API_BASE` to the web deployment's origin. Default: `https://bots.whosbluffing.com`. Use the custom domain once it exists. No trailing slash, no `/api`. The Worker calls `/api/round/daily-question`, `/api/round/answer` and `/api/round/reveal` (see `docs/api-rounds.md`).
 4. **Deploy once to get the URL**
    ```bash
    npx wrangler deploy
@@ -105,7 +105,7 @@ Already set up v0.1? Run step 2's `migrations apply` again (it adds `0002_daily_
 | `SLACK_SIGNING_SECRET` | secret | Basic Information → App Credentials |
 | `SALT` | secret | `openssl rand -hex 32`, set once, never change |
 | `BOT_KEY` | secret | the same value as the web project's `BOT_KEY` |
-| `API_BASE` | var in `wrangler.toml` | web origin, e.g. `https://whosbluffing.pages.dev` |
+| `API_BASE` | var in `wrangler.toml` | web origin, e.g. `https://bots.whosbluffing.com` |
 
 ## Picking the channel
 

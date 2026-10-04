@@ -75,7 +75,7 @@ Then:
 
 1. Paste the printed `database_id` into `wrangler.toml` (replace the zeros).
 2. In `wrangler.toml`, set `DISCORD_APP_ID` to the Application ID.
-3. Set `API_BASE` to the web deployment's origin. The default is `https://whosbluffing.pages.dev`; use the custom domain
+3. Set `API_BASE` to the web deployment's origin. The default is `https://bots.whosbluffing.com`; use the custom domain
    once it exists. No trailing slash, no `/api`.
 
 Then:
@@ -169,7 +169,7 @@ Discord section yet; one is needed before listing (suggested text in `NOTES.md` 
 | `SALT` | secret | `openssl rand -hex 32`, set once, never change |
 | `BOT_KEY` | secret | the web project's BOT_KEY, sent as `x-bluff-bot` on every API call |
 | `DISCORD_APP_ID` | var in `wrangler.toml` | General Information → Application ID (public) |
-| `API_BASE` | var in `wrangler.toml` | web origin, e.g. `https://whosbluffing.pages.dev` |
+| `API_BASE` | var in `wrangler.toml` | web origin, e.g. `https://bots.whosbluffing.com` |
 
 ## Deploy and update
 
