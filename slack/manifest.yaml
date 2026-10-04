@@ -1,4 +1,4 @@
-# Slack app manifest for Who's Bluffing. Replace YOUR-WORKER-HOST (3 places) with your Worker's host,
+# Slack app manifest for Who's Bluffing. Replace whosbluffing-slack.rongaijun41.workers.dev (3 places) with your Worker's host,
 # e.g. whosbluffing-slack.your-subdomain.workers.dev, then paste this at https://api.slack.com/apps
 # -> Create New App -> From an app manifest.
 display_information:
@@ -11,13 +11,13 @@ features:
     always_online: true
   slash_commands:
     - command: /bluff
-      url: https://YOUR-WORKER-HOST/slack/events
+      url: https://whosbluffing-slack.rongaijun41.workers.dev/slack/events
       description: Post today's question, reveal the answer, set the channel, or see the leaderboard
       usage_hint: "[setup #channel hour roast on|off | reveal | stats]"
       should_escape: true
 oauth_config:
   redirect_urls:
-    - https://YOUR-WORKER-HOST/slack/oauth/callback
+    - https://whosbluffing-slack.rongaijun41.workers.dev/slack/oauth/callback
   scopes:
     bot:
       - commands
@@ -29,7 +29,7 @@ oauth_config:
 settings:
   interactivity:
     is_enabled: true
-    request_url: https://YOUR-WORKER-HOST/slack/events
+    request_url: https://whosbluffing-slack.rongaijun41.workers.dev/slack/events
   org_deploy_enabled: false
   socket_mode_enabled: false
   token_rotation_enabled: false

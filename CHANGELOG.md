@@ -14,3 +14,8 @@ Deviations from `prereg/PREREG.md` after it is finalized are logged here with a 
 
 ## 2026-10-04
 - Renamed from HowSure to Who's Bluffing? (howsure.me belongs to an unrelated product)
+
+## 2026-10-04
+- Pre-registration frozen as v1 (tag `prereg-v1`) ahead of the 2026-10-05 public launch; the MAU definition now names Discord alongside web and Slack. Plays before the freeze are test plays and are excluded.
+- New brand mark: a question mark cut into five pieces, the fifth turned 45° in the accent colour (`brand/`). The five-squares-in-a-row mark is retired.
+- Slack and Discord Workers provisioned on Cloudflare (D1 databases, BOT_KEY and SALT secrets); the Slack manifest carries the real Worker host.

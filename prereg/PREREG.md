@@ -1,6 +1,6 @@
-# Who's Bluffing? — Pre-registration (v0 DRAFT, 2026-10-03)
+# Who's Bluffing? — Pre-registration (v1, FROZEN 2026-10-04)
 
-Status: draft. The final version is committed **before** the public launch of the web test and **before** the Anki add-on's data-sharing switch is enabled. Any deviation after that is logged in `CHANGELOG.md` with date and reason. Independent, unaffiliated project; anonymous opt-in data; no IRB review.
+Status: FROZEN 2026-10-04 (git tag `prereg-v1`), before the public launch of 2026-10-05 and before the Anki add-on's data-sharing switch is enabled. Ranked rounds have been served since 2026-10-04 (UTC); plays before the freeze are test plays and are excluded. Any deviation after that is logged in `CHANGELOG.md` with date and reason. Independent, unaffiliated project; anonymous opt-in data; no IRB review.
 
 ## Study A — Web game (cross-sectional and within-person)
 
@@ -38,7 +38,7 @@ Status: draft. The final version is committed **before** the public launch of th
 **Models.** Mixed-effects logistic regression: recall ~ rating + log(days since last review) + (1 + rating | user).
 
 ## Metric definitions (for any public number)
-- **MAU**: anonymous ids with ≥ 1 play — a completed round of 10 (ranked or quick), a completed full assessment, or an in-channel Slack or Discord answer to the daily question — in the trailing 30 days, summed across web and Slack without cross-surface deduplication (a person who plays on both counts twice; stated wherever MAU is reported). **DAU** likewise for one UTC day.
+- **MAU**: anonymous ids with ≥ 1 play — a completed round of 10 (ranked or quick), a completed full assessment, or an in-channel Slack or Discord answer to the daily question — in the trailing 30 days, summed across web, Slack and Discord without cross-surface deduplication (a person who plays on two surfaces counts twice; stated wherever MAU is reported). **DAU** likewise for one UTC day.
 - **Communities**: Slack workspaces, Discord servers and rooms with ≥ 1 play in the trailing 30 days, plus classrooms with ≥ 5 finished assessments; reported per platform and summed.
 - Computed once a day by a scheduled job into a `kpi` table; the public stats page and any application text use only that table.
 

@@ -11,7 +11,7 @@ crons = ["0 * * * *"]
 binding = "DB"
 database_name = "whosbluffing-discord"
 # Placeholder. Replace it with the id printed by `npx wrangler d1 create whosbluffing-discord`.
-database_id = "00000000-0000-0000-0000-000000000000"
+database_id = "2fbd2b5d-f54f-4d4c-b569-172a4949a8ef"
 
 [vars]
 # Origin of the web deployment that serves /api/round (no trailing slash, no /api).
