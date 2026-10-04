@@ -1,6 +1,6 @@
 # Discord listing: top.gg and the App Directory (submit after the bot has run in your own server for a few days)
 
-Before posting, check two claims: "open source" only once the GitHub repo is public, and "will be published" for
+Before posting, check two claims: "source published" only once the GitHub repo is public, and "will be released" for
 the data (not "is published") until the data is out. Replace {URL} with the site and {INVITE} with
 `https://<worker host>/install`.
 
