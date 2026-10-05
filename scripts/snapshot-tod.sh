@@ -133,8 +133,8 @@ snap = {
         "app_directory": attempt("our App Directory entry", lambda: app_directory(OUR_ID)),
     },
 }
-notes.append("top.gg server count has read 1,579,429 in every capture from 2025-04-21 on: it is no longer updated; use app_directory for Discord's own (rounded) count")
-notes.append("top.gg for us: not read (same Cloudflare block; listing not live as of 2026-10-04)")
+notes.append("top.gg server count read 1,579,429 in every capture from 2025-04-21 to 2026-05-16 (frozen); app_directory is Discord's own (rounded) count")
+notes.append("top.gg for us: not read (top.gg blocks scripts; open the listing in a browser once approved)")
 snap["notes"] = notes
 with open(sys.argv[1], "w") as f:
     json.dump(snap, f, indent=2)

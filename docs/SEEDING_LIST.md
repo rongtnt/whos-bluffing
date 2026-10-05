@@ -586,16 +586,16 @@ notes, not paste-ready text.
 
 | # | Subreddit | Size (source, date) | Path the rules allow | Best slot (ET) | Pri |
 |---|---|---|---|---|---|
-| D1 | r/ChatGPT | 11,655,316 members (widget, 2026-10-01) | AI-related text post; else the pinned weekly self-promo thread | PENDING | 1 |
-| D2 | r/OpenAI | 811,046 weekly visitors (header, 2026-10-01) | text post with context, after some participation | PENDING | 1 |
-| D3 | r/ArtificialInteligence | 644,429 weekly visitors (header, 2026-09-25) | post with standalone value, flair Project/Build | PENDING | 1 |
+| D1 | r/ChatGPT | 11,655,316 members (widget, 2026-10-01) | AI-related text post; else the pinned weekly self-promo thread | [UNVERIFIED] not measured | 1 |
+| D2 | r/OpenAI | 811,046 weekly visitors (header, 2026-10-01) | text post with context, after some participation | [UNVERIFIED] not measured | 1 |
+| D3 | r/ArtificialInteligence | 644,429 weekly visitors (header, 2026-09-25) | post with standalone value, flair Project/Build | [UNVERIFIED] not measured | 1 |
 | D4 | r/slatestarcodex | 6.3 posts/day (Apr-Sep 2026) | self-written post with a submission statement | Tue, 12pm-3pm | 1 |
 | D5 | r/Jeopardy | 10.0 posts/day (Apr-Sep 2026) | modmail first; post only with explicit permission | Sat, 12pm-3pm | 2 |
-| D6 | r/learnmachinelearning | 134,496 weekly visitors (header, 2026-07-05) | share your work, at most once a week | PENDING | 2 |
-| D7 | r/accelerate | 344,585 weekly visitors (header, 2026-10-03) | on-topic AI post with context | PENDING | 2 |
-| D8 | r/LocalLLaMA | 827,176 members (widget, 2026-09-18) | 1-in-10 self-promotion, affiliation disclosed, LLM topic | PENDING | 2 |
+| D6 | r/learnmachinelearning | 134,496 weekly visitors (header, 2026-07-05) | share your work, at most once a week | [UNVERIFIED] not measured | 2 |
+| D7 | r/accelerate | 344,585 weekly visitors (header, 2026-10-03) | on-topic AI post with context | [UNVERIFIED] not measured | 2 |
+| D8 | r/LocalLLaMA | 827,176 members (widget, 2026-09-18) | 1-in-10 self-promotion, affiliation disclosed, LLM topic | [UNVERIFIED] not measured | 2 |
 | D9 | r/EffectiveAltruism | 3.3 posts/day (Apr-Sep 2026) | promotion only with an argument for effectiveness | Thu, 12pm-3pm | 2 |
-| D10 | r/artificial | 266,955 weekly visitors (header, 2026-09-18) | modmail first; promo at most 10% of your activity | PENDING | 3 |
+| D10 | r/artificial | 266,955 weekly visitors (header, 2026-09-18) | modmail first; promo at most 10% of your activity | [UNVERIFIED] not measured | 3 |
 
 "Widget" = the related-communities box on another subreddit's captured page; "header" = Reddit's weekly-visitors count
 on the subreddit's own captured page.
@@ -603,7 +603,7 @@ on the subreddit's own captured page.
 ### D1. r/ChatGPT (priority 1)
 - **Rule** (rules page, capture 2026-07-25): "Posts must be directly related to ChatGPT or the topic of AI." Posts focused
   on advertising another LLM service go to the "weekly self-promotional mega thread, which is pinned".
-- **Best slot:** PENDING.
+- **Best slot:** [UNVERIFIED] not measured: the Arctic Shift archive rate-limited these queries. No time is recommended.
 - **Angle:** a text post built around one AI-pack question people get wrong with confidence (for example the same-day
   launch of Claude and GPT-4 on 14 March 2023, from `posts/ai-humor.md`), the link in the body. If removed, use the
   pinned weekly thread.
@@ -612,7 +612,7 @@ on the subreddit's own captured page.
 - **Rule** (rules page, capture 2026-07-28; same text in the sidebar on 2026-10-01): "Self-promotional direct link posts
   to projects are not allowed." For your own project, "context must be provided in a text post". Also: "We want
   participation first for you to advertise."
-- **Best slot:** PENDING.
+- **Best slot:** [UNVERIFIED] not measured: the Arctic Shift archive rate-limited these queries. No time is recommended.
 - **Angle:** a text post on what the AI pack covers (OpenAI's founding, the capped-profit change, o1 to o3 skipping o2)
   and how the scoring works. Comment in the subreddit for a few days first.
 
@@ -620,7 +620,7 @@ on the subreddit's own captured page.
 - **Rule** (rules page, capture 2026-07-28; same in the sidebar on 2026-09-25): "Posts must provide standalone
   educational or technical value that exists independently of any linked project." Use the "Project/Build" flair; "lead
   generation, waitlists, or repetitive self-promotion" bring a permanent ban.
-- **Best slot:** PENDING.
+- **Best slot:** [UNVERIFIED] not measured: the Arctic Shift archive rate-limited these queries. No time is recommended.
 - **Angle:** explain why a proper scoring rule makes honest confidence the best strategy, with three AI-pack questions
   written out in the post; the link goes last.
 
@@ -646,7 +646,7 @@ on the subreddit's own captured page.
 ### D6. r/learnmachinelearning (priority 2)
 - **Rule** (rules page, capture 2026-06-12): "Share your content at most once per week" and "Do share your works and
   achievements, but do not spam." No referral links or paid courses.
-- **Best slot:** PENDING.
+- **Best slot:** [UNVERIFIED] not measured: the Arctic Shift archive rate-limited these queries. No time is recommended.
 - **Angle:** calibration is the same idea people measure in classifiers (a proper scoring rule, 50% scores 0); show the
   formula and the AI pack link.
 
@@ -654,14 +654,14 @@ on the subreddit's own captured page.
 - **Rule** (sidebar, capture 2026-10-03): "Users who post irrelevant or substantially similar content, or posts without
   context, are banned." AI or tech progress "must be the primary topic". No separate self-promotion rule appeared in the
   captured sidebar.
-- **Best slot:** PENDING.
+- **Best slot:** [UNVERIFIED] not measured: the Arctic Shift archive rate-limited these queries. No time is recommended.
 - **Angle:** the AI pack as a test of how well people know the race (launch dates, parameter counts, funding), with
   context in the post. Keep the lab jokes out and the tone neutral: the sub bans anti-AI ("decel") posters.
 
 ### D8. r/LocalLLaMA (priority 2)
 - **Rule** (rules page, capture 2026-08-07): "The 1/10th rule is a good guideline: self-promotion should not be more
   than 10% of your content." "Affiliation must be disclosed". Posts "must be related to Llama or the topic of LLMs."
-- **Best slot:** PENDING.
+- **Best slot:** [UNVERIFIED] not measured: the Arctic Shift archive rate-limited these queries. No time is recommended.
 - **Angle:** the `ai_params` and `ai_tech` questions (published parameter counts, context windows, training tokens),
   which are on topic here. Say plainly that you made it. Write it yourself.
 
@@ -675,7 +675,7 @@ on the subreddit's own captured page.
 ### D10. r/artificial (priority 3)
 - **Rule** (rules page, capture 2026-08-28): "Your first post or comment cannot have promo, that would be 100%
   self-promo" and "Any questions or confusion you need to Modmail us first before posting."
-- **Best slot:** PENDING.
+- **Best slot:** [UNVERIFIED] not measured: the Arctic Shift archive rate-limited these queries. No time is recommended.
 - **Angle:** only after taking part in discussions; modmail the link first.
 
 Reserve: r/quizbowl (3,892 subscribers, Arctic Shift 2025-02-14; 0.5 posts/day). No self-promotion rule, but "Posts and

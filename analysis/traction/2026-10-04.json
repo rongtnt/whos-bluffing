@@ -1,5 +1,5 @@
 {
-  "taken_at_utc": "2026-10-05T03:23:47Z",
+  "taken_at_utc": "2026-10-05T03:29:24Z",
   "truth_or_dare": {
     "topgg": null,
     "discordbotlist": {
@@ -14,7 +14,7 @@
     },
     "support_server": {
       "members": 22228,
-      "online": 1095,
+      "online": 1084,
       "source": "https://discord.com/api/v10/invites/vBERMvVaRt?with_counts=true"
     },
     "x": {
@@ -68,7 +68,7 @@
     "top.gg via Wayback: HTTP 429",
     "our discordbotlist listing: HTTP 404",
     "our App Directory entry: HTTP 403",
-    "top.gg server count has read 1,579,429 in every capture from 2025-04-21 on: it is no longer updated; use app_directory for Discord's own (rounded) count",
-    "top.gg for us: not read (same Cloudflare block; listing not live as of 2026-10-04)"
+    "top.gg server count read 1,579,429 in every capture from 2025-04-21 to 2026-05-16 (frozen); app_directory is Discord's own (rounded) count",
+    "top.gg for us: not read (top.gg blocks scripts; open the listing in a browser once approved)"
   ]
 }
