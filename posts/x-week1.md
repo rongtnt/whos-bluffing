@@ -62,13 +62,15 @@ https://www.wikidata.org/wiki/Q183#P2046 (w0007, referenced).
 ### 13:00 · Dare · the brutal AI round
 
 ```text
-A dare for anyone who follows AI closely: ten brutal questions about deals, chips, parameter counts and lawsuits, with a stake on each.
+Ten brutal AI questions: deals, chips, parameter counts, lawsuits.
 
-Above 500 means you read the papers. Below 0 means you read the headlines. Saying 50% on all ten scores exactly 0.
+Above 500, you read the papers. Below 0, you read the headlines and were sure anyway.
+
+Confident and wrong costs 300 a question. Good luck.
 
 https://whosbluffing.com/?pack=ai&difficulty=brutal
 ```
-Count: 276
+Count: 232
 Source: scoring in `web/public/index.html` FAQ: each answer scores 100 − 400 × (confidence − outcome)², so 50% scores 0
 either way and a perfect round is 1,000. Brutal AI rounds draw tiers 2 and 3 (deals, money, lawsuits, technical numbers):
 `web/public/packs.js`, `items/ai_curated.json`. The thresholds are labels, not statistics.
@@ -76,17 +78,17 @@ either way and a perfect round is 1,000. Brutal AI rounds draw tiers 2 and 3 (de
 ### 19:00 · Lab rivalry · March 2023
 
 ```text
-March 2023, in order:
+March 2023 was a group chat nobody muted.
 
-The 9th: xAI is founded.
-The 14th: OpenAI announces GPT-4, and Anthropic introduces Claude the same day.
-The 21st: Google opens early access to Bard.
+9th: xAI is founded.
+14th: OpenAI drops GPT-4. Anthropic drops Claude. Same day. Coincidence, surely.
+21st: Google opens Bard, fashionably late.
 
-Twelve days, four labs, one crowded calendar. How sure are you of the rest?
+You remember the week. Do you remember the order?
 
 https://whosbluffing.com/?pack=ai
 ```
-Count: 274
+Count: 263
 Source (all in `items/ai_curated.json`): xAI founded 9 March 2023, https://en.wikipedia.org/wiki/SpaceXAI · GPT-4
 14 March 2023, https://en.wikipedia.org/wiki/GPT-4 · Claude 14 March 2023, https://www.anthropic.com/news/introducing-claude ·
 Bard early access 21 March 2023, https://en.wikipedia.org/wiki/Google_Gemini#Launch.
