@@ -289,6 +289,25 @@ class AiPack(unittest.TestCase):
         self.assertTrue(ok[frozenset(("ChatGPT (released)", "Amazon invests in Anthropic"))])
         self.assertFalse(ok[frozenset(("ChatGPT (released)", "a technical milestone"))])  # tier 3 never fills the ranked slot
 
+    def test_drama_needs_two_months_one_subject_never_meets_itself_and_unfamous_events_keep_their_views(self):
+        def drama(n, name, yyyymm, qid, famous=True, views=100):
+            it = self.month(n, name, yyyymm, views=views, qid=qid)
+            it.update(category="ai_drama", tier=2, famous=famous)
+            return it
+        removed = drama(1, "OpenAI's board removes Sam Altman (Nov 2023)", 202311, "Q7407093")
+        back = drama(2, "Sam Altman returns as OpenAI CEO (Nov 2023)", 202311, "Q7407093")
+        nyt = drama(3, "The New York Times sues OpenAI and Microsoft (Dec 2023)", 202312, "Q9684")
+        musk = drama(4, "Elon Musk sues OpenAI (Feb 2024)", 202402, "Q317521")
+        recall = drama(5, "Microsoft delays its Recall feature (Jun 2024)", 202406, "Q131353867", famous=False, views=2738)
+        got = {frozenset((p["a"], p["b"])): p for p in pairs_of([removed, back, nyt, musk, recall])}
+        self.assertNotIn(frozenset((removed["name"], back["name"])), got)  # one subject, and the same month
+        self.assertNotIn(frozenset((removed["name"], nyt["name"])), got)  # one month apart
+        p = got[frozenset((nyt["name"], musk["name"]))]
+        self.assertEqual((p["prompt"], p["gap"], p["tier"], p["difficulty_hint"]), ("Which came first?", 2, 2, "hard"))
+        self.assertEqual(got[frozenset((removed["name"], musk["name"]))]["fame"], P.FAME_RANKED)  # famous subjects
+        self.assertEqual(got[frozenset((musk["name"], recall["name"]))]["fame"], 2738)  # an unfamous event keeps its own views
+        self.assertFalse(any(P.ranked_ok(q) for q in got.values()))
+
     def test_ai_items_count_as_famous_and_never_enter_ranked_days_or_the_question(self):
         ai = [self.ai(900 + k, "ai_released", 1960 + 3 * k) for k in range(20)]
         pairs = pairs_of(spread_pool(Rounds.CATS, 120) + ai)

@@ -244,6 +244,11 @@ class AiPack(unittest.TestCase):
         self.assertEqual((ctx["en"], ctx["tier"], ctx["accept"]), ({"prompt": "How long is Claude 2's context window, in tokens?",
                                                                     "unit": "tokens of context"}, 3, [100, 1e9]))
         self.assertNotIn("famous", ctx)  # technical facts are judged by their own pageviews
+        quiet, _ = w.build_pool(RAW, ai=[{"category": "ai_drama", "name": "Microsoft delays its Recall feature (Jun 2024)", "month": "2024-06",
+                                          "famous": False, "note": "14 June 2024", "source": "https://en.wikipedia.org/wiki/Windows_Recall", "fun": "x"}],
+                                generated_at="2026-10-05")
+        drama = next(it for it in quiet["items"] if it["category"] == "ai_drama")
+        self.assertEqual((drama["tier"], drama["answer"], "famous" in drama), (2, 202406, False))
         self.assertEqual((chat["tier"], ai["Grok-1"]["tier"]), (1, 3))
         month = ai["ChatGPT (released)"]  # same source as the year item, another category: its own id
         self.assertEqual((month["answer"], month["month"], month["en"]["unit"], month["fun"], month["domain"]),
@@ -254,6 +259,8 @@ class AiPack(unittest.TestCase):
         second, _ = w.build_pool(RAW, first["items"], ai=self.ENTRIES, next_number=first["next_number"], generated_at="2026-10-05")
         again = {it["name"]: it["id"] for it in second["items"] if it["category"].startswith("ai_")}
         self.assertEqual(again, {n: it["id"] for n, it in ai.items()})  # same ids; their notes do not pin a second copy
+        third, _ = w.build_pool(RAW, second["items"], ai=self.ENTRIES[1:], next_number=second["next_number"], generated_at="2026-10-06")
+        self.assertNotIn("ChatGPT", [it["name"] for it in third["items"] if it["category"] == "ai_released"])  # taken out of the file: gone
 
     def test_the_ai_file_is_clean(self):
         with open(os.path.join(HERE, "..", "..", "items", "ai_curated.json")) as f:
@@ -265,14 +272,14 @@ class AiPack(unittest.TestCase):
             cat = w.AI_CATEGORIES[e["category"]]
             self.assertRegex(e["source"], r"^https://[^ ]+$")
             self.assertTrue(e["name"] and e["note"], e)
-            answer = int(e["month"].replace("-", "")) if e["category"] == "ai_timeline" else e["answer"]
+            answer = int(e["month"].replace("-", "")) if "month" in e else e["answer"]
             self.assertIn(e["tier"], (1, 2, 3), e)
             if e["category"] == "ai_tech":
                 cat = dict(cat, accept=w.TECH_UNITS[e["unit"]][0])
             if e["category"] == "ai_money":
                 self.assertTrue(e["volatile"] and re.match(r"^20\d\d-(0[1-9]|1[0-2])$", e["as_of"]), e)
                 self.assertRegex(e["name"], r"\((?:[^()]*\b)?(Jan|Feb|Mar|Apr|May|Jun|Jul|Aug|Sep|Oct|Nov|Dec) 20\d\d|20\d\d\)|\b(Jan|Feb|Mar|Apr|May|Jun|Jul|Aug|Sep|Oct|Nov|Dec) 20\d\d")
-            if e["category"] == "ai_timeline":
+            if "month" in e:
                 self.assertRegex(e["month"], r"^(19|20)\d\d-(0[1-9]|1[0-2])$")
             self.assertTrue(cat["accept"][0] <= answer <= cat["accept"][1], e)
             self.assertLessEqual(len(e.get("fun", "")), 140)
@@ -281,6 +288,10 @@ class AiPack(unittest.TestCase):
             by_cat.setdefault(e["category"], []).append(e)
         self.assertEqual(set(by_cat), set(w.AI_CATEGORIES))
         self.assertTrue(all(len(v) >= 15 for v in by_cat.values()), {k: len(v) for k, v in by_cat.items()})
+        for e in by_cat["ai_drama"]:
+            self.assertTrue(e["fun"] and len(e["fun"]) <= 140 and re.search(r"(19|20)\d\d", e["note"]), e["name"])
+            self.assertRegex(e["name"], r"\((Jan|Feb|Mar|Apr|May|Jun|Jul|Aug|Sep|Oct|Nov|Dec) 20\d\d\)$")
+            self.assertIn("famous", e)  # decided per event from its subject's pageviews
         timeline = {e["name"]: e["month"] for e in by_cat["ai_timeline"]}
         for name, month in (("OpenAI (founded)", "2015-12"), ("Anthropic (founded)", "2021-01"), ("ChatGPT (released)", "2022-11"),
                             ("the Transformer paper (posted)", "2017-06"), ("DeepMind (bought by Google)", "2014-01"),

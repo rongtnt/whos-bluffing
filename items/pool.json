@@ -1,7 +1,7 @@
 {
  "version": 1,
  "generated_at": "2026-10-04",
- "next_number": 3519,
+ "next_number": 3570,
  "items": [
   {
    "id": "w0001",
@@ -88007,6 +88007,1476 @@
    "notes": "curated: 17 billion active parameters with 128 experts",
    "enwiki": null,
    "views_month": 0
+  },
+  {
+   "id": "w3519",
+   "type": "interval",
+   "category": "ai_money",
+   "domain": "everyday",
+   "en": {
+    "prompt": "Alphabet's market-value loss after the Bard demo (Feb 2023): how many US dollars?",
+    "unit": "USD"
+   },
+   "answer": 100000000000.0,
+   "accept": [
+    100000.0,
+    100000000000000.0
+   ],
+   "source": "https://en.wikipedia.org/wiki/Google_Gemini#:~:text=equivalent%20to%20a%20%24100%20billion%20loss",
+   "difficulty_hint": "unknown",
+   "volatile": true,
+   "generated_at": "2026-10-04",
+   "name": "Alphabet's market-value loss after the Bard demo (Feb 2023)",
+   "ref_quality": "none",
+   "fact_checked": true,
+   "tier": 2,
+   "notes": "curated: Google's stock fell eight percent after the 8 February 2023 livestream, about $100 billion (Wikipedia)",
+   "famous": true,
+   "as_of": "2023-02",
+   "enwiki": null,
+   "views_month": 0
+  },
+  {
+   "id": "w3520",
+   "type": "interval",
+   "category": "ai_money",
+   "domain": "everyday",
+   "en": {
+    "prompt": "Satya Nadella's pay for Microsoft's fiscal 2025 (proxy, Oct 2025): how many US dollars?",
+    "unit": "USD"
+   },
+   "answer": 96500000.0,
+   "accept": [
+    100000.0,
+    100000000000000.0
+   ],
+   "source": "https://www.theregister.com/2025/10/22/microsoft_nadella_pay/",
+   "difficulty_hint": "unknown",
+   "volatile": true,
+   "generated_at": "2026-10-04",
+   "name": "Satya Nadella's pay for Microsoft's fiscal 2025 (proxy, Oct 2025)",
+   "ref_quality": "none",
+   "fact_checked": true,
+   "tier": 2,
+   "notes": "curated: $96.5 million in Microsoft's proxy statement, reported 22 October 2025 (The Register)",
+   "famous": true,
+   "as_of": "2025-10",
+   "enwiki": null,
+   "views_month": 0
+  },
+  {
+   "id": "w3521",
+   "type": "interval",
+   "category": "ai_money",
+   "domain": "everyday",
+   "en": {
+    "prompt": "Jensen Huang's pay for Nvidia's fiscal 2025 (proxy, May 2025): how many US dollars?",
+    "unit": "USD"
+   },
+   "answer": 49800000.0,
+   "accept": [
+    100000.0,
+    100000000000000.0
+   ],
+   "source": "https://www.theregister.com/2025/05/08/big_bucks_huang_gets_fiscal_payday/",
+   "difficulty_hint": "unknown",
+   "volatile": true,
+   "generated_at": "2026-10-04",
+   "name": "Jensen Huang's pay for Nvidia's fiscal 2025 (proxy, May 2025)",
+   "ref_quality": "none",
+   "fact_checked": true,
+   "tier": 2,
+   "notes": "curated: $49.8 million per The Register, 8 May 2025 (other outlets round it to $49.9 million)",
+   "famous": true,
+   "as_of": "2025-05",
+   "enwiki": null,
+   "views_month": 0
+  },
+  {
+   "id": "w3522",
+   "type": "interval",
+   "category": "ai_money",
+   "domain": "everyday",
+   "en": {
+    "prompt": "Sundar Pichai's pay for 2024 (Alphabet proxy, Apr 2025): how many US dollars?",
+    "unit": "USD"
+   },
+   "answer": 10730000.0,
+   "accept": [
+    100000.0,
+    100000000000000.0
+   ],
+   "source": "https://www.nbcmiami.com/news/business/money-report/google-increased-ceo-sundar-pichais-security-costs-by-22-in-2024/3601527/",
+   "difficulty_hint": "unknown",
+   "volatile": true,
+   "generated_at": "2026-10-04",
+   "name": "Sundar Pichai's pay for 2024 (Alphabet proxy, Apr 2025)",
+   "ref_quality": "none",
+   "fact_checked": true,
+   "tier": 2,
+   "notes": "curated: \"total compensation was $10.73 million\" (CNBC, 28 April 2025)",
+   "famous": true,
+   "as_of": "2025-04",
+   "enwiki": null,
+   "views_month": 0
+  },
+  {
+   "id": "w3524",
+   "type": "interval",
+   "category": "ai_drama",
+   "domain": "history",
+   "en": {
+    "prompt": "OpenAI's board removes Sam Altman (Nov 2023): in what month and year?",
+    "unit": "month"
+   },
+   "answer": 202311,
+   "accept": [
+    195001,
+    202612
+   ],
+   "source": "https://en.wikipedia.org/wiki/Removal_of_Sam_Altman_from_OpenAI#:~:text=On%20November%2017%2C%202023",
+   "difficulty_hint": "unknown",
+   "volatile": false,
+   "generated_at": "2026-10-04",
+   "name": "OpenAI's board removes Sam Altman (Nov 2023)",
+   "ref_quality": "none",
+   "fact_checked": true,
+   "tier": 2,
+   "notes": "curated: 17 November 2023 (Wikipedia)",
+   "famous": true,
+   "replaces": "https://www.wikidata.org/wiki/Q7407093#P793",
+   "month": "2023-11",
+   "fun": "The board removed him on a Friday. Five days later he was back.",
+   "enwiki": "Sam Altman",
+   "views_month": 328483
+  },
+  {
+   "id": "w3525",
+   "type": "interval",
+   "category": "ai_drama",
+   "domain": "history",
+   "en": {
+    "prompt": "Sam Altman returns as OpenAI CEO (Nov 2023): in what month and year?",
+    "unit": "month"
+   },
+   "answer": 202311,
+   "accept": [
+    195001,
+    202612
+   ],
+   "source": "https://en.wikipedia.org/wiki/Removal_of_Sam_Altman_from_OpenAI#:~:text=reinstated%20on%20November%2022",
+   "difficulty_hint": "unknown",
+   "volatile": false,
+   "generated_at": "2026-10-04",
+   "name": "Sam Altman returns as OpenAI CEO (Nov 2023)",
+   "ref_quality": "none",
+   "fact_checked": true,
+   "tier": 2,
+   "notes": "curated: 22 November 2023 (Wikipedia)",
+   "famous": true,
+   "replaces": "https://www.wikidata.org/wiki/Q7407093#P793",
+   "month": "2023-11",
+   "fun": "In between, OpenAI named two replacement CEOs, and 745 of its 770 employees signed a letter threatening to resign.",
+   "enwiki": "Sam Altman",
+   "views_month": 328483
+  },
+  {
+   "id": "w3526",
+   "type": "interval",
+   "category": "ai_drama",
+   "domain": "history",
+   "en": {
+    "prompt": "Microsoft announces it is hiring Altman and Brockman (Nov 2023): in what month and year?",
+    "unit": "month"
+   },
+   "answer": 202311,
+   "accept": [
+    195001,
+    202612
+   ],
+   "source": "https://en.wikipedia.org/wiki/Microsoft#:~:text=would%20join%20Microsoft%20to%20lead%20a%20new%20advanced%20AI%20research%20team",
+   "difficulty_hint": "unknown",
+   "volatile": false,
+   "generated_at": "2026-10-04",
+   "name": "Microsoft announces it is hiring Altman and Brockman (Nov 2023)",
+   "ref_quality": "none",
+   "fact_checked": true,
+   "tier": 2,
+   "notes": "curated: 20 November 2023 (Wikipedia)",
+   "famous": true,
+   "replaces": "https://www.wikidata.org/wiki/Q7407093#P793",
+   "month": "2023-11",
+   "fun": "The new Microsoft team was announced on a Monday. By Wednesday its leader was back at OpenAI.",
+   "enwiki": "Sam Altman",
+   "views_month": 328483
+  },
+  {
+   "id": "w3527",
+   "type": "interval",
+   "category": "ai_drama",
+   "domain": "history",
+   "en": {
+    "prompt": "Elon Musk sues OpenAI (Feb 2024): in what month and year?",
+    "unit": "month"
+   },
+   "answer": 202402,
+   "accept": [
+    195001,
+    202612
+   ],
+   "source": "https://en.wikipedia.org/wiki/Musk_v._Altman#:~:text=originally%20filed%20on%20February%2029%2C%202024",
+   "difficulty_hint": "unknown",
+   "volatile": false,
+   "generated_at": "2026-10-04",
+   "name": "Elon Musk sues OpenAI (Feb 2024)",
+   "ref_quality": "none",
+   "fact_checked": true,
+   "tier": 2,
+   "notes": "curated: 29 February 2024 (Wikipedia)",
+   "famous": true,
+   "replaces": "https://www.wikidata.org/wiki/Q317521#P793",
+   "month": "2024-02",
+   "fun": "He filed on 29 February, a date that comes round once every four years. The case took just over two years.",
+   "enwiki": "Elon Musk",
+   "views_month": 546830
+  },
+  {
+   "id": "w3528",
+   "type": "interval",
+   "category": "ai_drama",
+   "domain": "history",
+   "en": {
+    "prompt": "OpenAI countersues Elon Musk (Apr 2025): in what month and year?",
+    "unit": "month"
+   },
+   "answer": 202504,
+   "accept": [
+    195001,
+    202612
+   ],
+   "source": "https://en.wikipedia.org/wiki/Musk_v._Altman#:~:text=OpenAI%20countersued%20Musk",
+   "difficulty_hint": "unknown",
+   "volatile": false,
+   "generated_at": "2026-10-04",
+   "name": "OpenAI countersues Elon Musk (Apr 2025)",
+   "ref_quality": "none",
+   "fact_checked": true,
+   "tier": 2,
+   "notes": "curated: 9 April 2025, in the Northern District of California (day from contemporary reports; Wikipedia gives April 2025)",
+   "famous": true,
+   "replaces": "https://www.wikidata.org/wiki/Q21708200#P793",
+   "month": "2025-04",
+   "fun": "Fourteen months after being sued, OpenAI sued back.",
+   "enwiki": "OpenAI",
+   "views_month": 223256
+  },
+  {
+   "id": "w3529",
+   "type": "interval",
+   "category": "ai_drama",
+   "domain": "history",
+   "en": {
+    "prompt": "A jury rules for OpenAI in Musk's lawsuit (May 2026): in what month and year?",
+    "unit": "month"
+   },
+   "answer": 202605,
+   "accept": [
+    195001,
+    202612
+   ],
+   "source": "https://en.wikipedia.org/wiki/Musk_v._Altman#:~:text=On%20May%2018%2C%202026%2C%20the%20jury%20decided",
+   "difficulty_hint": "unknown",
+   "volatile": false,
+   "generated_at": "2026-10-04",
+   "name": "A jury rules for OpenAI in Musk's lawsuit (May 2026)",
+   "ref_quality": "none",
+   "fact_checked": true,
+   "tier": 2,
+   "notes": "curated: 18 May 2026 (Wikipedia)",
+   "replaces": "https://www.wikidata.org/wiki/Q139570683#P793",
+   "month": "2026-05",
+   "fun": "The jury found the claims had been filed too late, so the calendar settled what the arguments did not.",
+   "enwiki": "Musk v. Altman",
+   "views_month": 6189
+  },
+  {
+   "id": "w3530",
+   "type": "interval",
+   "category": "ai_drama",
+   "domain": "history",
+   "en": {
+    "prompt": "The New York Times sues OpenAI and Microsoft (Dec 2023): in what month and year?",
+    "unit": "month"
+   },
+   "answer": 202312,
+   "accept": [
+    195001,
+    202612
+   ],
+   "source": "https://en.wikipedia.org/wiki/OpenAI#:~:text=The%20New%20York%20Times%20also%20sued%20the%20company%20in%20late%20December%202023",
+   "difficulty_hint": "unknown",
+   "volatile": false,
+   "generated_at": "2026-10-04",
+   "name": "The New York Times sues OpenAI and Microsoft (Dec 2023)",
+   "ref_quality": "none",
+   "fact_checked": true,
+   "tier": 2,
+   "notes": "curated: 27 December 2023 (Engadget, Bloomberg Law; Wikipedia: late December 2023)",
+   "famous": true,
+   "replaces": "https://www.wikidata.org/wiki/Q9684#P793",
+   "month": "2023-12",
+   "fun": "The complaint said millions of Times articles had been used to train the chatbots.",
+   "enwiki": "The New York Times",
+   "views_month": 113581
+  },
+  {
+   "id": "w3531",
+   "type": "interval",
+   "category": "ai_drama",
+   "domain": "history",
+   "en": {
+    "prompt": "The Authors Guild and 17 authors sue OpenAI (Sep 2023): in what month and year?",
+    "unit": "month"
+   },
+   "answer": 202309,
+   "accept": [
+    195001,
+    202612
+   ],
+   "source": "https://en.wikipedia.org/wiki/OpenAI#:~:text=17%20authors%2C%20including%20George%20R.%20R.%20Martin",
+   "difficulty_hint": "unknown",
+   "volatile": false,
+   "generated_at": "2026-10-04",
+   "name": "The Authors Guild and 17 authors sue OpenAI (Sep 2023)",
+   "ref_quality": "none",
+   "fact_checked": true,
+   "tier": 2,
+   "notes": "curated: 19 September 2023, filed in New York (AP; Wikipedia gives September 2023)",
+   "month": "2023-09",
+   "fun": "The plaintiffs included George R. R. Martin, John Grisham and Jodi Picoult.",
+   "enwiki": null,
+   "views_month": 0
+  },
+  {
+   "id": "w3532",
+   "type": "interval",
+   "category": "ai_drama",
+   "domain": "history",
+   "en": {
+    "prompt": "Anthropic agrees to pay authors $1.5 billion (Sep 2025): in what month and year?",
+    "unit": "month"
+   },
+   "answer": 202509,
+   "accept": [
+    195001,
+    202612
+   ],
+   "source": "https://en.wikipedia.org/wiki/Anthropic#:~:text=pay%20the%20authors%20%241.5%20billion",
+   "difficulty_hint": "unknown",
+   "volatile": false,
+   "generated_at": "2026-10-04",
+   "name": "Anthropic agrees to pay authors $1.5 billion (Sep 2025)",
+   "ref_quality": "none",
+   "fact_checked": true,
+   "tier": 2,
+   "notes": "curated: 5 September 2025 (Reuters, Jurist; Wikipedia gives September 2025)",
+   "famous": true,
+   "replaces": "https://www.wikidata.org/wiki/Q116758847#P793",
+   "month": "2025-09",
+   "fun": "That came to about $3,000 per book, which is more than most books cost.",
+   "enwiki": "Anthropic",
+   "views_month": 242191
+  },
+  {
+   "id": "w3533",
+   "type": "interval",
+   "category": "ai_drama",
+   "domain": "history",
+   "en": {
+    "prompt": "OpenAI's superalignment team is dissolved (May 2024): in what month and year?",
+    "unit": "month"
+   },
+   "answer": 202405,
+   "accept": [
+    195001,
+    202612
+   ],
+   "source": "https://news.bloomberglaw.com/artificial-intelligence/openai-dissolves-key-safety-team-after-chief-scientists-exit",
+   "difficulty_hint": "unknown",
+   "volatile": false,
+   "generated_at": "2026-10-04",
+   "name": "OpenAI's superalignment team is dissolved (May 2024)",
+   "ref_quality": "none",
+   "fact_checked": true,
+   "tier": 2,
+   "notes": "curated: 17 May 2024 (Bloomberg)",
+   "famous": true,
+   "replaces": "https://www.wikidata.org/wiki/Q21708200#P793",
+   "month": "2024-05",
+   "fun": "Launched in July 2023 with a promise of 20% of OpenAI's computing power, it lasted ten months.",
+   "enwiki": "OpenAI",
+   "views_month": 223256
+  },
+  {
+   "id": "w3534",
+   "type": "interval",
+   "category": "ai_drama",
+   "domain": "history",
+   "en": {
+    "prompt": "Ilya Sutskever leaves OpenAI (May 2024): in what month and year?",
+    "unit": "month"
+   },
+   "answer": 202405,
+   "accept": [
+    195001,
+    202612
+   ],
+   "source": "https://en.wikipedia.org/wiki/Safe_Superintelligence_Inc.#:~:text=On%20May%2015%2C%202024%2C%20OpenAI%20co%2Dfounder%20Ilya%20Sutskever%20left%20OpenAI",
+   "difficulty_hint": "unknown",
+   "volatile": false,
+   "generated_at": "2026-10-04",
+   "name": "Ilya Sutskever leaves OpenAI (May 2024)",
+   "ref_quality": "none",
+   "fact_checked": true,
+   "tier": 2,
+   "notes": "curated: 15 May 2024 (Wikipedia)",
+   "famous": true,
+   "replaces": "https://www.wikidata.org/wiki/Q21712134#P793",
+   "month": "2024-05",
+   "fun": "Six months earlier he had voted to remove Altman, then signed the staff letter against the board.",
+   "enwiki": "Ilya Sutskever",
+   "views_month": 76393
+  },
+  {
+   "id": "w3535",
+   "type": "interval",
+   "category": "ai_drama",
+   "domain": "history",
+   "en": {
+    "prompt": "Ilya Sutskever announces Safe Superintelligence (Jun 2024): in what month and year?",
+    "unit": "month"
+   },
+   "answer": 202406,
+   "accept": [
+    195001,
+    202612
+   ],
+   "source": "https://en.wikipedia.org/wiki/Safe_Superintelligence_Inc.#:~:text=On%20June%2019%2C%202024",
+   "difficulty_hint": "unknown",
+   "volatile": false,
+   "generated_at": "2026-10-04",
+   "name": "Ilya Sutskever announces Safe Superintelligence (Jun 2024)",
+   "ref_quality": "none",
+   "fact_checked": true,
+   "tier": 2,
+   "notes": "curated: 19 June 2024 (Wikipedia)",
+   "famous": true,
+   "replaces": "https://www.wikidata.org/wiki/Q21712134#P793",
+   "month": "2024-06",
+   "fun": "Within a year the new company was valued at more than $30 billion.",
+   "enwiki": "Ilya Sutskever",
+   "views_month": 76393
+  },
+  {
+   "id": "w3536",
+   "type": "interval",
+   "category": "ai_drama",
+   "domain": "history",
+   "en": {
+    "prompt": "Jan Leike joins Anthropic (May 2024): in what month and year?",
+    "unit": "month"
+   },
+   "answer": 202405,
+   "accept": [
+    195001,
+    202612
+   ],
+   "source": "https://en.wikipedia.org/wiki/Jan_Leike#:~:text=He%20joined%20Anthropic%20in%20May%202024",
+   "difficulty_hint": "unknown",
+   "volatile": false,
+   "generated_at": "2026-10-04",
+   "name": "Jan Leike joins Anthropic (May 2024)",
+   "ref_quality": "none",
+   "fact_checked": true,
+   "tier": 2,
+   "notes": "curated: 28 May 2024 (TechCrunch, Bloomberg)",
+   "replaces": "https://www.wikidata.org/wiki/Q123130693#P793",
+   "month": "2024-05",
+   "fun": "He had co-led OpenAI's superalignment team until it was dissolved eleven days earlier.",
+   "enwiki": "Jan Leike",
+   "views_month": 8387
+  },
+  {
+   "id": "w3537",
+   "type": "interval",
+   "category": "ai_drama",
+   "domain": "history",
+   "en": {
+    "prompt": "Andrej Karpathy leaves OpenAI again (Feb 2024): in what month and year?",
+    "unit": "month"
+   },
+   "answer": 202402,
+   "accept": [
+    195001,
+    202612
+   ],
+   "source": "https://en.wikipedia.org/wiki/Andrej_Karpathy#:~:text=February%2013%2C%202024",
+   "difficulty_hint": "unknown",
+   "volatile": false,
+   "generated_at": "2026-10-04",
+   "name": "Andrej Karpathy leaves OpenAI again (Feb 2024)",
+   "ref_quality": "none",
+   "fact_checked": true,
+   "tier": 2,
+   "notes": "curated: 13 February 2024 (Wikipedia)",
+   "replaces": "https://www.wikidata.org/wiki/Q56037405#P793",
+   "month": "2024-02",
+   "fun": "It was his second exit from OpenAI. In 2026 he joined Anthropic.",
+   "enwiki": "Andrej Karpathy",
+   "views_month": 34794
+  },
+  {
+   "id": "w3538",
+   "type": "interval",
+   "category": "ai_drama",
+   "domain": "history",
+   "en": {
+    "prompt": "Inflection's founders join Microsoft (Mar 2024): in what month and year?",
+    "unit": "month"
+   },
+   "answer": 202403,
+   "accept": [
+    195001,
+    202612
+   ],
+   "source": "https://techcrunch.com/2024/03/19/microsoft-hires-inflection-founders-to-run-new-consumer-ai-division/",
+   "difficulty_hint": "unknown",
+   "volatile": false,
+   "generated_at": "2026-10-04",
+   "name": "Inflection's founders join Microsoft (Mar 2024)",
+   "ref_quality": "none",
+   "fact_checked": true,
+   "tier": 2,
+   "notes": "curated: 19 March 2024 (TechCrunch)",
+   "replaces": "https://www.wikidata.org/wiki/Q16847797#P793",
+   "month": "2024-03",
+   "fun": "Microsoft also paid Inflection $650 million to license its technology and hired most of its 70 staff.",
+   "enwiki": "Mustafa Suleyman",
+   "views_month": 26995
+  },
+  {
+   "id": "w3539",
+   "type": "interval",
+   "category": "ai_drama",
+   "domain": "history",
+   "en": {
+    "prompt": "Character.AI's founders return to Google (Aug 2024): in what month and year?",
+    "unit": "month"
+   },
+   "answer": 202408,
+   "accept": [
+    195001,
+    202612
+   ],
+   "source": "https://techcrunch.com/2024/08/02/character-ai-ceo-noam-shazeer-returns-to-google/",
+   "difficulty_hint": "unknown",
+   "volatile": false,
+   "generated_at": "2026-10-04",
+   "name": "Character.AI's founders return to Google (Aug 2024)",
+   "ref_quality": "none",
+   "fact_checked": true,
+   "tier": 2,
+   "notes": "curated: 2 August 2024 (TechCrunch, Bloomberg)",
+   "replaces": "https://www.wikidata.org/wiki/Q30251943#P793",
+   "month": "2024-08",
+   "fun": "Google got the founders back along with a licence to Character.AI's technology. Shazeer went on to co-lead Gemini.",
+   "enwiki": "Noam Shazeer",
+   "views_month": 12961
+  },
+  {
+   "id": "w3540",
+   "type": "interval",
+   "category": "ai_drama",
+   "domain": "history",
+   "en": {
+    "prompt": "John Schulman joins Anthropic (Aug 2024): in what month and year?",
+    "unit": "month"
+   },
+   "answer": 202408,
+   "accept": [
+    195001,
+    202612
+   ],
+   "source": "https://en.wikipedia.org/wiki/John_Schulman#:~:text=he%20announced%20he%20would%20be%20joining%20Anthropic",
+   "difficulty_hint": "unknown",
+   "volatile": false,
+   "generated_at": "2026-10-04",
+   "name": "John Schulman joins Anthropic (Aug 2024)",
+   "ref_quality": "none",
+   "fact_checked": true,
+   "tier": 2,
+   "notes": "curated: 5 August 2024, announced on X (Wikipedia gives August 2024)",
+   "replaces": "https://www.wikidata.org/wiki/Q103236782#P793",
+   "month": "2024-08",
+   "fun": "About six months later he left for Mira Murati's Thinking Machines Lab.",
+   "enwiki": "John Schulman",
+   "views_month": 6735
+  },
+  {
+   "id": "w3541",
+   "type": "interval",
+   "category": "ai_drama",
+   "domain": "history",
+   "en": {
+    "prompt": "Mira Murati leaves OpenAI (Sep 2024): in what month and year?",
+    "unit": "month"
+   },
+   "answer": 202409,
+   "accept": [
+    195001,
+    202612
+   ],
+   "source": "https://en.wikipedia.org/wiki/Mira_Murati#:~:text=Murati%20announced%20that%20she%20was%20stepping%20down",
+   "difficulty_hint": "unknown",
+   "volatile": false,
+   "generated_at": "2026-10-04",
+   "name": "Mira Murati leaves OpenAI (Sep 2024)",
+   "ref_quality": "none",
+   "fact_checked": true,
+   "tier": 2,
+   "notes": "curated: 25 September 2024 (Fortune; Wikipedia gives September 2024)",
+   "replaces": "https://www.wikidata.org/wiki/Q116706551#P793",
+   "month": "2024-09",
+   "fun": "Ten months earlier she had been OpenAI's interim CEO, for three days.",
+   "enwiki": "Mira Murati",
+   "views_month": 48947
+  },
+  {
+   "id": "w3542",
+   "type": "interval",
+   "category": "ai_drama",
+   "domain": "history",
+   "en": {
+    "prompt": "Mira Murati launches Thinking Machines Lab (Feb 2025): in what month and year?",
+    "unit": "month"
+   },
+   "answer": 202502,
+   "accept": [
+    195001,
+    202612
+   ],
+   "source": "https://techcrunch.com/2025/02/18/thinking-machines-lab-is-ex-openai-cto-mira-muratis-new-startup/",
+   "difficulty_hint": "unknown",
+   "volatile": false,
+   "generated_at": "2026-10-04",
+   "name": "Mira Murati launches Thinking Machines Lab (Feb 2025)",
+   "ref_quality": "none",
+   "fact_checked": true,
+   "tier": 2,
+   "notes": "curated: 18 February 2025 (TechCrunch, Fortune)",
+   "replaces": "https://www.wikidata.org/wiki/Q116706551#P793",
+   "month": "2025-02",
+   "fun": "By July it had raised about $2 billion at a $12 billion valuation.",
+   "enwiki": "Mira Murati",
+   "views_month": 48947
+  },
+  {
+   "id": "w3543",
+   "type": "interval",
+   "category": "ai_drama",
+   "domain": "history",
+   "en": {
+    "prompt": "Meta launches Superintelligence Labs under Alexandr Wang (Jun 2025): in what month and year?",
+    "unit": "month"
+   },
+   "answer": 202506,
+   "accept": [
+    195001,
+    202612
+   ],
+   "source": "https://techcrunch.com/2025/06/30/meta-restructures-its-ai-unit-under-superintelligence-labs/",
+   "difficulty_hint": "unknown",
+   "volatile": false,
+   "generated_at": "2026-10-04",
+   "name": "Meta launches Superintelligence Labs under Alexandr Wang (Jun 2025)",
+   "ref_quality": "none",
+   "fact_checked": true,
+   "tier": 2,
+   "notes": "curated: 30 June 2025 (TechCrunch, Fortune)",
+   "famous": true,
+   "replaces": "https://www.wikidata.org/wiki/Q112629173#P793",
+   "month": "2025-06",
+   "fun": "Meta paid more than $14 billion for 49% of Scale AI, and Scale's CEO came over to run the lab.",
+   "enwiki": "Alexandr Wang",
+   "views_month": 72469
+  },
+  {
+   "id": "w3544",
+   "type": "interval",
+   "category": "ai_drama",
+   "domain": "history",
+   "en": {
+    "prompt": "Scarlett Johansson objects to ChatGPT's 'Sky' voice (May 2024): in what month and year?",
+    "unit": "month"
+   },
+   "answer": 202405,
+   "accept": [
+    195001,
+    202612
+   ],
+   "source": "https://techcrunch.com/2024/05/20/openai-to-remove-chatgpts-scarlett-johansson-like-voice/",
+   "difficulty_hint": "unknown",
+   "volatile": false,
+   "generated_at": "2026-10-04",
+   "name": "Scarlett Johansson objects to ChatGPT's 'Sky' voice (May 2024)",
+   "ref_quality": "none",
+   "fact_checked": true,
+   "tier": 2,
+   "notes": "curated: 20 May 2024, her statement (TechCrunch)",
+   "famous": true,
+   "replaces": "https://www.wikidata.org/wiki/Q34436#P793",
+   "month": "2024-05",
+   "fun": "She had turned down an offer to voice the assistant. OpenAI paused the Sky voice.",
+   "enwiki": "Scarlett Johansson",
+   "views_month": 427328
+  },
+  {
+   "id": "w3545",
+   "type": "interval",
+   "category": "ai_drama",
+   "domain": "history",
+   "en": {
+    "prompt": "Google pauses Gemini's images of people (Feb 2024): in what month and year?",
+    "unit": "month"
+   },
+   "answer": 202402,
+   "accept": [
+    195001,
+    202612
+   ],
+   "source": "https://techcrunch.com/2024/02/22/google-gemini-image-pause-people/",
+   "difficulty_hint": "unknown",
+   "volatile": false,
+   "generated_at": "2026-10-04",
+   "name": "Google pauses Gemini's images of people (Feb 2024)",
+   "ref_quality": "none",
+   "fact_checked": true,
+   "tier": 2,
+   "notes": "curated: 22 February 2024 (TechCrunch)",
+   "famous": true,
+   "replaces": "https://www.wikidata.org/wiki/Q116698014#P793",
+   "month": "2024-02",
+   "fun": "Google said the feature 'missed the mark' after it drew historical figures inaccurately.",
+   "enwiki": "Google Gemini",
+   "views_month": 78141
+  },
+  {
+   "id": "w3546",
+   "type": "interval",
+   "category": "ai_drama",
+   "domain": "history",
+   "en": {
+    "prompt": "Alphabet loses about $100 billion in value after a Bard demo (Feb 2023): in what month and year?",
+    "unit": "month"
+   },
+   "answer": 202302,
+   "accept": [
+    195001,
+    202612
+   ],
+   "source": "https://en.wikipedia.org/wiki/Google_Gemini#:~:text=%24100%20billion%20loss%20in%20market%20value",
+   "difficulty_hint": "unknown",
+   "volatile": false,
+   "generated_at": "2026-10-04",
+   "name": "Alphabet loses about $100 billion in value after a Bard demo (Feb 2023)",
+   "ref_quality": "none",
+   "fact_checked": true,
+   "tier": 2,
+   "notes": "curated: 8 February 2023 (Wikipedia)",
+   "famous": true,
+   "replaces": "https://www.wikidata.org/wiki/Q20800404#P793",
+   "month": "2023-02",
+   "fun": "The demo got a fact about the James Webb Space Telescope wrong. The shares fell 8%.",
+   "enwiki": "Alphabet Inc.",
+   "views_month": 89678
+  },
+  {
+   "id": "w3547",
+   "type": "interval",
+   "category": "ai_drama",
+   "domain": "history",
+   "en": {
+    "prompt": "Stability AI's CEO resigns (Mar 2024): in what month and year?",
+    "unit": "month"
+   },
+   "answer": 202403,
+   "accept": [
+    195001,
+    202612
+   ],
+   "source": "https://en.wikipedia.org/wiki/Stability_AI#:~:text=On%20March%2023%2C%202024%2C%20Emad%20Mostaque%20stepped%20down",
+   "difficulty_hint": "unknown",
+   "volatile": false,
+   "generated_at": "2026-10-04",
+   "name": "Stability AI's CEO resigns (Mar 2024)",
+   "ref_quality": "none",
+   "fact_checked": true,
+   "tier": 2,
+   "notes": "curated: 23 March 2024 (Wikipedia)",
+   "replaces": "https://www.wikidata.org/wiki/Q114049362#P793",
+   "month": "2024-03",
+   "fun": "It came after what the press called a 'mass exodus of executives' earlier that month.",
+   "enwiki": "Emad Mostaque",
+   "views_month": 5521
+  },
+  {
+   "id": "w3548",
+   "type": "interval",
+   "category": "ai_drama",
+   "domain": "history",
+   "en": {
+    "prompt": "DeepSeek-R1 sets off Nvidia's $600 billion one-day fall (Jan 2025): in what month and year?",
+    "unit": "month"
+   },
+   "answer": 202501,
+   "accept": [
+    195001,
+    202612
+   ],
+   "source": "https://en.wikipedia.org/wiki/Nvidia#:~:text=largest%20one%2Dday%20loss",
+   "difficulty_hint": "unknown",
+   "volatile": false,
+   "generated_at": "2026-10-04",
+   "name": "DeepSeek-R1 sets off Nvidia's $600 billion one-day fall (Jan 2025)",
+   "ref_quality": "none",
+   "fact_checked": true,
+   "tier": 2,
+   "notes": "curated: 27 January 2025 (contemporary reports; Wikipedia gives January 2025)",
+   "famous": true,
+   "replaces": "https://www.wikidata.org/wiki/Q182477#P793",
+   "month": "2025-01",
+   "fun": "About $600 billion of Nvidia's market value went in a single trading day.",
+   "enwiki": "Nvidia",
+   "views_month": 162860
+  },
+  {
+   "id": "w3549",
+   "type": "interval",
+   "category": "ai_drama",
+   "domain": "history",
+   "en": {
+    "prompt": "Grok posts antisemitic content and xAI deletes it (Jul 2025): in what month and year?",
+    "unit": "month"
+   },
+   "answer": 202507,
+   "accept": [
+    195001,
+    202612
+   ],
+   "source": "https://en.wikipedia.org/wiki/Grok_(chatbot)#:~:text=posting%20antisemitic%20content",
+   "difficulty_hint": "unknown",
+   "volatile": false,
+   "generated_at": "2026-10-04",
+   "name": "Grok posts antisemitic content and xAI deletes it (Jul 2025)",
+   "ref_quality": "none",
+   "fact_checked": true,
+   "tier": 2,
+   "notes": "curated: 8 July 2025 (Semafor; Wikipedia gives July 2025)",
+   "famous": true,
+   "replaces": "https://www.wikidata.org/wiki/Q123361035#P793",
+   "month": "2025-07",
+   "fun": "xAI removed the 'politically incorrect' instruction from Grok's prompt afterwards.",
+   "enwiki": "Grok (chatbot)",
+   "views_month": 52224
+  },
+  {
+   "id": "w3550",
+   "type": "interval",
+   "category": "ai_drama",
+   "domain": "history",
+   "en": {
+    "prompt": "OpenAI becomes a public benefit corporation (Oct 2025): in what month and year?",
+    "unit": "month"
+   },
+   "answer": 202510,
+   "accept": [
+    195001,
+    202612
+   ],
+   "source": "https://en.wikipedia.org/wiki/OpenAI#:~:text=On%20October%2028%2C%202025%2C%20OpenAI%20announced",
+   "difficulty_hint": "unknown",
+   "volatile": false,
+   "generated_at": "2026-10-04",
+   "name": "OpenAI becomes a public benefit corporation (Oct 2025)",
+   "ref_quality": "none",
+   "fact_checked": true,
+   "tier": 2,
+   "notes": "curated: 28 October 2025 (Wikipedia)",
+   "famous": true,
+   "replaces": "https://www.wikidata.org/wiki/Q21708200#P793",
+   "month": "2025-10",
+   "fun": "It took sign-off from two state attorneys general. Microsoft came out with about 27%.",
+   "enwiki": "OpenAI",
+   "views_month": 223256
+  },
+  {
+   "id": "w3551",
+   "type": "interval",
+   "category": "ai_drama",
+   "domain": "history",
+   "en": {
+    "prompt": "Musk-led group bids $97.4 billion for OpenAI's nonprofit (Feb 2025): in what month and year?",
+    "unit": "month"
+   },
+   "answer": 202502,
+   "accept": [
+    195001,
+    202612
+   ],
+   "source": "https://en.wikipedia.org/wiki/OpenAI#:~:text=%2497.4%20billion%20unsolicited%20bid",
+   "difficulty_hint": "unknown",
+   "volatile": false,
+   "generated_at": "2026-10-04",
+   "name": "Musk-led group bids $97.4 billion for OpenAI's nonprofit (Feb 2025)",
+   "ref_quality": "none",
+   "fact_checked": true,
+   "tier": 2,
+   "notes": "curated: 10 February 2025 (Wikipedia)",
+   "famous": true,
+   "replaces": "https://www.wikidata.org/wiki/Q317521#P793",
+   "month": "2025-02",
+   "fun": "The bid was unsolicited and promised to match or beat any better offer.",
+   "enwiki": "Elon Musk",
+   "views_month": 546830
+  },
+  {
+   "id": "w3552",
+   "type": "interval",
+   "category": "ai_drama",
+   "domain": "history",
+   "en": {
+    "prompt": "OpenAI opens Sora to the public (Dec 2024): in what month and year?",
+    "unit": "month"
+   },
+   "answer": 202412,
+   "accept": [
+    195001,
+    202612
+   ],
+   "source": "https://en.wikipedia.org/wiki/Sora_(text-to-video_model)#:~:text=As%20of%20December%209%2C%202024",
+   "difficulty_hint": "unknown",
+   "volatile": false,
+   "generated_at": "2026-10-04",
+   "name": "OpenAI opens Sora to the public (Dec 2024)",
+   "ref_quality": "none",
+   "fact_checked": true,
+   "tier": 2,
+   "notes": "curated: 9 December 2024 (Wikipedia)",
+   "replaces": "https://www.wikidata.org/wiki/Q124544998#P793",
+   "month": "2024-12",
+   "fun": "That was ten months after OpenAI first showed Sora's clips.",
+   "enwiki": "Sora (text-to-video model)",
+   "views_month": 19313
+  },
+  {
+   "id": "w3553",
+   "type": "interval",
+   "category": "ai_drama",
+   "domain": "history",
+   "en": {
+    "prompt": "HP buys Humane and the AI Pin is switched off (Feb 2025): in what month and year?",
+    "unit": "month"
+   },
+   "answer": 202502,
+   "accept": [
+    195001,
+    202612
+   ],
+   "source": "https://en.wikipedia.org/wiki/Humane_Inc.#:~:text=HP%20would%20acquire%20most%20of%20Humane",
+   "difficulty_hint": "unknown",
+   "volatile": false,
+   "generated_at": "2026-10-04",
+   "name": "HP buys Humane and the AI Pin is switched off (Feb 2025)",
+   "ref_quality": "none",
+   "fact_checked": true,
+   "tier": 2,
+   "notes": "curated: 18 February 2025, HP's announcement; the Pin's servers went off on 28 February (Wikipedia gives February 2025)",
+   "replaces": "https://www.wikidata.org/wiki/Q123437461#P793",
+   "month": "2025-02",
+   "fun": "HP paid $116 million for most of Humane. The AI Pin itself was not included.",
+   "enwiki": "Humane Inc.",
+   "views_month": 3403
+  },
+  {
+   "id": "w3554",
+   "type": "interval",
+   "category": "ai_drama",
+   "domain": "history",
+   "en": {
+    "prompt": "Microsoft delays its Recall feature (Jun 2024): in what month and year?",
+    "unit": "month"
+   },
+   "answer": 202406,
+   "accept": [
+    195001,
+    202612
+   ],
+   "source": "https://en.wikipedia.org/wiki/Windows_Recall#:~:text=June%2014%20to%20delay%20release",
+   "difficulty_hint": "unknown",
+   "volatile": false,
+   "generated_at": "2026-10-04",
+   "name": "Microsoft delays its Recall feature (Jun 2024)",
+   "ref_quality": "none",
+   "fact_checked": true,
+   "tier": 2,
+   "notes": "curated: 14 June 2024 (Wikipedia)",
+   "replaces": "https://www.wikidata.org/wiki/Q131353867#P793",
+   "month": "2024-06",
+   "fun": "It was meant to ship on 18 June. On 14 June it went back for more testing.",
+   "enwiki": "Windows Recall",
+   "views_month": 2738
+  },
+  {
+   "id": "w3555",
+   "type": "interval",
+   "category": "ai_drama",
+   "domain": "history",
+   "en": {
+    "prompt": "Anthropic publishes Claude's 'blackmail' safety test (May 2025): in what month and year?",
+    "unit": "month"
+   },
+   "answer": 202505,
+   "accept": [
+    195001,
+    202612
+   ],
+   "source": "https://en.wikipedia.org/wiki/Claude_(AI)#:~:text=sent%20a%20blackmail%20email",
+   "difficulty_hint": "unknown",
+   "volatile": false,
+   "generated_at": "2026-10-04",
+   "name": "Anthropic publishes Claude's 'blackmail' safety test (May 2025)",
+   "ref_quality": "none",
+   "fact_checked": true,
+   "tier": 2,
+   "notes": "curated: 22 May 2025, with the Claude 4 release (Wikipedia)",
+   "famous": true,
+   "replaces": "https://www.wikidata.org/wiki/Q118876059#P793",
+   "month": "2025-05",
+   "fun": "In the fictional test, Claude and other leading models often chose blackmail to avoid being replaced.",
+   "enwiki": "Claude (AI)",
+   "views_month": 147471
+  },
+  {
+   "id": "w3556",
+   "type": "interval",
+   "category": "ai_drama",
+   "domain": "history",
+   "en": {
+    "prompt": "OpenAI rolls back a 'sycophantic' GPT-4o update (Apr 2025): in what month and year?",
+    "unit": "month"
+   },
+   "answer": 202504,
+   "accept": [
+    195001,
+    202612
+   ],
+   "source": "https://en.wikipedia.org/wiki/GPT-4o#:~:text=rolled%20back%20an%20update%20of%20GPT%2D4o",
+   "difficulty_hint": "unknown",
+   "volatile": false,
+   "generated_at": "2026-10-04",
+   "name": "OpenAI rolls back a 'sycophantic' GPT-4o update (Apr 2025)",
+   "ref_quality": "none",
+   "fact_checked": true,
+   "tier": 2,
+   "notes": "curated: 29 April 2025 (TechCrunch; Wikipedia gives April 2025)",
+   "replaces": "https://www.wikidata.org/wiki/Q125919502#P793",
+   "month": "2025-04",
+   "fun": "The update made ChatGPT so agreeable that OpenAI rolled it back.",
+   "enwiki": "GPT-4o",
+   "views_month": 7504
+  },
+  {
+   "id": "w3557",
+   "type": "interval",
+   "category": "ai_drama",
+   "domain": "history",
+   "en": {
+    "prompt": "Meta's Llama 4 and its leaderboard score (Apr 2025): in what month and year?",
+    "unit": "month"
+   },
+   "answer": 202504,
+   "accept": [
+    195001,
+    202612
+   ],
+   "source": "https://en.wikipedia.org/wiki/Llama_(language_model)#:~:text=experimental%20chat%20version",
+   "difficulty_hint": "unknown",
+   "volatile": false,
+   "generated_at": "2026-10-04",
+   "name": "Meta's Llama 4 and its leaderboard score (Apr 2025)",
+   "ref_quality": "none",
+   "fact_checked": true,
+   "tier": 2,
+   "notes": "curated: 5 April 2025 (Wikipedia)",
+   "replaces": "https://www.wikidata.org/wiki/Q116894231#P793",
+   "month": "2025-04",
+   "fun": "Meta said its LMArena score came from an 'experimental chat version', not the model it released.",
+   "enwiki": "Llama (language model)",
+   "views_month": 16522
+  },
+  {
+   "id": "w3558",
+   "type": "interval",
+   "category": "ai_drama",
+   "domain": "history",
+   "en": {
+    "prompt": "Builder.ai enters insolvency (May 2025): in what month and year?",
+    "unit": "month"
+   },
+   "answer": 202505,
+   "accept": [
+    195001,
+    202612
+   ],
+   "source": "https://en.wikipedia.org/wiki/Builder.ai#:~:text=Collapse%20and%20bankruptcy",
+   "difficulty_hint": "unknown",
+   "volatile": false,
+   "generated_at": "2026-10-04",
+   "name": "Builder.ai enters insolvency (May 2025)",
+   "ref_quality": "none",
+   "fact_checked": true,
+   "tier": 2,
+   "notes": "curated: 20 May 2025 (Sifted, TechMarketView; Wikipedia gives May 2025)",
+   "replaces": "https://www.wikidata.org/wiki/Q134984536#P793",
+   "month": "2025-05",
+   "fun": "Fast Company had once ranked it the third most innovative company in AI.",
+   "enwiki": "Builder.ai",
+   "views_month": 4457
+  },
+  {
+   "id": "w3559",
+   "type": "interval",
+   "category": "ai_drama",
+   "domain": "history",
+   "en": {
+    "prompt": "SpaceX buys xAI (Feb 2026): in what month and year?",
+    "unit": "month"
+   },
+   "answer": 202602,
+   "accept": [
+    195001,
+    202612
+   ],
+   "source": "https://en.wikipedia.org/wiki/SpaceXAI#:~:text=On%20February%202%2C%202026%2C%20SpaceX%20acquired%20xAI",
+   "difficulty_hint": "unknown",
+   "volatile": false,
+   "generated_at": "2026-10-04",
+   "name": "SpaceX buys xAI (Feb 2026)",
+   "ref_quality": "none",
+   "fact_checked": true,
+   "tier": 2,
+   "notes": "curated: 2 February 2026 (Wikipedia)",
+   "replaces": "https://www.wikidata.org/wiki/Q120599684#P793",
+   "month": "2026-02",
+   "fun": "The deal valued SpaceX at $1 trillion and xAI at $250 billion. Both were founded by Elon Musk.",
+   "enwiki": "SpaceXAI",
+   "views_month": 38569
+  },
+  {
+   "id": "w3560",
+   "type": "interval",
+   "category": "ai_drama",
+   "domain": "history",
+   "en": {
+    "prompt": "OpenAI confirms it has filed for an IPO (Jun 2026): in what month and year?",
+    "unit": "month"
+   },
+   "answer": 202606,
+   "accept": [
+    195001,
+    202612
+   ],
+   "source": "https://en.wikipedia.org/wiki/OpenAI#:~:text=confirmed%20it%20filed%20for%20an%20IPO",
+   "difficulty_hint": "unknown",
+   "volatile": false,
+   "generated_at": "2026-10-04",
+   "name": "OpenAI confirms it has filed for an IPO (Jun 2026)",
+   "ref_quality": "none",
+   "fact_checked": true,
+   "tier": 2,
+   "notes": "curated: 8 June 2026 (Wikipedia)",
+   "famous": true,
+   "replaces": "https://www.wikidata.org/wiki/Q21708200#P793",
+   "month": "2026-06",
+   "fun": "It said a listing 'could be a while'. In September the IPO was pushed to 2027.",
+   "enwiki": "OpenAI",
+   "views_month": 223256
+  },
+  {
+   "id": "w3561",
+   "type": "interval",
+   "category": "ai_drama",
+   "domain": "history",
+   "en": {
+    "prompt": "Hugging Face reports an attack by autonomous AI agents (Jul 2026): in what month and year?",
+    "unit": "month"
+   },
+   "answer": 202607,
+   "accept": [
+    195001,
+    202612
+   ],
+   "source": "https://en.wikipedia.org/wiki/Hugging_Face#:~:text=disclosed%20a%20cyberattack%20by%20autonomous%20AI%20agents",
+   "difficulty_hint": "unknown",
+   "volatile": false,
+   "generated_at": "2026-10-04",
+   "name": "Hugging Face reports an attack by autonomous AI agents (Jul 2026)",
+   "ref_quality": "none",
+   "fact_checked": true,
+   "tier": 2,
+   "notes": "curated: July 2026 (Wikipedia gives the month)",
+   "famous": true,
+   "replaces": "https://www.wikidata.org/wiki/Q108943604#P793",
+   "month": "2026-07",
+   "fun": "OpenAI said two of its own models had slipped out of their sandbox. Hugging Face's servers were where they went.",
+   "enwiki": "Hugging Face",
+   "views_month": 139612
+  },
+  {
+   "id": "w3562",
+   "type": "interval",
+   "category": "ai_drama",
+   "domain": "history",
+   "en": {
+    "prompt": "Nvidia agrees to buy Hugging Face (Sep 2026): in what month and year?",
+    "unit": "month"
+   },
+   "answer": 202609,
+   "accept": [
+    195001,
+    202612
+   ],
+   "source": "https://en.wikipedia.org/wiki/Hugging_Face#:~:text=agreement%20to%20acquire%20Hugging%20Face",
+   "difficulty_hint": "unknown",
+   "volatile": false,
+   "generated_at": "2026-10-04",
+   "name": "Nvidia agrees to buy Hugging Face (Sep 2026)",
+   "ref_quality": "none",
+   "fact_checked": true,
+   "tier": 2,
+   "notes": "curated: 3 September 2026 (Wikipedia)",
+   "famous": true,
+   "replaces": "https://www.wikidata.org/wiki/Q108943604#P793",
+   "month": "2026-09",
+   "fun": "In 2025 Hugging Face had turned down a $500 million investment from Nvidia.",
+   "enwiki": "Hugging Face",
+   "views_month": 139612
+  },
+  {
+   "id": "w3563",
+   "type": "interval",
+   "category": "ai_drama",
+   "domain": "history",
+   "en": {
+    "prompt": "Anthropic accuses three Chinese labs of distilling Claude (Feb 2026): in what month and year?",
+    "unit": "month"
+   },
+   "answer": 202602,
+   "accept": [
+    195001,
+    202612
+   ],
+   "source": "https://en.wikipedia.org/wiki/Anthropic#:~:text=On%20February%2023%2C%202026%2C%20Anthropic%20accused",
+   "difficulty_hint": "unknown",
+   "volatile": false,
+   "generated_at": "2026-10-04",
+   "name": "Anthropic accuses three Chinese labs of distilling Claude (Feb 2026)",
+   "ref_quality": "none",
+   "fact_checked": true,
+   "tier": 2,
+   "notes": "curated: 23 February 2026 (Wikipedia)",
+   "famous": true,
+   "replaces": "https://www.wikidata.org/wiki/Q116758847#P793",
+   "month": "2026-02",
+   "fun": "Anthropic counted more than 16 million chats with Claude from about 24,000 accounts.",
+   "enwiki": "Anthropic",
+   "views_month": 242191
+  },
+  {
+   "id": "w3564",
+   "type": "interval",
+   "category": "ai_drama",
+   "domain": "history",
+   "en": {
+    "prompt": "Anthropic turns down the Pentagon's demand on Claude (Feb 2026): in what month and year?",
+    "unit": "month"
+   },
+   "answer": 202602,
+   "accept": [
+    195001,
+    202612
+   ],
+   "source": "https://en.wikipedia.org/wiki/Anthropic#:~:text=the%20DoD%20demanded%20the%20ability%20to%20use%20Claude",
+   "difficulty_hint": "unknown",
+   "volatile": false,
+   "generated_at": "2026-10-04",
+   "name": "Anthropic turns down the Pentagon's demand on Claude (Feb 2026)",
+   "ref_quality": "none",
+   "fact_checked": true,
+   "tier": 2,
+   "notes": "curated: February 2026 (Wikipedia gives the month)",
+   "famous": true,
+   "replaces": "https://www.wikidata.org/wiki/Q116758847#P793",
+   "month": "2026-02",
+   "fun": "A federal judge later blocked the government's plan to phase out Anthropic's products.",
+   "enwiki": "Anthropic",
+   "views_month": 242191
+  },
+  {
+   "id": "w3565",
+   "type": "interval",
+   "category": "ai_drama",
+   "domain": "history",
+   "en": {
+    "prompt": "Geoffrey Hinton leaves Google (May 2023): in what month and year?",
+    "unit": "month"
+   },
+   "answer": 202305,
+   "accept": [
+    195001,
+    202612
+   ],
+   "source": "https://en.wikipedia.org/wiki/Geoffrey_Hinton#:~:text=departure%20from%20Google%20in%20May%202023",
+   "difficulty_hint": "unknown",
+   "volatile": false,
+   "generated_at": "2026-10-04",
+   "name": "Geoffrey Hinton leaves Google (May 2023)",
+   "ref_quality": "none",
+   "fact_checked": true,
+   "tier": 2,
+   "notes": "curated: May 2023 (Wikipedia gives the month)",
+   "famous": true,
+   "replaces": "https://www.wikidata.org/wiki/Q92894#P793",
+   "month": "2023-05",
+   "fun": "He cited the risks of AI. The next year he shared the Nobel Prize in Physics for work that made it possible.",
+   "enwiki": "Geoffrey Hinton",
+   "views_month": 72915
+  },
+  {
+   "id": "w3566",
+   "type": "interval",
+   "category": "ai_drama",
+   "domain": "history",
+   "en": {
+    "prompt": "Yann LeCun leaves Meta to start AMI Labs (Nov 2025): in what month and year?",
+    "unit": "month"
+   },
+   "answer": 202511,
+   "accept": [
+    195001,
+    202612
+   ],
+   "source": "https://en.wikipedia.org/wiki/Yann_LeCun#:~:text=On%2019%20November%202025",
+   "difficulty_hint": "unknown",
+   "volatile": false,
+   "generated_at": "2026-10-04",
+   "name": "Yann LeCun leaves Meta to start AMI Labs (Nov 2025)",
+   "ref_quality": "none",
+   "fact_checked": true,
+   "tier": 2,
+   "notes": "curated: 19 November 2025 (Wikipedia)",
+   "replaces": "https://www.wikidata.org/wiki/Q3571662#P793",
+   "month": "2025-11",
+   "fun": "He had been Meta's chief AI scientist for ten years. His new company works on 'world models'.",
+   "enwiki": "Yann LeCun",
+   "views_month": 28859
+  },
+  {
+   "id": "w3567",
+   "type": "interval",
+   "category": "ai_drama",
+   "domain": "history",
+   "en": {
+    "prompt": "California's SB 1047 is vetoed (Sep 2024): in what month and year?",
+    "unit": "month"
+   },
+   "answer": 202409,
+   "accept": [
+    195001,
+    202612
+   ],
+   "source": "https://en.wikipedia.org/wiki/Safe_and_Secure_Innovation_for_Frontier_Artificial_Intelligence_Models_Act#:~:text=Governor%20Gavin%20Newsom%20vetoed%20the%20bill",
+   "difficulty_hint": "unknown",
+   "volatile": false,
+   "generated_at": "2026-10-04",
+   "name": "California's SB 1047 is vetoed (Sep 2024)",
+   "ref_quality": "none",
+   "fact_checked": true,
+   "tier": 2,
+   "notes": "curated: 29 September 2024 (Wikipedia)",
+   "replaces": "https://www.wikidata.org/wiki/Q127393140#P793",
+   "month": "2024-09",
+   "fun": "The AI safety bill had passed the state Senate 30 to 9 before the governor's veto.",
+   "enwiki": "Safe and Secure Innovation for Frontier Artificial Intelligence Models Act",
+   "views_month": 984
+  },
+  {
+   "id": "w3568",
+   "type": "interval",
+   "category": "ai_drama",
+   "domain": "history",
+   "en": {
+    "prompt": "The US AI executive order 14110 is rescinded (Jan 2025): in what month and year?",
+    "unit": "month"
+   },
+   "answer": 202501,
+   "accept": [
+    195001,
+    202612
+   ],
+   "source": "https://en.wikipedia.org/wiki/Executive_Order_14110#:~:text=rescinded%20by%20U.S.%20president%20Donald%20Trump",
+   "difficulty_hint": "unknown",
+   "volatile": false,
+   "generated_at": "2026-10-04",
+   "name": "The US AI executive order 14110 is rescinded (Jan 2025)",
+   "ref_quality": "none",
+   "fact_checked": true,
+   "tier": 2,
+   "notes": "curated: 20 January 2025 (Wikipedia)",
+   "replaces": "https://www.wikidata.org/wiki/Q123560919#P793",
+   "month": "2025-01",
+   "fun": "It was rescinded within hours of the new administration taking office.",
+   "enwiki": "Executive Order 14110",
+   "views_month": 1368
+  },
+  {
+   "id": "w3569",
+   "type": "interval",
+   "category": "ai_drama",
+   "domain": "history",
+   "en": {
+    "prompt": "The EU AI Act enters into force (Aug 2024): in what month and year?",
+    "unit": "month"
+   },
+   "answer": 202408,
+   "accept": [
+    195001,
+    202612
+   ],
+   "source": "https://en.wikipedia.org/wiki/Artificial_Intelligence_Act#:~:text=entered%20into%20force%20on%201%20August%202024",
+   "difficulty_hint": "unknown",
+   "volatile": false,
+   "generated_at": "2026-10-04",
+   "name": "The EU AI Act enters into force (Aug 2024)",
+   "ref_quality": "none",
+   "fact_checked": true,
+   "tier": 2,
+   "notes": "curated: 1 August 2024 (Wikipedia)",
+   "replaces": "https://www.wikidata.org/wiki/Q108456694#P793",
+   "month": "2024-08",
+   "fun": "Its rules switch on in stages over 6 to 36 months, so 'in force' was mostly a starting gun.",
+   "enwiki": "Artificial Intelligence Act",
+   "views_month": 10986
   }
  ],
  "views_window": "20260701-20260930"

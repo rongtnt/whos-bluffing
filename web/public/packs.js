@@ -8,7 +8,7 @@ export const PACKS = {
   all: { label: 'All', categories: null },
   ai: {
     label: 'AI',
-    categories: ['ai_timeline', 'ai_released', 'ai_company_founded', 'ai_money', 'ai_params', 'ai_tech'],
+    categories: ['ai_timeline', 'ai_drama', 'ai_released', 'ai_company_founded', 'ai_money', 'ai_params', 'ai_tech'],
     tiers: { easy: [1], normal: [1, 2], brutal: [2, 3] },
   },
   geography: { label: 'Geography', categories: ['country_area', 'country_population', 'mountain_elevation', 'river_length', 'lake'] },

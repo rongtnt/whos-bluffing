@@ -6,8 +6,9 @@
 
 Pairs: two items of items/pool.json with the same category and unit; the larger value is at least 1.3 times the
 smaller (melting points compared in kelvin), or, for years, at least 10 years apart ("Which came first?"). The AI pack's
-categories (items/ai_curated.json: ai_timeline, ai_released, ai_company_founded, ai_money, ai_params, ai_tech) need only 2
-years or 3 months (MIN_GAPS, written to each template as `min_gap`; money and tech use the 1.3 ratio), their year
+categories (items/ai_curated.json: ai_timeline, ai_drama, ai_released, ai_company_founded, ai_money, ai_params, ai_tech)
+need only 2 years, 3 months (timeline) or 2 months (drama) (MIN_GAPS, written to each template as `min_gap`; money and
+tech use the 1.3 ratio), their year
 difficulty scales to match (easy >= 10 years, medium >= 4), their tier 1-2 items count as
 famous (`famous`), and they stay out of ranked rounds and the chat question (QUICK_ONLY). AI items carry a `tier` (1 famous
 names and years, 2 events and money, 3 technical); a pair's tier is the higher of its two, and the AI pack draws by it
@@ -61,7 +62,7 @@ RULE_LADDER = ([(gap, 2, 2) for gap in (ITEM_NO_REUSE_DAYS, 14, 7, 5)] + [(gap, 
                + [(7, 3, None), (5, 4, None)])
 EXCLUDED_CATEGORIES = {"city_population"}
 # Hand-curated categories (items/ai_curated.json, the AI pack): quick rounds only, never a ranked round or the chat question.
-QUICK_ONLY = {"ai_released", "ai_company_founded", "ai_params", "ai_money", "ai_tech"}
+QUICK_ONLY = {"ai_released", "ai_company_founded", "ai_params", "ai_money", "ai_tech", "ai_drama"}
 # From AI_SLOT_FROM on, ranked slot 1 (index 0) of every day is one ai_timeline pair (with_ai_slot); the category takes no
 # other ranked slot and is never the chat question. Its items need real pageviews >= FAME_RANKED there (ai_slot_ok).
 AI_SLOT = "ai_timeline"
@@ -108,6 +109,7 @@ TEMPLATES = {
     ("ai_company_founded", "year"): ("Which came first?", "was founded first", "was founded later"),
     ("ai_params", "parameters"): ("Which model has more parameters?", "had more parameters", "had fewer parameters"),
     ("ai_timeline", "month"): ("Which came first?", "came first", "came later"),
+    ("ai_drama", "month"): ("Which came first?", "came first", "came later"),
     ("ai_money", "USD"): ("Which is bigger?", "was bigger", "was smaller"),
     ("ai_tech", "tokens of context"): ("Which has the longer context window?", "had the longer context window", "had the shorter context window"),
     ("ai_tech", "training tokens"): ("Which was trained on more tokens?", "was trained on more tokens", "was trained on fewer tokens"),
@@ -121,7 +123,7 @@ TEMPLATES = {
 # Minimum gap per (category, unit) when it is not MIN_GAP years or MIN_RATIO: AI years are 2 apart (the field is young;
 # a deviation from PREREG's 10, logged in CHANGELOG.md). Year difficulty scales with it: easy >= 5x, medium >= 2x.
 MIN_GAPS = {("ai_released", "year"): 2, ("ai_company_founded", "year"): 2, ("ai_params", "parameters"): MIN_RATIO,
-            ("ai_timeline", "month"): 3}  # months: answers are YYYYMM numbers (202211 = November 2022)
+            ("ai_timeline", "month"): 3, ("ai_drama", "month"): 2}  # months: answers are YYYYMM numbers (202211 = November 2022)
 NOT_A_PLANET = {"Pluto"}  # "its planet": moons of a dwarf planet stay out of the orbit-distance pairs
 REF_RANK = {"none": 0, "imported": 1, "referenced": 2}
 

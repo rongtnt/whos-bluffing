@@ -587,6 +587,9 @@ AI_CATEGORIES = {
     # answer is; 202211 = November 2022) and stays as `month` for display.
     "ai_timeline": dict(domain="history", unit="month", accept=[195001, CURRENT_YEAR * 100 + 12], prop="P585",
                         prompt="{name}: in what month and year?"),
+    # Public events that stirred the field (firings, exits, lawsuits, deals, flops), at month precision like ai_timeline.
+    "ai_drama": dict(domain="history", unit="month", accept=[195001, CURRENT_YEAR * 100 + 12], prop="P793",
+                     prompt="{name}: in what month and year?"),
     # Dated public dollar figures: `volatile` (never in ranked rounds) with `as_of` (YYYY-MM); the date is in the name.
     "ai_money": dict(domain="everyday", unit="USD", accept=[1e5, 1e14], prop="P2218", prompt="{name}: how many US dollars?"),
     # Published technical numbers; the unit comes from the entry (one comparison template per unit, see pairs.py).
@@ -602,13 +605,14 @@ TECH_UNITS = {  # unit: (sanity range, question)
     "authors": ([1, 1e4], "How many authors does {name} have?"),
     "experts": ([1, 1e5], "How many experts does {name} have?"),
 }
-TIER_BY_CATEGORY = {"ai_released": 1, "ai_company_founded": 1, "ai_timeline": 1, "ai_money": 2, "ai_params": 3, "ai_tech": 3}
+TIER_BY_CATEGORY = {"ai_released": 1, "ai_company_founded": 1, "ai_timeline": 1, "ai_drama": 2, "ai_money": 2, "ai_params": 3, "ai_tech": 3}
 
 
 def ai_items(entries, generated_at):
     """Items from items/ai_curated.json entries {category, tier, name, answer (or month: YYYY-MM), note, source[, qid]
     [, prompt][, fun][, unit (ai_tech)][, volatile, as_of (ai_money)]}: fact-checked, with `tier` (1 famous names and years,
-    2 events and money, 3 technical). Tiers 1 and 2 are `famous` (the familiarity gate treats them as famous); tier 3 is
+    2 events and money, 3 technical). Tiers 1 and 2 are `famous` (the familiarity gate treats them as famous) unless the
+    entry says `"famous": false` (ai_drama: famous only when its subject's article has 50,000+ monthly views); tier 3 is
     judged by its own pageviews. The note goes in `notes`, the optional reveal line in `fun`."""
     out = []
     for e in entries:
@@ -622,7 +626,7 @@ def ai_items(entries, generated_at):
               "accept": list(accept), "source": e["source"], "difficulty_hint": "unknown", "volatile": bool(e.get("volatile")),
               "generated_at": generated_at, "name": e["name"], "ref_quality": "none", "fact_checked": True, "tier": tier,
               "notes": f"curated: {e['note']}"}
-        if tier <= 2:
+        if e.get("famous", tier <= 2):
             it["famous"] = True
         if e.get("qid"):
             it["replaces"] = f"https://www.wikidata.org/wiki/{e['qid']}#{cat['prop']}"
@@ -656,7 +660,9 @@ def build_pool(responses, previous_items=(), scheduled_ids=(), generated_at=None
     # previous copies (which carry notes) are not pinned again. assign_ids keeps their ids by source.
     cur = curated_items(curated, generated_at) + ai_items(ai, generated_at)
     cur_sources, cur_keys = {it["source"] for it in cur}, {twin_key(it) for it in cur} - {None}
-    pinned, all_items = pin([it for it in previous_items if it["source"] not in cur_sources], all_items)
+    # Curated items are rebuilt from their files only: one taken out of its file leaves the pool (it is never pinned).
+    pinned, all_items = pin([it for it in previous_items if it["source"] not in cur_sources
+                             and not (it.get("notes") or "").startswith("curated")], all_items)
     pinned = [p for p in pinned if twin_key(p) not in cur_keys]
     all_items = [it for it in all_items if twin_key(it) not in cur_keys] + cur
     pool_items = assign_ids(all_items, previous_items, next_number) + pinned
