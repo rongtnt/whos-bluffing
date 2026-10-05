@@ -872,3 +872,7 @@ img.dc-avatar { display: block; object-fit: cover; }
 .dare-credits { font-size: 13px; }
 .dare-credits p { margin: 0; }
 .dare-credits ul { margin: 4px 0 0; padding: 0; list-style: none; }
+
+/* Get started band: the community line under the buttons */
+.band-more { margin: 14px 0 0; font-size: var(--fs-6); }
+.band-more a { color: var(--accent); font-weight: 700; }
