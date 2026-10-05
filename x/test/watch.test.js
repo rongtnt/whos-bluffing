@@ -9,7 +9,7 @@ test('handles are unique and every entry has an address and a deep link', () => 
   assert.equal(new Set(WATCH.map((u) => u.handle.toLowerCase())).size, WATCH.length);
   for (const u of WATCH) {
     assert.match(u.address, /^(Mr\.|Ms\.|Dr\.|Professor|Sir) /, u.handle);
-    assert.match(u.link, /^https:\/\/whosbluffing\.com\/\?pack=(ai|history|companies|products|countries)&difficulty=(normal|brutal)$/, u.handle);
+    assert.match(u.link, /^https:\/\/whosbluffing\.com\/(dare\/[a-z]+|\?pack=(ai|history|companies|products|countries)&difficulty=(normal|brutal))$/, u.handle);
   }
 });
 
