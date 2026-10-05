@@ -1,0 +1,74 @@
+{
+  "taken_at_utc": "2026-10-05T03:23:47Z",
+  "truth_or_dare": {
+    "topgg": null,
+    "discordbotlist": {
+      "servers": 1660000,
+      "upvotes": 0,
+      "slug": "truth-or-dare-8712",
+      "source": "https://discordbotlist.com/api/v1/bots/692045914436796436"
+    },
+    "app_directory": {
+      "servers": 1660000,
+      "source": "https://discord.com/api/v9/application-directory-static/applications/692045914436796436?locale=en-US"
+    },
+    "support_server": {
+      "members": 22228,
+      "online": 1095,
+      "source": "https://discord.com/api/v10/invites/vBERMvVaRt?with_counts=true"
+    },
+    "x": {
+      "followers": 319,
+      "posts": 46,
+      "source": "https://api.fxtwitter.com/truthordareteam",
+      "profile": "https://x.com/truthordareteam"
+    }
+  },
+  "whos_bluffing": {
+    "round_stats": {
+      "date": "2026-10-05",
+      "players": 0,
+      "source": "https://whosbluffing.com/api/round/stats"
+    },
+    "site_stats": {
+      "n_sessions": 0,
+      "n_answers": 0,
+      "n_countries": 0,
+      "source": "https://whosbluffing.com/api/stats"
+    },
+    "kpi": {
+      "as_of": "2026-10-04",
+      "mau": 3,
+      "dau": 3,
+      "communities": {
+        "workspaces": 1,
+        "guilds": 1,
+        "rooms": 0,
+        "classrooms": 0
+      },
+      "source": "https://whosbluffing.com/api/kpi"
+    },
+    "community_server": {
+      "members": 2,
+      "online": 1,
+      "source": "https://discord.com/api/v10/invites/V5wcSC7cd?with_counts=true"
+    },
+    "x": {
+      "followers": 0,
+      "posts": 7,
+      "source": "https://api.fxtwitter.com/whos_bluffing",
+      "profile": "https://x.com/whos_bluffing"
+    },
+    "discordbotlist": null,
+    "app_directory": null
+  },
+  "notes": [
+    "top.gg live page: HTTP 403",
+    "top.gg live page is behind a Cloudflare challenge for scripts (403 on 2026-10-04); fell back to the Wayback Machine's latest copy",
+    "top.gg via Wayback: HTTP 429",
+    "our discordbotlist listing: HTTP 404",
+    "our App Directory entry: HTTP 403",
+    "top.gg server count has read 1,579,429 in every capture from 2025-04-21 on: it is no longer updated; use app_directory for Discord's own (rounded) count",
+    "top.gg for us: not read (same Cloudflare block; listing not live as of 2026-10-04)"
+  ]
+}
