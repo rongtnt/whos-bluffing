@@ -55,22 +55,18 @@ Japan is bigger: 377,972 km² against 357,588 km² for Germany (Wikidata).
 
 Ten questions like this, and you say how sure you are on each. The sure-and-wrong ones are the ones that hurt. whosbluffing.com
 ```
-Count: 253
+Count: 262
 Source: Japan https://www.wikidata.org/wiki/Q17#P2046 (`items/pool.json` w0005, fact-checked) · Germany
 https://www.wikidata.org/wiki/Q183#P2046 (w0007, referenced).
 
 ### 13:00 · Dare · the brutal AI round
 
 ```text
-Ten brutal AI questions: deals, chips, parameter counts, lawsuits.
-
-Everyone in the replies will claim ten out of ten. Nobody will post the screenshot.
-
-Be the first.
+Ten brutal AI questions about deals, chips, parameter counts and lawsuits. Everyone in the replies will say they would get ten out of ten, and nobody will post the screenshot, so be the first.
 
 https://whosbluffing.com/?pack=ai&difficulty=brutal
 ```
-Count: 191
+Count: 217
 Source: scoring in `web/public/index.html` FAQ: each answer scores 100 − 400 × (confidence − outcome)², so 50% scores 0
 either way and a perfect round is 1,000. Brutal AI rounds draw tiers 2 and 3 (deals, money, lawsuits, technical numbers):
 `web/public/packs.js`, `items/ai_curated.json`. The thresholds are labels, not statistics.
@@ -120,7 +116,7 @@ Apple's M1 Ultra has more: 114 billion transistors, against 80 billion in Nvidia
 
 Brutal AI rounds are full of numbers like these: https://whosbluffing.com/?pack=ai&difficulty=brutal
 ```
-Count: 227
+Count: 236
 Source: M1 Ultra https://en.wikipedia.org/wiki/Apple_M1#:~:text=114%20billion · H100
 https://en.wikipedia.org/wiki/Hopper_(microarchitecture)#:~:text=80%20billion%20transistors (both `items/ai_curated.json`, ai_tech).
 
@@ -181,7 +177,7 @@ The Moon is bigger: 3,476 km across, against 2,376 km for Pluto (Wikidata).
 
 Ten questions like this take about a minute, and being sure only pays when you are right: whosbluffing.com
 ```
-Count: 233
+Count: 242
 Source: the Moon https://www.wikidata.org/wiki/Q405#P2386 (`items/pool.json` w1202) · Pluto
 https://www.wikidata.org/wiki/Q339#P2386 (w1209); both referenced.
 
@@ -241,7 +237,7 @@ Anthropic was valued higher: $965 billion in May 2026, against $852 billion for 
 
 Anthropic was founded in 2021 by seven former OpenAI employees. The AI pack has more: https://whosbluffing.com/?pack=ai
 ```
-Count: 270
+Count: 279
 Source (`items/ai_curated.json`, ai_money and ai_company_founded): Anthropic $965 billion, May 2026,
 https://en.wikipedia.org/wiki/Anthropic#:~:text=US%24965%20billion · OpenAI $852 billion, April 2026,
 https://en.wikipedia.org/wiki/OpenAI#:~:text=post%2Dmoney%20valuation%20of%20%24852%20billion · seven former OpenAI
@@ -305,7 +301,7 @@ Punjabi has more: about 125 million native speakers, against about 77 million fo
 
 Ten questions like this take about a minute: whosbluffing.com
 ```
-Count: 259
+Count: 268
 Source: Punjabi 125,000,000, https://www.wikidata.org/wiki/Q58635#P1098 (`items/pool.json` w2884) · French 77,200,000,
 https://www.wikidata.org/wiki/Q150#P1098 (w2849);
 both referenced, native speakers (Wikidata P1098).
@@ -363,7 +359,7 @@ Grok-1 has more: 314 billion parameters, against 175 billion for GPT-3. Grok-1 i
 
 Brutal AI rounds have more numbers like these: https://whosbluffing.com/?pack=ai&difficulty=brutal
 ```
-Count: 248
+Count: 257
 Source (`items/ai_curated.json`, ai_params): Grok-1 https://x.ai/news/grok-os · GPT-3
 https://en.wikipedia.org/wiki/GPT-3#GPT-3_models
 
@@ -422,7 +418,7 @@ Mont Blanc is higher: 4,806 m against 4,478 m for the Matterhorn (Wikidata).
 
 There is a new ranked round every day, the same ten questions for everyone: whosbluffing.com
 ```
-Count: 229
+Count: 238
 Source: Mont Blanc https://www.wikidata.org/wiki/Q583#P2044 (`items/pool.json` w0234) · Matterhorn
 https://www.wikidata.org/wiki/Q1374#P2044 (w0244); both fact-checked.
 
