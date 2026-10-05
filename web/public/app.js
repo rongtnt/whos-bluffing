@@ -7,7 +7,7 @@ import { renderRounds, renderChallenge, renderDare } from './rounds.js';
 import { renderStats } from './stats.js';
 import { renderBoard } from './labs.js';
 import { renderClassCreate, renderDashboard } from './class.js';
-import { renderPlayed, renderLive, wireSurfaces, wirePause } from './home.js';
+import { renderLive, wireSurfaces, wirePause } from './home.js';
 
 const app = document.getElementById('app');
 wireSurfaces(document.querySelector('[data-surfaces]')); // the home page's switch and list work before the game loads
@@ -84,7 +84,7 @@ function route() {
   const p = location.pathname;
   const dash = p.match(/^\/class\/d\/([A-Za-z0-9_-]{24})\/?$/);
   const challenge = p.match(/^\/c\/((?:rk-\d{4}-\d{2}-\d{2})|[A-Z2-9]{12})\/([A-Za-z0-9_-]{10})\/?$/);
-  if (p === '/') return Promise.all([renderRounds(ctx), renderPlayed(document.querySelector('[data-played]'))]);
+  if (p === '/') return renderRounds(ctx);
   if (challenge) return renderChallenge(ctx, challenge[1], challenge[2]);
   const dare = p.match(/^\/dare\/([a-z][a-z0-9-]{1,30})\/?$/); // functions/dare/[slug].js
   if (dare) return renderDare(ctx, dare[1]);

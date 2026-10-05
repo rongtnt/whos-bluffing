@@ -22,7 +22,7 @@ Who's Bluffing is an independent, unaffiliated, non-commercial project. No accou
 
 **Slack and Discord:** the chat apps store, per workspace or server, its id, the chosen channel, the bot token, the posting hour, the roast-mode setting, the ids of the messages they posted, and each day's answers (choice, confidence, points, right or wrong) keyed by a salted hash of the member id. They never store message text, names or emails; display names are fetched from the platform only while drawing a leaderboard or recap. With roast mode off (the default) nobody is named next to a wrong answer.
 
-**Public numbers:** monthly and daily active players are computed from anonymous ids once a day and published on the stats page using the definitions in `prereg/PREREG.md`.
+**Usage numbers:** monthly and daily active players and the other usage figures are computed from anonymous ids once a day, using the definitions in `prereg/PREREG.md`. They are collected privately to run the service and are not published.
 
 **Retention:** indefinitely, as anonymous research data.
 

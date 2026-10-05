@@ -10,7 +10,7 @@ import { dareView, boardView, darePage, boardPage, statusLine, dareShareText, fm
 import { HEADERS } from '../functions/_challenge.js';
 import { serverPool, compactPairs } from '../scripts/sync-items.js';
 import { pickDare, pinnedErrors, buildDares, seedErrors, dareContext, pretty, balanced, sideOf, DATED, EXAMPLE_PAIR, KEYWORD_FLOOR, SIDES } from '../scripts/build-dares.js';
-import { dareRankLabel, dareDone } from '../public/round-end.js';
+import { dareDone } from '../public/round-end.js';
 
 // --- fixture: 40 companies (every fifth an "Acme"), pairs 1, 2, 3 and 5 apart, plus the cases the rules exclude -------
 const w = (n) => `w${String(n).padStart(4, '0')}`;
@@ -249,10 +249,11 @@ test('pages: /dare/:slug and /dares on the site template; status lines; Open Gra
   want('<meta property="og:url" content="https://whosbluffing.com/dare/acme">');
   want('<h1 id="hero-title">Ten questions about Acme, written for Ms. Acme</h1>');
   want('<p class="hero-sub">Same ten for everyone. Being sure only pays when you\'re right.</p>');
-  want('<div class="tile"><b>1</b><span>person has taken it</span></div><div class="tile"><b>120</b><span>best score</span></div><div class="tile"><b>120</b><span>average score</span></div>');
+  want('<div class="tiles dare-tiles"><div class="tile"><b>120</b><span>best score</span></div><div class="tile"><b>120</b><span>average score</span></div></div>');
+  assert.ok(!page.includes('taken it</span>') && !/\d taken/.test(page), 'no count of people on the dare page');
   want('<div class="card dare-status"><span class="dare-face dare-mono" role="img" aria-label="Ada Acme">AA</span><div><p>Ms. Acme: no score yet</p><p class="fine">Read <a href="https://x.com/whosbluffing/status/9" rel="noopener noreferrer">the dare</a> on X.</p></div></div>');
   want('<button class="primary" id="play" type="button" data-play>');
-  want('<a href="/dare/bolt">Mr. Bolt’s round</a>: 0 taken; Mr. Bolt: 640, <a href="https://x.com/bolt/status/1" rel="noopener noreferrer">posted 12 October 2026</a>');
+  want('<a href="/dare/bolt">Mr. Bolt’s round</a>: Mr. Bolt: 640, <a href="https://x.com/bolt/status/1" rel="noopener noreferrer">posted 12 October 2026</a>');
   want('<p><a href="/dares">The dare board</a></p>');
   want('Public figures only. If your name is here and you would rather it weren’t, write to <a href="mailto:hello@whosbluffing.com">hello@whosbluffing.com</a> and it comes off within a day.');
   want('<script src="/site.js"></script>\n<script type="module" src="/app.js"></script>');
@@ -268,12 +269,13 @@ test('pages: /dare/:slug and /dares on the site template; status lines; Open Gra
   }
   assert.ok(boardHtml.includes('<h1>The dare board</h1>'));
   assert.ok(boardHtml.includes('<p class="lead">Each person got ten questions about their own field. Everyone can take the same ten. The board shows who has answered.</p>'));
-  assert.ok(boardHtml.includes('<tr><th scope="row"><span class="dare-face dare-face-sm dare-mono" role="img" aria-label="Ada Acme">AA</span><a href="/dare/acme">Ada Acme</a></th><td>Acme</td><td>1</td><td>120</td><td>no score yet</td><td><a href="https://x.com/whosbluffing/status/9" rel="noopener noreferrer">the dare</a></td></tr>'));
-  assert.ok(boardHtml.includes('<td>Bolt &amp; Co</td><td>0</td><td>–</td><td>posted 640</td><td>–</td>'));
+  assert.ok(boardHtml.includes('<tr><th scope="row"><span class="dare-face dare-face-sm dare-mono" role="img" aria-label="Ada Acme">AA</span><a href="/dare/acme">Ada Acme</a></th><td>Acme</td><td>120</td><td>no score yet</td><td><a href="https://x.com/whosbluffing/status/9" rel="noopener noreferrer">the dare</a></td></tr>'));
+  assert.ok(boardHtml.includes('<td>Bolt &amp; Co</td><td>–</td><td>posted 640</td><td>–</td>'));
+  assert.ok(!boardHtml.includes('People who have taken it') && boardHtml.includes('<th scope="col">Average score</th><th scope="col">Status</th>'));
   assert.ok(boardHtml.includes('<td>declined</td>') && !boardHtml.includes('/dare/gone'));
   assert.ok(boardHtml.indexOf('/dare/acme') < boardHtml.indexOf('/dare/bolt'), 'most played first');
   const cole = darePage(template, (await dareView(db, DATA, 'cole', NOW)).body, DATA.dares);
-  assert.ok(cole.includes('<p>Professor Cole declined</p>') && cole.includes('<b>0</b><span>people have taken it</span>') && !cole.includes('dare-rival'));
+  assert.ok(cole.includes('<p>Professor Cole declined</p>') && !cole.includes('taken it</span>') && !cole.includes('dare-rival'));
   const hostile = { ...(await dareView(db, DATA, 'acme', NOW)).body, org: '<b>Evil</b>', address: 'Mr. "X"' };
   const evil = darePage(template, hostile, DATA.dares);
   assert.ok(!evil.includes('<b>Evil</b>') && evil.includes('&lt;b&gt;Evil&lt;/b&gt;') && evil.includes('Mr. &quot;X&quot;: no score yet'));
@@ -283,9 +285,7 @@ test('pages: /dare/:slug and /dares on the site template; status lines; Open Gra
   assert.equal(HEADERS['content-security-policy'].includes("script-src 'self'"), true);
 });
 
-test('end screen: the rank tile\'s label and the finished-dare line', () => {
-  assert.equal(dareRankLabel(3400, 'Mr. Altman'), 'of 3,400 on Mr. Altman’s round');
-  assert.equal(dareRankLabel(1, 'Sir Demis'), 'of 1 on Sir Demis’s round');
+test('end screen: the finished-dare line', () => {
   assert.equal(dareDone(640), 'You have taken this round: 640 points.');
   assert.equal(dareDone(-228), 'You have taken this round: −228 points.');
 });

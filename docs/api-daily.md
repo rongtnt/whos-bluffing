@@ -7,7 +7,7 @@ Base: the web deployment (`https://<host>/api`). All JSON. Dates are UTC `YYYY-M
 - `POST /api/daily/complete` body `{date, anon_id, surface, community?}` → `{hits, n, streak, share_text, today:{players, avg_hits, hist:[n0..n5]}}`. Marks the play complete (this is what MAU counts). Same date rule as answer.
 - `GET /api/daily/stats?date=` → `{players, avg_hits, hist:[n0..n5]}` (passed plays only, cache 60 s).
 - `POST /api/flag` body `{item_id, anon_id, reason}` → `{ok}`; 3 distinct flags retire an item pending review.
-- `GET /api/kpi` → `{as_of, mau, dau, mau_by_surface:{web, slack, classroom}, communities:{workspaces, classrooms}}` from the daily KPI job.
+- `GET /api/kpi` (private, header `x-kpi-key`; 401 otherwise) → `{as_of, mau, dau, mau_by_surface:{web, slack, classroom}, communities:{workspaces, classrooms}}` from the daily KPI job.
 
 Anonymous ids: web = random id in localStorage; Slack = hex sha256(team_id + ":" + user_id + ":" + SALT) computed in the Slack worker (SALT is a Worker secret that must never change); never the raw Slack ids. Server stores `players(anon_id, surface, first_seen, last_seen, plays)` and `plays(anon_id, date, surface, hits, completed_at)`.
 

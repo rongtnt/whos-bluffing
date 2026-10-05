@@ -8,9 +8,7 @@ import { BOARDS } from './packs.js';
 export { fmtValue }; // the shared formatter: years, months, dollars, big counts (ui.js)
 export const fmtPoints = (p) => (p > 0 ? `+${p}` : p < 0 ? `−${-p}` : '0');
 
-// Dare rounds (/dare/<slug>): the rank tile's label ("#212" over "of 3,400 on Mr. Altman’s round"), and the line a
-// browser that has finished the dare sees instead of playing it again.
-export const dareRankLabel = (players, address) => `of ${players.toLocaleString('en-US')} on ${address}’s round`;
+// Dare rounds (/dare/<slug>): the line a browser that has finished the dare sees instead of playing it again.
 export const dareDone = (score) => `You have taken this round: ${score < 0 ? `−${-score}` : score} points.`;
 
 // The squares pop in one after another (styles.css staggers them); misses shake once after their pop.

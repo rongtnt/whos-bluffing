@@ -1,11 +1,12 @@
 // Static site checks: the Markdown converter behind /privacy, /terms and /docs/api; every page's head, shared header
-// and footer, sitemap entry and CSP-safe markup; the MAU definition on /research; the home page's copy, sections and
-// "played today" threshold; the live panel on /stats and the FAQ on /support.
+// and footer, sitemap entry and CSP-safe markup; the MAU definition on /research; the home page's copy and sections;
+// no count of players on the home, /stats or /status; the live panel on /stats and the FAQ on /support.
 import { test } from 'node:test';
 import assert from 'node:assert/strict';
 import { readFileSync, readdirSync } from 'node:fs';
 import { markdown, inline, renderPage, DOCS } from '../scripts/sync-docs.js';
-import { playedLine, MIN_PLAYERS, MIN_ROOM, roomView, roomChart, receipt, EXAMPLE_ROOM, EXAMPLE_BLUFFS } from '../public/home.js';
+import * as home from '../public/home.js';
+import { MIN_ROOM, roomView, roomChart, receipt, EXAMPLE_ROOM, EXAMPLE_BLUFFS } from '../public/home.js';
 import { TYPES } from '../functions/_rounds.js';
 import { typeName } from '../public/types.js';
 
@@ -70,13 +71,20 @@ test('/research quotes the MAU and community definitions from PREREG word for wo
   assert.ok(research.includes(`<p>${prereg.match(/^- (Communities: .*)$/m)[1]}</p>`), 'Communities definition');
 });
 
-test('played today: from 100 players in today\'s ranked round, never a number under it', () => {
-  assert.equal(MIN_PLAYERS, 100);
-  assert.equal(playedLine(null), null); // the stats request failed
-  assert.equal(playedLine({ players: MIN_PLAYERS - 1 }), null);
-  assert.equal(playedLine({ players: 100 }), '100 played today');
-  assert.equal(playedLine({ players: 4040 }), '4,040 played today');
-  assert.match(read(new URL('index.html', PUBLIC)), /<p class="played" data-played hidden><\/p>/);
+test('no social proof: the home, /stats and /status never print a count of players; usage stays private', () => {
+  const index = read(new URL('index.html', PUBLIC));
+  assert.ok(!index.includes('data-played') && !('playedLine' in home) && !('renderPlayed' in home));
+  for (const f of ['home.js', 'stats.js', 'status.js', 'app.js']) {
+    const js = read(new URL(f, PUBLIC));
+    assert.ok(!js.includes('/api/kpi'), `${f} reads /api/kpi`);
+    assert.doesNotMatch(js, /played today|num\(d\.n_|players: num|total_play/, f);
+  }
+  const status = read(new URL('status.html', PUBLIC));
+  for (const gone of ['data-kpi', 'monthly players', 'daily players', 'communities', 'rounds played']) assert.ok(!status.includes(gone), `status: ${gone}`);
+  const en = JSON.parse(read(new URL('i18n/en.json', PUBLIC)));
+  for (const k of ['ranked_row', 'row']) assert.doesNotMatch(en.stats[k], /\{(players|n)\}/, k);
+  assert.doesNotMatch(en.rounds.board_line, /\{players\}/);
+  assert.ok(!('rank_of' in en.rounds) && !('global' in en.results));
 });
 
 // Visible text of a page: no head, scripts, comments or tags.
@@ -115,8 +123,8 @@ test('live panel (the first section of /stats): the room chart from 20 players (
   const calibration = [50, 60, 70, 80, 90, 100].map((conf, k) => ({ conf, n: k ? 10 * k : 0, right: 4 * k }));
   assert.equal(roomView(null, null), null); // the stats request failed: the page keeps its example
   assert.equal(roomView({ players: 19, calibration }, { players: 19, calibration }), null);
-  assert.deepEqual(roomView({ players: 1204, calibration }, null), { points: calibration, cap: 'Today’s room · 1,204 played', live: true });
-  assert.deepEqual(roomView({ players: 3, calibration: [] }, { players: 25, calibration }), { points: calibration, cap: 'Yesterday’s room · 25 played', live: false });
+  assert.deepEqual(roomView({ players: 1204, calibration }, null), { points: calibration, cap: 'Today’s room', live: true });
+  assert.deepEqual(roomView({ players: 3, calibration: [] }, { players: 25, calibration }), { points: calibration, cap: 'Yesterday’s room', live: false });
   const chart = String(roomChart(calibration));
   assert.equal(chart.match(/<circle /g).length, 5, 'one dot per confidence with answers');
   assert.match(chart, /^<svg class="room-chart" viewBox="0 0 200 160" role="img"/);

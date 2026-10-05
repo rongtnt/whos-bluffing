@@ -10,7 +10,7 @@ import { questionCount, packChips, promptLines, promptList, commandCards, inject
 import { onRequest as gate } from '../functions/_middleware.js';
 import { onRequestGet as kpiGet } from '../functions/api/kpi/index.js';
 import { nearestDifficulty, settle, choose, shareWith, quickLabel } from '../public/picker.js';
-import { apiVerdict, kpiVerdict } from '../public/status.js';
+import { apiVerdict } from '../public/status.js';
 import { COMMANDS } from '../../discord/src/commands.js';
 import { questionPost, confidencePicker, revealMessage } from '../../discord/src/game.js';
 import { USAGE, questionMessage } from '../../slack/src/game.js';
@@ -132,10 +132,22 @@ test('command cards are written into /commands, /discord and /slack', () => {
   assert.match(page, /data-filter="cmd-discord cmd-slack cmd-web"/);
 });
 
-test('CORS: GET /api/kpi is a public read', async () => {
-  const res = await kpiGet({ env: { DB: openD1() } });
+test('GET /api/kpi is private: 401 without the x-kpi-key header, no CORS; with it the row plus all-time totals', async () => {
+  const env = { DB: openD1(), KPI_KEY: 'k3y' };
+  const req = (key) => new Request('https://h/api/kpi', { headers: key ? { 'x-kpi-key': key } : {} });
+  for (const [request, e] of [[req(), env], [req('wrong'), env], [req('k3y'), { DB: env.DB }]]) {
+    const res = await kpiGet({ request, env: e });
+    assert.equal(res.status, 401);
+    assert.equal(res.headers.get('access-control-allow-origin'), null);
+  }
+  const res = await kpiGet({ request: req('k3y'), env });
   assert.equal(res.status, 200);
-  assert.equal(res.headers.get('access-control-allow-origin'), '*');
+  assert.equal(res.headers.get('access-control-allow-origin'), null);
+  assert.equal(res.headers.get('cache-control'), 'no-store');
+  const body = await res.json();
+  assert.equal(body.total_played, 0);
+  assert.equal(body.total_players, 0);
+  assert.equal(body.mau, 0);
   assert.match(read('functions/api/round/stats.js'), /CACHE_HEADERS = \{ 'cache-control': 'public, max-age=60', \.\.\.CORS \}/);
 });
 
@@ -202,14 +214,11 @@ test('licence wording: the new footer line everywhere; no "open source" in web c
   for (const f of ['public/site.js', 'public/home.js', 'public/rounds.js', 'README.md', 'NOTES.md']) assert.doesNotMatch(read(f), /open[- ]source/i, f);
 });
 
-test('status page: verdicts for the server check and the KPI run; press files exist and images are sized from their PNGs', () => {
+test('status page: the verdict for the server check; press files exist and images are sized from their PNGs', () => {
   assert.deepEqual(apiVerdict({ ok: true, status: 200 }, 123.4), { state: 'up', text: 'Up · answered in 123 ms' });
   assert.equal(apiVerdict({ ok: true, status: 200 }, 2400).state, 'slow');
   assert.deepEqual(apiVerdict({ ok: false, status: 503 }, 10), { state: 'down', text: 'Not answering properly (HTTP 503)' });
   assert.equal(apiVerdict({ ok: false, status: 0 }, 10).state, 'down');
-  assert.deepEqual(kpiVerdict({ as_of: null }), { state: 'wait', text: 'No daily run yet.' });
-  assert.deepEqual(kpiVerdict({ as_of: '2026-10-19' }), { state: 'up', text: 'Latest run counted 2026-10-19 (UTC).' });
-  assert.equal(kpiVerdict(null).state, 'down');
   assert.deepEqual(pngSize(readFileSync(new URL('public/og.png', WEB))), [1200, 630]);
   const press = read('public/press.html');
   const files = readdirSync(new URL('public/press/', WEB));
