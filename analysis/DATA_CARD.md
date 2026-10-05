@@ -14,4 +14,4 @@
 
 **Not suitable for.** Ranking countries or cultures; clinical or educational assessment of individuals; any re-identification attempt (none is possible by design, and none is permitted by the licence terms of use).
 
-**Maintainer.** Ethan (GitHub: rongtnt). Issues via the repository.
+**Maintainer.** Jerry (GitHub: rongtnt). Issues via the repository.

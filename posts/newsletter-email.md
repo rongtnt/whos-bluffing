@@ -9,4 +9,4 @@ It doubles as a pre-registered study of whether daily feedback improves calibrat
 If it fits a links post: {URL}. Happy to send the first results when the sample is in.
 
 Thanks,
-Ethan
+Jerry
