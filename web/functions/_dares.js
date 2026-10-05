@@ -139,7 +139,7 @@ export function boardPage(template, v, dares) {
 <section class="section dare-board" aria-label="Dares">
   <div class="wrap">
     <div class="dare-scroll"><table class="vs dare-table">
-      <thead><tr><th scope="col">Person</th><th scope="col">Company</th><th scope="col">People who have taken it</th><th scope="col">Average score</th><th scope="col">Status</th><th scope="col">The dare</th></tr></thead>
+      <thead><tr><th scope="col">Person</th><th scope="col">Company or chamber</th><th scope="col">People who have taken it</th><th scope="col">Average score</th><th scope="col">Status</th><th scope="col">The dare</th></tr></thead>
       <tbody>${v.dares.map(row).join('\n') || '<tr><td colspan="6">No dares yet.</td></tr>'}</tbody>
     </table></div>
     <p class="fine">${OPT_OUT}</p>

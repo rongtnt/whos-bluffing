@@ -39,7 +39,7 @@ test('packs: Politics comes second after AI, with its five categories and the AI
   assert.deepEqual(new Set(pool.items.map((i) => i.category)), new Set(PACKS.politics.categories));
 });
 
-test('tiers: Easy draws tier 1, Normal tiers 1-2, Brutal tiers 2-3, every pair from the pack; All takes them too', () => {
+test('tiers: Easy draws tier 1, Normal tiers 1-2, Brutal tiers 2-3, every pair from the pack; All leaves politics out', () => {
   const ids = (pack, d) => Object.entries(DATA.packLists[pack][d]).flatMap(([level, list]) => (DIFFICULTIES[d].mix[level] ? list : []));
   const tiers = (d) => new Set(ids('politics', d).map((id) => DATA.pairs.get(id).tier));
   assert.deepEqual([tiers('easy'), tiers('normal'), tiers('brutal')], [new Set([1]), new Set([1, 2]), new Set([2, 3])]);
@@ -47,7 +47,7 @@ test('tiers: Easy draws tier 1, Normal tiers 1-2, Brutal tiers 2-3, every pair f
     assert.ok(ids('politics', d).length > 0, d);
     for (const id of ids('politics', d)) assert.ok(PACKS.politics.categories.includes(DATA.items.get(DATA.pairs.get(id).a_id).category), id);
   }
-  assert.ok(ids('politics', 'brutal').every((id) => ids('all', 'brutal').includes(id)));
+  assert.ok(ids('politics', 'brutal').every((id) => !ids('all', 'brutal').includes(id)), 'politics pairs stay out of All');
   assert.ok(ids('ai', 'brutal').length === 0, 'no AI pairs in this fixture');
 });
 

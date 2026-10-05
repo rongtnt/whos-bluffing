@@ -123,6 +123,7 @@ for d in sorted(rounds):
     if len(set(ents)) != 22: bad.append((d, "entities not distinct"))
     ai = [k for k, pid in enumerate(ids) if pair[pid]["category"].startswith("ai_")]
     if ai != ([0] if d >= AI_FROM else []) or (ai and pair[ranked[0]]["category"] != AI_SLOT): bad.append((d, f"AI pairs at {ai}"))
+    if any(pair[pid]["category"].startswith("pol_") for pid in ids): bad.append((d, "politics pair"))  # never ranked, never the chat question
     elif ai and abs(month(pair[ranked[0]]["a_id"]) - month(pair[ranked[0]]["b_id"])) < AI_MONTHS: bad.append((d, "AI pair < 3 months apart"))
     elif ai and max(item[i].get("tier", 1) for i in (pair[ranked[0]]["a_id"], pair[ranked[0]]["b_id"])) > 2: bad.append((d, "AI pair above tier 2"))
     cats = collections.Counter(pair[pid]["category"] for pid in ranked)

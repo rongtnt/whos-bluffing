@@ -1,6 +1,6 @@
 // Quick-round packs and difficulties: one list for the API (functions/_rounds.js imports it), the sync step that decides
 // which packs the home page offers (scripts/sync-pages.js) and the browser (labels on the end screen and in the share
-// text). A pack is a set of pair categories (items/pairs.json); `all` is every category.
+// text). A pack is a set of pair categories (items/pairs.json); `all` is every category except the Politics pack's.
 // `tiers` (the curated packs, AI and Politics): which pair tiers each difficulty draws, on top of the difficulty's own
 // rules. A curated pair's tier is the higher of its two items' (items/ai_curated.json, items/politics_curated.json):
 // 1 famous names and years, 2 events and money, 3 technical. Easy = tier 1, Normal = tiers 1-2, Brutal = tiers 2-3.

@@ -81,7 +81,9 @@ export function loadRounds(pool, compact, rounds, { minPackPairs = MIN_PACK_PAIR
   const pairs = new Map();
   const packLists = Object.fromEntries(Object.keys(PACKS).map((k) => [k, Object.fromEntries(Object.keys(DIFFICULTIES).map((d) => [d, { easy: [], medium: [], hard: [] }]))]));
   const packsOf = new Map(); // category -> the packs it belongs to, `all` first
-  for (const [k, pack] of Object.entries(PACKS)) for (const c of pack.categories ?? []) packsOf.set(c, [...(packsOf.get(c) ?? ['all']), k]);
+  // Every category joins `all` except the Politics pack's: politics stays behind its own chip and the dare pages, out of
+  // the default rounds that classrooms, Slack workspaces and Discord servers draw (owner's rule, 2026-10-05).
+  for (const [k, pack] of Object.entries(PACKS)) for (const c of pack.categories ?? []) packsOf.set(c, [...(packsOf.get(c) ?? (c.startsWith('pol_') ? [] : ['all'])), k]);
   for (const [n, a, b, truth, level, band = 0, ref = 0, tier = 0] of compact.pairs) {
     const p = { id: pairId(n), a_id: itemId(a), b_id: itemId(b), truth, level: LEVELS[level], band, ref, tier };
     pairs.set(p.id, p);
