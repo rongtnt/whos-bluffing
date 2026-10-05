@@ -88,7 +88,7 @@ const LINES = [
 // For members of Congress: about Congress's own record, never about the person's politics.
 const POLITICS_LINES = [
   (who, link) => `${who}, ten questions about Congress's own record, written for you. About a minute, and the same ten for everyone: ${link}`,
-  (who, link) => `${who}, your supporters are already taking the ten questions written for you. I would like to see your score next to theirs: ${link}`,
+  (who, link) => `${who}, your supporters can take the ten questions written for you and see how they score. I would like to see your score next to theirs: ${link}`,
   (who, link) => `${who}, ten questions about Congress, written for you. Being sure only pays when you're right: ${link}`,
   (who, link) => `${who}, a one-minute test on Congress's own record. The harder part is how sure you are on each answer: ${link}`,
   (who, link) => `${who}, the ten questions written for you are open to everyone. Your page says "no score yet" until you post yours: ${link}`,
