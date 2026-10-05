@@ -44,7 +44,7 @@ test('members of Congress: the 24 of dares/dares.json, 12 per side, addressed as
     assert.doesNotMatch(line, /!|democrat|republican|liberal|conservative|party|vote|left-wing|right-wing|MAGA|woke/i, line);
   }
   assert.match(lines.join(' '), /ten questions about Congress's own record, written for you/);
-  assert.match(lines.join(' '), /your supporters are already taking/);
+  assert.match(lines.join(' '), /your supporters can take/);
   const general = dare(WATCH.find((u) => u.handle === 'sama'), '0');
   assert.ok(!lines.includes(general.replace('Mr. Altman', 'Senator Cruz').replace('dare/altman', 'dare/cruz')), 'politicians get their own lines');
   assert.equal(dare(members.find((u) => u.handle === 'AOC'), '7'), dare(members.find((u) => u.handle === 'AOC'), '2'), 'rotated by post id');
