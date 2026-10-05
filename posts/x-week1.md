@@ -21,13 +21,13 @@ checklist. The register is the same as the thread's: complete sentences, no slan
 Spare post, for a receipt slot when the home page panel still shows its grey "Example" receipts:
 
 ```text
-A wrong answer at 100% sure costs 300 points in our game. A right one pays 100, and 50% scores nothing either way.
+Being wrong is cheap. Being sure and wrong is what costs you.
 
 So every question has two parts: which answer, and how sure you really are.
 
 whosbluffing.com
 ```
-Count: 216
+Count: 156
 Source: scoring in `web/public/index.html` (FAQ, "How are points worked out?").
 
 ---
@@ -39,11 +39,11 @@ Source: scoring in `web/public/index.html` (FAQ, "How are points worked out?").
 ```text
 Which country is bigger by area, Japan or Germany?
 
-Vote for an answer and for how sure you are. Choose "sure" only if you would stake 300 points on it.
+Vote for an answer and for how sure you are. Pick "sure" only if you would bet on it.
 
 The answer and its source follow tomorrow at 9:00 New York time.
 ```
-Count: 218
+Count: 203
 Poll options (1 day): `Japan, sure` · `Japan, not sure` · `Germany, not sure` · `Germany, sure`
 
 Reveal, Tuesday 6 October at 09:00, as a reply to this poll:
@@ -53,9 +53,9 @@ Japan is bigger: 377,972 km² against 357,588 km² for Germany (Wikidata).
 
 {sure_wrong}% of you picked Germany and said you were sure.
 
-Our game is ten questions like this, with a stake on each, and a sure miss costs 300 points. whosbluffing.com
+Ten questions like this, and you say how sure you are on each. The sure-and-wrong ones are the ones that hurt. whosbluffing.com
 ```
-Count: 242 with {sure_wrong} = 100
+Count: 253
 Source: Japan https://www.wikidata.org/wiki/Q17#P2046 (`items/pool.json` w0005, fact-checked) · Germany
 https://www.wikidata.org/wiki/Q183#P2046 (w0007, referenced).
 
@@ -64,13 +64,13 @@ https://www.wikidata.org/wiki/Q183#P2046 (w0007, referenced).
 ```text
 Ten brutal AI questions: deals, chips, parameter counts, lawsuits.
 
-Above 500, you read the papers. Below 0, you read the headlines and were sure anyway.
+Everyone in the replies will claim ten out of ten. Nobody will post the screenshot.
 
-Confident and wrong costs 300 a question. Good luck.
+Be the first.
 
 https://whosbluffing.com/?pack=ai&difficulty=brutal
 ```
-Count: 232
+Count: 191
 Source: scoring in `web/public/index.html` FAQ: each answer scores 100 − 400 × (confidence − outcome)², so 50% scores 0
 either way and a perfect round is 1,000. Brutal AI rounds draw tiers 2 and 3 (deals, money, lawsuits, technical numbers):
 `web/public/packs.js`, `items/ai_curated.json`. The thresholds are labels, not statistics.
@@ -104,11 +104,11 @@ Also at 09:00: the reveal of Monday's poll, as a reply to it (text under Monday 
 ```text
 Which chip has more transistors, Nvidia's H100 or Apple's M1 Ultra?
 
-Vote for an answer and for how sure you are. Choose "sure" only if you would stake 300 points on it.
+Vote for an answer and for how sure you are. Pick "sure" only if you would bet on it.
 
 The answer and its source follow tomorrow at 9:00 New York time.
 ```
-Count: 235
+Count: 220
 Poll options (1 day): `H100, sure` · `H100, not sure` · `M1 Ultra, not sure` · `M1 Ultra, sure`
 
 Reveal, Wednesday 7 October at 09:00, as a reply to this poll:
@@ -120,7 +120,7 @@ Apple's M1 Ultra has more: 114 billion transistors, against 80 billion in Nvidia
 
 Brutal AI rounds are full of numbers like these: https://whosbluffing.com/?pack=ai&difficulty=brutal
 ```
-Count: 227 with {sure_wrong} = 100
+Count: 227
 Source: M1 Ultra https://en.wikipedia.org/wiki/Apple_M1#:~:text=114%20billion · H100
 https://en.wikipedia.org/wiki/Hopper_(microarchitecture)#:~:text=80%20billion%20transistors (both `items/ai_curated.json`, ai_tech).
 
@@ -130,13 +130,13 @@ https://en.wikipedia.org/wiki/Hopper_(microarchitecture)#:~:text=80%20billion%20
 A bluff receipt from yesterday's ranked round:
 
 {question}
-One player said {wrong_pick}, 100% sure. It was {right_answer}. That cost 300 points.
+One player said {wrong_pick}, 100% sure. It was {right_answer}. Sure and wrong, the expensive combination.
 
 {players} people played it, and {sure_share}% of their answers were at 100%.
 
 whosbluffing.com
 ```
-Count: 271 with the sample fill (47-character question, the Danube, the Mississippi, 10,000 players, 100%); the question and both names together may use up to 81 characters
+Count: 261
 Fill from Monday's ranked round (checklist items 4 to 6). Pick a receipt stamped 100 (−300); if the only ones are
 stamped 90, write "90% sure" and "224 points".
 Source: the "Biggest bluffs today" panel on the home page and `/api/round/stats?date=2026-10-05`.
@@ -146,11 +146,11 @@ Source: the "Biggest bluffs today" panel on the home page and `/api/round/stats?
 ```text
 In February 2023, a demo of Google's Bard got a fact about the James Webb Space Telescope wrong. Alphabet's shares fell 8%, about $100 billion in market value.
 
-A confident wrong answer is expensive. In our game it costs only 300 points.
+A confident wrong answer is expensive everywhere else. Here it only costs you the leaderboard.
 
 whosbluffing.com
 ```
-Count: 262
+Count: 273
 Source: `items/ai_curated.json` (ai_drama and ai_money, 8 February 2023):
 https://en.wikipedia.org/wiki/Google_Gemini#:~:text=%24100%20billion%20loss%20in%20market%20value
 
@@ -165,11 +165,11 @@ Also at 09:00: the reveal of Tuesday's poll, as a reply to it.
 ```text
 Which has the larger diameter, Pluto or the Moon?
 
-Vote for an answer and for how sure you are. Choose "sure" only if you would stake 300 points on it.
+Vote for an answer and for how sure you are. Pick "sure" only if you would bet on it.
 
 The answer and its source follow tomorrow at 9:00 New York time.
 ```
-Count: 217
+Count: 202
 Poll options (1 day): `Pluto, sure` · `Pluto, not sure` · `Moon, not sure` · `Moon, sure`
 
 Reveal, Thursday 8 October at 09:00, as a reply to this poll:
@@ -181,7 +181,7 @@ The Moon is bigger: 3,476 km across, against 2,376 km for Pluto (Wikidata).
 
 Ten questions like this take about a minute, and being sure only pays when you are right: whosbluffing.com
 ```
-Count: 240 with {sure_wrong} = 100
+Count: 233
 Source: the Moon https://www.wikidata.org/wiki/Q405#P2386 (`items/pool.json` w1202) · Pluto
 https://www.wikidata.org/wiki/Q339#P2386 (w1209); both referenced.
 
@@ -225,11 +225,11 @@ Also at 09:00: the reveal of Wednesday's poll, as a reply to it.
 ```text
 OpenAI raised money in April 2026, and Anthropic in May 2026. Which of the two was valued higher in its round?
 
-Vote for an answer and for how sure you are. Choose "sure" only if you would stake 300 points on it.
+Vote for an answer and for how sure you are. Pick "sure" only if you would bet on it.
 
 The answer and its source follow tomorrow at 9:00 New York time.
 ```
-Count: 278
+Count: 263
 Poll options (1 day): `OpenAI, sure` · `OpenAI, not sure` · `Anthropic, not sure` · `Anthropic, sure`
 
 Reveal, Friday 9 October at 09:00, as a reply to this poll:
@@ -241,7 +241,7 @@ Anthropic was valued higher: $965 billion in May 2026, against $852 billion for 
 
 Anthropic was founded in 2021 by seven former OpenAI employees. The AI pack has more: https://whosbluffing.com/?pack=ai
 ```
-Count: 270 with {sure_wrong} = 100
+Count: 270
 Source (`items/ai_curated.json`, ai_money and ai_company_founded): Anthropic $965 billion, May 2026,
 https://en.wikipedia.org/wiki/Anthropic#:~:text=US%24965%20billion · OpenAI $852 billion, April 2026,
 https://en.wikipedia.org/wiki/OpenAI#:~:text=post%2Dmoney%20valuation%20of%20%24852%20billion · seven former OpenAI
@@ -274,7 +274,7 @@ Someone went with {wrong_pick} at 100% sure. It was {right_answer}.
 
 whosbluffing.com
 ```
-Count: 271 with the sample fill (47-character question, the Danube, the Mississippi, 10,000 players, 100%); the question and both names together may use up to 81 characters
+Count: 240
 Fill from Wednesday's ranked round (checklist items 4 to 6).
 Source: the home page panel and `/api/round/stats?date=2026-10-07`.
 
@@ -289,11 +289,11 @@ Also at 09:00: the reveal of Thursday's poll, as a reply to it.
 ```text
 Which language has more native speakers, Punjabi or French?
 
-Vote for an answer and for how sure you are. Choose "sure" only if you would stake 300 points on it.
+Vote for an answer and for how sure you are. Pick "sure" only if you would bet on it.
 
 The answer and its source follow tomorrow at 9:00 New York time.
 ```
-Count: 227
+Count: 212
 Poll options (1 day): `Punjabi, sure` · `Punjabi, not sure` · `French, not sure` · `French, sure`
 
 Reveal, Saturday 10 October at 09:00, as a reply to this poll:
@@ -305,7 +305,7 @@ Punjabi has more: about 125 million native speakers, against about 77 million fo
 
 Ten questions like this take about a minute: whosbluffing.com
 ```
-Count: 266 with {sure_wrong} = 100
+Count: 259
 Source: Punjabi 125,000,000, https://www.wikidata.org/wiki/Q58635#P1098 (`items/pool.json` w2884) · French 77,200,000,
 https://www.wikidata.org/wiki/Q150#P1098 (w2849);
 both referenced, native speakers (Wikidata P1098).
@@ -332,7 +332,7 @@ If you cannot decide which lab is right, you can back both. Our game does not al
 
 whosbluffing.com
 ```
-Count: 276
+Count: 269
 Source (`items/ai_curated.json`, ai_money): https://en.wikipedia.org/wiki/Anthropic#:~:text=doubling%20its%20total%20investment ·
 https://en.wikipedia.org/wiki/OpenAI#:~:text=led%20by%20Amazon%20%28%2450%20billion%29
 
@@ -347,11 +347,11 @@ Also at 09:00: the reveal of Friday's poll, as a reply to it.
 ```text
 Which model has more parameters, xAI's Grok-1 or OpenAI's GPT-3?
 
-Vote for an answer and for how sure you are. Choose "sure" only if you would stake 300 points on it.
+Vote for an answer and for how sure you are. Pick "sure" only if you would bet on it.
 
 The answer and its source follow tomorrow at 9:00 New York time.
 ```
-Count: 232
+Count: 217
 Poll options (1 day): `Grok-1, sure` · `Grok-1, not sure` · `GPT-3, not sure` · `GPT-3, sure`
 
 Reveal, Sunday 11 October at 09:00, as a reply to this poll:
@@ -363,7 +363,7 @@ Grok-1 has more: 314 billion parameters, against 175 billion for GPT-3. Grok-1 i
 
 Brutal AI rounds have more numbers like these: https://whosbluffing.com/?pack=ai&difficulty=brutal
 ```
-Count: 248 with {sure_wrong} = 100
+Count: 248
 Source (`items/ai_curated.json`, ai_params): Grok-1 https://x.ai/news/grok-os · GPT-3
 https://en.wikipedia.org/wiki/GPT-3#GPT-3_models
 
@@ -376,7 +376,7 @@ Roast mode is off by default. If your friends can take it, turn it on and the re
 
 whosbluffing.com/discord
 ```
-Count: 276
+Count: 277
 Source: `web/public/discord.html` (hero line; FAQ "What is roast mode?").
 
 ### 19:00 · Bluff receipt (template)
@@ -391,7 +391,7 @@ Someone picked {wrong_pick} at 100% sure. It was {right_answer}.
 
 whosbluffing.com
 ```
-Count: 272 with the sample fill (47-character question, the Danube, the Mississippi, 10,000 players, 100%); the question and both names together may use up to 80 characters
+Count: 252
 Fill from Friday's ranked round (checklist items 4 to 6).
 Source: the home page panel and `/api/round/stats?date=2026-10-09`.
 
@@ -406,11 +406,11 @@ Also at 09:00: the reveal of Saturday's poll, as a reply to it.
 ```text
 Which mountain is higher, Mont Blanc or the Matterhorn?
 
-Vote for an answer and for how sure you are. Choose "sure" only if you would stake 300 points on it.
+Vote for an answer and for how sure you are. Pick "sure" only if you would bet on it.
 
 The answer and its source follow tomorrow at 9:00 New York time.
 ```
-Count: 223
+Count: 208
 Poll options (1 day): `Mont Blanc, sure` · `Mont Blanc, not sure` · `Matterhorn, not sure` · `Matterhorn, sure`
 
 Reveal, Monday 12 October at 09:00, as a reply to this poll:
@@ -422,7 +422,7 @@ Mont Blanc is higher: 4,806 m against 4,478 m for the Matterhorn (Wikidata).
 
 There is a new ranked round every day, the same ten questions for everyone: whosbluffing.com
 ```
-Count: 236 with {sure_wrong} = 100
+Count: 229
 Source: Mont Blanc https://www.wikidata.org/wiki/Q583#P2044 (`items/pool.json` w0234) · Matterhorn
 https://www.wikidata.org/wiki/Q1374#P2044 (w0244); both fact-checked.
 
@@ -435,7 +435,7 @@ Our game has the opposite problem. It tells you exactly what your confidence cos
 
 whosbluffing.com
 ```
-Count: 233
+Count: 226
 Source: `items/ai_curated.json` (ai_drama, 29 April 2025):
 https://en.wikipedia.org/wiki/GPT-4o#:~:text=rolled%20back%20an%20update%20of%20GPT%2D4o
 
@@ -444,11 +444,11 @@ https://en.wikipedia.org/wiki/GPT-4o#:~:text=rolled%20back%20an%20update%20of%20
 ```text
 A Sunday dare: play one round, then reply with your type. It will be Bluffer, Too sure, Spot on, Too modest or Playing it safe.
 
-Spot on means your confidence matched how often you were right, within 5 points. It is harder than it sounds.
+Spot on means you were exactly as sure as you should have been. It is harder than it sounds.
 
 whosbluffing.com
 ```
-Count: 263
+Count: 239
 Source: the type definitions in `web/public/index.html` (type tiles and FAQ).
 
 ---
