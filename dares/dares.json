@@ -14,7 +14,7 @@
     "dare_url": null,
     "status": "open",
     "their_score": null,
-    "items": ["p37282", "p37263", "p36967", "p37152", "p36645", "p36787", "p36906", "p36695", "p36687", "p36659"]
+    "items": ["p37282", "p37263", "p39129", "p39070", "p39096", "p38986", "p38700", "p38980", "p36645", "p36787"]
   },
   {
     "slug": "musk",
@@ -30,7 +30,8 @@
     "issued": "2026-10-05",
     "dare_url": null,
     "status": "open",
-    "their_score": null
+    "their_score": null,
+    "items": ["p39014", "p38974", "p38739", "p38736", "p38695", "p39076", "p39057", "p38971", "p39099", "p39090"]
   },
   {
     "slug": "brockman",
@@ -47,7 +48,7 @@
     "dare_url": null,
     "status": "open",
     "their_score": null,
-    "items": ["p36805", "p38584", "p37196", "p37192", "p36885", "p36787", "p36695", "p38534", "p38533", "p38530"]
+    "items": ["p36805", "p39113", "p39115", "p38584", "p39084", "p36645", "p39096", "p38696", "p38697", "p38689"]
   },
   {
     "slug": "karpathy",
@@ -65,7 +66,7 @@
     "dare_url": null,
     "status": "open",
     "their_score": null,
-    "items": ["p36873", "p36967", "p36907", "p37018", "p36656", "p36645", "p36787", "p36695", "p36659", "p38533"]
+    "items": ["p38981", "p39119", "p38980", "p36873", "p36967", "p36907", "p39130", "p36645", "p39082", "p39084"]
   },
   {
     "slug": "lecun",
@@ -82,7 +83,7 @@
     "dare_url": null,
     "status": "open",
     "their_score": null,
-    "items": ["p38546", "p36699", "p38561", "p37170", "p37178", "p37186", "p36907", "p36695", "p36787", "p38520"]
+    "items": ["p38546", "p36699", "p38561", "p39103", "p37170", "p38985", "p37178", "p38689", "p36650", "p39108"]
   },
   {
     "slug": "hassabis",
@@ -99,7 +100,7 @@
     "dare_url": null,
     "status": "open",
     "their_score": null,
-    "items": ["p37178", "p36710", "p36645", "p36656", "p36964", "p37368", "p36787", "p36775", "p36659", "p38538"]
+    "items": ["p37178", "p38981", "p38701", "p39076", "p36710", "p36645", "p36656", "p36964", "p38980", "p38983"]
   },
   {
     "slug": "suleyman",
@@ -115,7 +116,8 @@
     "issued": "2026-10-05",
     "dare_url": null,
     "status": "open",
-    "their_score": null
+    "their_score": null,
+    "items": ["p37070", "p37140", "p38754", "p39076", "p38747", "p38986", "p36787", "p36710", "p36701", "p39119"]
   },
   {
     "slug": "srinivas",
@@ -132,7 +134,7 @@
     "dare_url": null,
     "status": "open",
     "their_score": null,
-    "items": ["p37282", "p37263", "p36749", "p37070", "p36787", "p36663", "p36645", "p38520", "p38523", "p38533"]
+    "items": ["p37282", "p37263", "p39130", "p39132", "p39153", "p38679", "p38670", "p38676", "p38677", "p39084"]
   },
   {
     "slug": "nadella",
@@ -149,7 +151,7 @@
     "dare_url": null,
     "status": "open",
     "their_score": null,
-    "items": ["p37763", "p36735", "p37868", "p36743", "p36824", "p36821", "p36926", "p36954", "p37171", "p37403"]
+    "items": ["p39046", "p37763", "p38792", "p38795", "p38705", "p38700", "p36735", "p38783", "p36825", "p36821"]
   },
   {
     "slug": "pichai",
@@ -166,7 +168,7 @@
     "dare_url": null,
     "status": "open",
     "their_score": null,
-    "items": ["p37781", "p37903", "p37911", "p37452", "p37441", "p36732", "p36733", "p37447", "p36848", "p36881"]
+    "items": ["p38810", "p37781", "p37903", "p37452", "p38780", "p37441", "p36732", "p36733", "p38701", "p36848"]
   },
   {
     "slug": "kilpatrick",
@@ -183,7 +185,7 @@
     "dare_url": null,
     "status": "open",
     "their_score": null,
-    "items": ["p37263", "p36787", "p36645", "p36710", "p37329", "p37083", "p37018", "p36659", "p38538", "p38530"]
+    "items": ["p37263", "p36787", "p36645", "p36710", "p37329", "p37083", "p37018", "p38701", "p38697", "p38688"]
   },
   {
     "slug": "clark",
@@ -200,7 +202,7 @@
     "dare_url": null,
     "status": "open",
     "their_score": null,
-    "items": ["p36885", "p36881", "p36695", "p36749", "p37403", "p37072", "p38546", "p36967", "p36699", "p36659"]
+    "items": ["p36885", "p36881", "p36695", "p39143", "p39142", "p39146", "p39174", "p39084", "p38669", "p38698"]
   },
   {
     "slug": "dwarkesh",
@@ -218,7 +220,7 @@
     "dare_url": null,
     "status": "open",
     "their_score": null,
-    "items": ["p37072", "p37070", "p38605", "p37319", "p36650", "p36733", "p36787", "p36885", "p38534", "p38523"]
+    "items": ["p39125", "p37072", "p39034", "p39027", "p39082", "p36695", "p39090", "p38677", "p38670", "p38671"]
   },
   {
     "slug": "mollick",
@@ -236,7 +238,7 @@
     "dare_url": null,
     "status": "open",
     "their_score": null,
-    "items": ["p36881", "p36885", "p38531", "p37349", "p36955", "p37114", "p36787", "p36695", "p38527", "p38525"]
+    "items": ["p38784", "p39147", "p36881", "p39146", "p39119", "p36885", "p39111", "p39061", "p39082", "p39084"]
   },
   {
     "slug": "marcus",
@@ -254,7 +256,7 @@
     "dare_url": null,
     "status": "open",
     "their_score": null,
-    "items": ["p37140", "p37072", "p37392", "p37399", "p36881", "p36787", "p36733", "p36695", "p38520", "p38523"]
+    "items": ["p37140", "p37072", "p37392", "p37399", "p36881", "p38693", "p38697", "p39114", "p38698", "p38688"]
   },
   {
     "slug": "graham",
@@ -263,14 +265,16 @@
     "org": "Y Combinator",
     "handle": "paulg",
     "pronoun": "he",
-    "pack": "companies",
-    "difficulty": "brutal",
-    "keywords": ["Y Combinator", "Airbnb", "Stripe", "Dropbox", "Reddit"],
+    "pack": "ai",
+    "difficulty": "normal",
+    "keywords": ["OpenAI", "Y Combinator", "Altman", "Anthropic"],
     "rival": "andreessen",
     "issued": "2026-10-05",
     "dare_url": null,
     "status": "open",
-    "their_score": null
+    "their_score": null,
+    "items": ["p38701", "p38749", "p38765", "p38673", "p37554", "p38748", "p38707", "p36749", "p36861", "p36873"],
+    "topic": "AI"
   },
   {
     "slug": "andreessen",
@@ -279,14 +283,16 @@
     "org": "a16z",
     "handle": "pmarca",
     "pronoun": "he",
-    "pack": "companies",
-    "difficulty": "brutal",
-    "keywords": ["Netscape", "Facebook", "Coinbase", "Airbnb"],
+    "pack": "ai",
+    "difficulty": "normal",
+    "keywords": ["Meta", "Llama", "OpenAI", "Anthropic"],
     "rival": "graham",
     "issued": "2026-10-05",
     "dare_url": null,
     "status": "open",
-    "their_score": null
+    "their_score": null,
+    "items": ["p37416", "p38790", "p38791", "p38721", "p36964", "p38794", "p38746", "p36787", "p36810", "p38673"],
+    "topic": "AI"
   },
   {
     "slug": "naval",
@@ -295,14 +301,16 @@
     "org": "AngelList",
     "handle": "naval",
     "pronoun": "he",
-    "pack": "companies",
+    "pack": "ai",
     "difficulty": "normal",
-    "keywords": ["Twitter", "Uber", "AngelList"],
+    "keywords": ["OpenAI", "Anthropic", "Google", "xAI"],
     "rival": "graham",
     "issued": "2026-10-05",
     "dare_url": null,
     "status": "open",
-    "their_score": null
+    "their_score": null,
+    "items": ["p37075", "p37016", "p37067", "p37066", "p37052", "p36900", "p36873", "p37018", "p36932", "p38994"],
+    "topic": "AI"
   },
   {
     "slug": "gates",
@@ -311,14 +319,16 @@
     "org": "Microsoft",
     "handle": "BillGates",
     "pronoun": "he",
-    "pack": "history",
+    "pack": "ai",
     "difficulty": "normal",
-    "keywords": ["Microsoft", "Windows"],
+    "keywords": ["Microsoft", "OpenAI", "Copilot", "GPT"],
     "rival": "bezos",
     "issued": "2026-10-05",
     "dare_url": null,
     "status": "open",
-    "their_score": null
+    "their_score": null,
+    "items": ["p38880", "p38864", "p38688", "p38862", "p37282", "p37295", "p37296", "p37287", "p36777", "p36739"],
+    "topic": "AI"
   },
   {
     "slug": "bezos",
@@ -327,13 +337,15 @@
     "org": "Amazon",
     "handle": "JeffBezos",
     "pronoun": "he",
-    "pack": "companies",
+    "pack": "ai",
     "difficulty": "normal",
-    "keywords": ["Amazon", "AWS", "Blue Origin"],
+    "keywords": ["Amazon", "Anthropic", "AWS", "Alexa"],
     "rival": "gates",
     "issued": "2026-10-05",
     "dare_url": null,
     "status": "open",
-    "their_score": null
+    "their_score": null,
+    "items": ["p38708", "p37223", "p37397", "p38779", "p37248", "p38706", "p38869", "p38988", "p36821", "p36733"],
+    "topic": "AI"
   }
 ]
