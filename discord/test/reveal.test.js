@@ -57,7 +57,7 @@ test('reveal, roast off: both values with sources, the split, top 5 by name (pos
       '**Top 3:** 1. Maya +96 · 2. Sam +64 · 3. a member +36',
       "Someone was 90% sure the Danube is longer. It isn't.",
     ].join('\n'),
-    components: [],
+    components: [{ type: 1, components: [{ type: 2, style: 5, url: 'https://discord.com/oauth2/authorize?client_id=424242&scope=bot+applications.commands&permissions=83968&integration_type=0', label: 'Add to your server' }] }],
     allowed_mentions: { parse: [] },
   });
   assert.deepEqual(env.DB.rows('SELECT revealed FROM posts'), [{ revealed: 1 }]);

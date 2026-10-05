@@ -265,7 +265,7 @@ export async function revealPost(env, post) {
     const bluff = r.biggest_bluff?.conf >= game.BLUFF_CONF ? r.biggest_bluff : null;
     const named = [...top.map((t) => t.anon_id), ...(bluff && post.roast ? [bluff.anon_id] : [])];
     const names = await memberNames(env, post.guild_id, named);
-    const msg = game.revealMessage({ q: post, r, top, names, bluff, roast: Boolean(post.roast) });
+    const msg = game.revealMessage({ q: post, r, top, names, bluff, roast: Boolean(post.roast), installUrl: installUrl(env) });
     const res = await discord(env, 'PATCH', `/channels/${post.channel_id}/messages/${post.message_id}`, msg);
     if (!res.ok && !GONE.has(res.status)) throw new Error(`reveal edit returned ${res.status}`);
     return true;
@@ -409,5 +409,5 @@ async function playNext(env, i, [roundId, stepText]) {
   }
   await store.endPlay(env.DB, me.anon_id);
   const challengeId = done.challenge_url && `px:${Math.round(done.score)}:${done.challenge_url}`;
-  return game.playEnd(done, challengeId?.length <= MAX_CUSTOM_ID ? challengeId : null);
+  return game.playEnd(done, challengeId?.length <= MAX_CUSTOM_ID ? challengeId : null, installUrl(env));
 }

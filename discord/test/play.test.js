@@ -84,7 +84,7 @@ test('/bluff play: a private 10-question round in one message, from the first qu
     'The Nile would like a word.',
     'Streak: 3 days.',
   ].join('\n'));
-  assert.deepEqual([ids(msg), labels(msg)], [['pp', 'px:260:/c/r1/tok1234567'], ['Play again', 'Challenge']]);
+  assert.deepEqual([ids(msg), labels(msg)], [['pp', 'px:260:/c/r1/tok1234567', undefined], ['Play again', 'Challenge', 'Add to your server']]); // the third button is the install link (no custom_id)
   assert.equal(env.DB.rows('SELECT * FROM play_state').length, 0);
 
   // Challenge posts the link publicly under the player's display name, read from the press; nobody is pinged.

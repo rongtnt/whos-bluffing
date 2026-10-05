@@ -53,6 +53,10 @@ const todayAt = (hour, now) => Math.floor(now / DAY_MS) * DAY_MS + hour * HOUR_M
 const nameOf = (names, anonId) => esc(names.get(anonId) ?? 'a member');
 const button = (customId, text, style = 2) => ({ type: 2, style, custom_id: customId, label: label(text) });
 const row = (...components) => ({ type: 1, components });
+// A link button (style 5): opens a URL, no interaction comes back. Every reveal and play end carries the install link,
+// the mechanism that carried Truth or Dare from 0 to 1.6M servers (docs/TOD_TRACTION.md).
+const linkButton = (url, text) => ({ type: 2, style: 5, url, label: label(text) });
+export const ADD_LABEL = 'Add to your server';
 const option = (q, choice) => `${LETTERS[choice]} · ${esc(choice ? q.b : q.a)}`;
 const abButtons = (q, id) => [row(button(id(0), `A · ${q.a}`, 1), button(id(1), `B · ${q.b}`, 1))];
 const confLabel = (c) => (CONF_WORDS[c] ? `${c}% · ${CONF_WORDS[c]}` : `${c}%`);
@@ -106,7 +110,7 @@ export function bluffLine(q, bluff, name) {
 }
 
 // The question post after the reveal: both values with sources, this server's split, top 5 and the bluff line.
-export function revealMessage({ q, r, top, names, bluff, roast }) {
+export function revealMessage({ q, r, top, names, bluff, roast, installUrl }) {
   const lines = [`**Who's Bluffing?** · ${esc(q.prompt)}`, side(q, r, 0), side(q, r, 1)];
   if (!r.n) {
     lines.push('Nobody here answered this one.');
@@ -117,7 +121,7 @@ export function revealMessage({ q, r, top, names, bluff, roast }) {
     }
     if (bluff) lines.push(bluffLine(q, bluff, roast ? names.get(bluff.anon_id) : null));
   }
-  return { content: lines.join('\n'), components: [], allowed_mentions: NO_PINGS };
+  return { content: lines.join('\n'), components: installUrl ? [row(linkButton(installUrl, ADD_LABEL))] : [], allowed_mentions: NO_PINGS };
 }
 
 export const posted = (revealAt) => `Posted. The answer comes out at ${revealText(revealAt)}.`;
@@ -244,7 +248,7 @@ export function playResult(state, step, choice, conf, res) {
   };
 }
 
-export function playEnd(done, challengeId) {
+export function playEnd(done, challengeId, installUrl) {
   const [name, meaning] = Object.hasOwn(TYPES, done.type) ? TYPES[done.type] : [];
   const line = name ? `${name} · ${meaning}` : `${esc(done.type)}.`; // an unknown type shows as the API sent it
   const lines = [
@@ -255,6 +259,7 @@ export function playEnd(done, challengeId) {
   if (done.streak > 1) lines.push(`Streak: ${done.streak} days.`);
   const buttons = [button('pp', 'Play again', 1)];
   if (challengeId) buttons.push(button(challengeId, 'Challenge'));
+  if (installUrl) buttons.push(linkButton(installUrl, ADD_LABEL));
   return { content: lines.join('\n'), components: [row(...buttons)] };
 }
 
