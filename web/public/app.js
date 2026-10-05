@@ -3,7 +3,7 @@
 // /class and /class/d/<secret> (their own HTML shells; _redirects maps the dashboard to class.html).
 import { html, api } from './ui.js';
 import { startTest } from './test.js';
-import { renderRounds, renderChallenge } from './rounds.js';
+import { renderRounds, renderChallenge, renderDare } from './rounds.js';
 import { renderStats } from './stats.js';
 import { renderLabs } from './labs.js';
 import { renderClassCreate, renderDashboard } from './class.js';
@@ -86,6 +86,8 @@ function route() {
   const challenge = p.match(/^\/c\/((?:rk-\d{4}-\d{2}-\d{2})|[A-Z2-9]{12})\/([A-Za-z0-9_-]{10})\/?$/);
   if (p === '/') return Promise.all([renderRounds(ctx), renderPlayed(document.querySelector('[data-played]'))]);
   if (challenge) return renderChallenge(ctx, challenge[1], challenge[2]);
+  const dare = p.match(/^\/dare\/([a-z][a-z0-9-]{1,30})\/?$/); // functions/dare/[slug].js
+  if (dare) return renderDare(ctx, dare[1]);
   if (/^\/test\/?$/.test(p)) return renderTestLanding();
   if (/^\/stats\/?$/.test(p)) return Promise.all([renderStats(ctx), renderLive(document.querySelector('[data-live]'))]);
   if (/^\/labs\/?$/.test(p)) return renderLabs(ctx);

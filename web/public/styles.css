@@ -849,3 +849,10 @@ button.pick:hover { border-color: var(--accent); }
 
 /* The member in the Discord mock is the owner, with his real avatar. */
 img.dc-avatar { display: block; object-fit: cover; }
+/* dares */
+.dare-tiles { grid-template-columns: repeat(3, minmax(0, 1fr)); max-width: 34em; }
+.dare-status, .dare-rival { max-width: 34em; }
+.dare-status p, .dare-rival p { margin: 0; }
+.dare-status p + p { margin-top: 6px; }
+.dare-scroll { overflow-x: auto; }
+.dare-table { min-width: 640px; }
