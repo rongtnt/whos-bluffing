@@ -1,6 +1,5 @@
 // KPI job (prereg/PREREG.md, "Metric definitions" and "Engagement numbers"), run once a day through POST /api/kpi/run.
-// It is the only code that scans the play tables on a schedule; GET /api/kpi (private, x-kpi-key) reads the latest kpi
-// row plus the all-time totals. Usage figures are collected for the owner and not published.
+// It is the only code that scans the play tables; GET /api/kpi and the stats page read just the latest kpi row.
 //   Plays: a completed round of 10 (ranked or quick; counted on the day it was completed), an answer to the Slack or
 //        Discord daily question (on the question's day), a completed full assessment (on the day it was finished,
 //        surface "classroom" when it carried a class code, else "web"; only sessions with an anonymous id count).
@@ -103,7 +102,7 @@ export async function runKpi(db, asOf, now) {
   return row;
 }
 
-// GET /api/kpi shape (a private read); zeros (rates null) and as_of null before the first run.
+// GET /api/kpi shape; zeros (rates null) and as_of null before the first run.
 export const publicKpi = (r) => ({
   as_of: r?.as_of ?? null,
   mau: r?.mau ?? 0,
@@ -118,15 +117,6 @@ export const publicKpi = (r) => ({
 });
 
 export const latestKpi = async (db) => publicKpi(await db.prepare('SELECT * FROM kpi ORDER BY as_of DESC LIMIT 1').first());
-
-// All-time totals: completed rounds on every surface plus the chat apps' daily-question answers, and the distinct
-// anonymous ids behind them. ponytail: two full scans on each private read; a running counter if they slow.
-const ALLTIME_SQL = `SELECT (SELECT COUNT(*) FROM round_plays) + (SELECT COUNT(*) FROM round_answers WHERE round_id LIKE 'dq-%') AS played,
-  (SELECT COUNT(*) FROM (SELECT anon_id FROM round_plays UNION SELECT anon_id FROM round_answers WHERE round_id LIKE 'dq-%')) AS players`;
-export async function allTimeTotals(db) {
-  const r = await db.prepare(ALLTIME_SQL).first();
-  return { total_played: r?.played ?? 0, total_players: r?.players ?? 0 };
-}
 
 // The x-kpi-key header must match env.KPI_KEY. No key configured -> nobody is authorized (fail closed).
 export const authorized = (request, env) => headerMatches(request, 'x-kpi-key', env.KPI_KEY);

@@ -201,7 +201,7 @@
       },
       {
         "name": "whosbluffing.com/stats",
-        "does": "Live charts: today’s room, today’s ranked round and the full assessment’s calibration curve.",
+        "does": "Live numbers: monthly players, communities and today’s ranked round.",
         "options": [],
         "who": "Anyone"
       }

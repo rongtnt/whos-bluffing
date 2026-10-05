@@ -660,6 +660,10 @@ const statsBody = (date, rows) => {
 // use the partial index of migration 0007, so each lookup reads one entry. No player id is read.
 const BLUFF_SQL = `SELECT item_id, choice, conf, points, answered_at FROM round_answers
   WHERE round_id = ? AND item_id = ? AND correct = 0 AND conf >= 90 ORDER BY points, answered_at DESC LIMIT 1`;
+// All-time totals for /status: completed rounds on every surface plus the chat apps' daily-question answers, and the
+// distinct anonymous ids behind them. ponytail: two full scans, cached 60 s with the rest; a running counter if they slow.
+const ALLTIME_SQL = `SELECT (SELECT COUNT(*) FROM round_plays) + (SELECT COUNT(*) FROM round_answers WHERE round_id LIKE 'dq-%') AS played,
+  (SELECT COUNT(*) FROM (SELECT anon_id FROM round_plays UNION SELECT anon_id FROM round_answers WHERE round_id LIKE 'dq-%')) AS players`;
 
 // calibration: [{conf, n, right}] for 50, 60 ... 100% over the day's plays (round_agg). bluffs: up to MAX_BLUFFS of the
 // day's live pairs, costliest miss first (the most recent on a tie), each {prompt, pick, conf, points}; [] until
@@ -669,12 +673,15 @@ export async function roundStats(db, data, dateParam, now) {
   if (!isDate(date)) return err(400, 'date must be YYYY-MM-DD');
   if (date > todayUTC(now) || !data.rounds[date]) return err(404, 'no ranked round for that date');
   const ids = data.rounds[date].ranked;
-  const [agg, pairRows, itemRows, ...misses] = await db.batch([
+  const [agg, totals, pairRows, itemRows, ...misses] = await db.batch([
     db.prepare(AGG_SQL).bind(date),
+    db.prepare(ALLTIME_SQL),
     ...deadStatements(db, data, ids),
     ...ids.map((id) => db.prepare(BLUFF_SQL).bind(`rk-${date}`, id)),
   ]);
   const body = statsBody(date, agg.results);
+  body.total_played = totals.results[0]?.played ?? 0;
+  body.total_players = totals.results[0]?.players ?? 0;
   const calib = agg.results.reduce((sum, r) => JSON.parse(r.calib).map((c, k) => sum[k] + c), Array(2 * CONFS.length).fill(0));
   body.calibration = CONFS.map((conf, k) => ({ conf, n: calib[2 * k], right: calib[2 * k + 1] }));
   const dead = deadFrom(data, ids, [pairRows, itemRows]);

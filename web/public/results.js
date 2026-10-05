@@ -20,6 +20,7 @@ export function showResults(ctx, res, run) {
     const row = t('results.range_row', { low: num(d.low), high: num(d.high), unit: q.unit, truth: num(d.truth) });
     return html`<li><span class="rq">${q.prompt}</span><span>${row} · <b class="${d.hit ? 'hit' : 'miss'}">${d.hit ? '✓' : '✗'} ${t(d.hit ? 'results.hit' : 'results.miss')}</b></span></li>`;
   };
+  const g = res.global;
   app.innerHTML = html`<h1>${t('results.title')}</h1>
 <p class="headline">${h.ranges}</p>
 <p class="muted">${t('results.int_explain')}</p>
@@ -29,6 +30,7 @@ export function showResults(ctx, res, run) {
 ${res.percentile ? html`<p>${t('results.pct_over', { p: res.percentile.overconf })} ${t('results.pct_int', { p: res.percentile.int_hit })}</p>` : ''}
 <h2>${t('results.ranges_title')}</h2>
 <ul class="ranges">${res.interval_detail.map(range)}</ul>
+${g.n_sessions > 1 && g.n_countries > 1 ? html`<p class="muted">${t('results.global', { n: num(g.n_sessions), k: g.n_countries })}</p>` : ''}
 <section id="share" class="card"></section>
 <p><a href="/">${t('results.daily_link')}</a> · <a href="/stats">${t('results.stats_link')}</a></p>`;
   window.scrollTo(0, 0);

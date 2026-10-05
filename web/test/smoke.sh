@@ -117,7 +117,7 @@ content /class '<title>Create a class code' 'class shell'
 content /class/d/AAAAAAAAAAAAAAAAAAAAAAAA '<script type="module" src="/app.js">' 'class dashboard (rewritten to the class shell, URL kept)'
 content /slack "<h1 id=\"slack-title\">Who's Bluffing? for Slack</h1>" 'Slack page'
 content /teachers '<a class="button primary" href="/class">' 'teachers page'
-content /research '<h2 id="numbers">Numbers we track</h2>' 'research page (definitions checked against PREREG in test/site.test.js)'
+content /research '<h2 id="numbers">Numbers we publish</h2>' 'research page (definitions checked against PREREG in test/site.test.js)'
 content /support 'What to include in a bug report' 'support page'
 content /privacy '<h1 id="privacy">Privacy</h1>' 'privacy page (generated from PRIVACY.md)'
 content /terms '<h1 id="terms-of-use">Terms of use</h1>' 'terms page (generated from TERMS.md)'
@@ -592,18 +592,14 @@ SHOWN=$(printf '%s' "$BODY" | node --input-type=module -e '
 [[ "$SHOWN" =~ ^\$[0-9.,]+\ (million|billion|trillion)\ \|\ \$[0-9.,]+\ (million|billion|trillion)$ ]] || fail "ai_money values read as dollars in words" "$SHOWN"
 pass "ai_money values as the reveal and the end-screen card show them: $SHOWN"
 
-echo "== public reads: CORS on GET /api/round/stats only; GET /api/kpi is private"
+echo "== public reads: CORS on GET /api/round/stats and /api/kpi only"
 # Through another host name, so the 60 s stats cache that later checks read stays untouched; the stats are asked twice,
 # so the second answer comes from the cache and must carry the header too.
-for path in /api/round/stats /api/round/stats; do
+for path in /api/round/stats /api/round/stats /api/kpi; do
   H=$(curl -s -D - -o /dev/null -H 'Host: cors.localhost' "$BASE$path")
   grep -qi '^access-control-allow-origin: \*' <<< "$H" || fail "GET $path carries Access-Control-Allow-Origin: *" "$H"
   pass "GET $path -> Access-Control-Allow-Origin: *"
 done
-H=$(curl -s -D - -o "$STATE/kpi401.json" -H 'Host: cors.localhost' "$BASE/api/kpi")
-[[ "$H" == "HTTP/1.1 401"* ]] && ! grep -qi '^access-control-allow-origin' <<< "$H" && grep -q '"unauthorized"' "$STATE/kpi401.json" \
-  || fail "GET /api/kpi without x-kpi-key -> 401, no CORS header" "$H"
-pass "GET /api/kpi without x-kpi-key -> 401, no CORS header (usage figures are private)"
 H=$(curl -s -D - -o /dev/null "$BASE/api/round?mode=ranked")
 ! grep -qi '^access-control-allow-origin' <<< "$H" || fail "GET /api/round has no CORS header (not a public read)" "$H"
 pass "GET /api/round -> no CORS header (it can write a row)"
@@ -613,11 +609,11 @@ STATUS=$(curl -s -o "$STATE/bots.json" -w '%{http_code}' -H 'Host: bots.whosbluf
 expect "bots host without the key -> 403" 403 'r.error === "bot host requires key"'
 STATUS=$(curl -s -o "$STATE/bots.json" -w '%{http_code}' -H 'Host: bots.whosbluffing.com' -H 'x-bluff-bot: wrong' "$BASE/api/kpi"); BODY=$(cat "$STATE/bots.json")
 expect "bots host with a wrong key -> 403" 403 'r.error === "bot host requires key"'
-STATUS=$(curl -s -o "$STATE/bots.json" -w '%{http_code}' -H 'Host: bots.whosbluffing.com' -H "x-bluff-bot: $BOT_KEY" "$BASE/api/round/stats"); BODY=$(cat "$STATE/bots.json")
-expect "bots host with the key -> the API" 200 'typeof r.players === "number"'
+STATUS=$(curl -s -o "$STATE/bots.json" -w '%{http_code}' -H 'Host: bots.whosbluffing.com' -H "x-bluff-bot: $BOT_KEY" "$BASE/api/kpi"); BODY=$(cat "$STATE/bots.json")
+expect "bots host with the key -> the API" 200 'typeof r.mau === "number"'
 STATUS=$(curl -s -o "$STATE/bots.json" -w '%{http_code}' -H 'Host: bots.whosbluffing.com' -H "x-bluff-bot: $BOT_KEY" "$BASE/discord"); BODY=$(cat "$STATE/bots.json")
 [ "$STATUS" = 200 ] && grep -qi "<html" "$STATE/bots.json" || fail "bots host, a page -> the static page (public/_routes.json runs Functions only on /api/* and /c/*)" "$STATUS"; pass "bots host, a page -> the static page (Functions only on /api/* and /c/*)"
-STATUS=$(curl -s -o /dev/null -w '%{http_code}' -H 'Host: whosbluffing.com' "$BASE/api/round/stats")
+STATUS=$(curl -s -o /dev/null -w '%{http_code}' -H 'Host: whosbluffing.com' "$BASE/api/kpi")
 [ "$STATUS" = 200 ] || fail "normal host without a key -> unchanged (200)" "$STATUS"; pass "normal host without a key -> unchanged (200)"
 
 echo "== rounds: today's ranked round, rank, stats"
@@ -635,7 +631,7 @@ req POST /api/round/complete "$(cbody "rk-$TODAY" "$RANKER" web)"
 expect "ranked complete (half right at 80%) -> -360, rank 2 of 3" 200 'r.score === -360 && r.rank_today === 2 && r.players_today === 3'
 req GET "/api/round/stats?date=$TODAY"
 expect "GET /api/round/stats -> 3 players, 41 bins of 100 points, mean overconfidence +30" 200 \
-  'r.players === 3 && r.score_hist.length === 41 && r.score_hist.reduce((s, c) => s + c, 0) === 3 && r.score_hist[40] === 1 && r.score_hist[26] === 1 && r.score_hist[25] === 1 && r.mean_overconfidence === 30 && r.bin_from === -3000 && r.bin_width === 100 && !("total_played" in r) && !("total_players" in r)'
+  'r.players === 3 && r.score_hist.length === 41 && r.score_hist.reduce((s, c) => s + c, 0) === 3 && r.score_hist[40] === 1 && r.score_hist[26] === 1 && r.score_hist[25] === 1 && r.mean_overconfidence === 30 && r.bin_from === -3000 && r.bin_width === 100'
 
 echo "== rounds: flag -> retire the pair and its values -> ranked day recomputed"
 RFLAG=$(items_of "$STATE/ranked.json" | head -1)
@@ -725,12 +721,8 @@ expect "KPI run -> MAU 7 (web 4: A, host, friend, ranker; Slack 2 chat answers; 
 expect "KPI run -> engagement: 1.25 rounds per player-day, challenge conversion 1, share rate 0.2, no return cohorts yet" 200 \
   'r.rounds_per_player_day === 1.25 && r.challenge_conversion === 1 && r.share_rate === 0.2 && r.d1_return === null && r.d7_return === null'
 req GET /api/kpi
-expect "GET /api/kpi without the key -> 401" 401 'r.error === "unauthorized"'
-req GET /api/kpi '' 'x-kpi-key: wrong'
-expect "GET /api/kpi with a wrong key -> 401" 401 'r.error === "unauthorized"'
-req GET /api/kpi '' "x-kpi-key: $KPI_KEY"
-expect "GET /api/kpi with the key -> the stored row with surfaces, platforms and engagement, and the all-time totals (8 plays: rounds plus chat answers; 6 ids)" 200 \
-  'r.total_played === 8 && r.total_players === 6 && r.as_of === process.env.TODAY && r.mau === 7 && r.mau_by_surface.web === 4 && r.mau_by_surface.discord === 1 && r.communities.workspaces === 1 && r.communities.guilds === 1 && r.communities.classrooms === 1 && r.rounds_per_player_day === 1.25 && r.share_rate === 0.2'
+expect "GET /api/kpi -> the stored row with surfaces, platforms and engagement" 200 \
+  'r.as_of === process.env.TODAY && r.mau === 7 && r.mau_by_surface.web === 4 && r.mau_by_surface.discord === 1 && r.communities.workspaces === 1 && r.communities.guilds === 1 && r.communities.classrooms === 1 && r.rounds_per_player_day === 1.25 && r.share_rate === 0.2'
 
 echo "== daily tables: counts, idempotency, no IP or user agent, request queries use indexes"
 "${WRANGLER[@]}" d1 execute whosbluffing --local --persist-to "$STATE" --json --command \
@@ -915,10 +907,10 @@ DPAGE=$(cat "$STATE/dare.html")
   && [[ "$DPAGE" == *'<meta property="og:title" content="Ten questions about OpenAI, written for Mr. Altman | Who&#39;s Bluffing?">'* ]] \
   && [[ "$DPAGE" == *'<meta property="og:description" content="Same ten for everyone. Mr. Altman: no score yet.">'* ]] \
   && [[ "$DPAGE" == *'<meta property="og:url" content="https://whosbluffing.com/dare/altman">'* ]] \
-  && [[ "$DPAGE" == *'<p>Mr. Altman: no score yet</p>'* ]] && [[ "$DPAGE" != *'taken it</span>'* ]] && [[ "$DPAGE" == *'<span>best score</span>'* ]] \
+  && [[ "$DPAGE" == *'<p>Mr. Altman: no score yet</p>'* ]] && [[ "$DPAGE" == *'<b>2</b><span>people have taken it</span>'* ]] \
   && [[ "$DPAGE" == *'<script type="module" src="/app.js"></script>'* ]] && [[ "$DPAGE" == *'and it comes off within a day.'* ]] \
   || fail "GET /dare/altman -> 200 with its Open Graph tags, heading, numbers and status" "$(head -c 400 "$STATE/dare.html")"
-pass "GET /dare/altman -> 200: og:title, og:description and og:url of its own, the heading, no count of people, \"Mr. Altman: no score yet\", the game, the opt-out line"
+pass "GET /dare/altman -> 200: og:title, og:description and og:url of its own, the heading, 2 people, \"Mr. Altman: no score yet\", the game, the opt-out line"
 grep -qi '^content-security-policy: default-src' "$STATE/dare_h.txt" && grep -qi '^x-content-type-options: nosniff' "$STATE/dare_h.txt" \
   && grep -qi '^content-type: text/html' "$STATE/dare_h.txt" || fail "dare page security headers" "$(cat "$STATE/dare_h.txt")"
 pass "the dare page carries the CSP, nosniff and text/html headers itself (a Function response)"
@@ -928,8 +920,7 @@ pass "GET /dare/altman -> his portrait (grey while open) and the photo credits"
 META=$(curl -s -o /dev/null -w '%{http_code} %{content_type}' "$BASE/img/dares/altman.jpg")
 [[ "$META" == "200 image/jpeg"* ]] || fail "GET /img/dares/altman.jpg -> 200 image/jpeg" "$META"; pass "GET /img/dares/altman.jpg -> 200 image/jpeg (a static asset)"
 content /dares '<h1>The dare board</h1>' 'the dare board'
-content /dares '<th scope="col">Company or chamber</th><th scope="col">Average score</th>' 'the dare board: no column of people'
-content /dares '<a href="/dare/altman">Sam Altman</a></th><td>OpenAI</td><td>' 'the dare board: Sam Altman, OpenAI'
+content /dares '<a href="/dare/altman">Sam Altman</a></th><td>OpenAI</td><td>2</td>' 'the dare board: Sam Altman, OpenAI, 2 people'
 req GET /dare/nobody
 [ "$STATUS" = 404 ] && [[ "$BODY" == *'<h1>Page not found</h1>'* ]] || fail "GET /dare/nobody -> branded 404" "$BODY"
 pass "GET /dare/nobody -> 404 with the branded page"

@@ -1,11 +1,22 @@
-// The home page (/): the hero's Discord · Slack · Web switch and the question list's pause button. It never prints a
-// count of players. And the live panel, the first section of /stats, graphics with one short label each and no counts:
-// today's room as a calibration chart (from 20 players, else yesterday's, else a grey example), the day's biggest
-// bluffs as stamped receipts (the API sends up to three from 5 players, never who; else two grey examples) and the
-// five types as tiles with a tooltip.
-import { html, api, signed } from './ui.js';
+// The home page (/): the hero's Discord · Slack · Web switch, the question list's pause button and the "N played today"
+// line under Get started (from 100 players in today's ranked round; nothing under that). And the live panel, the first
+// section of /stats, graphics with one short label each: today's room as a calibration chart (from 20 players, else
+// yesterday's, else a grey example), the day's biggest bluffs as stamped receipts (the API sends up to three from 5
+// players, never who; else two grey examples) and the five types as tiles with a tooltip.
+import { html, api, num, signed } from './ui.js';
 
+export const MIN_PLAYERS = 100;
 export const MIN_ROOM = 20;
+
+// "1,204 played today" from MIN_PLAYERS players in today's ranked round (ranked = GET /api/round/stats, or null), else null.
+export const playedLine = (ranked) => (ranked?.players >= MIN_PLAYERS ? `${num(ranked.players)} played today` : null);
+
+export async function renderPlayed(el) {
+  if (!el) return;
+  const r = await api('/api/round/stats');
+  const line = playedLine(r.ok ? r.data : null);
+  if (line) { el.textContent = line; el.hidden = false; }
+}
 
 // The switch over the hero's mocks: a tap shows that surface (styles.css keeps the three in one place).
 export function wireSurfaces(root) {
@@ -53,7 +64,7 @@ export const EXAMPLE_BLUFFS = [{ prompt: 'Which is longer?', pick: 'The Danube',
 // What the chart shows: today's room from MIN_ROOM players, else yesterday's, else null (the page keeps its example).
 export function roomView(today, yesterday) {
   for (const [day, stats] of [['Today', today], ['Yesterday', yesterday]]) {
-    if (stats?.players >= MIN_ROOM) return { points: stats.calibration ?? [], cap: `${day}’s room`, live: day === 'Today' };
+    if (stats?.players >= MIN_ROOM) return { points: stats.calibration ?? [], cap: `${day}’s room · ${num(stats.players)} played`, live: day === 'Today' };
   }
   return null;
 }

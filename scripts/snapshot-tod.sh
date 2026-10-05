@@ -1,10 +1,8 @@
 #!/usr/bin/env bash
 # Records today's public numbers for Truth or Dare Bot and for Who's Bluffing into
 # analysis/traction/YYYY-MM-DD.json (New York date). Re-running the same day overwrites that day's file.
-# No logins: public pages and public JSON, plus one private read of our own: GET /api/kpi needs the header x-kpi-key,
-# taken from the environment variable KPI_KEY (the value is in web/.dev.vars locally; never commit it). Without KPI_KEY
-# that source is null with a note. Any source that fails is null, with the reason in "notes".
-# Usage: KPI_KEY=... bash scripts/snapshot-tod.sh
+# No tokens, no logins: public pages and public JSON only. Any source that fails is null, with the reason in "notes".
+# Usage: bash scripts/snapshot-tod.sh
 set -euo pipefail
 root="$(cd "$(dirname "$0")/.." && pwd)"
 day="$(TZ=America/New_York date +%F)"
@@ -12,21 +10,21 @@ out="$root/analysis/traction/$day.json"
 mkdir -p "$root/analysis/traction"
 
 python3 - "$out.tmp" <<'PY'
-import json, os, re, sys, gzip, datetime, urllib.request, urllib.error
+import json, re, sys, gzip, datetime, urllib.request, urllib.error
 
 TOD_ID = "692045914436796436"           # Truth or Dare app id
 OUR_ID = "1556371051439587461"          # Who's Bluffing? app id (discord/wrangler.toml)
 UA = "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/129.0 Safari/537.36"
 notes = []
 
-def get(url, timeout=30, headers=None):
-    req = urllib.request.Request(url, headers={"User-Agent": UA, "Accept-Language": "en-US,en;q=0.9", **(headers or {})})
+def get(url, timeout=30):
+    req = urllib.request.Request(url, headers={"User-Agent": UA, "Accept-Language": "en-US,en;q=0.9"})
     with urllib.request.urlopen(req, timeout=timeout) as r:
         raw = r.read()
     return (gzip.decompress(raw) if raw[:2] == b"\x1f\x8b" else raw).decode("utf-8", "replace")
 
-def get_json(url, headers=None):
-    return json.loads(get(url, headers=headers))
+def get_json(url):
+    return json.loads(get(url))
 
 def attempt(label, fn):
     try:
@@ -111,14 +109,10 @@ def wb_site_stats():
     return {k: d.get(k) for k in ("n_sessions", "n_answers", "n_countries")} | {"source": url}
 
 def wb_kpi():
-    url = "https://whosbluffing.com/api/kpi"    # private: x-kpi-key
-    key = os.environ.get("KPI_KEY")
-    if not key:
-        notes.append("our /api/kpi: KPI_KEY not set, skipped (it is a private read)")
-        return None
-    d = get_json(url, headers={"x-kpi-key": key})
-    return {"as_of": d.get("as_of"), "mau": d.get("mau"), "dau": d.get("dau"), "communities": d.get("communities"),
-            "total_played": d.get("total_played"), "total_players": d.get("total_players"), "source": url}
+    url = "https://whosbluffing.com/api/kpi"    # also read by /stats
+    d = get_json(url)
+    return {"as_of": d.get("as_of"), "mau": d.get("mau"), "dau": d.get("dau"),
+            "communities": d.get("communities"), "source": url}
 
 snap = {
     "taken_at_utc": datetime.datetime.now(datetime.timezone.utc).strftime("%Y-%m-%dT%H:%M:%SZ"),

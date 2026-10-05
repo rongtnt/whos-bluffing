@@ -128,14 +128,14 @@ export function darePage(template, v, dares) {
   const d = dares.get(v.slug);
   const h1 = `Ten questions about ${d?.topic ?? v.org}, written for ${v.address}`;
   const rival = v.rival && dares.get(v.rival.slug);
-  const rivalCard = rival ? `<div class="card dare-rival"><p><a href="/dare/${v.rival.slug}">${esc(v.rival.address)}’s round</a>: ${
-    v.rival.players ? `average ${avg(v.rival.mean_score)}; ` : ''}${statusLine(rival)}</p></div>` : '';
+  const rivalCard = rival ? `<div class="card dare-rival"><p><a href="/dare/${v.rival.slug}">${esc(v.rival.address)}’s round</a>: ${num(v.rival.players)} taken${
+    v.rival.players ? `, average ${avg(v.rival.mean_score)}` : ''}; ${statusLine(rival)}</p></div>` : '';
   const main = `<section class="hero" aria-labelledby="hero-title">
   <div class="wrap">
     <p class="eyebrow">A dare</p>
     <h1 id="hero-title">${esc(h1)}</h1>
     <p class="hero-sub">Same ten for everyone. Being sure only pays when you're right.</p>
-    <div class="tiles dare-tiles">${tile(v.best == null ? '–' : num(v.best), 'best score')}${tile(avg(v.mean_score), 'average score')}</div>
+    <div class="tiles dare-tiles">${tile(num(v.players), v.players === 1 ? 'person has taken it' : 'people have taken it')}${tile(v.best == null ? '–' : num(v.best), 'best score')}${tile(avg(v.mean_score), 'average score')}</div>
     <div class="card dare-status">${face(v.name, d?.avatar, v.status, 64)}<div><p>${statusLine(v)}</p>${v.dare_url ? `<p class="fine">Read <a href="${esc(v.dare_url)}" rel="noopener noreferrer">the dare</a> on X.</p>` : ''}</div></div>
     <div class="actions"><button class="primary" id="play" type="button" data-play>${PLAY_ICON}<span>Play</span></button></div>
     <p class="fine">About a minute. Anonymous: no account, no tracking. Your answers go into a public research dataset.</p>
@@ -160,7 +160,7 @@ export function darePage(template, v, dares) {
 export function boardPage(template, v, dares) {
   const row = (e) => {
     const d = dares.get(e.slug);
-    return `<tr><th scope="row">${face(e.name, d?.avatar, e.status, 32)}<a href="/dare/${e.slug}">${esc(e.name)}</a></th><td>${esc(e.org)}</td><td>${avg(e.mean_score)}</td><td>${boardStatus(e)}</td><td>${
+    return `<tr><th scope="row">${face(e.name, d?.avatar, e.status, 32)}<a href="/dare/${e.slug}">${esc(e.name)}</a></th><td>${esc(e.org)}</td><td>${num(e.players)}</td><td>${avg(e.mean_score)}</td><td>${boardStatus(e)}</td><td>${
       d?.dare_url ? `<a href="${esc(d.dare_url)}" rel="noopener noreferrer">the dare</a>` : '–'}</td></tr>`;
   };
   const sentence = 'Each person got ten questions about their own field. Everyone can take the same ten. The board shows who has answered.';
@@ -173,8 +173,8 @@ export function boardPage(template, v, dares) {
 <section class="section dare-board" aria-label="Dares">
   <div class="wrap">
     <div class="dare-scroll"><table class="vs dare-table">
-      <thead><tr><th scope="col">Person</th><th scope="col">Company or chamber</th><th scope="col">Average score</th><th scope="col">Status</th><th scope="col">The dare</th></tr></thead>
-      <tbody>${v.dares.map(row).join('\n') || '<tr><td colspan="5">No dares yet.</td></tr>'}</tbody>
+      <thead><tr><th scope="col">Person</th><th scope="col">Company or chamber</th><th scope="col">People who have taken it</th><th scope="col">Average score</th><th scope="col">Status</th><th scope="col">The dare</th></tr></thead>
+      <tbody>${v.dares.map(row).join('\n') || '<tr><td colspan="6">No dares yet.</td></tr>'}</tbody>
     </table></div>
     <p class="fine">${OPT_OUT}</p>
     ${credits(v.dares.map((e) => ({ name: e.name, credit: dares.get(e.slug)?.credit })))}

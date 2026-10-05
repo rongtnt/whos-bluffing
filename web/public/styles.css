@@ -200,7 +200,7 @@ label input, label select { font-weight: 400; }
 .card > :first-child { margin-top: 0; }
 .card > :last-child { margin-bottom: 0; }
 .counters, .tiles { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 8px; margin: 16px 0; }
-.tiles, .counters-2 { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+.tiles { grid-template-columns: repeat(2, minmax(0, 1fr)); }
 @media (min-width: 520px) { .tiles { grid-template-columns: repeat(4, minmax(0, 1fr)); } }
 .counters > div, .tile { padding: 14px 10px; text-align: center; background: var(--surface); border: 1px solid var(--border); border-radius: var(--radius); }
 .counters b, .tile b { display: block; font-size: var(--fs-3); font-weight: 800; line-height: 1.15; letter-spacing: -0.01em; }
@@ -641,6 +641,7 @@ button.pick:hover { border-color: var(--accent); }
 @media (min-width: 900px) { .band-start { padding: 136px 0 144px; } }
 .band-start p { margin: 0 auto; }
 .band-start .actions { justify-content: center; margin-top: 28px; }
+.band-start .played { margin-top: 18px; font-size: var(--fs-6); font-weight: 600; }
 
 /* The live panel, the first section of /stats (home.js): today's room (from 20 players), the day's biggest bluffs (the
    API sends them from 5 players) and the five types. The feed's height is fixed per breakpoint and home.js fills it in
@@ -853,7 +854,7 @@ button.pick:hover { border-color: var(--accent); }
 /* The member in the Discord mock is the owner, with his real avatar. */
 img.dc-avatar { display: block; object-fit: cover; }
 /* dares */
-.dare-tiles { grid-template-columns: repeat(2, minmax(0, 1fr)); max-width: 23em; }
+.dare-tiles { grid-template-columns: repeat(3, minmax(0, 1fr)); max-width: 34em; }
 .dare-status, .dare-rival { max-width: 34em; }
 .dare-status p, .dare-rival p { margin: 0; }
 .dare-status p + p { margin-top: 6px; }

@@ -14,7 +14,7 @@ import { initPicker, quickLabel, shareWith } from './picker.js';
 import { pickReaction, bestLine } from './reactions.js';
 import { createSound } from './sound.js';
 import { countTo, raceTo, confetti } from './motion.js';
-import { resultGrid, wireGrid, fmtValue, fmtPoints, boardOf, sideBlock, wireSide, savedSide, withSideLine, dareDone } from './round-end.js';
+import { resultGrid, wireGrid, fmtValue, fmtPoints, boardOf, sideBlock, wireSide, savedSide, withSideLine, dareRankLabel, dareDone } from './round-end.js';
 import { typeName } from './types.js';
 
 export { fmtValue, fmtPoints };
@@ -72,7 +72,7 @@ export function scoreChart(stats, mine, title) {
     const h = r1(((H - T - B) * c) / max);
     const from = stats.bin_from + k * stats.bin_width;
     const isMine = mine != null && k === binOf(mine);
-    return html`<rect class="bar anim anim-grow${isMine ? ' mine' : ''}" x="${r1(L + j * bw + 1)}" y="${r1(H - B - h)}" width="${r1(Math.max(1, bw - 2))}" height="${h}"><title>${from} to ${from + stats.bin_width - 1}</title></rect>
+    return html`<rect class="bar anim anim-grow${isMine ? ' mine' : ''}" x="${r1(L + j * bw + 1)}" y="${r1(H - B - h)}" width="${r1(Math.max(1, bw - 2))}" height="${h}"><title>${from} to ${from + stats.bin_width - 1}: ${c}</title></rect>
 ${j % every === 0 ? html`<text class="axis" x="${r1(L + j * bw + bw / 2)}" y="${H - 8}" text-anchor="middle">${from}</text>` : ''}`;
   });
   return html`<svg class="chart" viewBox="0 0 ${W} ${H}" role="img" aria-label="${title}"><title>${title}</title>${bars}</svg>`;
@@ -300,13 +300,15 @@ async function finish(ctx, st) {
   return showEnd(ctx, st, r.data);
 }
 
-// The end screen's two tiles, streak and share right (no rank: the pages never print a count of players); the numbers
-// count up from 0 (data-to).
+// The end screen's three tiles; the numbers count up from 0 (data-to).
 function counters(t, res) {
-  const tile = (to, suffix, label) => html`<div><b class="anim" data-to="${to}" data-prefix="" data-suffix="${suffix}">${to}${suffix}</b><span>${label}</span></div>`;
-  return html`<div class="counters counters-2">
-  ${tile(res.streak, '', t('rounds.streak'))}
-  ${tile(Math.round(res.accuracy), '%', t('rounds.right_label'))}
+  const tile = (to, prefix, suffix, label) => html`<div><b class="anim" data-to="${to}" data-prefix="${prefix}" data-suffix="${suffix}">${prefix}${to}${suffix}</b><span>${label}</span></div>`;
+  return html`<div class="counters">
+  ${tile(res.streak, '', '', t('rounds.streak'))}
+  ${res.rank_today ? tile(res.rank_today, '#', '', t('rounds.rank_of', { players: res.players_today }))
+    : res.dare ? tile(res.rank, '#', '', dareRankLabel(res.players, res.dare.address))
+      : html`<div><b>–</b><span>${t('rounds.rank_quick')}</span></div>`}
+  ${tile(Math.round(res.accuracy), '', '%', t('rounds.right_label'))}
 </div>`;
 }
 
@@ -415,7 +417,7 @@ async function leaderboard(ctx, el, fresh) {
   const mine = store.get(RANKED_KEY, {})[s.date] ?? null;
   el.innerHTML = s.players
     ? html`<h3 class="anim anim-slide">${t('rounds.board_title')}</h3>
-<p class="anim anim-slide">${t('rounds.board_line', { x: signed(Math.round(s.mean_overconfidence)) })}</p>
+<p class="anim anim-slide">${t('rounds.board_line', { players: s.players.toLocaleString('en-US'), x: signed(Math.round(s.mean_overconfidence)) })}</p>
 <figure class="anim anim-slide">${scoreChart(s, mine, t('rounds.board_chart'))}<figcaption>${mine == null ? t('rounds.board_play') : t('rounds.board_you', { score: fmtTotal(mine) })}</figcaption></figure>`
     : html`<h3 class="anim anim-slide">${t('rounds.board_title')}</h3><p class="anim anim-slide">${t('rounds.board_empty')}</p>`;
 }

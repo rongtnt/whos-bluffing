@@ -224,7 +224,6 @@ test('complete: every pair first; scores, type, share text, challenge link; coun
   assert.deepEqual(again.body, r.body); // same play, same token, not counted twice
   assert.equal((await db.prepare('SELECT nickname FROM round_plays WHERE anon_id = ?').bind(anon('a')).first()).nickname, 'Sam B');
   assert.equal((await roundStats(db, DATA, DAY, NOW)).body.players, 1);
-  assert.ok(!('total_played' in (await roundStats(db, DATA, DAY, NOW)).body), 'service totals live in the private /api/kpi only');
   const b = await playRound(db, 'b', `rk-${DAY}`, ids, all(1), { conf: () => 50 }); // all right at 50%: 0 points, no roast
   assert.deepEqual([b.body.score, b.body.type, b.body.rank_today, b.body.players_today, 'roast' in b.body], [0, 'Hedger', 1, 2, false]);
   assert.equal((await complete(db, DATA, { round_id: `rk-${DAY}`, anon_id: anon('a'), surface: 'web' }, NOW, ORIGIN)).body.rank_today, 2);

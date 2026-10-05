@@ -4,12 +4,12 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <title>Status | Who's Bluffing?</title>
-<meta name="description" content="Live status of Who's Bluffing: whether the game server answers, checked each time the page opens.">
+<meta name="description" content="Live status of Who's Bluffing: whether the game server answers, when the daily numbers last ran, and the latest player and community counts.">
 <link rel="canonical" href="https://whosbluffing.com/status">
 <meta property="og:type" content="website">
 <meta property="og:site_name" content="Who's Bluffing?">
 <meta property="og:title" content="Status | Who's Bluffing?">
-<meta property="og:description" content="Live status of Who's Bluffing: whether the game server answers, checked each time the page opens.">
+<meta property="og:description" content="Live status of Who's Bluffing: whether the game server answers, when the daily numbers last ran, and the latest player and community counts.">
 <meta property="og:url" content="https://whosbluffing.com/status">
 <meta property="og:image" content="https://whosbluffing.com/og.png">
 <meta property="og:image:width" content="1200">
@@ -47,7 +47,7 @@
 <section class="page-head wrap">
   <p class="eyebrow">Status</p>
   <h1>Status</h1>
-  <p class="lead">Is the game up? This page checks live each time it opens.</p>
+  <p class="lead">Is the game up, and what do the latest numbers say? This page checks live each time it opens.</p>
 </section>
 <section class="wrap status" aria-label="Current status">
   <div class="status-grid">
@@ -56,7 +56,20 @@
       <p class="status-line"><span class="status-dot" data-api-dot></span><span data-api-text>Checking…</span></p>
       <p class="muted small">One request to <code>/api/round/stats</code>, the public read behind today’s leaderboard.</p>
     </article>
+    <article class="status-card">
+      <h2>Daily numbers</h2>
+      <p class="status-line"><span class="status-dot" data-kpi-dot></span><span data-kpi-text>Checking…</span></p>
+      <p class="muted small">The KPI job runs once a day after 00:10 UTC and counts the day before.</p>
+    </article>
   </div>
+  <div class="tiles" aria-live="polite">
+    <div class="tile"><b data-kpi="mau">–</b><span>monthly players</span></div>
+    <div class="tile"><b data-kpi="dau">–</b><span>daily players</span></div>
+    <div class="tile"><b data-kpi="communities">–</b><span>communities</span></div>
+    <div class="tile"><b data-kpi="ranked">–</b><span>played today’s ranked round</span></div>
+    <div class="tile"><b data-kpi="total">–</b><span>rounds played, all time, every surface</span></div>
+  </div>
+  <p class="fine">Monthly players: anonymous ids with a finished round, full assessment or chat answer in the last 30 days; someone who plays on two surfaces, say the web and Discord, counts twice. <a href="/research#numbers">Definitions</a> · <a href="/stats">All the numbers</a></p>
   <h2 class="status-sub">Tests</h2>
   <p>Every change runs the full test suite before it ships. <a href="/status" data-actions hidden>See the latest runs on GitHub Actions</a><span data-actions-soon>The runs will be linked here once the repository is public.</span></p>
 </section>
