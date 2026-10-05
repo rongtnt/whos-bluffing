@@ -1,5 +1,6 @@
-// Public stats page: player counts and engagement from the daily KPI job (/api/kpi), today's ranked round
-// (/api/round/stats), and the full assessment's counters and calibration curve (/api/stats, passed sessions only).
+// Public stats page, under its title and the live panel (stats.html, home.js): player counts and engagement from the
+// daily KPI job (/api/kpi), today's ranked round (/api/round/stats), and the full assessment's counters and calibration
+// curve (/api/stats, passed sessions only).
 import { html, api, pct, signed, num, calibrationChart, chartLabels } from './ui.js';
 import { scoreChart } from './rounds.js';
 
@@ -70,14 +71,13 @@ function testSection(t, d) {
 
 export async function renderStats(ctx) {
   const { app, t } = ctx;
-  app.innerHTML = html`<h1>${t('stats.title')}</h1><p class="muted">…</p>`;
+  app.innerHTML = html`<p class="muted">…</p>`;
   const [kpi, ranked, stats] = await Promise.all([api('/api/kpi'), api('/api/round/stats'), api('/api/stats')]);
   if (!kpi.ok && !stats.ok) {
-    app.innerHTML = html`<h1>${t('stats.title')}</h1><p class="msg">${t('stats.failed')}</p>`;
+    app.innerHTML = html`<p class="msg">${t('stats.failed')}</p>`;
     return;
   }
-  app.innerHTML = html`<h1>${t('stats.title')}</h1>
-${kpi.ok ? html`<section>${kpiSection(t, kpi.data)}</section><section>${engagementSection(t, kpi.data)}</section>` : ''}
+  app.innerHTML = html`${kpi.ok ? html`<section>${kpiSection(t, kpi.data)}</section><section>${engagementSection(t, kpi.data)}</section>` : ''}
 ${ranked.ok ? html`<section>${rankedSection(t, ranked.data)}</section>` : ''}
 ${stats.ok ? html`<section>${testSection(t, stats.data)}</section>` : ''}`;
 }

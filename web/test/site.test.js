@@ -1,10 +1,11 @@
 // Static site checks: the Markdown converter behind /privacy, /terms and /docs/api; every page's head, shared header
-// and footer, sitemap entry and CSP-safe markup; the MAU definition on /research; the social-proof threshold on /.
+// and footer, sitemap entry and CSP-safe markup; the MAU definition on /research; the home page's copy, sections and
+// "played today" threshold; the live panel on /stats and the FAQ on /support.
 import { test } from 'node:test';
 import assert from 'node:assert/strict';
 import { readFileSync, readdirSync } from 'node:fs';
 import { markdown, inline, renderPage, DOCS } from '../scripts/sync-docs.js';
-import { proofTiles, MIN_PLAYERS, MIN_ROOM, roomView, roomChart, receipt, EXAMPLE_ROOM, EXAMPLE_BLUFFS } from '../public/home.js';
+import { playedLine, MIN_PLAYERS, MIN_ROOM, roomView, roomChart, receipt, EXAMPLE_ROOM, EXAMPLE_BLUFFS } from '../public/home.js';
 import { TYPES } from '../functions/_rounds.js';
 import { typeName } from '../public/types.js';
 
@@ -69,16 +70,47 @@ test('/research quotes the MAU and community definitions from PREREG word for wo
   assert.ok(research.includes(`<p>${prereg.match(/^- (Communities: .*)$/m)[1]}</p>`), 'Communities definition');
 });
 
-test('social proof: nothing below 100 monthly players; tiles leave out numbers that are missing', () => {
-  const kpi = { mau: MIN_PLAYERS, communities: { workspaces: 3, guilds: 2, rooms: 0, classrooms: 1 } };
-  assert.equal(proofTiles({ ...kpi, mau: MIN_PLAYERS - 1 }, null, null), null);
-  assert.equal(proofTiles(null, null, null), null);
-  assert.deepEqual(proofTiles(kpi, { n_countries: 1234 }, { players: 4040 }),
-    [['100', 'monthly players'], ['1,234', 'countries'], ['6', 'communities'], ['4,040', 'played today’s ranked round']]);
-  assert.deepEqual(proofTiles({ ...kpi, mau: 2500 }, null, { players: 0 }).map(([, label]) => label), ['monthly players', 'communities']);
+test('played today: from 100 players in today\'s ranked round, never a number under it', () => {
+  assert.equal(MIN_PLAYERS, 100);
+  assert.equal(playedLine(null), null); // the stats request failed
+  assert.equal(playedLine({ players: MIN_PLAYERS - 1 }), null);
+  assert.equal(playedLine({ players: 100 }), '100 played today');
+  assert.equal(playedLine({ players: 4040 }), '4,040 played today');
+  assert.match(read(new URL('index.html', PUBLIC)), /<p class="played" data-played hidden><\/p>/);
 });
 
-test('live panel: the room chart from 20 players (today, else yesterday, else the grey example), stamped receipts, five type tiles', () => {
+// Visible text of a page: no head, scripts, comments or tags.
+const visible = (h) => h.replace(/<head>[\s\S]*?<\/head>|<!--[\s\S]*?-->|<svg[\s\S]*?<\/svg>|<!doctype html>/gi, ' ').replace(/<[^>]+>/g, ' ');
+const words = (text) => text.trim().split(/\s+/).length;
+
+test('home page: one headline and short copy per section, in the house register; the old sections are gone', () => {
+  const home = read(new URL('index.html', PUBLIC));
+  assert.match(home, /<h1 id="hero-title">Who's <span class="h1-accent">bluffing<\/span>\?<\/h1>/);
+  assert.match(home, /<p class="hero-sub">[^<]+<\/p>\n {6}<p class="hero-note">Every answer comes with a source, so you learn as you play\. One round a day keeps you up to date on AI\.<\/p>/);
+  assert.equal([...home.match(/<div class="home-copy">[\s\S]*?<div class="actions">/)[0].matchAll(/<p /g)].length, 2, 'the hero copy: the sentence and the note');
+  assert.match(home, /<button class="primary" id="play" type="button" data-play>/);
+  const budgets = [ // [paragraph, at most this many words]
+    [/<p class="hero-sub">([^<]+)<\/p>/, 16], [/id="reveal-title">[^<]+<\/h2>\s*<p>([^<]+)<\/p>/, 30],
+    [/id="packs-title">[^<]+<\/h2>\s*<p>([^<]+)<\/p>/, 25], [/questions, each with a source<\/h2>\s*<p>([^<]+)<\/p>/, 20],
+    [/id="start-title">[^<]+<\/h2>\s*<p>([^<]+)<\/p>/, 20],
+  ];
+  for (const [re, most] of budgets) {
+    const text = home.match(re)?.[1];
+    assert.ok(text && words(text) <= most, `"${text}" is over ${most} words`);
+  }
+  assert.equal([...home.matchAll(/<h2 id="[a-z]+-title">/g)].length, 4);
+  const text = visible(home.replace(/<!-- prompts -->[\s\S]*<!-- \/prompts -->/, '')); // the prompts are the game's data, not copy
+  assert.doesNotMatch(text, /calibrat|open source|—|!|\b(first|largest|best)\b/i);
+  for (const gone of ['class="live"', 'id="faq"', 'id="how"', 'id="ways"', 'id="open"', 'id="proof"', 'premium']) assert.ok(!home.includes(gone), gone);
+});
+
+test('the FAQ lives on /support under "Answers that may help", and nothing links to /#faq any more', () => {
+  const support = read(new URL('support.html', PUBLIC));
+  assert.match(support, /<h2 id="faq">Answers that may help<\/h2>\n {2}<div class="faq">(\n {4}<details><summary>[^<]+<\/summary><p>[\s\S]+?<\/p><\/details>){8}\n {2}<\/div>/);
+  for (const file of pages) assert.ok(!read(new URL(file, PUBLIC)).includes('href="/#faq"'), file);
+});
+
+test('live panel (the first section of /stats): the room chart from 20 players (today, else yesterday, else the grey example), stamped receipts, five type tiles', () => {
   assert.equal(MIN_ROOM, 20);
   const calibration = [50, 60, 70, 80, 90, 100].map((conf, k) => ({ conf, n: k ? 10 * k : 0, right: 4 * k }));
   assert.equal(roomView(null, null), null); // the stats request failed: the page keeps its example
@@ -92,9 +124,11 @@ test('live panel: the room chart from 20 players (today, else yesterday, else th
   assert.match(String(roomChart(EXAMPLE_ROOM, { example: true })), /^<svg class="room-chart is-example"/);
   assert.equal(String(receipt({ prompt: 'Which came first?', pick: 'Tesla & Co', conf: 100, points: -300 })),
     '<li class="receipt"><span class="receipt-q">Which came first?</span><span class="receipt-pick"><s>Tesla &amp; Co</s><b>−300</b></span><span class="stamp stamp-bluff" data-stake="100">BLUFF</span></li>');
-  const home = read(new URL('index.html', PUBLIC));
-  assert.ok(home.includes(`<div class="room-box" data-room-chart>${roomChart(EXAMPLE_ROOM, { example: true })}</div>`), 'the static example chart is the builder\'s');
-  assert.ok(home.includes(`<ol class="receipts is-example" data-receipts>${EXAMPLE_BLUFFS.map(receipt).join('')}</ol>`), 'the static example receipts are the builder\'s');
-  assert.equal([...home.matchAll(/<figcaption class="live-cap" data-(?:room|receipts)-cap>Example<\/figcaption>/g)].length, 2);
-  assert.deepEqual([...home.matchAll(/<button type="button" class="type-tile" data-type="[a-z-]+" aria-pressed="false"><svg [^>]+><path d="[^"]+"\/><\/svg><span>([^<]+)<\/span><span class="type-band" aria-hidden="true">(?:<i><\/i>){5}<\/span><span class="type-tip">[^<]+<\/span><\/button>/g)].map((m) => m[1]), TYPES.map(typeName)); // the names players read (public/types.js)
+  const stats = read(new URL('stats.html', PUBLIC));
+  assert.match(stats, /<main id="main">\n<div class="stats-top">\n {2}<h1>Live stats<\/h1>\n {2}<section class="live" aria-labelledby="live-title" data-live>/);
+  assert.ok(stats.indexOf('data-live') < stats.indexOf('<div id="app">'));
+  assert.ok(stats.includes(`<div class="room-box" data-room-chart>${roomChart(EXAMPLE_ROOM, { example: true })}</div>`), 'the static example chart is the builder\'s');
+  assert.ok(stats.includes(`<ol class="receipts is-example" data-receipts>${EXAMPLE_BLUFFS.map(receipt).join('')}</ol>`), 'the static example receipts are the builder\'s');
+  assert.equal([...stats.matchAll(/<figcaption class="live-cap" data-(?:room|receipts)-cap>Example<\/figcaption>/g)].length, 2);
+  assert.deepEqual([...stats.matchAll(/<button type="button" class="type-tile" data-type="[a-z-]+" aria-pressed="false"><svg [^>]+><path d="[^"]+"\/><\/svg><span>([^<]+)<\/span><span class="type-band" aria-hidden="true">(?:<i><\/i>){5}<\/span><span class="type-tip">[^<]+<\/span><\/button>/g)].map((m) => m[1]), TYPES.map(typeName)); // the names players read (public/types.js)
 });

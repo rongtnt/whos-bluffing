@@ -10,3 +10,6 @@ web/functions/_items.json
 anki/src/whosbluffing/user_files/
 .dev.vars
 .cache/
+
+# Agent worktrees (local only)
+.claude/worktrees/

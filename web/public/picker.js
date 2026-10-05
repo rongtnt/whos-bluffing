@@ -1,6 +1,7 @@
-// Pack and difficulty for quick rounds: the chips and the segment in the home hero (index.html; scripts/sync-pages.js
-// writes the chips with the difficulties each pack has enough questions for). The choice is kept in localStorage, and
-// ?pack= and ?difficulty= in the address pick one for a link. The ranked round ignores both.
+// Pack and difficulty for quick rounds: the chips and the segment in the home page's packs band (index.html;
+// scripts/sync-pages.js writes the chips with the difficulties each pack has enough questions for). The choice is kept
+// in localStorage, ?pack= and ?difficulty= in the address pick one for a link, and a tap writes them into the address,
+// so the link remembers the pick. The ranked round ignores both.
 import { store } from './ui.js';
 import { PACKS, DEFAULT_PACK, DEFAULT_DIFFICULTY, packLabel, difficultyLabel } from './packs.js';
 import { typeName } from './types.js';
@@ -45,8 +46,9 @@ function offerFrom(chips) {
   return Object.fromEntries(chips.map((c) => [c.dataset.pack, c.dataset.difficulties.split(' ')]));
 }
 
-// Wires the hero's picker (if the page has one) and returns {current()}: the choice for the next quick round.
-export function initPicker(doc = document) {
+// Wires the page's picker (if it has one) and returns {current()}: the choice for the next quick round. onPick runs
+// after each tap.
+export function initPicker(doc = document, { onPick } = {}) {
   const chips = [...doc.querySelectorAll('[data-pack]')];
   const levels = [...doc.querySelectorAll('[data-difficulty]')];
   const line = doc.querySelector('[data-difficulty-line]');
@@ -76,6 +78,11 @@ export function initPicker(doc = document) {
     store.set(DIFFICULTY_KEY, state.difficulty);
     paint();
     if (status) status.textContent = next.note;
+    const url = new URL(location.href); // other parameters (a class code) stay
+    url.searchParams.set('pack', state.pack);
+    url.searchParams.set('difficulty', state.difficulty);
+    history.replaceState(history.state, '', url);
+    onPick?.();
   };
   for (const c of chips) c.addEventListener('click', () => apply({ pack: c.dataset.pack }));
   for (const b of levels) b.addEventListener('click', () => apply({ difficulty: b.dataset.difficulty }));

@@ -3,12 +3,12 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
-<title>Who's Bluffing? — Find out who's bluffing.</title>
+<title>Who's Bluffing? Find out who's bluffing.</title>
 <meta name="description" content="A one-minute game: ten either-or questions. Say how sure you are and find out whether your confidence matches what you know.">
 <link rel="canonical" href="https://whosbluffing.com/">
 <meta property="og:type" content="website">
 <meta property="og:site_name" content="Who's Bluffing?">
-<meta property="og:title" content="Who's Bluffing? — Find out who's bluffing.">
+<meta property="og:title" content="Who's Bluffing? Find out who's bluffing.">
 <meta property="og:description" content="A one-minute game: ten either-or questions. Say how sure you are and find out whether your confidence matches what you know.">
 <meta property="og:url" content="https://whosbluffing.com/">
 <meta property="og:image" content="https://whosbluffing.com/og.png">
@@ -45,16 +45,105 @@
   </div>
 </header>
 <main id="main">
-<section class="hero" aria-labelledby="hero-title">
-  <div class="wrap hero-grid hero-home">
-    <div class="hero-main">
+<section class="hero home-hero" aria-labelledby="hero-title">
+  <div class="wrap home-grid">
+    <div class="home-copy">
       <svg class="mark hero-mark anim" data-mark viewBox="0 0 38 44" aria-hidden="true" focusable="false"><g transform="rotate(-14 16.5 20)"><rect class="back" x="4.00" y="2.50" width="25" height="35" rx="5.5"/></g><g transform="rotate(9 22.5 24)"><rect class="front" x="10.00" y="6.50" width="25" height="35" rx="5.5"/><g transform="rotate(45 22.5 24)"><rect class="pip" x="17.75" y="19.25" width="9.5" height="9.5" rx="1.6"/></g></g></svg>
-      <h1 id="hero-title">Who's bluffing?</h1>
-      <p class="hero-sub">Think you know things? Ten questions, about a minute. Stake how sure you are: being sure only pays when you're right.</p>
+      <h1 id="hero-title">Who's <span class="h1-accent">bluffing</span>?</h1>
+      <p class="hero-sub">Ten questions. Stake how sure you are. Being sure only pays when you're right.</p>
+      <p class="hero-note">Every answer comes with a source, so you learn as you play. One round a day keeps you up to date on AI.</p>
+      <div class="actions">
+        <button class="primary" id="play" type="button" data-play><svg class="i i-fill" viewBox="0 0 24 24" aria-hidden="true" focusable="false"><path d="M8 5.6v12.8a.6.6 0 0 0 .92.5l10.08-6.4a.6.6 0 0 0 0-1L8.92 5.1a.6.6 0 0 0-.92.5z"/></svg><span>Play now</span></button>
+        <a class="button" href="/discord"><svg class="i" viewBox="0 0 24 24" aria-hidden="true" focusable="false"><path d="M4 5.5h11a2 2 0 0 1 2 2V13a2 2 0 0 1-2 2H9l-4 3.5V15H4a2 2 0 0 1-2-2V7.5a2 2 0 0 1 2-2z"/><path d="M19.5 9.5H20a2 2 0 0 1 2 2V17a2 2 0 0 1-2 2h-1v3l-3.5-3H12"/></svg><span>Add to Discord</span></a>
+      </div>
+      <a class="text-link" href="/slack"><span>Add to Slack</span><svg class="i" viewBox="0 0 24 24" aria-hidden="true" focusable="false"><path d="M5 12h14M13 6l6 6-6 6"/></svg></a>
+    </div>
+    <div class="home-demo" data-surfaces data-show="discord">
+      <div class="seg surfaces" role="group" aria-label="Show the game in">
+        <button type="button" data-surface="discord" aria-pressed="true">Discord</button>
+        <button type="button" data-surface="slack" aria-pressed="false">Slack</button>
+        <button type="button" data-surface="web" aria-pressed="false">Web</button>
+      </div>
+      <div class="mocks">
+        <div class="mock" data-mock="discord" role="img" aria-label="In Discord: the bot posts today's question, the Nile or the Danube, with an A and a B button. You tap A and say how sure you are in a reply only you can see. Maya writes: called it.">
+          <div class="dc-msg">
+            <span class="dc-avatar"><svg viewBox="0 0 64 64" aria-hidden="true" focusable="false"><rect width="64" height="64" fill="#111827"/><g transform="translate(13.207 10.240) scale(0.9891)"><g transform="rotate(-14 16.5 20)"><rect x="4.00" y="2.50" width="25" height="35" rx="5.5" fill="#7A95FF"/></g><g transform="rotate(9 22.5 24)"><rect x="10.00" y="6.50" width="25" height="35" rx="5.5" fill="#F5F3EE"/><g transform="rotate(45 22.5 24)"><rect x="17.75" y="19.25" width="9.5" height="9.5" rx="1.6" fill="#111827"/></g></g></g></svg></span>
+            <div class="dc-body">
+              <p class="dc-head"><b>Who's Bluffing</b><span class="dc-tag">BOT</span><span class="dc-time">Today at 14:00</span></p>
+              <p><b>Who's Bluffing?</b> · Which is longer: the Nile or the Danube?</p>
+              <p class="dc-sub">Tap A or B, then say how sure you are. Answer at 20:00.</p>
+              <p class="dc-row"><span class="dc-btn dc-press anim">A · the Nile</span><span class="dc-btn">B · the Danube</span></p>
+              <div class="dc-private">
+                <p class="dc-only"><svg class="i" viewBox="0 0 24 24" aria-hidden="true" focusable="false"><path d="M2.5 12S6 5.5 12 5.5 21.5 12 21.5 12 18 18.5 12 18.5 2.5 12 2.5 12z"/><circle cx="12" cy="12" r="2.8"/></svg>Only you can see this</p>
+                <p>You picked <b>A</b>. Say how sure you are.</p>
+                <p class="dc-row dc-conf"><span>50% · coin flip</span><span>60%</span><span>70%</span></p>
+                <p class="dc-row dc-conf"><span>80%</span><span class="dc-pick anim">90%</span><span>100% · stake it all</span></p>
+              </div>
+            </div>
+          </div>
+          <div class="dc-msg">
+            <span class="dc-avatar dc-member" aria-hidden="true">M</span>
+            <div class="dc-body">
+              <p class="dc-head"><b>Maya</b><span class="dc-time">Today at 14:02</span></p>
+              <p>called it.</p>
+            </div>
+          </div>
+        </div>
+        <div class="mock" data-mock="slack" role="img" aria-label="In Slack: the app posts today's question, the Nile or the Danube, with an A and a B button and a line saying that nobody sees your answer before the reveal.">
+          <div class="sk-msg">
+            <span class="sk-avatar"><svg viewBox="0 0 64 64" aria-hidden="true" focusable="false"><rect width="64" height="64" fill="#111827"/><g transform="translate(13.207 10.240) scale(0.9891)"><g transform="rotate(-14 16.5 20)"><rect x="4.00" y="2.50" width="25" height="35" rx="5.5" fill="#7A95FF"/></g><g transform="rotate(9 22.5 24)"><rect x="10.00" y="6.50" width="25" height="35" rx="5.5" fill="#F5F3EE"/><g transform="rotate(45 22.5 24)"><rect x="17.75" y="19.25" width="9.5" height="9.5" rx="1.6" fill="#111827"/></g></g></g></svg></span>
+            <div class="sk-body">
+              <p class="sk-head"><b>Who's Bluffing</b><span class="sk-tag">APP</span><span class="sk-time">14:00</span></p>
+              <p><b>Who's Bluffing?</b> · Which is longer: the Nile or the Danube?</p>
+              <p class="sk-row"><span>A · the Nile</span><span>B · the Danube</span></p>
+              <p class="sk-context">Tap A or B, then say how sure you are. Nobody sees your answer before the reveal: today 20:00.</p>
+            </div>
+          </div>
+        </div>
+        <div class="mock mock-web" data-mock="web" role="img" aria-label="On the web: question 4 of 10, the Nile against the Danube as two cards with A picked, and the confidence row from 50% to 100% with 90% chosen.">
+          <div class="demo-top"><span class="demo-bar"><i></i></span><span>4 of 10</span></div>
+          <p class="demo-q">Which is longer?</p>
+          <div class="demo-picks"><span class="is-picked"><b>A</b><span>The Nile</span></span><span><b>B</b><span>The Danube</span></span></div>
+          <p class="demo-hint">Say how sure you are.</p>
+          <div class="demo-conf"><span>50%</span><span>60%</span><span>70%</span><span>80%</span><span class="on">90%</span><span>100%</span></div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+<div id="app"></div>
+<noscript><p class="wrap">The game needs JavaScript. The rest of this page works without it.</p></noscript>
+<div class="after-app">
+  <section class="band band-reveal" aria-labelledby="reveal-title">
+    <div class="wrap band-grid">
+      <div class="band-copy">
+        <h2 id="reveal-title">Then the reveal</h2>
+        <p>At reveal time the post shows the answer with its source, how the room split, the top five, and the bluff of the day.</p>
+      </div>
+      <div class="mock mock-reveal" role="img" aria-label="In Discord, at reveal time: the same post now shows the Nile, 6,650 km, as the answer, the Danube at 2,850 km, each with a source link; 12 answered, 75% A and 25% B; the top five; and the line: Someone was 90% sure the Danube is longer. It isn't.">
+        <div class="dc-msg">
+          <span class="dc-avatar"><svg viewBox="0 0 64 64" aria-hidden="true" focusable="false"><rect width="64" height="64" fill="#111827"/><g transform="translate(13.207 10.240) scale(0.9891)"><g transform="rotate(-14 16.5 20)"><rect x="4.00" y="2.50" width="25" height="35" rx="5.5" fill="#7A95FF"/></g><g transform="rotate(9 22.5 24)"><rect x="10.00" y="6.50" width="25" height="35" rx="5.5" fill="#F5F3EE"/><g transform="rotate(45 22.5 24)"><rect x="17.75" y="19.25" width="9.5" height="9.5" rx="1.6" fill="#111827"/></g></g></g></svg></span>
+          <div class="dc-body">
+            <p class="dc-head"><b>Who's Bluffing</b><span class="dc-tag">BOT</span><span class="dc-time">Today at 14:00</span></p>
+            <p><b>Who's Bluffing?</b> · Which is longer: the Nile or the Danube?</p>
+            <p><svg class="dc-ok" viewBox="0 0 16 16" aria-hidden="true" focusable="false"><rect width="16" height="16" rx="3.5"/><path d="m4.4 8.3 2.4 2.4 4.8-5"/></svg> <b>A · the Nile</b>: 6,650 km (<span class="dc-link">source</span>)</p>
+            <p>B · the Danube: 2,850 km (<span class="dc-link">source</span>)</p>
+            <p>12 answered · 75% A · 25% B</p>
+            <p><b>Top 5:</b> 1. Maya +100 · 2. Sam +96 · 3. Priya +84 · 4. Alex +64 · 5. Jo +36</p>
+            <p>Someone was 90% sure the Danube is longer. It isn't.</p>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+  <section class="band band-packs" aria-labelledby="packs-title">
+    <div class="wrap band-grid">
+      <div class="band-copy">
+        <h2 id="packs-title">Pick a pack</h2>
+        <p>Twelve packs, from geography to AI, at three difficulties. The link remembers your pick, so you can dare a friend to the same pack.</p>
+      </div>
       <div class="picker" data-picker>
-        <div class="picker-row">
-          <p class="picker-label" id="pack-label">Pack</p>
-          <div class="chips" role="group" aria-labelledby="pack-label"><!-- packs -->
+        <div class="chips" role="group" aria-labelledby="packs-title"><!-- packs -->
         <button type="button" class="chip" data-pack="all" data-difficulties="easy normal brutal" aria-pressed="true">All</button>
         <button type="button" class="chip" data-pack="ai" data-difficulties="easy normal brutal" aria-pressed="false">AI</button>
         <button type="button" class="chip" data-pack="geography" data-difficulties="easy normal brutal" aria-pressed="false">Geography</button>
@@ -68,110 +157,94 @@
         <button type="button" class="chip" data-pack="languages" data-difficulties="brutal" aria-pressed="false">Languages</button>
         <button type="button" class="chip" data-pack="countries" data-difficulties="easy normal brutal" aria-pressed="false">Countries</button>
         <!-- /packs --></div>
-        </div>
-        <div class="picker-row">
-          <p class="picker-label" id="difficulty-label">Difficulty</p>
-          <div class="seg" role="group" aria-labelledby="difficulty-label">
-            <button type="button" data-difficulty="easy" data-line="Easy: famous things, far apart." aria-pressed="false">Easy</button>
-            <button type="button" data-difficulty="normal" data-line="Normal: famous things, some close calls." aria-pressed="true">Normal</button>
-            <button type="button" data-difficulty="brutal" data-line="Brutal: things you may never have heard of." aria-pressed="false">Brutal</button>
-          </div>
+        <div class="seg" role="group" aria-label="Difficulty">
+          <button type="button" data-difficulty="easy" data-line="Easy: famous things, far apart." aria-pressed="false">Easy</button>
+          <button type="button" data-difficulty="normal" data-line="Normal: famous things, some close calls." aria-pressed="true">Normal</button>
+          <button type="button" data-difficulty="brutal" data-line="Brutal: things you may never have heard of." aria-pressed="false">Brutal</button>
         </div>
         <p class="picker-line" data-difficulty-line>Normal: famous things, some close calls.</p>
         <p class="sr-only" role="status" data-pick-status></p>
       </div>
-      <div class="actions">
-        <button class="primary" id="play" type="button" data-play><svg class="i i-fill" viewBox="0 0 24 24" aria-hidden="true" focusable="false"><path d="M8 5.6v12.8a.6.6 0 0 0 .92.5l10.08-6.4a.6.6 0 0 0 0-1L8.92 5.1a.6.6 0 0 0-.92.5z"/></svg><span>Play now</span></button>
+      <div class="band-go"><button type="button" data-play><svg class="i i-fill" viewBox="0 0 24 24" aria-hidden="true" focusable="false"><path d="M8 5.6v12.8a.6.6 0 0 0 .92.5l10.08-6.4a.6.6 0 0 0 0-1L8.92 5.1a.6.6 0 0 0-.92.5z"/></svg><span>Play this pack</span></button></div>
+    </div>
+  </section>
+  <section class="band band-questions" aria-labelledby="questions-title">
+    <div class="wrap band-grid">
+      <div class="band-copy">
+        <h2 id="questions-title"><!-- questions -->19,000+<!-- /questions --> questions, each with a source</h2>
+        <p>Both answers link to their source, and a question that looks wrong can be reported right under its answer.</p>
       </div>
-      <div class="actions actions-add">
+      <div class="prompts" data-prompts>
+        <div class="prompts-view">
+          <div class="prompts-track anim"><!-- prompts -->
+          <ul class="prompts-list">
+            <li>Which is larger by area: the United States or India?</li>
+            <li>Which country has more people: the United Kingdom or Spain?</li>
+            <li>Which came out first: Wikipedia or Grand Theft Auto V?</li>
+            <li>Which came first: ChatGPT (released) or Anthropic (founded)?</li>
+            <li>Which company was founded first: OpenAI or Google?</li>
+            <li>Which came first: Anthropic or Nvidia?</li>
+            <li>Which is higher: Mount Everest or Mount Rushmore?</li>
+            <li>Which has the bigger diameter: the Moon or Earth?</li>
+            <li>Which came first: the Airbus A380 or the Concorde?</li>
+            <li>Which is taller: the Eiffel Tower or the One World Trade Center?</li>
+            <li>Which is farther from the Sun: Jupiter or Venus?</li>
+            <li>Which came first: Google Translate or Claude?</li>
+            <li>Which is older: Colosseum or Statue of Liberty?</li>
+            <li>Which is larger by area: Lake Ontario or Lake Baikal?</li>
+            <li>Which was founded first: Harvard University or Yale University?</li>
+            <li>Which language has more native speakers: Japanese or English?</li>
+            <li>Which is longer: the Nile or the Danube?</li>
+            <li>Which melts at a higher temperature: gold or tungsten?</li>
+            <li>Which is taller: Taj Mahal or Colossus of Rhodes?</li>
+            <li>Which was first climbed earlier: K2 or Mount Whitney?</li>
+            <li>Which is larger by area: Argentina or Australia?</li>
+            <li>Which country has more people: Germany or Cape Verde?</li>
+            <li>Which came out first: Facebook or TikTok?</li>
+            <li>Which came first: ChatGPT Atlas (launched) or OpenAI (founded)?</li>
+          </ul>
+          <ul class="prompts-list" aria-hidden="true">
+            <li>Which is larger by area: the United States or India?</li>
+            <li>Which country has more people: the United Kingdom or Spain?</li>
+            <li>Which came out first: Wikipedia or Grand Theft Auto V?</li>
+            <li>Which came first: ChatGPT (released) or Anthropic (founded)?</li>
+            <li>Which company was founded first: OpenAI or Google?</li>
+            <li>Which came first: Anthropic or Nvidia?</li>
+            <li>Which is higher: Mount Everest or Mount Rushmore?</li>
+            <li>Which has the bigger diameter: the Moon or Earth?</li>
+            <li>Which came first: the Airbus A380 or the Concorde?</li>
+            <li>Which is taller: the Eiffel Tower or the One World Trade Center?</li>
+            <li>Which is farther from the Sun: Jupiter or Venus?</li>
+            <li>Which came first: Google Translate or Claude?</li>
+            <li>Which is older: Colosseum or Statue of Liberty?</li>
+            <li>Which is larger by area: Lake Ontario or Lake Baikal?</li>
+            <li>Which was founded first: Harvard University or Yale University?</li>
+            <li>Which language has more native speakers: Japanese or English?</li>
+            <li>Which is longer: the Nile or the Danube?</li>
+            <li>Which melts at a higher temperature: gold or tungsten?</li>
+            <li>Which is taller: Taj Mahal or Colossus of Rhodes?</li>
+            <li>Which was first climbed earlier: K2 or Mount Whitney?</li>
+            <li>Which is larger by area: Argentina or Australia?</li>
+            <li>Which country has more people: Germany or Cape Verde?</li>
+            <li>Which came out first: Facebook or TikTok?</li>
+            <li>Which came first: ChatGPT Atlas (launched) or OpenAI (founded)?</li>
+          </ul>
+          <!-- /prompts --></div>
+        </div>
+        <button class="icon-btn prompts-pause" type="button" data-prompts-pause aria-pressed="false" aria-label="Pause the list"><svg class="i i-pause" viewBox="0 0 24 24" aria-hidden="true" focusable="false"><path d="M9 6v12M15 6v12"/></svg><svg class="i i-fill i-resume" viewBox="0 0 24 24" aria-hidden="true" focusable="false"><path d="M8 5.6v12.8a.6.6 0 0 0 .92.5l10.08-6.4a.6.6 0 0 0 0-1L8.92 5.1a.6.6 0 0 0-.92.5z"/></svg></button>
+      </div>
+    </div>
+  </section>
+  <section class="band band-start" aria-labelledby="start-title">
+    <div class="wrap">
+      <h2 id="start-title">Get started</h2>
+      <p>Play in the browser, or add one question a day to your Discord server or Slack workspace.</p>
+      <div class="actions">
+        <button class="primary" type="button" data-play><svg class="i i-fill" viewBox="0 0 24 24" aria-hidden="true" focusable="false"><path d="M8 5.6v12.8a.6.6 0 0 0 .92.5l10.08-6.4a.6.6 0 0 0 0-1L8.92 5.1a.6.6 0 0 0-.92.5z"/></svg><span>Play now</span></button>
         <a class="button" href="/discord"><svg class="i" viewBox="0 0 24 24" aria-hidden="true" focusable="false"><path d="M4 5.5h11a2 2 0 0 1 2 2V13a2 2 0 0 1-2 2H9l-4 3.5V15H4a2 2 0 0 1-2-2V7.5a2 2 0 0 1 2-2z"/><path d="M19.5 9.5H20a2 2 0 0 1 2 2V17a2 2 0 0 1-2 2h-1v3l-3.5-3H12"/></svg><span>Add to Discord</span></a>
         <a class="button" href="/slack"><svg class="i" viewBox="0 0 24 24" aria-hidden="true" focusable="false"><path d="M4.5 9h15M4.5 15h15M10 3.5 8 20.5M16 3.5l-2 17"/></svg><span>Add to Slack</span></a>
       </div>
-    </div>
-    <div class="hero-side">
-      <figure class="hero-demo" aria-hidden="true">
-        <div class="demo">
-          <div class="demo-top"><span class="demo-bar"><i></i></span><span>4 of 10</span></div>
-          <p class="demo-q">Which came first?</p>
-          <div class="demo-picks"><span class="is-true"><b>✓</b><span>Anthropic (founded)<small>Jan 2021</small></span></span><span><b>B</b><span>ChatGPT (released)<small>Nov 2022</small></span></span></div>
-          <div class="demo-conf"><span>50%</span><span>60%</span><span>70%</span><span class="on">80%</span><span>90%</span><span>100%</span></div>
-          <p class="demo-verdict">✓ Right at 80% sure · +84 points</p>
-        </div>
-        <figcaption>An example question</figcaption>
-      </figure>
-      <section class="live" aria-labelledby="live-title" data-live>
-        <h2 class="sr-only" id="live-title">Today’s room</h2>
-        <div class="live-top" data-live-top>
-          <figure class="live-room">
-            <div class="room-box" data-room-chart><svg class="room-chart is-example" viewBox="0 0 200 160" role="img" aria-label="How sure against how often right"><path class="room-axis" d="M40 8V138H192"/><path class="room-ideal" d="M40 73L192 8"/><circle cx="40" cy="73" r="5.1"/><circle cx="70.4" cy="66.5" r="5.4"/><circle cx="100.8" cy="60" r="5.7"/><circle cx="131.2" cy="55.7" r="6"/><circle cx="161.6" cy="52.2" r="5.7"/><circle cx="192" cy="47" r="5.4"/><text x="35" y="15" text-anchor="end">100%</text><text x="35" y="138" text-anchor="end">0%</text><text x="40" y="154">50%</text><text x="116" y="154" text-anchor="middle">sure</text><text x="192" y="154" text-anchor="end">100%</text><text transform="rotate(-90)" x="-73" y="10" text-anchor="middle">right</text></svg></div>
-            <figcaption class="live-cap" data-room-cap>Example</figcaption>
-          </figure>
-          <figure class="live-bluffs">
-            <ol class="receipts is-example" data-receipts><li class="receipt"><span class="receipt-q">Which is longer?</span><span class="receipt-pick"><s>The Danube</s><b>−300</b></span><span class="stamp stamp-bluff" data-stake="100">BLUFF</span></li><li class="receipt"><span class="receipt-q">Which is higher?</span><span class="receipt-pick"><s>K2</s><b>−224</b></span><span class="stamp stamp-bluff" data-stake="90">BLUFF</span></li></ol>
-            <figcaption class="live-cap" data-receipts-cap>Example</figcaption>
-          </figure>
-        </div>
-        <div class="live-types">
-          <div class="type-tiles" role="group" aria-labelledby="types-title">
-            <button type="button" class="type-tile" data-type="bluffer" aria-pressed="false"><svg class="i" viewBox="0 0 24 24" aria-hidden="true" focusable="false"><path d="M12 3c3 3.5 5.5 6 5.5 10a5.5 5.5 0 0 1-11 0c0-2.2 1-4 2.6-5.5.3 1.6 1 2.6 2 3.2C11.3 8.6 11 5.6 12 3z"/></svg><span>Bluffer</span><span class="type-band" aria-hidden="true"><i></i><i></i><i></i><i></i><i></i></span><span class="type-tip">Way more sure than right: 15 or more points over.</span></button>
-            <button type="button" class="type-tile" data-type="hot-headed" aria-pressed="false"><svg class="i" viewBox="0 0 24 24" aria-hidden="true" focusable="false"><path d="M12 19V5M6 11l6-6 6 6"/></svg><span>Too sure</span><span class="type-band" aria-hidden="true"><i></i><i></i><i></i><i></i><i></i></span><span class="type-tip">5 to 15 points more sure than right.</span></button>
-            <button type="button" class="type-tile" data-type="calibrated" aria-pressed="false"><svg class="i" viewBox="0 0 24 24" aria-hidden="true" focusable="false"><path d="M12 4v16M8 20h8M5 8h14M5 8l-3 6h6zM19 8l-3 6h6z"/></svg><span>Spot on</span><span class="type-band" aria-hidden="true"><i></i><i></i><i></i><i></i><i></i></span><span class="type-tip">Your confidence matches how often you're right, within 5 points.</span></button>
-            <button type="button" class="type-tile" data-type="modest" aria-pressed="false"><svg class="i" viewBox="0 0 24 24" aria-hidden="true" focusable="false"><path d="M12 5v14M6 13l6 6 6-6"/></svg><span>Too modest</span><span class="type-band" aria-hidden="true"><i></i><i></i><i></i><i></i><i></i></span><span class="type-tip">5 to 15 points less sure than right.</span></button>
-            <button type="button" class="type-tile" data-type="hedger" aria-pressed="false"><svg class="i" viewBox="0 0 24 24" aria-hidden="true" focusable="false"><path d="M5 12h14"/></svg><span>Playing it safe</span><span class="type-band" aria-hidden="true"><i></i><i></i><i></i><i></i><i></i></span><span class="type-tip">15 or more points less sure than right.</span></button>
-          </div>
-          <p class="live-cap" id="types-title">Which one are you?</p>
-        </div>
-      </section>
-    </div>
-    <div class="proof" id="proof"><p class="proof-line"><span><!-- questions -->19,000+<!-- /questions --> questions, every one with a source</span></p></div>
-  </div>
-</section>
-<div id="app"></div>
-<noscript><p class="wrap">The game needs JavaScript. The rest of this page works without it.</p></noscript>
-<div class="after-app">
-  <section class="section" id="how" aria-labelledby="how-title">
-    <div class="wrap">
-      <div class="section-head"><p class="eyebrow">How it works</p><h2 id="how-title">Ten questions, about a minute</h2></div>
-      <ol class="steps">
-        <li><h3>Pick one</h3><p>Each question compares two things: which river is longer, which mountain is higher, which plane flew earlier.</p></li>
-        <li><h3>Say how sure you are</h3><p>From 50% (a coin flip) to 100% (stake it all). Honest confidence scores best: a sure miss costs 300 points, a coin flip costs nothing.</p></li>
-        <li><h3>See how you did</h3><p>Both answers and their sources appear right away. At the end: your score, your type, and how sure you were against how often you were right.</p></li>
-      </ol>
-    </div>
-  </section>
-  <section class="section" id="ways" aria-labelledby="ways-title">
-    <div class="wrap">
-      <div class="section-head"><p class="eyebrow">Three ways to play</p><h2 id="ways-title">On your own, with your team, or in class</h2></div>
-      <div class="cards">
-        <article class="feature"><span class="ico"><svg class="i" viewBox="0 0 24 24" aria-hidden="true" focusable="false"><rect x="3.5" y="5" width="17" height="15.5" rx="3"/><path d="M3.5 10h17M8 3v4M16 3v4"/></svg></span><h3>Rounds</h3><p>Ten questions in about a minute. One ranked round a day, the same for everyone, with a leaderboard; then as many quick rounds as you like. Challenge a friend to the same ten.</p><button class="primary" type="button" data-play><svg class="i i-fill" viewBox="0 0 24 24" aria-hidden="true" focusable="false"><path d="M8 5.6v12.8a.6.6 0 0 0 .92.5l10.08-6.4a.6.6 0 0 0 0-1L8.92 5.1a.6.6 0 0 0-.92.5z"/></svg><span>Play</span></button></article>
-        <article class="feature"><span class="ico"><svg class="i" viewBox="0 0 24 24" aria-hidden="true" focusable="false"><path d="M4 5.5h11a2 2 0 0 1 2 2V13a2 2 0 0 1-2 2H9l-4 3.5V15H4a2 2 0 0 1-2-2V7.5a2 2 0 0 1 2-2z"/><path d="M19.5 9.5H20a2 2 0 0 1 2 2V17a2 2 0 0 1-2 2h-1v3l-3.5-3H12"/></svg></span><h3>Discord and Slack</h3><p>Add it once. One question a day in a channel: members pick an answer and say how sure they are, and the post later reveals the answer and the boldest bluff.</p><div class="feature-actions"><a class="button" href="/discord"><span>Add to Discord</span><svg class="i" viewBox="0 0 24 24" aria-hidden="true" focusable="false"><path d="M5 12h14M13 6l6 6-6 6"/></svg></a><a class="button" href="/slack"><span>Add to Slack</span><svg class="i" viewBox="0 0 24 24" aria-hidden="true" focusable="false"><path d="M5 12h14M13 6l6 6-6 6"/></svg></a></div></article>
-        <article class="feature"><span class="ico"><svg class="i" viewBox="0 0 24 24" aria-hidden="true" focusable="false"><circle cx="9" cy="8" r="3.5"/><path d="M2.5 20c.6-3.5 3.2-5.5 6.5-5.5s5.9 2 6.5 5.5M16 4.6a3.5 3.5 0 0 1 0 6.8M18.2 14.9c1.8.8 2.9 2.4 3.3 5.1"/></svg></span><h3>Classroom</h3><p>Run the overconfidence demo in class. Students play on their phones while your screen shows how sure the class was against how often it was right.</p><a class="button" href="/teachers"><span>For teachers</span><svg class="i" viewBox="0 0 24 24" aria-hidden="true" focusable="false"><path d="M5 12h14M13 6l6 6-6 6"/></svg></a></article>
-      </div>
-    </div>
-  </section>
-  <section class="section" id="open" aria-labelledby="open-title">
-    <div class="wrap">
-      <div class="section-head"><p class="eyebrow">Open research</p><h2 id="open-title">A game, and a study</h2><p class="lead">Does daily feedback make people better at knowing how much they know? The hypotheses are fixed before launch, the anonymous answers will be released as open data, and the source is published so anyone can check it.</p></div>
-      <ul class="links">
-        <li><a href="/research#hypotheses"><span class="ico"><svg class="i" viewBox="0 0 24 24" aria-hidden="true" focusable="false"><path d="M7 3h7l5 5v12a1 1 0 0 1-1 1H7a1 1 0 0 1-1-1V4a1 1 0 0 1 1-1z"/><path d="M14 3v5h5M9 13h6M9 17h6"/></svg></span><span><b>Pre-registered hypotheses</b><span>Frozen on 2026-10-04, before launch; any later change is logged with a reason.</span></span></a></li>
-        <li><a href="/research#data"><span class="ico"><svg class="i" viewBox="0 0 24 24" aria-hidden="true" focusable="false"><ellipse cx="12" cy="6" rx="7" ry="3"/><path d="M5 6v12c0 1.7 3.1 3 7 3s7-1.3 7-3V6M5 12c0 1.7 3.1 3 7 3s7-1.3 7-3"/></svg></span><span><b>Open data</b><span>Anonymous answers, released with a data card.</span></span></a></li>
-        <li><a href="https://github.com/rongtnt/whos-bluffing"><span class="ico"><svg class="i i-fill" viewBox="0 0 16 16" aria-hidden="true" focusable="false"><path d="M6.766 11.328c-2.063-.25-3.516-1.734-3.516-3.656 0-.781.281-1.625.75-2.188-.203-.515-.172-1.609.063-2.062.625-.078 1.468.25 1.968.703.594-.187 1.219-.281 1.985-.281.765 0 1.39.094 1.953.265.484-.437 1.344-.765 1.969-.687.218.422.25 1.515.046 2.047.5.593.766 1.39.766 2.203 0 1.922-1.453 3.375-3.547 3.64.531.344.89 1.094.89 1.954v1.625c0 .468.391.734.86.547C13.781 14.359 16 11.53 16 8.03 16 3.61 12.406 0 7.984 0 3.563 0 0 3.61 0 8.031a7.88 7.88 0 0 0 5.172 7.422c.422.156.828-.125.828-.547v-1.25c-.219.094-.5.156-.75.156-1.031 0-1.64-.562-2.078-1.609-.172-.422-.36-.672-.719-.719-.187-.015-.25-.093-.25-.187 0-.188.313-.328.625-.328.453 0 .844.281 1.25.86.313.452.64.655 1.031.655s.641-.14 1-.5c.266-.265.47-.5.657-.656"/></svg></span><span><b>Source on GitHub</b><span>The site, the Slack and Discord apps and every analysis.</span></span></a></li>
-      </ul>
-    </div>
-  </section>
-  <section class="section" id="faq" aria-labelledby="faq-title">
-    <div class="wrap split">
-      <div class="section-head"><p class="eyebrow">FAQ</p><h2 id="faq-title">Questions</h2></div>
-      <div class="faq">
-        <details><summary>What does “how sure” mean?</summary><p>Your confidence is your chance of being right. Say 70% on ten questions and you should get about seven of them right. Most people are surer than they are right; the game shows you by how much.</p></details>
-        <details><summary>How are points worked out?</summary><p>Each answer scores 100 − 400 × (confidence − outcome)², where the outcome is 1 if you were right and 0 if not. So 50% always scores 0, 100% scores +100 when right and −300 when wrong, and 80% scores +84 or −156. The best strategy is to say exactly how sure you are; the <a href="/research#scoring">research page</a> explains why.</p></details>
-        <details><summary>What do the types mean?</summary><p>Your type compares how sure you were with how often you were right: Bluffer (way more sure than right: 15 or more points over), Too sure (5 to 15 points more sure than right), Spot on (your confidence matches how often you're right, within 5 points), Too modest (5 to 15 points less sure than right) and Playing it safe (15 or more points less sure than right).</p></details>
-        <details><summary>What is the ranked round?</summary><p>The same ten questions for everyone, new every day at 00:00 UTC, with a leaderboard. After it, quick rounds pick questions you haven’t seen yet. Your streak counts the days you finish at least one round; missing a single day doesn’t break it.</p></details>
-        <details><summary>What are packs and difficulty?</summary><p>They shape your quick rounds. A pack keeps to one subject, such as Geography, History or Countries; the difficulty sets how well known the things are: Easy (famous things, far apart), Normal (famous things, some close calls) or Brutal (things you may never have heard of). The ranked round is the same for everyone and ignores both. A pack plays only at the difficulties it has enough questions for: a dashed pack needs another difficulty, and tapping it switches.</p></details>
-        <details><summary>Do I need an account?</summary><p>No. There are no accounts and no tracking. Your browser keeps a random id so your streak survives a reload; we never store your IP address or an email. Your anonymous answers become part of a public research dataset (see <a href="/research">research</a>). If you add a nickname to a challenge link, it is shown to the people who open that link. Details are in the <a href="/privacy">privacy policy</a>.</p></details>
-        <details><summary>Where do the questions come from?</summary><p>From Wikidata, with a source link for both answers. Two things are compared only when one is at least 1.3 times the other (for years, at least ten years apart). Ranked rounds use only facts with a reference or an independent check, and you can report a question that looks wrong right under its answer.</p></details>
-        <details><summary>Is there a longer version?</summary><p>Yes. The <a href="/test">full assessment</a> takes 5 minutes: twelve two-choice questions with a confidence rating and six 90% ranges, then a chart of how sure you were against how often you were right.</p></details>
-      </div>
+      <p class="played" data-played hidden></p>
     </div>
   </section>
 </div>

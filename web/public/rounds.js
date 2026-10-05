@@ -437,13 +437,15 @@ ${row(t('rounds.vs_sure'), (p) => `${Math.round(p.mean_conf)}%`)}
 
 // --- entry points -----------------------------------------------------------------------------------------------
 
-// `/`: the hero's Play button starts today's ranked round if it is still to play (prefetched: reading it writes
-// nothing), else a quick round in the picked pack and difficulty; an unfinished round from today resumes.
+// `/`: the Play buttons start today's ranked round if it is still to play (prefetched: reading it writes nothing), else
+// a quick round in the picked pack and difficulty; an unfinished round from today resumes. A pick on the page dares
+// that round, as a link with ?pack= does: Play then starts a quick round.
 export async function renderRounds(ctx) {
   const { app, t } = ctx;
   app.replaceChildren();
   bindKeys();
-  picker = initPicker();
+  let picked = false;
+  picker = initPicker(document, { onPick: () => { picked = true; } });
   const today = todayUTC();
   const saved = loadRound();
   if (saved && saved.date === today && !saved.challenge && saved.items.some((i) => !saved.answers[i.id])) {
@@ -459,7 +461,7 @@ export async function renderRounds(ctx) {
     return;
   }
   const r = await api('/api/round?mode=ranked');
-  ctx.setPlay(t('rounds.play'), r.ok && r.data.items.length ? () => begin(ctx, r.data) : () => playQuick(ctx));
+  ctx.setPlay(t('rounds.play'), () => (r.ok && r.data.items.length && !picked ? begin(ctx, r.data) : playQuick(ctx)));
 }
 
 // `/c/<round>/<token>`: plays the challenger's round, then shows the side-by-side. A finished round shows it at once.

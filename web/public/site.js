@@ -132,7 +132,7 @@ const ACTIONS_URL = 'https://github.com/rongtnt/whos-bluffing/actions'; // the r
       };
       host.addEventListener('pointerenter', (e) => { if (e.pointerType === 'mouse') pop(); });
       host.addEventListener('pointerdown', pop);
-      mark.addEventListener('animationend', (e) => { if (e.animationName === 'pip-flip') mark.classList.remove('pop'); }); // the hero's idle flip resumes
+      mark.addEventListener('animationend', (e) => { if (e.animationName === 'pip-flip') mark.classList.remove('pop'); }); // ready to pop again
     }
   }
 

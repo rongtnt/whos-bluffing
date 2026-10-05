@@ -1,8 +1,6 @@
-// The home page (/): the social-proof strip under the hero, and the live panel under the example card.
-// Social proof: from 100 monthly players (the daily KPI job) four numbers replace the static line under the buttons.
-// Countries come from /api/stats (full assessment), the only count of countries; communities are the KPI's Slack
-// workspaces, Discord servers, rooms and classrooms.
-// Live panel, graphics with one short label each: today's room as a calibration chart (from 20 players, else
+// The home page (/): the hero's Discord · Slack · Web switch, the question list's pause button and the "N played today"
+// line under Get started (from 100 players in today's ranked round; nothing under that). And the live panel, the first
+// section of /stats, graphics with one short label each: today's room as a calibration chart (from 20 players, else
 // yesterday's, else a grey example), the day's biggest bluffs as stamped receipts (the API sends up to three from 5
 // players, never who; else two grey examples) and the five types as tiles with a tooltip.
 import { html, api, num, signed } from './ui.js';
@@ -10,32 +8,38 @@ import { html, api, num, signed } from './ui.js';
 export const MIN_PLAYERS = 100;
 export const MIN_ROOM = 20;
 
-// One request to the ranked round's stats for both the strip and the panel.
-let rankedStats = null;
-const getRankedStats = () => (rankedStats ??= api('/api/round/stats'));
+// "1,204 played today" from MIN_PLAYERS players in today's ranked round (ranked = GET /api/round/stats, or null), else null.
+export const playedLine = (ranked) => (ranked?.players >= MIN_PLAYERS ? `${num(ranked.players)} played today` : null);
 
-// [[value, label]] for the strip, or null below MIN_PLAYERS. kpi = GET /api/kpi, stats = GET /api/stats,
-// ranked = GET /api/round/stats; the last two may be null (their tiles are then left out).
-export function proofTiles(kpi, stats, ranked) {
-  if (!(kpi?.mau >= MIN_PLAYERS)) return null;
-  const c = kpi.communities ?? {};
-  return [
-    [num(kpi.mau), 'monthly players'],
-    stats?.n_countries ? [num(stats.n_countries), 'countries'] : null,
-    [num((c.workspaces ?? 0) + (c.guilds ?? 0) + (c.rooms ?? 0) + (c.classrooms ?? 0)), 'communities'],
-    ranked?.players ? [num(ranked.players), 'played today’s ranked round'] : null,
-  ].filter(Boolean);
+export async function renderPlayed(el) {
+  if (!el) return;
+  const r = await api('/api/round/stats');
+  const line = playedLine(r.ok ? r.data : null);
+  if (line) { el.textContent = line; el.hidden = false; }
 }
 
-export async function renderProof(el) {
-  if (!el) return;
-  const kpi = await api('/api/kpi');
-  if (!kpi.ok || !(kpi.data?.mau >= MIN_PLAYERS)) return;
-  const [stats, ranked] = await Promise.all([api('/api/stats'), getRankedStats()]);
-  const tiles = proofTiles(kpi.data, stats.ok ? stats.data : null, ranked.ok ? ranked.data : null);
-  // PREREG: the double count across surfaces is stated wherever MAU is reported.
-  el.innerHTML = html`<div class="tiles">${tiles.map(([value, label]) => html`<div class="tile"><b>${value}</b><span>${label}</span></div>`)}</div>
-<p class="fine">Monthly players: anonymous ids with a finished round, full assessment or chat answer in the last 30 days; someone who plays on two surfaces, say the web and Discord, counts twice. <a href="/research#numbers">Definitions</a></p>`;
+// The switch over the hero's mocks: a tap shows that surface (styles.css keeps the three in one place).
+export function wireSurfaces(root) {
+  if (!root) return;
+  const buttons = [...root.querySelectorAll('[data-surface]')];
+  for (const b of buttons) {
+    b.addEventListener('click', () => {
+      for (const other of buttons) other.setAttribute('aria-pressed', String(other === b));
+      root.dataset.show = b.dataset.surface;
+    });
+  }
+}
+
+// The question list drifts up until its button pauses it (and again until it is pressed once more).
+export function wirePause(root) {
+  const button = root?.querySelector('[data-prompts-pause]');
+  if (!button) return;
+  button.addEventListener('click', () => {
+    const paused = button.getAttribute('aria-pressed') !== 'true';
+    button.setAttribute('aria-pressed', String(paused));
+    button.setAttribute('aria-label', paused ? 'Play the list' : 'Pause the list');
+    root.toggleAttribute('data-paused', paused);
+  });
 }
 
 // The room chart: confidence 50-100% across, share right 0-100% up, the dashed diagonal where they would match, one dot
@@ -70,7 +74,7 @@ export function roomView(today, yesterday) {
 export async function renderLive(el) {
   if (!el) return;
   wireTypes(el);
-  const today = await getRankedStats();
+  const today = await api('/api/round/stats');
   const t = today.ok ? today.data : null;
   const y = t?.players >= MIN_ROOM ? null : await api(`/api/round/stats?date=${new Date(Date.now() - 864e5).toISOString().slice(0, 10)}`);
   const room = roomView(t, y?.ok ? y.data : null);

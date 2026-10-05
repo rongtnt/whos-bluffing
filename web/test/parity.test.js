@@ -6,13 +6,14 @@ import assert from 'node:assert/strict';
 import { readFileSync, readdirSync } from 'node:fs';
 import { openD1 } from './d1.js';
 import { loadRounds, getRound, packAvailability, servablePairs, PACKS, DIFFICULTIES, MIN_PACK_PAIRS } from '../functions/_rounds.js';
-import { questionCount, packChips, commandCards, inject, pngSize } from '../scripts/sync-pages.js';
+import { questionCount, packChips, promptLines, promptList, commandCards, inject, pngSize } from '../scripts/sync-pages.js';
 import { onRequest as gate } from '../functions/_middleware.js';
 import { onRequestGet as kpiGet } from '../functions/api/kpi/index.js';
 import { nearestDifficulty, settle, choose, shareWith, quickLabel } from '../public/picker.js';
 import { apiVerdict, kpiVerdict } from '../public/status.js';
 import { COMMANDS } from '../../discord/src/commands.js';
-import { USAGE } from '../../slack/src/game.js';
+import { questionPost, confidencePicker, revealMessage } from '../../discord/src/game.js';
+import { USAGE, questionMessage } from '../../slack/src/game.js';
 
 const WEB = new URL('../', import.meta.url);
 const read = (path) => readFileSync(new URL(path, WEB), 'utf8');
@@ -66,20 +67,40 @@ test('packs: the bar is 200 eligible pairs, and small fixtures can lower it', ()
   assert.ok(packAvailability(lowBar).brutal.length >= packAvailability(DATA).brutal.length);
 });
 
-test('home page: the question count and the pack chips are what the data says (scripts/sync-pages.js)', () => {
+test('home page: the question count, the pack chips and the question list are what the data says (scripts/sync-pages.js)', () => {
   const home = read('public/index.html');
   const count = servablePairs(DATA).size;
   assert.ok(count > 10000 && count < json('functions/_pairs.json').pairs.length, `${count} servable pairs`);
-  assert.ok(home.includes(`<!-- questions -->${questionCount(count)}<!-- /questions --> questions, every one with a source`));
+  assert.ok(home.includes(`<h2 id="questions-title"><!-- questions -->${questionCount(count)}<!-- /questions --> questions, each with a source</h2>`));
   assert.equal(questionCount(17142), '17,000+');
   assert.ok(home.includes(`<!-- packs -->${packChips(packAvailability(DATA))}<!-- /packs -->`));
   const chips = [...home.matchAll(/data-pack="([a-z]+)" data-difficulties="([a-z ]+)"/g)].map((m) => [m[1], m[2]]);
   assert.equal(chips[0][0], 'all');
   for (const [pack, levels] of chips) for (const d of levels.split(' ')) assert.ok(packAvailability(DATA)[d].includes(pack), `${pack} at ${d}`);
   assert.throws(() => inject('<p></p>', 'packs', 'x'), /marker <!-- packs --> not found/);
-  assert.match(home, /<span>Play now<\/span>/);
-  assert.match(home, /href="\/discord"><svg[^>]*>.*?<span>Add to Discord<\/span>/);
-  assert.match(home, /href="\/slack"><svg[^>]*>.*?<span>Add to Slack<\/span>/);
+  // The list: 24 real prompts of famous pairs, no AI drama, each name once, written twice (the copy hidden) for the loop.
+  const pairs = JSON.parse(readFileSync(new URL('../items/pairs.json', WEB), 'utf8'));
+  const lines = promptLines(pairs);
+  assert.ok(home.includes(`<!-- prompts -->${promptList(lines)}<!-- /prompts -->`));
+  assert.equal(lines.length, 24);
+  const byLine = new Map(pairs.pairs.map((p) => [`${p.prompt.replace(/\?$/, '')}: ${p.a} or ${p.b}?`, p]));
+  for (const line of lines) {
+    const p = byLine.get(line);
+    assert.ok(p && p.fame >= 50000 && p.category !== 'ai_drama' && line.length <= 64, line);
+  }
+  const names = lines.flatMap((l) => l.replace(/^[^:]+: |\?$/g, '').split(' or '));
+  assert.equal(new Set(names).size, names.length, 'a name twice');
+  assert.equal([...home.matchAll(/<ul class="prompts-list" aria-hidden="true">/g)].length, 1);
+  // The hero: Play now (the game's #play), Add to Discord, and Add to Slack as a text link; the band repeats all three.
+  const hero = home.match(/<section class="hero home-hero"[\s\S]*?<\/section>/)[0];
+  assert.match(hero, /<button class="primary" id="play" type="button" data-play><svg[^>]*>.*?<\/svg><span>Play now<\/span><\/button>/);
+  assert.match(hero, /<a class="button" href="\/discord"><svg[^>]*>.*?<\/svg><span>Add to Discord<\/span><\/a>/);
+  assert.match(hero, /<a class="text-link" href="\/slack"><span>Add to Slack<\/span>/);
+  const band = home.match(/<section class="band band-start"[\s\S]*?<\/section>/)[0];
+  assert.match(band, /data-play><svg[^>]*>.*?<\/svg><span>Play now<\/span>/);
+  assert.match(band, /href="\/discord"><svg[^>]*>.*?<\/svg><span>Add to Discord<\/span>/);
+  assert.match(band, /href="\/slack"><svg[^>]*>.*?<\/svg><span>Add to Slack<\/span>/);
+  assert.equal([...home.matchAll(/ data-play>/g)].length, 3);
 });
 
 test('commands.json: the Discord and Slack cards match the bots\' own command definitions', () => {
@@ -287,15 +308,43 @@ test('AI pack: reaction lines are posts/ai-humor.md section 1, word for word, an
   assert.equal(pickReaction([ai(false, 90)], 0, 10, new Set(), { rand: () => 0.3 }).text.includes('{conf}'), false);
 });
 
-test('home page: the example card is the AI question (Anthropic, Jan 2021, right at 80%)', () => {
+test('home page: the Discord, Slack and web mocks say what the bots and the game say (their own builders)', () => {
   const home = read('public/index.html');
-  const card = home.match(/<figure class="hero-demo" aria-hidden="true">[\s\S]*?<\/figure>/)[0];
-  assert.match(card, /<p class="demo-q">Which came first\?<\/p>/);
-  assert.match(card, /<span class="is-true"><b>✓<\/b><span>Anthropic \(founded\)<small>Jan 2021<\/small><\/span><\/span><span><b>B<\/b><span>ChatGPT \(released\)<small>Nov 2022<\/small><\/span><\/span>/);
-  assert.match(card, /<span class="on">80%<\/span>/);
-  assert.match(card, /<p class="demo-verdict">✓ Right at 80% sure · \+84 points<\/p>/);
-  assert.match(card, /<figcaption>An example question<\/figcaption>/);
-  assert.doesNotMatch(card, /Nile|Danube/);
+  const between = (from, to) => home.slice(home.indexOf(from), home.indexOf(to, home.indexOf(from)));
+  const lines = (h) => h.replace(/<svg[\s\S]*?<\/svg>/g, '').replace(/<\/(?:p|div)>/g, '\n').replace(/<\/span>\s*<span[^>]*>/g, ' ').replace(/<[^>]+>/g, '')
+    .split('\n').map((l) => l.replace(/\s+/g, ' ').trim()).filter(Boolean);
+  const has = (got, line, where) => assert.ok(got.includes(line), `${where}: "${line}" not in ${JSON.stringify(got)}`);
+  // Discord markdown as the client shows it: bold, small text, a 20:00 reveal, the ✅ (drawn), "source" links.
+  const shown = (md) => md.replace(/\*\*/g, '').replace(/^-# /gm, '').replace(/<t:\d+:t> \(<t:\d+:R>\)/g, '20:00').replace(/✅ /g, '')
+    .replace(/\[source\]\(<[^>]+>\)/g, 'source').split('\n');
+  const q = { round_id: 'dq-2026-10-05', item_id: 'p06261', prompt: 'Which is longer: the Nile or the Danube?', a: 'the Nile', b: 'the Danube' };
+  const discord = lines(between('data-mock="discord"', 'data-mock="slack"'));
+  const post = questionPost(q, '2026-10-05', '2026-10-05T20:00:00Z');
+  for (const line of shown(post.content)) has(discord, line, 'Discord post');
+  has(discord, post.components[0].components.map((b) => b.label).join(' '), 'Discord buttons');
+  const picker = confidencePicker('2026-10-05', q.round_id, q.item_id, 0);
+  for (const line of shown(picker.content)) has(discord, line, 'Discord private reply');
+  for (const row of picker.components) has(discord, row.components.map((b) => b.label).join(' '), 'Discord confidence row');
+  const names = ['Maya', 'Sam', 'Priya', 'Alex', 'Jo'];
+  const top = [100, 96, 84, 64, 36].map((points, i) => ({ anon_id: `m${i}`, points })); // right at 100, 90, 80, 70, 60% sure
+  const r = { n: 12, pct_a: 75, pct_b: 25, correct: 0, a_value: 6650, b_value: 2850, unit: 'km', a_source: 'https://www.wikidata.org/wiki/Q3392', b_source: 'https://www.wikidata.org/wiki/Q1653' };
+  const reveal = revealMessage({ q, r, top, names: new Map(top.map((t, i) => [t.anon_id, names[i]])), bluff: { anon_id: 'x', conf: 90, choice: 1 }, roast: 0 });
+  const revealed = lines(between('class="mock mock-reveal"', '</section>'));
+  for (const line of shown(reveal.content)) has(revealed, line, 'Discord reveal');
+  assert.ok(reveal.content.endsWith("Someone was 90% sure the Danube is longer. It isn't.")); // roast off: no name
+  // Slack mrkdwn: bold, and the reveal time as the client shows a date token.
+  const slackShown = (md) => md.replace(/\*/g, '').replace(/<!date\^\d+\^[^|]+\|[^>]+>/g, 'today 20:00');
+  const slack = lines(between('data-mock="slack"', 'data-mock="web"'));
+  const msg = questionMessage({ ...q, prompt: 'Which is longer?' }, '2026-10-05', Date.parse('2026-10-05T20:00:00Z'));
+  has(slack, slackShown(msg.blocks[0].text.text), 'Slack section');
+  has(slack, msg.blocks[1].elements.map((b) => b.text.text).join(' '), 'Slack buttons');
+  has(slack, slackShown(msg.blocks[2].elements[0].text), 'Slack context');
+  // The web game's question card: its progress label and its "how sure" line.
+  const en = json('public/i18n/en.json');
+  const web = lines(between('data-mock="web"', '</section>'));
+  has(web, en.rounds.progress.replace('{i}', 4).replace('{n}', 10), 'web progress');
+  has(web, en.rounds.how_sure, 'web confidence');
+  has(web, '50% 60% 70% 80% 90% 100%', 'web confidence row');
 });
 
 // --- type names players read (the owner: "use normal words that say how confident people are") ---------------------
@@ -314,17 +363,18 @@ test('types: display names and one-liners everywhere players read them; the API 
   assert.deepEqual(TYPES, Object.keys(WANT)); // internal names unchanged
   assert.equal(typeOf(800, 7, 10), 'Hot-headed');
   const en = json('public/i18n/en.json');
-  const home = read('public/index.html');
+  const stats = read('public/stats.html'); // the type tiles (the live panel)
+  const support = read('public/support.html'); // the FAQ
   for (const [api, [name, key, line]] of Object.entries(WANT)) {
     assert.equal(TYPE_NAMES[api], name);
     assert.equal(typeName(api), name);
     assert.equal(en.rounds[`type_${key}`], line, api);
-    const tile = home.match(new RegExp(`data-type="${key.replace('_', '-')}"[^>]*>[\\s\\S]*?</button>`))[0];
+    const tile = stats.match(new RegExp(`data-type="${key.replace('_', '-')}"[^>]*>[\\s\\S]*?</button>`))[0];
     assert.match(tile, new RegExp(`<span>${name}</span>[\\s\\S]*<span class="type-tip">${line.replace(/[.?]/g, '\\$&')}</span>`), api);
   }
-  const faq = home.match(/<summary>What do the types mean\?<\/summary><p>([^<]+)<\/p>/)[1];
+  const faq = support.match(/<summary>What do the types mean\?<\/summary><p>([^<]+)<\/p>/)[1];
   for (const [name] of Object.values(WANT)) assert.ok(faq.includes(name), `FAQ: ${name}`);
-  assert.doesNotMatch(home.replace(/data-type="[a-z-]+"/g, ''), /Hot-headed|Calibrated|Hedger|\bModest\b/);
+  for (const page of [stats, support, read('public/index.html')]) assert.doesNotMatch(page.replace(/data-type="[a-z-]+"/g, ''), /Hot-headed|Calibrated|Hedger|\bModest\b/);
   assert.equal(challengeDescription('Hedger', 100, 70), "Playing it safe: 100% right at 70% sure. Play the same ten questions on Who's Bluffing.");
   const url = 'https://whosbluffing.com/c/ABCDEFGHJKLM/abcdefghij';
   assert.equal(shareWith(`Who's Bluffing? · Hot-headed · 420 pts · 70% right at 80% sure · ${url}`, { type: 'Hot-headed', pack: 'ai', url }),

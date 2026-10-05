@@ -2,9 +2,11 @@
 // the layout checks. No dependencies (Node 22's fetch and WebSocket). CHROME=/path/to/chrome picks another Chromium.
 //   node design/render.js assets           public/og.png, favicon-32.png, apple-touch-icon.png (from favicon.svg =
 //                                          brand/icon.svg), press/logo.png and press/logo-dark.png from design/*.html
-//   node design/render.js screens [BASE]   design/screens/<page>-<width>-<theme>.png for /, /slack, /research (375, 768,
+//   node design/render.js screens [BASE] [PAGE]
+//                                          design/screens/<page>-<width>-<theme>.png for /, /slack, /research (375, 768,
 //                                          1280) and /discord, /commands (375, 1280); BASE is a running `npm run dev`
-//                                          (default http://127.0.0.1:8788)
+//                                          (default http://127.0.0.1:8788). PAGE shoots one page only; a suffixed name
+//                                          (home-v2) shoots that page under the new name and keeps the earlier set
 //   node design/render.js checks [BASE]    overflow at 375 px and layout shift on every page, keyboard walk on /, /slack,
 //                                          /discord and /commands, theme toggle label and persistence
 //   node design/render.js rounds [BASE]    design/screens/rounds-{item,reveal-right,reveal-wrong,end,challenge}-<width>-
@@ -119,14 +121,17 @@ async function assets(cdp) {
 const post = (base, path, body) => fetch(`${base}${path}`, { method: 'POST', headers: { 'content-type': 'application/json' }, body: JSON.stringify(body) })
   .then(async (r) => { if (!r.ok) throw new Error(`${path} -> ${r.status} ${await r.text()}`); return r.json(); });
 
-async function screens(cdp, base) {
+async function screens(cdp, base, only) {
   const all = [[375, 812], [768, 1024], [1280, 800]];
   const shots = [['home', '/', all], ['slack', '/slack', all], ['research', '/research', all],
     ['discord', '/discord', [all[0], all[2]]], ['commands', '/commands', [all[0], all[2]]]];
-  for (const [name, path, sizes] of shots) {
+  const picked = only ? shots.filter(([name]) => only === name || only.startsWith(`${name}-`)).map(([, path, sizes]) => [only, path, sizes]) : shots;
+  for (const [name, path, sizes] of picked) {
     for (const dark of [false, true]) {
       for (const [w, h] of sizes) {
         await open(cdp, `${base}${path}`, { width: w, height: h, dark });
+        // as with overlay scrollbars: --hide-scrollbars still reserves the gutter (styles.css), an empty strip at the right
+        await evaluate(cdp, "document.documentElement.style.scrollbarGutter = 'auto'");
         await capture(cdp, join(WEB, `design/screens/${name}-${w}-${dark ? 'dark' : 'light'}.png`), w);
         if (HERO_SHOTS.includes(name) && w === 1280 && !dark) await capture(cdp, join(WEB, `design/screens/${name}-hero-1280-light.png`), w, h); // the press kit's view
       }
@@ -572,7 +577,7 @@ const cdp = await launch();
 let failed = 0;
 try {
   if (mode === 'assets') await assets(cdp);
-  else if (mode === 'screens') await screens(cdp, base);
+  else if (mode === 'screens') await screens(cdp, base, part);
   else if (mode === 'checks') failed = await checks(cdp, base);
   else if (mode === 'rounds') await roundScreens(cdp, base);
   else if (mode === 'results') await resultScreens(cdp, base);

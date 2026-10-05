@@ -8,7 +8,7 @@
 //   web/scripts/page.html -> web/functions/_page.json                          (template of the challenge page)
 //   PRIVACY.md, TERMS.md, CHANGELOG.md, docs/api-*.md -> web/public/privacy.html, terms.html, changelog.html,
 //                          docs/api.html (sync-docs.js)
-//   the question count, pack chips and command cards inside committed pages, press screenshots (sync-pages.js)
+//   the question count, pack chips, question list and command cards inside committed pages, press screenshots (sync-pages.js)
 import { readFileSync, writeFileSync, existsSync } from 'node:fs';
 import { fileURLToPath } from 'node:url';
 import { isDate } from '../functions/_daily.js';
@@ -208,7 +208,7 @@ function main() {
     + `pool ${pool.items.length} items; schedule ${days.length} days${days.length ? ` (${days[0]} to ${days.at(-1)})` : ''}; `
     + `${pairs.pairs.length} pairs; ranked rounds ${Object.keys(rounds).length} days`);
   console.log(`synced docs: ${syncDocs().join(', ')}`);
-  const pages = syncPages({ pool: server, compact, rounds });
+  const pages = syncPages({ pool: server, compact, rounds, pairs });
   console.log(`synced pages: ${pages.files.join(', ')} (${pages.count.toLocaleString('en-US')} servable pairs)`);
 }
 

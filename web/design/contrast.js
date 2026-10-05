@@ -9,7 +9,7 @@ function tokens(selector) {
   const start = css.indexOf(`${selector} {`);
   if (start < 0) throw new Error(`no "${selector} {" block in styles.css`);
   const body = css.slice(start, css.indexOf('}', start));
-  return Object.fromEntries([...body.matchAll(/--([\w-]+):\s*(#[0-9a-fA-F]{6})\b/g)].map((m) => [m[1], m[2].toUpperCase()]));
+  return Object.fromEntries([...body.matchAll(/--([\w-]+):\s*(#[0-9a-fA-F]{6}\b|\d+%)/g)].map((m) => [m[1], m[2].toUpperCase()]));
 }
 
 const light = tokens(':root');
@@ -49,6 +49,23 @@ const NON_TEXT = [
   ['text', 'bg', 'focus ring (inner 2px)'], ['text', 'surface', 'focus ring (inner 2px) on cards'],
   ['muted', 'surface', 'input borders'], ['muted', 'bg', 'input borders on the page'],
 ];
+
+// color-mix(in srgb, a p, b) as a hex colour.
+const rgb = (hex) => [1, 3, 5].map((i) => parseInt(hex.slice(i, i + 2), 16));
+const mix = (a, p, b) => `#${rgb(a).map((v, i) => Math.round(v * p + rgb(b)[i] * (1 - p)).toString(16).padStart(2, '0')).join('')}`.toUpperCase();
+// The home page's tints (styles.css, Home): the pills are six palette tints at --pill-tint over --surface, their text
+// --text, or the off colour when dashed; the slanted band (--band-tint) and the discs (--disc-tint) are accent over --bg.
+for (const t of Object.values(themes)) {
+  const pct = (k) => parseFloat(t[k]) / 100;
+  for (const [k, c] of Object.entries({ accent: t.accent, hit: t.hit, focus: t.focus, miss: t.miss, slate: t.muted, teal: mix(t.accent, 0.45, t.hit) })) t[`pill-${k}`] = mix(c, pct('pill-tint'), t.surface);
+  t.off = mix(t.muted, 0.85, t.text);
+  t.band = mix(t.accent, pct('band-tint'), t.bg);
+  t.disc = mix(t.accent, pct('disc-tint'), t.bg);
+  t.private = mix(t.accent, 0.06, t.surface);
+}
+TEXT.push(...['accent', 'hit', 'focus', 'miss', 'slate', 'teal'].flatMap((k) => [['text', `pill-${k}`, 'a pack pill'], ['off', `pill-${k}`, 'a dashed pack pill']]),
+  ['muted', 'band', 'the line under Get started'], ['text', 'disc', 'the headline over a disc'], ['accent', 'disc', 'the headline\'s accent word over a disc'],
+  ['muted', 'private', 'the Discord mock\'s private reply']);
 
 let failures = 0;
 function report(title, pairs, min) {
