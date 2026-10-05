@@ -365,7 +365,8 @@
     "issued": "2026-10-05",
     "dare_url": null,
     "status": "open",
-    "their_score": null
+    "their_score": null,
+    "items": ["p40538", "p41131", "p39876", "p39854", "p39815", "p40233", "p40234", "p39470", "p39485", "p39204"]
   },
   {
     "slug": "sanders",
@@ -385,7 +386,8 @@
     "issued": "2026-10-05",
     "dare_url": null,
     "status": "open",
-    "their_score": null
+    "their_score": null,
+    "items": ["p39698", "p41218", "p39857", "p39887", "p39854", "p39710", "p39696", "p39470", "p39467", "p39466"]
   },
   {
     "slug": "warren",
@@ -404,7 +406,8 @@
     "issued": "2026-10-05",
     "dare_url": null,
     "status": "open",
-    "their_score": null
+    "their_score": null,
+    "items": ["p40651", "p40943", "p39307", "p40193", "p41255", "p39366", "p39365", "p39393", "p39248", "p39455"]
   },
   {
     "slug": "schumer",
@@ -423,7 +426,8 @@
     "issued": "2026-10-05",
     "dare_url": null,
     "status": "open",
-    "their_score": null
+    "their_score": null,
+    "items": ["p39349", "p39543", "p40107", "p40167", "p40242", "p40170", "p40162", "p39413", "p40714", "p40706"]
   },
   {
     "slug": "fetterman",
@@ -442,7 +446,8 @@
     "issued": "2026-10-05",
     "dare_url": null,
     "status": "open",
-    "their_score": null
+    "their_score": null,
+    "items": ["p40706", "p40714", "p41103", "p39379", "p40713", "p40238", "p40228", "p39841", "p39470", "p39466"]
   },
   {
     "slug": "booker",
@@ -461,7 +466,8 @@
     "issued": "2026-10-05",
     "dare_url": null,
     "status": "open",
-    "their_score": null
+    "their_score": null,
+    "items": ["p40603", "p39569", "p39350", "p40605", "p39641", "p40073", "p39567", "p40070", "p39575", "p40018"]
   },
   {
     "slug": "khanna",
@@ -480,7 +486,8 @@
     "issued": "2026-10-05",
     "dare_url": null,
     "status": "open",
-    "their_score": null
+    "their_score": null,
+    "items": ["p41184", "p39198", "p40664", "p39798", "p39914", "p39612", "p39911", "p39549", "p39543", "p39534"]
   },
   {
     "slug": "crockett",
@@ -499,7 +506,8 @@
     "issued": "2026-10-05",
     "dare_url": null,
     "status": "open",
-    "their_score": null
+    "their_score": null,
+    "items": ["p39280", "p41068", "p39841", "p40346", "p40290", "p39323", "p39353", "p39878", "p39282", "p39320"]
   },
   {
     "slug": "omar",
@@ -518,7 +526,8 @@
     "issued": "2026-10-05",
     "dare_url": null,
     "status": "open",
-    "their_score": null
+    "their_score": null,
+    "items": ["p39504", "p39528", "p41123", "p39531", "p40501", "p39508", "p40536", "p39590", "p39552", "p39485"]
   },
   {
     "slug": "schiff",
@@ -537,7 +546,8 @@
     "issued": "2026-10-05",
     "dare_url": null,
     "status": "open",
-    "their_score": null
+    "their_score": null,
+    "items": ["p40714", "p40870", "p40706", "p39738", "p41049", "p39743", "p39733", "p39946", "p39552", "p39543"]
   },
   {
     "slug": "chris-murphy",
@@ -556,7 +566,8 @@
     "issued": "2026-10-05",
     "dare_url": null,
     "status": "open",
-    "their_score": null
+    "their_score": null,
+    "items": ["p41240", "p39482", "p39463", "p40352", "p39328", "p39303", "p39977", "p39337", "p39258", "p40234"]
   },
   {
     "slug": "mark-kelly",
@@ -575,7 +586,8 @@
     "issued": "2026-10-05",
     "dare_url": null,
     "status": "open",
-    "their_score": null
+    "their_score": null,
+    "items": ["p40544", "p41104", "p39531", "p39520", "p40511", "p40512", "p39522", "p39587", "p39543", "p39492"]
   },
   {
     "slug": "cruz",
@@ -594,7 +606,8 @@
     "issued": "2026-10-05",
     "dare_url": null,
     "status": "open",
-    "their_score": null
+    "their_score": null,
+    "items": ["p40336", "p40480", "p41214", "p39243", "p40332", "p39443", "p39440", "p39218", "p39310", "p39318"]
   },
   {
     "slug": "rand-paul",
@@ -613,7 +626,8 @@
     "issued": "2026-10-05",
     "dare_url": null,
     "status": "open",
-    "their_score": null
+    "their_score": null,
+    "items": ["p41057", "p40057", "p40027", "p40087", "p40762", "p40026", "p40090", "p39514", "p39282", "p39289"]
   },
   {
     "slug": "hawley",
@@ -632,7 +646,8 @@
     "issued": "2026-10-05",
     "dare_url": null,
     "status": "open",
-    "their_score": null
+    "their_score": null,
+    "items": ["p40009", "p39808", "p40087", "p40035", "p40084", "p39803", "p40167", "p39204", "p39463", "p39278"]
   },
   {
     "slug": "tim-scott",
@@ -651,7 +666,8 @@
     "issued": "2026-10-05",
     "dare_url": null,
     "status": "open",
-    "their_score": null
+    "their_score": null,
+    "items": ["p39859", "p40290", "p40242", "p40234", "p39854", "p39825", "p39848", "p39289", "p39278", "p39366"]
   },
   {
     "slug": "mike-lee",
@@ -670,7 +686,8 @@
     "issued": "2026-10-05",
     "dare_url": null,
     "status": "open",
-    "their_score": null
+    "their_score": null,
+    "items": ["p39463", "p40179", "p40101", "p39460", "p40118", "p40198", "p40151", "p39470", "p39303", "p40056"]
   },
   {
     "slug": "cotton",
@@ -689,7 +706,8 @@
     "issued": "2026-10-05",
     "dare_url": null,
     "status": "open",
-    "their_score": null
+    "their_score": null,
+    "items": ["p40359", "p41306", "p40876", "p39964", "p39871", "p39328", "p39869", "p39349", "p39353", "p39350"]
   },
   {
     "slug": "jordan",
@@ -708,7 +726,8 @@
     "issued": "2026-10-05",
     "dare_url": null,
     "status": "open",
-    "their_score": null
+    "their_score": null,
+    "items": ["p41329", "p39963", "p40228", "p39914", "p40306", "p40317", "p39911", "p39282", "p39216", "p39298"]
   },
   {
     "slug": "mike-johnson",
@@ -727,7 +746,8 @@
     "issued": "2026-10-05",
     "dare_url": null,
     "status": "open",
-    "their_score": null
+    "their_score": null,
+    "items": ["p39236", "p41229", "p39237", "p39364", "p40191", "p39234", "p40119", "p40198", "p40117", "p40114"]
   },
   {
     "slug": "massie",
@@ -746,7 +766,8 @@
     "issued": "2026-10-05",
     "dare_url": null,
     "status": "open",
-    "their_score": null
+    "their_score": null,
+    "items": ["p39278", "p40870", "p40822", "p40142", "p40123", "p39414", "p39380", "p40141", "p40155", "p39250"]
   },
   {
     "slug": "crenshaw",
@@ -765,7 +786,8 @@
     "issued": "2026-10-05",
     "dare_url": null,
     "status": "open",
-    "their_score": null
+    "their_score": null,
+    "items": ["p40341", "p40379", "p39606", "p39510", "p39696", "p40264", "p39518", "p39854", "p39440", "p39534"]
   },
   {
     "slug": "stefanik",
@@ -784,7 +806,8 @@
     "issued": "2026-10-05",
     "dare_url": null,
     "status": "open",
-    "their_score": null
+    "their_score": null,
+    "items": ["p39360", "p41002", "p39367", "p39307", "p39354", "p40371", "p39841", "p39803", "p41080", "p39244"]
   },
   {
     "slug": "john-kennedy",
@@ -803,6 +826,7 @@
     "issued": "2026-10-05",
     "dare_url": null,
     "status": "open",
-    "their_score": null
+    "their_score": null,
+    "items": ["p39473", "p40118", "p40670", "p40107", "p40117", "p40671", "p40873", "p39445", "p39204", "p39229"]
   }
 ]
