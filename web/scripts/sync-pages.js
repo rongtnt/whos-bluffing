@@ -39,11 +39,11 @@ export function packChips(availability) {
 }
 
 // The home page's question list: famous pairs only (both items >= 50,000 monthly views, fameBand 2 in sync-items.js), no
-// AI drama, at most 64 characters, each name once. One category at a time, the category of the most famous pair first,
+// drama (AI or Politics), at most 64 characters, each name once. One category at a time, the category of the most famous pair first,
 // the most famous pair first within each: "Which is longer: the Nile or the Danube?"
 export function promptLines(pairsDoc, n = 24) {
   const byCategory = new Map();
-  const famous = pairsDoc.pairs.filter((p) => (p.fame ?? 0) >= 50000 && p.category !== 'ai_drama').sort((x, y) => y.fame - x.fame || x.id.localeCompare(y.id));
+  const famous = pairsDoc.pairs.filter((p) => (p.fame ?? 0) >= 50000 && !/_drama$/.test(p.category)).sort((x, y) => y.fame - x.fame || x.id.localeCompare(y.id));
   for (const p of famous) byCategory.set(p.category, [...(byCategory.get(p.category) ?? []), p]);
   const used = new Set();
   const lines = [];

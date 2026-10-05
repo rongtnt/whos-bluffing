@@ -9,7 +9,7 @@ import { loadRounds, getRound, answer, complete, compare } from '../functions/_r
 import { dareView, boardView, darePage, boardPage, statusLine, dareShareText, fmtDate } from '../functions/_dares.js';
 import { HEADERS } from '../functions/_challenge.js';
 import { serverPool, compactPairs } from '../scripts/sync-items.js';
-import { pickDare, pinnedErrors, buildDares, seedErrors, dareContext, pretty, DATED, EXAMPLE_PAIR, KEYWORD_FLOOR } from '../scripts/build-dares.js';
+import { pickDare, pinnedErrors, buildDares, seedErrors, dareContext, pretty, balanced, sideOf, DATED, EXAMPLE_PAIR, KEYWORD_FLOOR, SIDES } from '../scripts/build-dares.js';
 import { dareRankLabel, dareDone } from '../public/round-end.js';
 
 // --- fixture: 40 companies (every fifth an "Acme"), pairs 1, 2, 3 and 5 apart, plus the cases the rules exclude -------
@@ -26,13 +26,14 @@ items.push(
   item(44, 'Acme board fires its chief (Nov 2023)', { category: 'ai_drama', en: { prompt: 'When?', unit: 'month' }, answer: 202311, fact_checked: true }),
   item(45, 'Acme chief returns', { category: 'ai_drama', en: { prompt: 'When?', unit: 'month' }, answer: 202402, fact_checked: true }),
   item(46, 'Acme 6'), // a second record named like w0006: the same item to a player
+  item(47, 'The Senate passes a budget (Mar 2020)', { category: 'pol_drama', en: { prompt: 'When?', unit: 'month' }, answer: 202003, fact_checked: true }),
 );
 const LEVEL = ['easy', 'medium', 'hard'];
 const pairs = [];
 const pair = (id, a, b, extra = {}) => pairs.push({ id, a_id: w(a), b_id: w(b), truth: items[a - 1].answer < items[b - 1].answer ? 0 : 1,
   difficulty_hint: LEVEL[(a + b) % 3], fame: 60000, ref_quality: 'referenced', ...extra });
 for (let i = 1; i <= 40; i += 1) for (const step of [1, 2, 3, 5]) if (i + step <= 40) pair(p(pairs.length + 1), i, i + step, step === 5 ? { fame: 30000 } : {});
-const SPECIAL = { volatileItem: p(901), unreferenced: p(902), checked: p(903), volatilePair: p(904), dated: p(905), undated: p(906), sameName: p(907) };
+const SPECIAL = { volatileItem: p(901), unreferenced: p(902), checked: p(903), volatilePair: p(904), dated: p(905), undated: p(906), sameName: p(907), polDated: p(908) };
 pair(SPECIAL.volatileItem, 41, 2, { difficulty_hint: 'medium' });
 pair(SPECIAL.unreferenced, 42, 3, { difficulty_hint: 'medium' });
 pair(SPECIAL.checked, 43, 4, { difficulty_hint: 'medium' });
@@ -40,6 +41,7 @@ pair(SPECIAL.volatilePair, 11, 19, { difficulty_hint: 'medium', volatile: true }
 pair(SPECIAL.dated, 44, 7, { difficulty_hint: 'medium' });
 pair(SPECIAL.undated, 45, 8, { difficulty_hint: 'medium' });
 pair(SPECIAL.sameName, 46, 9, { difficulty_hint: 'hard' });
+pair(SPECIAL.polDated, 47, 10, { difficulty_hint: 'medium' });
 pair(EXAMPLE_PAIR, 1, 13, { difficulty_hint: 'medium' });
 const TEMPLATES = [{ category: 'company_founded', unit: 'year', prompt: 'Which company was founded first?', more: 'was founded first', less: 'was founded later' }];
 const POOL = { version: 1, items };
@@ -83,6 +85,7 @@ test('picker: never the example pair, a volatile item or pair, an unreferenced i
   const okAll = pickDare(all, CTX).items;
   assert.ok(front(all, okAll, SPECIAL.dated).some((e) => e.startsWith(`${SPECIAL.dated} is not allowed`)), 'an ai_drama name with a date');
   assert.ok(!front(all, okAll, SPECIAL.undated).some((e) => e.includes('not allowed')), 'an ai_drama name without a date');
+  assert.ok(front(all, okAll, SPECIAL.polDated).some((e) => e.startsWith(`${SPECIAL.polDated} is not allowed`)), 'a pol_drama name with a date');
   const withSix = pairs.find((q) => q.a_id === w(6) && q.b_id === w(7)).id; // Acme 6 vs Firm 7, medium
   const twice = pinnedErrors({ ...seed('acme'), items: [SPECIAL.sameName, withSix, ...ok.filter((id) => id !== withSix && id !== SPECIAL.sameName)].slice(0, 10) }, CTX);
   assert.ok(twice.includes(`${withSix} repeats an item or breaks the mix of levels`), 'two records named Acme 6 are one item');
@@ -277,4 +280,56 @@ test('real dares/dares.json: valid seed; every filled dare passes the rules; fun
   assert.deepEqual(r.compact, bundle);
   for (const d of dares.filter((x) => x.items?.length)) assert.deepEqual(pinnedErrors(d, ctx), [], d.slug);
   assert.ok(bundle.some((d) => d.slug === 'altman'), 'the smoke test plays dr-altman');
+});
+
+// --- members of Congress (the Politics pack's dares) --------------------------------------------------------------------
+const member = (slug, party, extra = {}) => seed(slug, { party, bioguide: 'A000001', org: 'the Senate', topic: 'Congress', address: `Senator ${slug}`, ...extra });
+
+test('members of Congress: party, caucus and bioguide rules; the board shows them in equal numbers per party', () => {
+  assert.deepEqual(seedErrors([member('one', 'green'), member('two', 'independent'), member('three', 'democrat', { caucus: 'democrat' }),
+    member('four', 'republican', { bioguide: undefined }), member('five', 'independent', { caucus: 'green' }), member('six', 'democrat', { bioguide: 'o000172' })])
+    .map((e) => e.split(':')[0]), ['one', 'two', 'three', 'four', 'five', 'six']);
+  assert.deepEqual(seedErrors([member('seven', 'independent', { caucus: 'democrat' }), member('eight', 'republican'), seed('nine')]), []);
+  assert.deepEqual([sideOf(member('i', 'independent', { caucus: 'democrat' })), sideOf(member('r', 'republican')), sideOf(seed('x'))], ['democrat', 'republican', undefined]);
+  const filled = (slug, party, extra) => ({ ...member(slug, party, extra), items: ['p00001'] });
+  const board = [seed('acme', { items: ['p00001'] }), filled('d1', 'democrat'), filled('i1', 'independent', { caucus: 'democrat' }), filled('r1', 'republican')];
+  const { shown, waiting } = balanced(board);
+  assert.deepEqual([shown.map((d) => d.slug), waiting.map((d) => d.slug)], [['acme', 'd1', 'r1'], ['i1']]);
+  assert.deepEqual(balanced(board.slice(0, 3)).waiting.map((d) => d.slug), ['d1', 'i1'], 'no Republican filled: no member on the board');
+  // Through the build: two Democrats fill (keyword Acme), the Republican cannot, so both Democrats wait; the rest is unchanged.
+  const r = buildDares([seed('acme'), member('dem', 'democrat'), member('dem-two', 'democrat'), member('rep', 'republican', { keywords: ['Globex'] })], CTX);
+  assert.deepEqual(r.errors, []);
+  assert.deepEqual(r.compact.map((d) => d.slug), ['acme']);
+  assert.deepEqual(r.unfilled.map((u) => [u.slug, u.reason.split(' ')[0]]), [['rep', 'no'], ['dem', 'filled,'], ['dem-two', 'filled,']]);
+  assert.ok(r.dares.find((d) => d.slug === 'dem').items.length === 10, 'the waiting dare keeps its picks');
+});
+
+test('pages: a member of Congress gets ten questions about Congress (`topic`), addressed by chamber', async () => {
+  const template = readFileSync(new URL('../scripts/page.html', import.meta.url), 'utf8');
+  const db = openD1();
+  const v = { ...(await dareView(db, DATA, 'cole', NOW)).body, slug: 'cruz', name: 'Ted Cruz', address: 'Senator Cruz', org: 'the Senate' };
+  const page = darePage(template, v, new Map([['cruz', { topic: 'Congress' }]]));
+  assert.ok(page.includes('<h1 id="hero-title">Ten questions about Congress, written for Senator Cruz</h1>'));
+  assert.ok(page.includes('<p>Senator Cruz declined</p>'));
+});
+
+// The real file's members: who they are was checked on congress.gov (current members, 2026-10-05) and their X accounts
+// on Wikidata (web/NOTES.md); this checks the shape the coordinator asked for.
+test('real dares/dares.json: 24 members of Congress, 12 per side, addressed by chamber, the rival from the other side', () => {
+  const dares = JSON.parse(readFileSync(new URL('../../dares/dares.json', import.meta.url), 'utf8'));
+  const members = dares.filter((d) => d.party);
+  assert.equal(members.length, 24);
+  assert.deepEqual(SIDES.map((side) => members.filter((d) => sideOf(d) === side).length), [12, 12]);
+  const by = new Map(dares.map((d) => [d.slug, d]));
+  for (const d of members) {
+    const chamber = d.org === 'the Senate' ? 'Senate' : 'House';
+    assert.ok(['the Senate', 'the House'].includes(d.org), d.slug);
+    assert.equal(d.address, `${chamber === 'Senate' ? 'Senator' : 'Representative'} ${d.keywords[0]}`, d.slug);
+    assert.deepEqual([d.topic, d.pack, d.difficulty, d.keywords.length, d.keywords[2], d.status, d.dare_url], ['Congress', 'politics', 'normal', 3, chamber, 'open', null], d.slug);
+    assert.ok(d.name.endsWith(` ${d.keywords[0]}`) && /^[A-Za-z_]{1,15}$/.test(d.handle), d.slug);
+    const rival = by.get(d.rival);
+    assert.ok(rival?.party && sideOf(rival) !== sideOf(d), `${d.slug}: a rival from the other side`);
+    assert.ok(rival.keywords[1] === d.keywords[1] || rival.org === d.org, `${d.slug}: the rival shares the state or the chamber`);
+  }
+  assert.equal(new Set(members.map((d) => d.handle.toLowerCase())).size, 24);
 });

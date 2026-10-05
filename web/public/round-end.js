@@ -1,9 +1,9 @@
 // Pieces of a finished round's end screen: the result grid (one square per question, green right, red wrong) and the
-// detail card a square opens, and after an AI-pack round the lab block (the one piece that calls the API). Pure HTML
-// builders plus wiring functions, so node tests can render them. st = the round state of rounds.js: {items: [{id,
-// prompt, a, b}], answers: {id: {choice, conf, correct, points, truth, line}}}.
+// detail card a square opens, and after an AI or Politics round the side block (the one piece that calls the API).
+// Pure HTML builders plus wiring functions, so node tests can render them. st = the round state of rounds.js: {items:
+// [{id, prompt, a, b}], answers: {id: {choice, conf, correct, points, truth, line}}}.
 import { html, fmtValue, api, store, anonId } from './ui.js';
-import { LABS } from './packs.js';
+import { BOARDS } from './packs.js';
 
 export { fmtValue }; // the shared formatter: years, months, dollars, big counts (ui.js)
 export const fmtPoints = (p) => (p > 0 ? `+${p}` : p < 0 ? `−${-p}` : '0');
@@ -66,14 +66,18 @@ export function wireGrid(root, st, t) {
   });
 }
 
-// --- after an AI-pack round: "Which lab are you with?" ----------------------------------------------------------------
-// Six chips; a tap claims the round for that lab (POST /api/round/lab), presses the chip and shows the mini board. The
-// lab is kept in this browser (whosbluffing_lab) and later AI rounds claim it at once, showing "You're with {lab} ·
-// change". board = the body of GET /api/labs: {min_players, labs: [{lab, name, players, mean_score, mean_overconfidence}]}.
-export const LAB_KEY = 'whosbluffing_lab';
-export const savedLab = () => {
-  const lab = store.get(LAB_KEY, null);
-  return typeof lab === 'string' && Object.hasOwn(LABS, lab) ? lab : null;
+// --- after an AI or Politics round: "Which lab are you with?" / "Which side are you on?" ----------------------------
+// One chip per side of the pack's board (packs.js BOARDS: labs for AI, parties for Politics); a tap claims the round for
+// that side (POST /api/round/<key>), presses the chip and shows the mini board. The side is kept in this browser
+// (whosbluffing_lab, whosbluffing_party) and later rounds of that pack claim it at once, showing "You're with {lab}" or
+// "Your side: {side}" and "change". Quick rounds only: a challenge round loads as pack All, and a dare round is not a
+// quick round (the API refuses it). board = the body of GET /api/<list>: {min_players, <list>: [{<key>, name, players,
+// mean_score, mean_overconfidence}]}. Both boards use the lab-* class names (styles.css).
+export const boardOf = (st) => (st.mode === 'quick' && Object.hasOwn(BOARDS, st.pack ?? '') ? st.pack : null);
+const storeKey = (pack) => `whosbluffing_${BOARDS[pack].key}`;
+export const savedSide = (pack) => {
+  const side = store.get(storeKey(pack), null);
+  return typeof side === 'string' && Object.hasOwn(BOARDS[pack].sides, side) ? side : null;
 };
 const fmtScore = (n) => (n < 0 ? `−${-n}` : String(n));
 
@@ -88,71 +92,77 @@ export function overWords(x, t) {
 }
 
 // The board as a table in the API's order: players, then the average score (full: and the overconfidence in words), or
-// how many more players the lab needs. `mine` (the player's lab) is highlighted.
-export function labTable(board, mine, t, { full = false } = {}) {
+// how many more players the side needs. `mine` (the player's side) is highlighted.
+export function sideTable(pack, board, mine, t, { full = false } = {}) {
+  const { key, list } = BOARDS[pack];
   const row = (l) => {
     const need = board.min_players - l.players;
     const means = l.mean_score === null
-      ? html`<td class="lab-need" colspan="${full ? 2 : 1}">${need === 1 ? t('labs.need_one') : t('labs.need', { k: need })}</td>`
+      ? html`<td class="lab-need" colspan="${full ? 2 : 1}">${need === 1 ? t(`${list}.need_one`) : t(`${list}.need`, { k: need })}</td>`
       : html`<td>${fmtScore(Math.round(l.mean_score))}</td>${full ? html`<td>${overWords(l.mean_overconfidence, t)}</td>` : ''}`;
-    return html`<tr class="${l.lab === mine ? 'is-mine' : ''}"><th scope="row">${l.name}${l.lab === mine ? html` <span class="lab-you">${t('labs.yours')}</span>` : ''}</th><td>${l.players.toLocaleString('en-US')}</td>${means}</tr>`;
+    return html`<tr class="${l[key] === mine ? 'is-mine' : ''}"><th scope="row">${l.name}${l[key] === mine ? html` <span class="lab-you">${t(`${list}.yours`)}</span>` : ''}</th><td>${l.players.toLocaleString('en-US')}</td>${means}</tr>`;
   };
-  return html`<table class="vs lab-table"><thead><tr><th scope="col">${t('labs.col_lab')}</th><th scope="col">${t('labs.col_players')}</th><th scope="col">${t('labs.col_score')}</th>${full ? html`<th scope="col">${t('labs.col_over')}</th>` : ''}</tr></thead>
-<tbody>${board.labs.map(row)}</tbody></table>`;
+  return html`<table class="vs lab-table"><thead><tr><th scope="col">${t(`${list}.col_side`)}</th><th scope="col">${t(`${list}.col_players`)}</th><th scope="col">${t(`${list}.col_score`)}</th>${full ? html`<th scope="col">${t(`${list}.col_over`)}</th>` : ''}</tr></thead>
+<tbody>${board[list].map(row)}</tbody></table>`;
 }
 
-// The share text's lab line, once the player's lab has an average (min_players claims), else null.
-export function labShareLine(board, lab, t) {
-  const l = board?.labs.find((x) => x.lab === lab);
-  return l && l.mean_score !== null ? t('labs.share_line', { lab: l.name, score: fmtScore(Math.round(l.mean_score)) }) : null;
+// The share text's side line, once the player's side has an average (min_players claims), else null. Only boards with
+// `share` (the labs) have one; the Politics share text stays as it is.
+export function sideShareLine(pack, board, side, t) {
+  const { key, list, share } = BOARDS[pack];
+  const l = share ? board?.[list].find((x) => x[key] === side) : null;
+  return l && l.mean_score !== null ? t(`${list}.share_line`, { side: l.name, score: fmtScore(Math.round(l.mean_score)) }) : null;
 }
 
-// The share text with the lab line before the link, so the link stays last; unchanged without a line.
-export function withLabLine(text, line, url) {
+// The share text with the side line before the link, so the link stays last; unchanged without a line.
+export function withSideLine(text, line, url) {
   if (!line) return text;
   const tail = [`\n${url}`, ` · ${url}`].find((x) => text.endsWith(x));
   return tail ? `${text.slice(0, -tail.length)}\n${line}\n${url}` : `${text}\n${line}`;
 }
 
-// lab: the saved lab (the chips wait behind "change"), or null (the question and the chips).
-export function labBlock(t, lab) {
+// side: the saved side (the chips wait behind "change"), or null (the question and the chips).
+export function sideBlock(pack, t, side) {
+  const { list, sides } = BOARDS[pack];
   return html`<section class="card lab-claim" aria-labelledby="lab-q">
-  <h3 id="lab-q"${lab ? ' hidden' : ''}>${t('labs.question')}</h3>
-  <p class="lab-with"${lab ? '' : ' hidden'}><span data-lab-with>${lab ? t('labs.with', { lab: LABS[lab] }) : ''}</span> · <button type="button" class="link" data-lab-change>${t('labs.change')}</button></p>
-  <div class="chips lab-chips" role="group" aria-labelledby="lab-q"${lab ? ' hidden' : ''}>${Object.entries(LABS).map(([k, name]) => html`<button type="button" class="chip" data-lab="${k}" aria-pressed="${String(k === lab)}">${name}</button>`)}</div>
+  <h3 id="lab-q"${side ? ' hidden' : ''}>${t(`${list}.question`)}</h3>
+  <p class="lab-with"${side ? '' : ' hidden'}><span data-lab-with>${side ? t(`${list}.with`, { side: sides[side] }) : ''}</span> · <button type="button" class="link" data-lab-change>${t(`${list}.change`)}</button></p>
+  <div class="chips lab-chips" role="group" aria-labelledby="lab-q"${side ? ' hidden' : ''}>${Object.entries(sides).map(([k, name]) => html`<button type="button" class="chip" data-lab="${k}" aria-pressed="${String(k === side)}">${name}</button>`)}</div>
   <p class="msg" role="status"></p>
   <div data-lab-board></div>
-  <p class="small"><a href="/labs">${t('labs.full_board')}</a></p>
+  <p class="small"><a href="/${list}">${t(`${list}.full_board`)}</a></p>
 </section>`;
 }
 
-// Wires the block under `root` for the round; a saved lab claims at once. Returns {shareLine()}.
-export function wireLab(root, roundId, t) {
+// Wires the block under `root` for the round; a saved side claims at once. Returns {shareLine()}.
+export function wireSide(pack, root, roundId, t) {
+  const { key, list, sides } = BOARDS[pack];
   const el = root.querySelector('.lab-claim');
   const chips = [...el.querySelectorAll('[data-lab]')];
-  let lab = savedLab();
+  let side = savedSide(pack);
   let board = null;
   let busy = false;
   const claim = async (pick) => {
     if (busy) return;
     busy = true;
-    const r = await api('/api/round/lab', { method: 'POST', body: { round_id: roundId, anon_id: anonId(), lab: pick } });
+    const r = await api(`/api/round/${key}`, { method: 'POST', body: { round_id: roundId, anon_id: anonId(), [key]: pick } });
     busy = false;
-    el.querySelector('.msg').textContent = r.ok ? '' : t('labs.save_failed');
+    el.querySelector('.msg').textContent = r.ok ? '' : t(`${list}.save_failed`);
     if (!r.ok) return;
-    ({ lab, board } = r.data);
-    store.set(LAB_KEY, lab);
-    for (const c of chips) c.setAttribute('aria-pressed', String(c.dataset.lab === lab));
-    el.querySelector('[data-lab-with]').textContent = t('labs.with', { lab: LABS[lab] });
-    el.querySelector('[data-lab-board]').innerHTML = labTable(board, lab, t);
+    side = r.data[key];
+    board = r.data.board;
+    store.set(storeKey(pack), side);
+    for (const c of chips) c.setAttribute('aria-pressed', String(c.dataset.lab === side));
+    el.querySelector('[data-lab-with]').textContent = t(`${list}.with`, { side: sides[side] });
+    el.querySelector('[data-lab-board]').innerHTML = sideTable(pack, board, side, t);
   };
   for (const c of chips) c.addEventListener('click', () => claim(c.dataset.lab));
   el.querySelector('[data-lab-change]').addEventListener('click', () => {
     el.querySelector('.lab-with').hidden = true;
     el.querySelector('#lab-q').hidden = false;
     el.querySelector('.lab-chips').hidden = false;
-    (chips.find((c) => c.dataset.lab === lab) ?? chips[0]).focus();
+    (chips.find((c) => c.dataset.lab === side) ?? chips[0]).focus();
   });
-  if (lab) claim(lab);
-  return { shareLine: () => labShareLine(board, lab, t) };
+  if (side) claim(side);
+  return { shareLine: () => sideShareLine(pack, board, side, t) };
 }

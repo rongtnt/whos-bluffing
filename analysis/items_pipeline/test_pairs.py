@@ -319,6 +319,29 @@ class AiPack(unittest.TestCase):
         self.assertTrue(days and not used & {p["id"] for p in mine})
 
 
+class PoliticsPack(unittest.TestCase):
+    def pol(self, n, category, answer, unit, **extra):
+        return item(n, category, answer, ref="none", unit=unit, views=100, fact_checked=True, famous=True, tier=1, **extra)
+
+    def test_gaps_follow_the_ai_pack_counts_take_any_unit_and_nothing_is_ranked_or_takes_the_ai_slot(self):
+        years = [self.pol(n, "pol_elected", y, "year") for n, y in enumerate((2008, 2009, 2010, 2020), start=1)]
+        self.assertEqual(sorted(p["gap"] for p in pairs_of(years)), [2, 10, 11, 12])  # 2008/2009 and 2009/2010 too close
+        months = [self.pol(10 + k, c, m, "month") for k, (c, m) in enumerate((("pol_timeline", 202001), ("pol_timeline", 202003),
+                                                                              ("pol_timeline", 202004), ("pol_drama", 202001), ("pol_drama", 202003)))]
+        self.assertEqual(sorted((p["category"], p["gap"]) for p in pairs_of(months)), [("pol_drama", 2), ("pol_timeline", 3)])
+        counts = [self.pol(20, "pol_numbers", 100, "seats"), self.pol(21, "pol_numbers", 435, "seats"), self.pol(22, "pol_numbers", 300, "days")]
+        got = pairs_of(counts)
+        self.assertEqual([(p["unit"], p["prompt"], [p["a"], p["b"]][p["truth"]]) for p in got], [("seats", "Which is bigger?", "thing 21")])
+        self.assertIsNone(P.template("pol_unknown", "seats"))
+        everything = years + months + counts
+        ranked = pairs_of(spread_pool(Rounds.CATS, 120) + everything)
+        days = P.extend_rounds(ranked, {}, "2026-10-03", days=10)
+        mine = {p["id"] for p in ranked if p["category"].startswith("pol_")}
+        self.assertTrue(mine and days and not mine & {pid for e in days.values() for pid in P.day_pairs(e)})
+        items = {it["id"]: it for it in everything}
+        self.assertFalse(any(P.ai_slot_ok(p, items) for p in ranked if p["id"] in mine))
+
+
 class Stability(unittest.TestCase):
     def test_ids_and_a_b_order_survive_a_rebuild_and_new_pairs_get_new_ids(self):
         items = spread_pool(["river_length"], 40)

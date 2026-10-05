@@ -12,7 +12,9 @@ tech use the 1.3 ratio), their year
 difficulty scales to match (easy >= 10 years, medium >= 4), their tier 1-2 items count as
 famous (`famous`), and they stay out of ranked rounds and the chat question (QUICK_ONLY). AI items carry a `tier` (1 famous
 names and years, 2 events and money, 3 technical); a pair's tier is the higher of its two, and the AI pack draws by it
-(web/public/packs.js). ai_money items are `volatile` (dated figures): paired for quick rounds, never ranked.
+(web/public/packs.js). ai_money items are `volatile` (dated figures): paired for quick rounds, never ranked. The Politics
+pack (items/politics_curated.json: pol_elected, pol_timeline, pol_drama, pol_money, pol_numbers) follows the same rules
+(2 years, 3 or 2 months, money and counts 1.3), never takes a ranked slot, and pol_numbers pairs any unit (OPEN_UNIT).
 Left out: city populations, volatile items, retired items (`retired_at` in the pool, or daily/runtime.json, an export of
 items_runtime), the disputed items in DISPUTED, and countries under 20,000 monthly views (famous countries only). An item
 marked `ranked_ok: false` (fact-checked, but its definition or figure is ambiguous) is paired for quick rounds and its
@@ -61,8 +63,10 @@ COUNTRY_CATEGORIES = ("country_area", "country_population")
 RULE_LADDER = ([(gap, 2, 2) for gap in (ITEM_NO_REUSE_DAYS, 14, 7, 5)] + [(gap, 2, None) for gap in (ITEM_NO_REUSE_DAYS, 14, 7, 5)]
                + [(7, 3, None), (5, 4, None)])
 EXCLUDED_CATEGORIES = {"city_population"}
-# Hand-curated categories (items/ai_curated.json, the AI pack): quick rounds only, never a ranked round or the chat question.
-QUICK_ONLY = {"ai_released", "ai_company_founded", "ai_params", "ai_money", "ai_tech", "ai_drama"}
+# Hand-curated categories (items/ai_curated.json, the AI pack; items/politics_curated.json, the Politics pack): quick
+# rounds only, never a ranked round or the chat question (ai_timeline, the AI slot's category, apart).
+QUICK_ONLY = {"ai_released", "ai_company_founded", "ai_params", "ai_money", "ai_tech", "ai_drama",
+              "pol_elected", "pol_timeline", "pol_numbers", "pol_money", "pol_drama"}
 # From AI_SLOT_FROM on, ranked slot 1 (index 0) of every day is one ai_timeline pair (with_ai_slot); the category takes no
 # other ranked slot and is never the chat question. Its items need real pageviews >= FAME_RANKED there (ai_slot_ok).
 AI_SLOT = "ai_timeline"
@@ -119,13 +123,26 @@ TEMPLATES = {
     ("ai_tech", "GB of memory"): ("Which has more memory?", "had more memory", "had less memory"),
     ("ai_tech", "authors"): ("Which paper has more authors?", "had more authors", "had fewer authors"),
     ("ai_tech", "experts"): ("Which model has more experts?", "had more experts", "had fewer experts"),
+    ("pol_elected", "year"): ("Which came first?", "came first", "came later"),
+    ("pol_timeline", "month"): ("Which came first?", "came first", "came later"),
+    ("pol_drama", "month"): ("Which came first?", "came first", "came later"),
+    ("pol_money", "USD"): ("Which is bigger?", "was bigger", "was smaller"),
 }
+# pol_numbers takes any unit (items/politics_curated.json): every unit gets this template, and units never mix.
+OPEN_UNIT = {"pol_numbers": ("Which is bigger?", "was bigger", "was smaller")}
 # Minimum gap per (category, unit) when it is not MIN_GAP years or MIN_RATIO: AI years are 2 apart (the field is young;
-# a deviation from PREREG's 10, logged in CHANGELOG.md). Year difficulty scales with it: easy >= 5x, medium >= 2x.
+# a deviation from PREREG's 10, logged in CHANGELOG.md), and the Politics pack's follow the AI pack's. Year difficulty
+# scales with it: easy >= 5x, medium >= 2x.
 MIN_GAPS = {("ai_released", "year"): 2, ("ai_company_founded", "year"): 2, ("ai_params", "parameters"): MIN_RATIO,
-            ("ai_timeline", "month"): 3, ("ai_drama", "month"): 2}  # months: answers are YYYYMM numbers (202211 = November 2022)
+            ("ai_timeline", "month"): 3, ("ai_drama", "month"): 2,  # months: answers are YYYYMM numbers (202211 = November 2022)
+            ("pol_elected", "year"): 2, ("pol_timeline", "month"): 3, ("pol_drama", "month"): 2}
 NOT_A_PLANET = {"Pluto"}  # "its planet": moons of a dwarf planet stay out of the orbit-distance pairs
 REF_RANK = {"none": 0, "imported": 1, "referenced": 2}
+
+
+def template(category, unit):
+    """(prompt, more, less) for a pair of this category and unit, or None when such items are not paired."""
+    return TEMPLATES.get((category, unit)) or OPEN_UNIT.get(category)
 
 
 def is_year(unit):
@@ -176,7 +193,7 @@ def usable(item, retired):
         return False
     if views(item) < MIN_VIEWS.get(item["category"], 0):
         return False
-    if not item.get("name") or (item["category"], item["en"]["unit"]) not in TEMPLATES:
+    if not item.get("name") or template(item["category"], item["en"]["unit"]) is None:
         return False
     if item["en"]["unit"] == "km" and item["category"] == "solar_system_distance":
         parent = item["en"]["prompt"].rsplit(" from ", 1)[-1].rstrip("?")
@@ -316,15 +333,16 @@ def build_pairs(pool_items, previous=(), retired=(), scheduled=(), generated_at=
     pairs = sorted(pairs + carried, key=lambda p: p["id"])
     present = {number_key(p["a_id"], p["b_id"], p["category"], p["unit"]) for p in pairs}
     absent = sorted([n, a, b, k[2], k[3]] for k, (n, a, b) in known.items() if k not in present)
+    open_units = sorted({(p["category"], p["unit"]) for p in pairs if p["category"] in OPEN_UNIT})
     doc = {"version": 1, "generated_at": generated_at, "next_number": next_n,
            "templates": [{"category": c, "unit": u, "prompt": t[0], "more": t[1], "less": t[2], "min_gap": min_gap(c, u)}
-                         for (c, u), t in TEMPLATES.items()],
+                         for (c, u), t in list(TEMPLATES.items()) + [(k, template(*k)) for k in open_units]],
            "pairs": pairs, "absent": absent}
     return doc, report(pairs, items, carried)
 
 
 def make_pair(pair_id, a, b, ratio, gap, level):
-    prompt = TEMPLATES[(a["category"], a["en"]["unit"])][0]
+    prompt = template(a["category"], a["en"]["unit"])[0]
     weaker = min(item_ref(a), item_ref(b), key=REF_RANK.get)
     pair = {"id": pair_id, "a_id": a["id"], "b_id": b["id"], "truth": correct_index(a, b), "ratio": ratio}
     if gap is not None:
@@ -334,9 +352,9 @@ def make_pair(pair_id, a, b, ratio, gap, level):
     if a.get("ranked_ok") is False or b.get("ranked_ok") is False:
         pair["ranked_ok"] = False
     if "tier" in a or "tier" in b:
-        pair["tier"] = max(a.get("tier", 1), b.get("tier", 1))  # the AI pack draws by tier (web/public/packs.js)
+        pair["tier"] = max(a.get("tier", 1), b.get("tier", 1))  # the curated packs draw by tier (web/public/packs.js)
     if a.get("volatile") or b.get("volatile"):
-        pair["volatile"] = True  # dated figures (ai_money): quick rounds only
+        pair["volatile"] = True  # dated figures (ai_money, pol_money): quick rounds only
     return pair
 
 

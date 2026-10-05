@@ -134,7 +134,7 @@ if bad: print("rounds problems:", bad[:8]); sys.exit(1)
 print("rounds OK")
 PY
 
-say "dares: live-file guard (status in the enum, their_score only when played; every filled dare: 10 distinct pairs of its pack at its difficulty and mix, >= 5 naming a keyword, referenced or fact-checked, no volatile item or pair, no name twice, never p36637, a dated ai_drama name or a ranked pair; unfilled dares are listed, not failed)"
+say "dares: live-file guard (status in the enum, their_score only when played; every filled dare: 10 distinct pairs of its pack at its difficulty and mix, >= 5 naming a keyword, referenced or fact-checked, no volatile item or pair, no name twice, never p36637, a dated drama name or a ranked pair; unfilled dares are listed, not failed)"
 packs=$(node --input-type=module -e "import('$root/web/public/packs.js').then((m) => process.stdout.write(JSON.stringify(m.PACKS)))") || fail=1
 python3 - "$root" "$packs" <<'PY' || fail=1
 import json, re, sys
@@ -148,7 +148,7 @@ MIX = {"easy": {"easy": 10}, "normal": {"easy": 3, "medium": 4, "hard": 3}, "bru
 MON = "(?:Jan|Feb|Mar|Apr|May|Jun|Jul|Aug|Sep|Oct|Nov|Dec)"
 DATED = re.compile(rf"\b(?:19|20)\d{{2}}\b|\b{MON}[a-z]*\.? \d|\b\d{{1,2}} {MON}")
 band = lambda p: 2 if p.get("fame", 0) >= 50000 else 1 if p.get("fame", 0) >= 20000 else 0
-ok_item = lambda i: (i.get("ref_quality") == "referenced" or i.get("fact_checked") is True) and not i.get("volatile") and not (i["category"] == "ai_drama" and DATED.search(i["name"]))
+ok_item = lambda i: (i.get("ref_quality") == "referenced" or i.get("fact_checked") is True) and not i.get("volatile") and not (i["category"].endswith("_drama") and DATED.search(i["name"]))
 bad, unfilled = [], []
 for d in dares:
     s = d.get("slug")
@@ -177,5 +177,28 @@ if unfilled: print("WARN not filled, left off the board (data gap):", ", ".join(
 if bad: print("dare problems:", bad[:8]); sys.exit(1)
 print("dares OK")
 PY
+
+say "party balance (members of Congress: equal numbers per party in dares/dares.json, on the dare board and in the X watch list, joined by handle; a watched member whose dare is not on the board yet is a WARN)"
+ROOT="$root" node --input-type=module -e '
+const root = process.env.ROOT;
+const { readFileSync } = await import("node:fs");
+const { WATCH } = await import(`${root}/x/src/watch.js`);
+const dares = JSON.parse(readFileSync(`${root}/dares/dares.json`, "utf8"));
+const board = new Set(JSON.parse(readFileSync(`${root}/web/functions/_dares.json`, "utf8")).map((d) => d.slug));
+const side = (d) => d.caucus ?? d.party;
+const members = dares.filter((d) => d.party && d.status !== "removed");
+const byHandle = new Map(members.map((d) => [d.handle.toLowerCase(), d]));
+const watched = WATCH.filter((u) => u.pack === "politics").map((u) => byHandle.get(u.handle.toLowerCase()) ?? { slug: `@${u.handle}` });
+const count = (list) => ["democrat", "republican"].map((s) => list.filter((d) => side(d) === s).length);
+const rows = [["dares/dares.json", count(members)], ["the dare board", count(members.filter((d) => board.has(d.slug)))], ["the X watch list", count(watched)]];
+for (const [where, [dem, rep]] of rows) console.log(`${where}: ${dem} who caucus with the Democrats, ${rep} Republicans`);
+const unknown = watched.filter((d) => !d.party).map((d) => d.slug);
+const waiting = watched.filter((d) => d.party && !board.has(d.slug)).map((d) => d.slug);
+if (waiting.length) console.log(`WARN watched, but not on the dare board yet (their link 404s until it is filled): ${waiting.join(", ")}`);
+if (unknown.length) console.log(`watched as politicians but not in dares/dares.json: ${unknown.join(", ")}`);
+const bad = rows.filter(([, [dem, rep]]) => dem !== rep).map(([where]) => where);
+if (bad.length || unknown.length) { console.log(`party balance broken: ${bad.join(", ") || "the watch list"}`); process.exit(1); }
+console.log("party balance OK");
+' || fail=1
 
 say "result"; [ $fail -eq 0 ] && echo "ALL CHECKS PASSED" || { echo "FAILURES PRESENT"; exit 1; }

@@ -846,6 +846,10 @@ button.pick:hover { border-color: var(--accent); }
 .lab-table .is-mine > * { background: var(--accent-soft); }
 .lab-you { color: var(--accent); font-size: var(--fs-6); font-weight: 700; }
 .lab-need { color: var(--muted); }
+/* /parties' longest side name ("Independents"): tighter cells fit a 375 px phone; on a narrower one the table scrolls,
+   never the page. */
+.lab-board { overflow-x: auto; }
+@media (max-width: 400px) { .lab-table th, .lab-table td { padding-inline: 3px; } }
 
 /* The member in the Discord mock is the owner, with his real avatar. */
 img.dc-avatar { display: block; object-fit: cover; }

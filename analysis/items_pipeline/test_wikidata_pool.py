@@ -300,6 +300,102 @@ class AiPack(unittest.TestCase):
             self.assertEqual(timeline.get(name), month, name)
 
 
+POLITICS_FIXTURE = os.path.join(HERE, "..", "..", "web", "test", "fixtures", "politics_curated.json")
+POLITICS_FILE = os.path.join(HERE, "..", "..", "items", "politics_curated.json")
+DATED = re.compile(r"\b(?:19|20)\d{2}\b|\b(?:Jan|Feb|Mar|Apr|May|Jun|Jul|Aug|Sep|Oct|Nov|Dec)[a-z]*\.? \d|\b\d{1,2} (?:Jan|Feb|Mar|Apr|May|Jun|Jul|Aug|Sep|Oct|Nov|Dec)")
+
+
+class PoliticsPack(unittest.TestCase):
+    """The Politics pack (items/politics_curated.json) on its test fixture (web/test/fixtures/politics_curated.json, the
+    same schema): what the pipeline needs from every entry, and the fixture through the pool and the pairs."""
+
+    def assert_clean(self, entries):
+        self.assertEqual(len({(e["category"], e["source"]) for e in entries}), len(entries))  # ids are kept by category and source
+        self.assertEqual(len({(e["category"], e.get("unit"), e["name"]) for e in entries}), len(entries))
+        for e in entries:
+            cat = w.POL_CATEGORIES[e["category"]]  # a Politics category, nothing else
+            self.assertRegex(e["source"], r"^https://[^ ]+$")
+            self.assertTrue(e["name"] and e["note"], e)
+            self.assertIn(e["tier"], (1, 2, 3), e)
+            answer = int(e["month"].replace("-", "")) if "month" in e else e["answer"]
+            self.assertTrue(cat["accept"][0] <= answer <= cat["accept"][1], e)
+            if "month" in e:
+                self.assertRegex(e["month"], r"^\d{4}-(0[1-9]|1[0-2])$")
+                self.assertNotRegex(e["name"], DATED)  # "Which came first?": a date in the name shows the answer
+            if e["category"] == "pol_elected":
+                self.assertNotRegex(e["name"], DATED)
+            if e["category"] == "pol_numbers":
+                self.assertTrue(e["unit"] and isinstance(e["answer"], int), e)
+            if e["category"] == "pol_money":
+                self.assertTrue(e["volatile"] and re.match(r"^\d{4}-(0[1-9]|1[0-2])$", e["as_of"]) and DATED.search(e["name"]), e)
+            if e["category"] == "pol_drama":
+                self.assertTrue(e.get("fun") and "famous" in e, e["name"])
+            self.assertLessEqual(len(e.get("fun", "")), 140)
+            if "qid" in e:
+                self.assertRegex(e["qid"], r"^Q\d+$")
+
+    def test_the_fixture_is_clean_and_has_every_category(self):
+        with open(POLITICS_FIXTURE) as f:
+            entries = json.load(f)["items"]
+        self.assert_clean(entries)
+        self.assertEqual(len(entries), 30)
+        self.assertEqual({e["category"] for e in entries}, set(w.POL_CATEGORIES))
+
+    def test_the_real_file_is_clean_when_it_exists(self):
+        if not os.path.exists(POLITICS_FILE):
+            self.skipTest("items/politics_curated.json is not there yet")
+        with open(POLITICS_FILE) as f:
+            self.assert_clean(json.load(f)["items"])
+
+    def test_the_fixture_flows_through_the_pool_and_the_pairs_and_old_numbers_stay(self):
+        import pairs as P
+        with open(POLITICS_FIXTURE) as f:
+            entries = json.load(f)["items"]
+        ai = AiPack.ENTRIES
+        before, _ = w.build_pool(RAW, ai=ai, generated_at="2026-10-05")
+        after, report = w.build_pool(RAW, before["items"], ai=ai, politics=entries, next_number=before["next_number"], generated_at="2026-10-06")
+        old = {it["id"]: it["name"] for it in before["items"]}
+        self.assertEqual({i: n for i, n in ((it["id"], it["name"]) for it in after["items"]) if i in old}, old)  # nothing renumbered
+        pol = {it["name"]: it for it in after["items"] if it["category"].startswith("pol_")}
+        self.assertEqual((len(pol), report["_total"]["politics"]), (30, 30))
+        self.assertTrue(all(int(it["id"][1:]) >= before["next_number"] for it in pol.values()))  # new ids only
+        votes, ev = pol["Joe Biden's popular vote in 2020"], pol["electoral votes in the Electoral College"]
+        self.assertEqual((votes["en"], votes["tier"], votes["accept"], "famous" in votes),
+                         ({"prompt": "Joe Biden's popular vote in 2020: how many votes?", "unit": "votes"}, 3, [1, 1e10], False))
+        self.assertEqual(ev["en"]["unit"], "electoral votes")
+        obama = pol["Barack Obama (first elected president)"]
+        self.assertEqual((obama["answer"], obama["en"], obama["tier"], obama["famous"], obama["replaces"]),
+                         (2008, {"prompt": "Barack Obama (first elected president): in what year?", "unit": "year"}, 1, True,
+                          "https://www.wikidata.org/wiki/Q45578#P39"))
+        nixon = pol["Richard Nixon resigns the presidency"]
+        self.assertEqual((nixon["answer"], nixon["month"], nixon["en"]["unit"], nixon["fun"], nixon["famous"]),
+                         (197408, "1974-08", "month", "He is the only US president to have resigned.", True))
+        self.assertNotIn("famous", pol["The Supreme Court decides Bush v. Gore"])  # its subject's article is under 50,000 views
+        money = pol["TARP's authorized spending (Oct 2008)"]
+        self.assertEqual((money["en"]["unit"], money["volatile"], money["as_of"], money["tier"]), ("USD", True, "2008-10", 2))
+        again, _ = w.build_pool(RAW, after["items"], ai=ai, politics=entries, next_number=after["next_number"], generated_at="2026-10-07")
+        self.assertEqual({it["name"]: it["id"] for it in again["items"] if it["category"].startswith("pol_")}, {n: it["id"] for n, it in pol.items()})
+        # The pairs: every (category, unit) of the fixture pairs, the units never mix, nothing is ranked.
+        doc = P.build_pairs(after["items"], generated_at="2026-10-06")[0]
+        mine = [p for p in doc["pairs"] if p["category"].startswith("pol_")]
+        self.assertEqual({(p["category"], p["unit"]) for p in mine}, {(it["category"], it["en"]["unit"]) for it in pol.values()})
+        templates = {(t["category"], t["unit"]): t for t in doc["templates"]}
+        self.assertEqual((templates[("pol_numbers", "votes")]["prompt"], templates[("pol_numbers", "electoral votes")]["min_gap"]), ("Which is bigger?", 1.3))
+        self.assertFalse(any(P.ranked_ok(p) for p in mine))
+        by = {frozenset((p["a"], p["b"])): p for p in mine}
+        tarp = by[frozenset(("TARP's authorized spending (Oct 2008)", "the President's annual salary (since 2001)"))]
+        self.assertEqual((tarp["tier"], tarp["volatile"], [tarp["a"], tarp["b"]][tarp["truth"]]), (2, True, "TARP's authorized spending (Oct 2008)"))
+        self.assertNotIn(frozenset(("Joe Biden's popular vote in 2020", "Donald Trump's popular vote in 2020")), by)  # one entity, and 1.1 apart
+        drama = by[frozenset(("Richard Nixon resigns the presidency", "The House impeaches Bill Clinton"))]
+        self.assertEqual(([drama["a"], drama["b"]][drama["truth"]], drama["prompt"], drama["tier"]), ("Richard Nixon resigns the presidency", "Which came first?", 2))
+        # Adding the pack leaves every earlier pair number and a/b order alone.
+        first = P.build_pairs(before["items"], generated_at="2026-10-05")[0]
+        second = P.build_pairs(after["items"], first["pairs"], numbers=first, generated_at="2026-10-06")[0]
+        key = lambda p: (p["a_id"], p["b_id"], p["category"], p["unit"])
+        self.assertEqual({p["id"]: key(p) for p in second["pairs"] if p["id"] in {q["id"] for q in first["pairs"]}}, {p["id"]: key(p) for p in first["pairs"]})
+        self.assertTrue(all(int(p["id"][1:]) >= first["next_number"] for p in second["pairs"] if p["category"].startswith("pol_")))
+
+
 class References(unittest.TestCase):
     def row(self, referenced, imported, rank=NORMAL):
         return {"referenced": referenced, "imported": imported, "rank": rank}
@@ -428,7 +524,8 @@ class Cli(unittest.TestCase):
             with redirect_stderr(io.StringIO()):
                 code = w.main(["--fixture", FIXTURE, "--out", out, "--schedule", os.path.join(tmp, "none.json"),
                                "--rounds", os.path.join(tmp, "none.json"), "--pairs", os.path.join(tmp, "none.json"),
-                               "--curated", os.path.join(tmp, "none.json"), "--ai", os.path.join(tmp, "none.json")])
+                               "--curated", os.path.join(tmp, "none.json"), "--ai", os.path.join(tmp, "none.json"),
+                               "--politics", os.path.join(tmp, "none.json")])
             self.assertEqual(code, 0)
             with open(out) as f:
                 self.assertEqual(len(json.load(f)["items"]), 21)

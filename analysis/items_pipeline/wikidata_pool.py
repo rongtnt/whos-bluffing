@@ -24,7 +24,8 @@ P143 / Wikimedia import URL P4656 / retrieved P813; `imported` = only Wikipedia-
 pinned (kept verbatim with `fact_checked: true`), and the generated twin of the same Wikidata statement (their
 `replaces` URL, or their own source when it is a Wikidata link) is dropped. Curated launch years (items/launch_years.json:
 famous products whose Wikidata items have no launch date) are merged as fact-checked product_released items, and the AI
-pack (items/ai_curated.json: AI_CATEGORIES, no Wikidata query) as fact-checked items marked `famous`.
+and Politics packs (items/ai_curated.json: AI_CATEGORIES; items/politics_curated.json: POL_CATEGORIES; no Wikidata
+query) as fact-checked items marked `famous`.
 """
 import argparse
 import datetime
@@ -605,24 +606,40 @@ TECH_UNITS = {  # unit: (sanity range, question)
     "authors": ([1, 1e4], "How many authors does {name} have?"),
     "experts": ([1, 1e5], "How many experts does {name} have?"),
 }
-TIER_BY_CATEGORY = {"ai_released": 1, "ai_company_founded": 1, "ai_timeline": 1, "ai_drama": 2, "ai_money": 2, "ai_params": 3, "ai_tech": 3}
+# The Politics pack (items/politics_curated.json): the AI pack's schema and rules. pol_elected: election years;
+# pol_timeline and pol_drama: events at month precision (`month`, YYYY-MM; drama with `famous` and a `fun` line);
+# pol_money: dated public dollar figures (`volatile`, `as_of`); pol_numbers: counts with the entry's own `unit` (any
+# unit: one sanity range and one question for all of them, one comparison template per unit in pairs.py).
+POL_CATEGORIES = {
+    "pol_elected": dict(domain="history", unit="year", accept=[1600, CURRENT_YEAR], prop="P39", prompt="{name}: in what year?"),
+    "pol_timeline": dict(domain="history", unit="month", accept=[160001, CURRENT_YEAR * 100 + 12], prop="P585",
+                         prompt="{name}: in what month and year?"),
+    "pol_drama": dict(domain="history", unit="month", accept=[160001, CURRENT_YEAR * 100 + 12], prop="P793",
+                      prompt="{name}: in what month and year?"),
+    "pol_money": dict(domain="everyday", unit="USD", accept=[1e3, 1e14], prop="P2130", prompt="{name}: how many US dollars?"),
+    "pol_numbers": dict(domain="everyday", unit=None, accept=[1, 1e10], prop="P1114", prompt="{name}: how many {unit}?"),
+}
+CURATED_CATEGORIES = {**AI_CATEGORIES, **POL_CATEGORIES}
+TIER_BY_CATEGORY = {"ai_released": 1, "ai_company_founded": 1, "ai_timeline": 1, "ai_drama": 2, "ai_money": 2, "ai_params": 3, "ai_tech": 3,
+                    "pol_elected": 1, "pol_timeline": 1, "pol_drama": 2, "pol_money": 2, "pol_numbers": 3}
 
 
 def ai_items(entries, generated_at):
-    """Items from items/ai_curated.json entries {category, tier, name, answer (or month: YYYY-MM), note, source[, qid]
-    [, prompt][, fun][, unit (ai_tech)][, volatile, as_of (ai_money)]}: fact-checked, with `tier` (1 famous names and years,
-    2 events and money, 3 technical). Tiers 1 and 2 are `famous` (the familiarity gate treats them as famous) unless the
-    entry says `"famous": false` (ai_drama: famous only when its subject's article has 50,000+ monthly views); tier 3 is
-    judged by its own pageviews. The note goes in `notes`, the optional reveal line in `fun`."""
+    """Items from the curated packs' entries (items/ai_curated.json, items/politics_curated.json) {category, tier, name,
+    answer (or month: YYYY-MM), note, source[, qid][, prompt][, fun][, unit (ai_tech, pol_numbers)][, volatile, as_of
+    (money)]}: fact-checked, with `tier` (1 famous names and years, 2 events and money, 3 technical). Tiers 1 and 2 are
+    `famous` (the familiarity gate treats them as famous) unless the entry says `"famous": false` (drama: famous only when
+    its subject's article has 50,000+ monthly views); tier 3 is judged by its own pageviews. The note goes in `notes`, the
+    optional reveal line in `fun`."""
     out = []
     for e in entries:
-        cat = AI_CATEGORIES[e["category"]]
-        unit = e["unit"] if e["category"] == "ai_tech" else cat["unit"]
+        cat = CURATED_CATEGORIES[e["category"]]
+        unit = cat["unit"] or e["unit"]
         accept, question = TECH_UNITS[unit] if e["category"] == "ai_tech" else (cat["accept"], cat["prompt"])
         tier = e.get("tier", TIER_BY_CATEGORY[e["category"]])
         answer = int(e["month"].replace("-", "")) if "month" in e else e["answer"]
         it = {"type": "interval", "category": e["category"], "domain": cat["domain"],
-              "en": {"prompt": e.get("prompt") or question.format(name=e["name"]), "unit": unit}, "answer": answer,
+              "en": {"prompt": e.get("prompt") or question.format(name=e["name"], unit=unit), "unit": unit}, "answer": answer,
               "accept": list(accept), "source": e["source"], "difficulty_hint": "unknown", "volatile": bool(e.get("volatile")),
               "generated_at": generated_at, "name": e["name"], "ref_quality": "none", "fact_checked": True, "tier": tier,
               "notes": f"curated: {e['note']}"}
@@ -635,10 +652,10 @@ def ai_items(entries, generated_at):
     return out
 
 
-def build_pool(responses, previous_items=(), scheduled_ids=(), generated_at=None, curated=(), next_number=1, ai=()):
+def build_pool(responses, previous_items=(), scheduled_ids=(), generated_at=None, curated=(), next_number=1, ai=(), politics=()):
     """responses: {category name: SPARQL JSON}; curated: items/launch_years.json entries; ai: items/ai_curated.json
-    entries; next_number: the last pool's `next_number` (ids of dropped items are never handed out again). Returns
-    (pool dict, report)."""
+    entries; politics: items/politics_curated.json entries; next_number: the last pool's `next_number` (ids of dropped
+    items are never handed out again). Returns (pool dict, report)."""
     generated_at = generated_at or datetime.date.today().isoformat()
     previous_items = list(previous_items)
     all_items, report = [], {}
@@ -658,7 +675,7 @@ def build_pool(responses, previous_items=(), scheduled_ids=(), generated_at=None
     all_items, cross_dupes = dedupe(all_items)
     # Curated launch years are rebuilt from their file every time: they win over a generated or pinned twin, and their
     # previous copies (which carry notes) are not pinned again. assign_ids keeps their ids by source.
-    cur = curated_items(curated, generated_at) + ai_items(ai, generated_at)
+    cur = curated_items(curated, generated_at) + ai_items(list(ai) + list(politics), generated_at)
     cur_sources, cur_keys = {it["source"] for it in cur}, {twin_key(it) for it in cur} - {None}
     # Curated items are rebuilt from their files only: one taken out of its file leaves the pool (it is never pinned).
     pinned, all_items = pin([it for it in previous_items if it["source"] not in cur_sources
@@ -671,7 +688,7 @@ def build_pool(responses, previous_items=(), scheduled_ids=(), generated_at=None
     carried = [it for it in previous_items if it["id"] in set(scheduled_ids) - present]
     pool_items = sorted(pool_items + carried, key=lambda it: it["id"])
     report["_total"] = {"kept": len(pool_items), "carried_scheduled": len(carried), "cross_category_duplicates": cross_dupes,
-                        "pinned": len(pinned), "curated": len(cur), "ai": len(ai)}
+                        "pinned": len(pinned), "curated": len(cur), "ai": len(ai), "politics": len(politics)}
     high = max([next_number] + [int(it["id"][1:]) + 1 for it in pool_items + previous_items])
     return {"version": 1, "generated_at": generated_at, "next_number": high, "items": pool_items}, report
 
@@ -767,6 +784,8 @@ def main(argv=None):
     ap.add_argument("--pairs", default=os.path.join(ROOT, "items", "pairs.json"))
     ap.add_argument("--curated", default=os.path.join(ROOT, "items", "launch_years.json"), help="curated launch years")
     ap.add_argument("--ai", default=os.path.join(ROOT, "items", "ai_curated.json"), help="the AI pack's curated items")
+    ap.add_argument("--politics", default=os.path.join(ROOT, "items", "politics_curated.json"),
+                    help="the Politics pack's curated items (no file: no Politics items)")
     args = ap.parse_args(argv)
 
     if args.fixture:
@@ -788,7 +807,8 @@ def main(argv=None):
         for pid in list(day["ranked"]) + [day["question"]]:
             scheduled.update(pair_items.get(pid, ()))
     pool, report = build_pool(responses, previous, scheduled, curated=read_json(args.curated, {"items": []})["items"],
-                              next_number=last.get("next_number", 1), ai=read_json(args.ai, {"items": []})["items"])
+                              next_number=last.get("next_number", 1), ai=read_json(args.ai, {"items": []})["items"],
+                              politics=read_json(args.politics, {"items": []})["items"])
     with open(args.out, "w") as f:
         json.dump(pool, f, ensure_ascii=False, indent=1)
         f.write("\n")

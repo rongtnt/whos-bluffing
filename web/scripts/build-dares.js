@@ -3,8 +3,8 @@
 // levels, and Normal's one lesser-known pair), deterministically: candidates are shuffled by a hash of the slug, pairs
 // naming a keyword first. Rules: at least KEYWORD_FLOOR pairs with an item whose name contains one of the dare's
 // keywords (case-insensitive), the rest from the same pack; both items referenced or fact-checked; no volatile item or
-// pair; no item twice; never the home page's example pair, an ai_drama item whose name still carries a date, or a pair
-// of a ranked day or chat question in daily/rounds.json (a dare must not show them early).
+// pair; no item twice; never the home page's example pair, a drama item (ai_drama, pol_drama) whose name still carries a
+// date, or a pair of a ranked day or chat question in daily/rounds.json (a dare must not show them early).
 // The picks are written into dares.json (`items`) once and then kept: a fixed round must not change under its players,
 // so later runs check them and fail loudly when one breaks a rule (empty `items` to pick again). A dare that cannot be
 // filled is reported and left off the board. Writes functions/_dares.json: the dares on the board, the fields the
@@ -19,6 +19,11 @@ export const KEYWORD_FLOOR = 5;
 export const EXAMPLE_PAIR = 'p36637'; // the home page's example: ChatGPT (released) vs Anthropic (founded)
 export const STATUSES = ['open', 'played', 'declined', 'removed'];
 export const PRONOUNS = ['he', 'she', 'they'];
+// Members of Congress carry `party` (an independent also `caucus`, the party they sit with) and their congress.gov
+// `bioguide` id; the board shows them in equal numbers per side (sideOf), so a filled dare of the bigger side waits.
+export const MEMBER_PARTIES = ['democrat', 'republican', 'independent'];
+export const SIDES = ['democrat', 'republican'];
+export const sideOf = (d) => d.caucus ?? d.party;
 // A date in a name: a year, a month followed by a number, or a day followed by a month.
 const MON = '(?:Jan|Feb|Mar|Apr|May|Jun|Jul|Aug|Sep|Oct|Nov|Dec)';
 export const DATED = new RegExp(`\\b(?:19|20)\\d{2}\\b|\\b${MON}[a-z]*\\.? \\d|\\b\\d{1,2} ${MON}`);
@@ -47,6 +52,9 @@ export function seedErrors(dares) {
     for (const k of ['name', 'address', 'org']) if (!text(d[k])) e(`missing ${k}`);
     if (d.topic != null && !text(d.topic)) e('topic must be text');
     if (d.pronoun != null && !PRONOUNS.includes(d.pronoun)) e('pronoun must be he, she or they');
+    if (d.party != null && !MEMBER_PARTIES.includes(d.party)) e('party must be democrat, republican or independent');
+    if ((d.party === 'independent') !== (d.caucus != null) || (d.caucus != null && !SIDES.includes(d.caucus))) e('an independent (only) needs caucus: democrat or republican');
+    if (d.party != null && !/^[A-Z]\d{6}$/.test(d.bioguide ?? '')) e('a member of Congress needs their congress.gov bioguide id');
     if (!Object.hasOwn(PACKS, d.pack ?? '')) e('unknown pack');
     if (!Object.hasOwn(DIFFICULTIES, d.difficulty ?? '')) e('difficulty must be easy, normal or brutal');
     if (!Array.isArray(d.keywords) || !d.keywords.length || !d.keywords.every(text)) e('keywords must be a list of words');
@@ -71,7 +79,7 @@ export function dareContext({ pool, doc, rounds, data }) {
   };
 }
 
-const itemOk = (i) => (i.ref_quality === 'referenced' || i.fact_checked === true) && !i.volatile && !(i.category === 'ai_drama' && DATED.test(i.name ?? ''));
+const itemOk = (i) => (i.ref_quality === 'referenced' || i.fact_checked === true) && !i.volatile && !(/_drama$/.test(i.category) && DATED.test(i.name ?? ''));
 
 // The pairs a dare may use, in its order: pairs naming one keyword item, then two (they spend two), then the rest of
 // the pack; each group shuffled by the slug. An item is its name (lower case): two records of one model, say its
@@ -158,8 +166,17 @@ const compactDare = ({ slug, name, address, org, topic, pronoun, pack, difficult
   dare_url: dareUrl ?? null, status, their_score: theirs ?? null, items,
 });
 
-// {errors, unfilled, dares, compact}: errors stop the build; unfilled ({slug, reason}) are left off the board; dares =
-// the file with new picks; compact = the bundle.
+// The board's dares with members of Congress in equal numbers per side: the first n of each side in file order, n = the
+// smaller side's count. Returns {shown, waiting}.
+export function balanced(board) {
+  const members = (side) => board.filter((d) => d.party && sideOf(d) === side);
+  const n = Math.min(...SIDES.map((side) => members(side).length));
+  const waiting = SIDES.flatMap((side) => members(side).slice(n));
+  return { shown: board.filter((d) => !waiting.includes(d)), waiting };
+}
+
+// {errors, unfilled, dares, compact}: errors stop the build; unfilled ({slug, reason}) are left off the board, with the
+// filled dares that wait for the other party's; dares = the file with new picks; compact = the bundle.
 export function buildDares(dares, ctx) {
   const errors = seedErrors(dares);
   if (errors.length) return { errors, unfilled: [], dares, compact: [] };
@@ -174,7 +191,9 @@ export function buildDares(dares, ctx) {
     if (r.error) unfilled.push({ slug: d.slug, reason: r.error });
     return r.items ? { ...d, items: r.items } : d;
   });
-  return { errors, unfilled, dares: out, compact: out.filter((d) => d.status !== 'removed' && d.items?.length).map(compactDare) };
+  const { shown, waiting } = balanced(out.filter((d) => d.status !== 'removed' && d.items?.length));
+  for (const d of waiting) unfilled.push({ slug: d.slug, reason: 'filled, but waits for one more filled dare of the other party (the board shows members of Congress in equal numbers per party)' });
+  return { errors, unfilled, dares: out, compact: shown.map(compactDare) };
 }
 
 // Two-space JSON with lists of words on one line, as the owner edits it.

@@ -2,7 +2,8 @@
 
 A Cloudflare Worker with two jobs:
 
-1. **Watch** the people in `src/watch.js` (AI lab leaders, researchers, founders, investors). Every two minutes it asks
+1. **Watch** the people in `src/watch.js` (AI lab leaders, researchers, founders, investors, and 24 members of Congress,
+   12 per party, whose drafts use the politics lines and link their dare pages). Every two minutes it asks
    X for their new posts and, for each one, sends a Discord message to a private channel with the post, a polite
    personalised dare ("Mr. Altman, I would bet you can't get all ten of these right: …?pack=ai&difficulty=brutal"), and
    a prefilled reply link. You tap the link on your phone, read the draft, and press Post. Nothing is replied
