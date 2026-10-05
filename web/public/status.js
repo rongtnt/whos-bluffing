@@ -34,6 +34,7 @@ async function main() {
     dau: k?.as_of ? num(k.dau) : null,
     communities: k?.as_of ? num((c.workspaces ?? 0) + (c.guilds ?? 0) + (c.rooms ?? 0) + (c.classrooms ?? 0)) : null,
     ranked: stats.ok ? num(stats.data.players) : null,
+    total: stats.ok && stats.data.total_played != null ? num(stats.data.total_played) : null,
   };
   for (const el of document.querySelectorAll('[data-kpi]')) if (values[el.dataset.kpi] != null) el.textContent = values[el.dataset.kpi];
 }
