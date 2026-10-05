@@ -267,6 +267,28 @@ class AiPack(unittest.TestCase):
         self.assertTrue(all("OpenAI" in p["a"] + p["b"] for p in early[:2]))  # the first week prefers OpenAI pairs
         self.assertEqual(P.with_ai_slot(pairs, out, items, start="2026-10-05"), out)  # idempotent
 
+    def test_money_and_tech_pairs_carry_the_higher_tier_volatile_money_is_paired_but_never_ranked(self):
+        money = [dict(self.ai(1, "ai_money", 6.6e9), en={"prompt": "?", "unit": "USD"}, volatile=True, tier=2),
+                 dict(self.ai(2, "ai_money", 157e9), en={"prompt": "?", "unit": "USD"}, volatile=True, tier=2)]
+        p = pairs_of(money)[0]
+        self.assertEqual((p["prompt"], p["tier"], p["volatile"], P.ranked_ok(p)), ("Which is bigger?", 2, True, False))
+        tech = [dict(self.ai(3, "ai_tech", 8000), en={"prompt": "?", "unit": "tokens of context"}, tier=3, famous=False),
+                dict(self.ai(4, "ai_tech", 200000), en={"prompt": "?", "unit": "tokens of context"}, tier=3, famous=False),
+                dict(self.ai(5, "ai_tech", 80e9), en={"prompt": "?", "unit": "transistors"}, tier=3, famous=False)]
+        got = pairs_of(tech)
+        self.assertEqual([(q["prompt"], q["tier"], q["fame"]) for q in got], [("Which has the longer context window?", 3, 100)])  # units never mix
+        generated = pairs_of([item(1, "river_length", 100, volatile=True), item(2, "river_length", 1000)])
+        self.assertEqual(generated, [])  # outside the AI pack a volatile item is still left out
+        t1 = self.month(10, "ChatGPT (released)", 202211, views=90000, qid="Q1")
+        t2 = dict(self.month(11, "Amazon invests in Anthropic", 202309, views=90000, qid="Q2"), tier=2)
+        t3 = dict(self.month(12, "a technical milestone", 202101, views=90000, qid="Q3"), tier=3)
+        tiers = {frozenset((q["a"], q["b"])): q["tier"] for q in pairs_of([t1, t2, t3])}
+        self.assertEqual(tiers[frozenset(("ChatGPT (released)", "Amazon invests in Anthropic"))], 2)
+        items = {i["id"]: i for i in (t1, t2, t3)}
+        ok = {frozenset((q["a"], q["b"])): P.ai_slot_ok(q, items) for q in pairs_of([t1, t2, t3])}
+        self.assertTrue(ok[frozenset(("ChatGPT (released)", "Amazon invests in Anthropic"))])
+        self.assertFalse(ok[frozenset(("ChatGPT (released)", "a technical milestone"))])  # tier 3 never fills the ranked slot
+
     def test_ai_items_count_as_famous_and_never_enter_ranked_days_or_the_question(self):
         ai = [self.ai(900 + k, "ai_released", 1960 + 3 * k) for k in range(20)]
         pairs = pairs_of(spread_pool(Rounds.CATS, 120) + ai)

@@ -5,6 +5,7 @@ fixture (fixtures/sparql_fixture.json, real responses trimmed from the 2026-10-0
 """
 import io
 import json
+import re
 import os
 import sys
 import tempfile
@@ -218,12 +219,17 @@ class AiPack(unittest.TestCase):
                 "source": "https://en.wikipedia.org/wiki/Deep_Blue_versus_Garry_Kasparov", "qid": "Q3235334",
                 "prompt": "In what year did Deep Blue beat Garry Kasparov in a match?"},
                {"category": "ai_timeline", "name": "ChatGPT (released)", "month": "2022-11", "note": "30 November 2022",
-                "source": "https://en.wikipedia.org/wiki/ChatGPT", "qid": "Q115564437", "fun": "A reveal line."}]
+                "source": "https://en.wikipedia.org/wiki/ChatGPT", "qid": "Q115564437", "fun": "A reveal line."},
+               {"category": "ai_money", "tier": 2, "name": "OpenAI's valuation (Oct 2024 round)", "answer": 157e9, "as_of": "2024-10",
+                "volatile": True, "note": "$157 billion", "source": "https://en.wikipedia.org/wiki/OpenAI#:~:text=%24157%20billion"},
+               {"category": "ai_tech", "tier": 3, "name": "Claude 2", "unit": "tokens of context", "answer": 100000,
+                "note": "100K", "source": "https://www.anthropic.com/news/claude-2"}]
 
     def test_ai_items_are_merged_fact_checked_famous_and_keep_their_ids(self):
         first, report = w.build_pool(RAW, ai=self.ENTRIES, generated_at="2026-10-04")
         ai = {it["name"]: it for it in first["items"] if it["category"].startswith("ai_")}
-        self.assertEqual(set(ai), {"ChatGPT", "Grok-1", "Deep Blue's win over Kasparov", "ChatGPT (released)"})
+        self.assertEqual(set(ai), {"ChatGPT", "Grok-1", "Deep Blue's win over Kasparov", "ChatGPT (released)",
+                                   "OpenAI's valuation (Oct 2024 round)", "Claude 2"})
         chat = ai["ChatGPT"]
         self.assertEqual((chat["answer"], chat["fact_checked"], chat["famous"], chat["replaces"], chat["domain"]),
                          (2022, True, True, "https://www.wikidata.org/wiki/Q115564437#P577", "everyday"))
@@ -232,7 +238,13 @@ class AiPack(unittest.TestCase):
         self.assertEqual(ai["Grok-1"]["en"], {"prompt": "How many parameters does Grok-1 have?", "unit": "parameters"})
         self.assertNotIn("replaces", ai["Grok-1"])  # no Wikidata entity named: its own id is its entity
         self.assertEqual(ai["Deep Blue's win over Kasparov"]["en"]["prompt"], "In what year did Deep Blue beat Garry Kasparov in a match?")
-        self.assertEqual(report["_total"]["ai"], 4)
+        self.assertEqual(report["_total"]["ai"], 6)
+        val, ctx = ai["OpenAI's valuation (Oct 2024 round)"], ai["Claude 2"]
+        self.assertEqual((val["en"]["unit"], val["volatile"], val["as_of"], val["tier"], val["famous"]), ("USD", True, "2024-10", 2, True))
+        self.assertEqual((ctx["en"], ctx["tier"], ctx["accept"]), ({"prompt": "How long is Claude 2's context window, in tokens?",
+                                                                    "unit": "tokens of context"}, 3, [100, 1e9]))
+        self.assertNotIn("famous", ctx)  # technical facts are judged by their own pageviews
+        self.assertEqual((chat["tier"], ai["Grok-1"]["tier"]), (1, 3))
         month = ai["ChatGPT (released)"]  # same source as the year item, another category: its own id
         self.assertEqual((month["answer"], month["month"], month["en"]["unit"], month["fun"], month["domain"]),
                          (202211, "2022-11", "month", "A reveal line.", "history"))
@@ -247,13 +259,19 @@ class AiPack(unittest.TestCase):
         with open(os.path.join(HERE, "..", "..", "items", "ai_curated.json")) as f:
             entries = json.load(f)["items"]
         self.assertEqual(len({(e["category"], e["source"]) for e in entries}), len(entries))  # ids are kept by category and source
-        self.assertEqual(len({(e["category"], e["name"]) for e in entries}), len(entries))
+        self.assertEqual(len({(e["category"], e.get("unit"), e["name"]) for e in entries}), len(entries))
         by_cat = {}
         for e in entries:
             cat = w.AI_CATEGORIES[e["category"]]
             self.assertRegex(e["source"], r"^https://[^ ]+$")
             self.assertTrue(e["name"] and e["note"], e)
             answer = int(e["month"].replace("-", "")) if e["category"] == "ai_timeline" else e["answer"]
+            self.assertIn(e["tier"], (1, 2, 3), e)
+            if e["category"] == "ai_tech":
+                cat = dict(cat, accept=w.TECH_UNITS[e["unit"]][0])
+            if e["category"] == "ai_money":
+                self.assertTrue(e["volatile"] and re.match(r"^20\d\d-(0[1-9]|1[0-2])$", e["as_of"]), e)
+                self.assertRegex(e["name"], r"\((?:[^()]*\b)?(Jan|Feb|Mar|Apr|May|Jun|Jul|Aug|Sep|Oct|Nov|Dec) 20\d\d|20\d\d\)|\b(Jan|Feb|Mar|Apr|May|Jun|Jul|Aug|Sep|Oct|Nov|Dec) 20\d\d")
             if e["category"] == "ai_timeline":
                 self.assertRegex(e["month"], r"^(19|20)\d\d-(0[1-9]|1[0-2])$")
             self.assertTrue(cat["accept"][0] <= answer <= cat["accept"][1], e)

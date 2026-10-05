@@ -1,0 +1,12 @@
+# AI pack: weekly update (Mondays)
+
+1. Scan the past 7 days: the company newsrooms (anthropic.com/news, openai.com/news in a browser, blog.google, ai.meta.com/blog, x.ai/news, mistral.ai/news, nvidianews.nvidia.com, news.microsoft.com), the Reuters, Bloomberg, FT and CNBC tech pages, and the Wikipedia articles of the big AI companies (their history and funding sections).
+2. Keep only facts with a public number and a date: funding rounds, valuations, deals, revenue run rates, release months, published technical numbers. Skip anything without a named source.
+3. Add each fact to `items/ai_curated.json` as one line: `category` (ai_money, ai_timeline, ai_released or ai_tech), `tier` (1 famous names and years, 2 events and money, 3 technical), a neutral `name` with the date in it ("OpenAI's valuation (Oct 2024 round)"), the value (`answer`, or `month` as YYYY-MM), one https `source` (the company's post, or Wikipedia with a `#:~:text=` fragment), and a `note` giving the exact day and the publisher. Write "reported" in the name when the figure was reported, not announced.
+4. Money: set `"volatile": true` and `"as_of": "YYYY-MM"`. Never overwrite an old figure; add a new dated item (a new valuation is a new line), so every old pair stays true. Volatile items never enter ranked rounds.
+5. A correction (the source changed the number): fix that line's value and note in place; the item keeps its id, which is keyed by category and source.
+6. Rebuild from the repo root: `python3 analysis/items_pipeline/wikidata_pool.py --raw-dir DIR` (DIR = the saved Wikidata answers; without it the script queries Wikidata again and other categories can shift), then `apply_factcheck.py`, `pageviews.py --cache DIR2 --today 2026-10-04` (keep this date until a planned refresh: a new 3-month window moves fame bands, and a ranked item under 50,000 views fails the rounds guard), `pairs.py --today YYYY-MM-DD` (today in UTC).
+7. Never pass `--fresh`: pair numbers are permanent (`next_number` and `absent` in `items/pairs.json`), and live answers point at them.
+8. Check: `python3 -m unittest discover -s analysis/items_pipeline`, `cd web && npm run sync-items && npm test`, `bash scripts/check.sh` (must say ALL CHECKS PASSED).
+9. Read the new rows in `items/pairs.REVIEW.md` and play one AI round at each difficulty. Easy should show tier 1 only, Normal tiers 1-2, Brutal tiers 2-3.
+10. Commit `items/ai_curated.json` together with `items/pool.json`, `items/pairs.json`, `daily/rounds.json` and the two REVIEW files, then deploy as usual.

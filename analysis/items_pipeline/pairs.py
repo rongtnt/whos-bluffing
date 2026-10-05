@@ -6,9 +6,12 @@
 
 Pairs: two items of items/pool.json with the same category and unit; the larger value is at least 1.3 times the
 smaller (melting points compared in kelvin), or, for years, at least 10 years apart ("Which came first?"). The AI pack's
-categories (items/ai_curated.json: ai_released, ai_company_founded, ai_params) need only 2 years (MIN_GAPS, written to
-each template as `min_gap`), their year difficulty scales to match (easy >= 10 years, medium >= 4), their items count as
-famous (`famous`), and they stay out of ranked rounds and the chat question (QUICK_ONLY).
+categories (items/ai_curated.json: ai_timeline, ai_released, ai_company_founded, ai_money, ai_params, ai_tech) need only 2
+years or 3 months (MIN_GAPS, written to each template as `min_gap`; money and tech use the 1.3 ratio), their year
+difficulty scales to match (easy >= 10 years, medium >= 4), their tier 1-2 items count as
+famous (`famous`), and they stay out of ranked rounds and the chat question (QUICK_ONLY). AI items carry a `tier` (1 famous
+names and years, 2 events and money, 3 technical); a pair's tier is the higher of its two, and the AI pack draws by it
+(web/public/packs.js). ai_money items are `volatile` (dated figures): paired for quick rounds, never ranked.
 Left out: city populations, volatile items, retired items (`retired_at` in the pool, or daily/runtime.json, an export of
 items_runtime), the disputed items in DISPUTED, and countries under 20,000 monthly views (famous countries only). An item
 marked `ranked_ok: false` (fact-checked, but its definition or figure is ambiguous) is paired for quick rounds and its
@@ -58,7 +61,7 @@ RULE_LADDER = ([(gap, 2, 2) for gap in (ITEM_NO_REUSE_DAYS, 14, 7, 5)] + [(gap, 
                + [(7, 3, None), (5, 4, None)])
 EXCLUDED_CATEGORIES = {"city_population"}
 # Hand-curated categories (items/ai_curated.json, the AI pack): quick rounds only, never a ranked round or the chat question.
-QUICK_ONLY = {"ai_released", "ai_company_founded", "ai_params"}
+QUICK_ONLY = {"ai_released", "ai_company_founded", "ai_params", "ai_money", "ai_tech"}
 # From AI_SLOT_FROM on, ranked slot 1 (index 0) of every day is one ai_timeline pair (with_ai_slot); the category takes no
 # other ranked slot and is never the chat question. Its items need real pageviews >= FAME_RANKED there (ai_slot_ok).
 AI_SLOT = "ai_timeline"
@@ -105,6 +108,15 @@ TEMPLATES = {
     ("ai_company_founded", "year"): ("Which came first?", "was founded first", "was founded later"),
     ("ai_params", "parameters"): ("Which model has more parameters?", "had more parameters", "had fewer parameters"),
     ("ai_timeline", "month"): ("Which came first?", "came first", "came later"),
+    ("ai_money", "USD"): ("Which is bigger?", "was bigger", "was smaller"),
+    ("ai_tech", "tokens of context"): ("Which has the longer context window?", "had the longer context window", "had the shorter context window"),
+    ("ai_tech", "training tokens"): ("Which was trained on more tokens?", "was trained on more tokens", "was trained on fewer tokens"),
+    ("ai_tech", "petaFLOP-days"): ("Which took more compute to train?", "took more compute", "took less compute"),
+    ("ai_tech", "transistors"): ("Which chip has more transistors?", "had more transistors", "had fewer transistors"),
+    ("ai_tech", "images"): ("Which dataset has more images?", "had more images", "had fewer images"),
+    ("ai_tech", "GB of memory"): ("Which has more memory?", "had more memory", "had less memory"),
+    ("ai_tech", "authors"): ("Which paper has more authors?", "had more authors", "had fewer authors"),
+    ("ai_tech", "experts"): ("Which model has more experts?", "had more experts", "had fewer experts"),
 }
 # Minimum gap per (category, unit) when it is not MIN_GAP years or MIN_RATIO: AI years are 2 apart (the field is young;
 # a deviation from PREREG's 10, logged in CHANGELOG.md). Year difficulty scales with it: easy >= 5x, medium >= 2x.
@@ -157,8 +169,8 @@ def band(fame):
 
 def usable(item, retired):
     """Items that may appear in a pair (see the module docstring)."""
-    if (item["category"] in EXCLUDED_CATEGORIES or item.get("volatile") or item.get("retired_at") or item["id"] in retired
-            or item["id"] in DISPUTED):
+    if (item["category"] in EXCLUDED_CATEGORIES or (item.get("volatile") and item["category"] not in QUICK_ONLY)
+            or item.get("retired_at") or item["id"] in retired or item["id"] in DISPUTED):
         return False
     if views(item) < MIN_VIEWS.get(item["category"], 0):
         return False
@@ -319,6 +331,10 @@ def make_pair(pair_id, a, b, ratio, gap, level):
                  "difficulty_hint": level, "ref_quality": weaker, "fame": min(views(a), views(b))})
     if a.get("ranked_ok") is False or b.get("ranked_ok") is False:
         pair["ranked_ok"] = False
+    if "tier" in a or "tier" in b:
+        pair["tier"] = max(a.get("tier", 1), b.get("tier", 1))  # the AI pack draws by tier (web/public/packs.js)
+    if a.get("volatile") or b.get("volatile"):
+        pair["volatile"] = True  # dated figures (ai_money): quick rounds only
     return pair
 
 
@@ -348,13 +364,14 @@ def ranked_ok(pair):
     """May be used in a ranked round or as the chat question: both items referenced or fact-checked (PREREG), famous,
     neither marked ranked_ok: false, and not from a quick-only category (QUICK_ONLY: the AI pack)."""
     return (pair["ref_quality"] == "referenced" and pair.get("fame", 0) >= FAME_RANKED and pair.get("ranked_ok", True)
-            and pair["category"] not in QUICK_ONLY and pair["category"] != AI_SLOT)
+            and pair["category"] not in QUICK_ONLY and pair["category"] != AI_SLOT and not pair.get("volatile"))
 
 
 def ai_slot_ok(pair, items):
-    """May fill the AI slot: an AI_SLOT pair, fact-checked, both items with >= FAME_RANKED monthly views of their own (real
-    pageviews, not the `famous` mark: the ranked round keeps its familiarity bar)."""
+    """May fill the AI slot: an AI_SLOT pair of tier 1 or 2, not volatile, fact-checked, both items with >= FAME_RANKED
+    monthly views of their own (real pageviews, not the `famous` mark: the ranked round keeps its familiarity bar)."""
     return (pair["category"] == AI_SLOT and pair["ref_quality"] == "referenced" and pair.get("ranked_ok", True)
+            and pair.get("tier", 1) <= 2 and not pair.get("volatile")
             and all(items[i].get("views_month", 0) >= FAME_RANKED for i in (pair["a_id"], pair["b_id"])))
 
 

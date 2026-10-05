@@ -88,7 +88,7 @@ print("schedule OK")
 PY
 
 
-say "daily rounds: live-file guard (10 ranked + 1 question, famous + referenced/fact-checked, 3/4/3 difficulty, ≤4 per category, 180d pair / 5d item reuse; from 2026-10-05 slot 1 = the day's one ai_timeline pair, ≥ 3 months apart)"
+say "daily rounds: live-file guard (10 ranked + 1 question, famous + referenced/fact-checked, 3/4/3 difficulty, ≤4 per category, 180d pair / 5d item reuse; no volatile item; from 2026-10-05 slot 1 = the day's one ai_timeline pair, tier 1-2, ≥ 3 months apart)"
 python3 - "$root" <<'PY' || fail=1
 import json, sys, datetime as dt, collections
 root = sys.argv[1]
@@ -113,6 +113,7 @@ for d in sorted(rounds):
     for pid in ids:
         a, b = pair[pid]["a_id"], pair[pid]["b_id"]
         if not (ok_item(a) and ok_item(b)): bad.append((d, f"{pid} not famous+referenced"))
+        if item[a].get("volatile") or item[b].get("volatile"): bad.append((d, f"{pid} has a volatile item"))
         ents += [entity(a), entity(b)]
         for it in (a, b):
             if it in last_item and (day - last_item[it]).days < ITEM_GAP: bad.append((d, f"item {it} reused <{ITEM_GAP}d"))
@@ -123,6 +124,7 @@ for d in sorted(rounds):
     ai = [k for k, pid in enumerate(ids) if pair[pid]["category"].startswith("ai_")]
     if ai != ([0] if d >= AI_FROM else []) or (ai and pair[ranked[0]]["category"] != AI_SLOT): bad.append((d, f"AI pairs at {ai}"))
     elif ai and abs(month(pair[ranked[0]]["a_id"]) - month(pair[ranked[0]]["b_id"])) < AI_MONTHS: bad.append((d, "AI pair < 3 months apart"))
+    elif ai and max(item[i].get("tier", 1) for i in (pair[ranked[0]]["a_id"], pair[ranked[0]]["b_id"])) > 2: bad.append((d, "AI pair above tier 2"))
     cats = collections.Counter(pair[pid]["category"] for pid in ranked)
     if max(cats.values()) > CAT_MAX: bad.append((d, f"category >{CAT_MAX}"))
     diff = collections.Counter(pair[pid]["difficulty_hint"] for pid in ranked)

@@ -27,7 +27,7 @@ their source links; fix or drop a bad item by editing `items/pool.json` (or swap
 | landmark_height | 101 | 113 | bounds: 2, conflict: 10 |
 | landmark_built | 187 | 217 | bounds: 1, conflict: 5, label: 1, precision: 23 |
 
-**Total: 3381 items** (9 cross-category duplicates dropped, 0 scheduled items carried over from the previous pool).
+**Total: 3479 items** (9 cross-category duplicates dropped, 0 scheduled items carried over from the previous pool).
 
 ## 30 random samples
 

@@ -587,25 +587,46 @@ AI_CATEGORIES = {
     # answer is; 202211 = November 2022) and stays as `month` for display.
     "ai_timeline": dict(domain="history", unit="month", accept=[195001, CURRENT_YEAR * 100 + 12], prop="P585",
                         prompt="{name}: in what month and year?"),
+    # Dated public dollar figures: `volatile` (never in ranked rounds) with `as_of` (YYYY-MM); the date is in the name.
+    "ai_money": dict(domain="everyday", unit="USD", accept=[1e5, 1e14], prop="P2218", prompt="{name}: how many US dollars?"),
+    # Published technical numbers; the unit comes from the entry (one comparison template per unit, see pairs.py).
+    "ai_tech": dict(domain="everyday", unit=None, accept=None, prop="P1114", prompt=None),
 }
+TECH_UNITS = {  # unit: (sanity range, question)
+    "tokens of context": ([100, 1e9], "How long is {name}'s context window, in tokens?"),
+    "training tokens": ([1e9, 1e15], "How many tokens was {name} trained on?"),
+    "petaFLOP-days": ([1, 1e8], "How much compute did training {name} take, in petaFLOP-days?"),
+    "transistors": ([1e6, 1e14], "How many transistors does {name} have?"),
+    "images": ([1e3, 1e11], "How many images does {name} have?"),
+    "GB of memory": ([1, 1e5], "How much memory does {name} have, in GB?"),
+    "authors": ([1, 1e4], "How many authors does {name} have?"),
+    "experts": ([1, 1e5], "How many experts does {name} have?"),
+}
+TIER_BY_CATEGORY = {"ai_released": 1, "ai_company_founded": 1, "ai_timeline": 1, "ai_money": 2, "ai_params": 3, "ai_tech": 3}
 
 
 def ai_items(entries, generated_at):
-    """Items from items/ai_curated.json entries {category, name, answer (or month: YYYY-MM), note, source[, qid][, prompt]
-    [, fun]}: fact-checked, `famous` (the familiarity gate treats them as famous), the note in `notes`, the optional reveal
-    line in `fun`."""
+    """Items from items/ai_curated.json entries {category, tier, name, answer (or month: YYYY-MM), note, source[, qid]
+    [, prompt][, fun][, unit (ai_tech)][, volatile, as_of (ai_money)]}: fact-checked, with `tier` (1 famous names and years,
+    2 events and money, 3 technical). Tiers 1 and 2 are `famous` (the familiarity gate treats them as famous); tier 3 is
+    judged by its own pageviews. The note goes in `notes`, the optional reveal line in `fun`."""
     out = []
     for e in entries:
         cat = AI_CATEGORIES[e["category"]]
+        unit = e["unit"] if e["category"] == "ai_tech" else cat["unit"]
+        accept, question = TECH_UNITS[unit] if e["category"] == "ai_tech" else (cat["accept"], cat["prompt"])
+        tier = e.get("tier", TIER_BY_CATEGORY[e["category"]])
         answer = int(e["month"].replace("-", "")) if "month" in e else e["answer"]
         it = {"type": "interval", "category": e["category"], "domain": cat["domain"],
-              "en": {"prompt": e.get("prompt") or cat["prompt"].format(name=e["name"]), "unit": cat["unit"]}, "answer": answer,
-              "accept": list(cat["accept"]), "source": e["source"], "difficulty_hint": "unknown", "volatile": False,
-              "generated_at": generated_at, "name": e["name"], "ref_quality": "none", "fact_checked": True, "famous": True,
+              "en": {"prompt": e.get("prompt") or question.format(name=e["name"]), "unit": unit}, "answer": answer,
+              "accept": list(accept), "source": e["source"], "difficulty_hint": "unknown", "volatile": bool(e.get("volatile")),
+              "generated_at": generated_at, "name": e["name"], "ref_quality": "none", "fact_checked": True, "tier": tier,
               "notes": f"curated: {e['note']}"}
+        if tier <= 2:
+            it["famous"] = True
         if e.get("qid"):
             it["replaces"] = f"https://www.wikidata.org/wiki/{e['qid']}#{cat['prop']}"
-        it.update({k: e[k] for k in ("month", "fun") if k in e})
+        it.update({k: e[k] for k in ("month", "fun", "as_of") if k in e})
         out.append(it)
     return out
 
@@ -634,7 +655,7 @@ def build_pool(responses, previous_items=(), scheduled_ids=(), generated_at=None
     # Curated launch years are rebuilt from their file every time: they win over a generated or pinned twin, and their
     # previous copies (which carry notes) are not pinned again. assign_ids keeps their ids by source.
     cur = curated_items(curated, generated_at) + ai_items(ai, generated_at)
-    cur_sources, cur_keys = {it["source"] for it in cur}, {twin_key(it) for it in cur}
+    cur_sources, cur_keys = {it["source"] for it in cur}, {twin_key(it) for it in cur} - {None}
     pinned, all_items = pin([it for it in previous_items if it["source"] not in cur_sources], all_items)
     pinned = [p for p in pinned if twin_key(p) not in cur_keys]
     all_items = [it for it in all_items if twin_key(it) not in cur_keys] + cur

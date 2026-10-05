@@ -1,9 +1,16 @@
 // Quick-round packs and difficulties: one list for the API (functions/_rounds.js imports it), the sync step that decides
 // which packs the home page offers (scripts/sync-pages.js) and the browser (labels on the end screen and in the share
 // text). A pack is a set of pair categories (items/pairs.json); `all` is every category.
+// `tiers` (AI pack only): which pair tiers each difficulty draws, on top of the difficulty's own rules. An AI pair's tier
+// is the higher of its two items' (items/ai_curated.json): 1 famous names and years, 2 events and money, 3 technical.
+// Easy = tier 1, Normal = tiers 1-2, Brutal = tiers 2-3. Ranked rounds ignore packs (their AI slot is tier 1-2).
 export const PACKS = {
   all: { label: 'All', categories: null },
-  ai: { label: 'AI', categories: ['ai_timeline', 'ai_released', 'ai_company_founded', 'ai_params'] },
+  ai: {
+    label: 'AI',
+    categories: ['ai_timeline', 'ai_released', 'ai_company_founded', 'ai_money', 'ai_params', 'ai_tech'],
+    tiers: { easy: [1], normal: [1, 2], brutal: [2, 3] },
+  },
   geography: { label: 'Geography', categories: ['country_area', 'country_population', 'mountain_elevation', 'river_length', 'lake'] },
   space: { label: 'Space', categories: ['solar_system_size', 'solar_system_distance'] },
   elements: { label: 'Elements', categories: ['element_melting_point'] },
