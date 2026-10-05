@@ -88127,7 +88127,7 @@
    "category": "ai_drama",
    "domain": "history",
    "en": {
-    "prompt": "OpenAI's board removes Sam Altman (Nov 2023): in what month and year?",
+    "prompt": "OpenAI's board removes Sam Altman: in what month and year?",
     "unit": "month"
    },
    "answer": 202311,
@@ -88139,7 +88139,7 @@
    "difficulty_hint": "unknown",
    "volatile": false,
    "generated_at": "2026-10-04",
-   "name": "OpenAI's board removes Sam Altman (Nov 2023)",
+   "name": "OpenAI's board removes Sam Altman",
    "ref_quality": "none",
    "fact_checked": true,
    "tier": 2,
@@ -88157,7 +88157,7 @@
    "category": "ai_drama",
    "domain": "history",
    "en": {
-    "prompt": "Sam Altman returns as OpenAI CEO (Nov 2023): in what month and year?",
+    "prompt": "Sam Altman returns as OpenAI CEO: in what month and year?",
     "unit": "month"
    },
    "answer": 202311,
@@ -88169,7 +88169,7 @@
    "difficulty_hint": "unknown",
    "volatile": false,
    "generated_at": "2026-10-04",
-   "name": "Sam Altman returns as OpenAI CEO (Nov 2023)",
+   "name": "Sam Altman returns as OpenAI CEO",
    "ref_quality": "none",
    "fact_checked": true,
    "tier": 2,
@@ -88187,7 +88187,7 @@
    "category": "ai_drama",
    "domain": "history",
    "en": {
-    "prompt": "Microsoft announces it is hiring Altman and Brockman (Nov 2023): in what month and year?",
+    "prompt": "Microsoft announces it is hiring Altman and Brockman: in what month and year?",
     "unit": "month"
    },
    "answer": 202311,
@@ -88199,7 +88199,7 @@
    "difficulty_hint": "unknown",
    "volatile": false,
    "generated_at": "2026-10-04",
-   "name": "Microsoft announces it is hiring Altman and Brockman (Nov 2023)",
+   "name": "Microsoft announces it is hiring Altman and Brockman",
    "ref_quality": "none",
    "fact_checked": true,
    "tier": 2,
@@ -88217,7 +88217,7 @@
    "category": "ai_drama",
    "domain": "history",
    "en": {
-    "prompt": "Elon Musk sues OpenAI (Feb 2024): in what month and year?",
+    "prompt": "Elon Musk sues OpenAI: in what month and year?",
     "unit": "month"
    },
    "answer": 202402,
@@ -88229,7 +88229,7 @@
    "difficulty_hint": "unknown",
    "volatile": false,
    "generated_at": "2026-10-04",
-   "name": "Elon Musk sues OpenAI (Feb 2024)",
+   "name": "Elon Musk sues OpenAI",
    "ref_quality": "none",
    "fact_checked": true,
    "tier": 2,
@@ -88247,7 +88247,7 @@
    "category": "ai_drama",
    "domain": "history",
    "en": {
-    "prompt": "OpenAI countersues Elon Musk (Apr 2025): in what month and year?",
+    "prompt": "OpenAI countersues Elon Musk: in what month and year?",
     "unit": "month"
    },
    "answer": 202504,
@@ -88259,7 +88259,7 @@
    "difficulty_hint": "unknown",
    "volatile": false,
    "generated_at": "2026-10-04",
-   "name": "OpenAI countersues Elon Musk (Apr 2025)",
+   "name": "OpenAI countersues Elon Musk",
    "ref_quality": "none",
    "fact_checked": true,
    "tier": 2,
@@ -88277,7 +88277,7 @@
    "category": "ai_drama",
    "domain": "history",
    "en": {
-    "prompt": "A jury rules for OpenAI in Musk's lawsuit (May 2026): in what month and year?",
+    "prompt": "A jury rules for OpenAI in Musk's lawsuit: in what month and year?",
     "unit": "month"
    },
    "answer": 202605,
@@ -88289,7 +88289,7 @@
    "difficulty_hint": "unknown",
    "volatile": false,
    "generated_at": "2026-10-04",
-   "name": "A jury rules for OpenAI in Musk's lawsuit (May 2026)",
+   "name": "A jury rules for OpenAI in Musk's lawsuit",
    "ref_quality": "none",
    "fact_checked": true,
    "tier": 2,
@@ -88306,7 +88306,7 @@
    "category": "ai_drama",
    "domain": "history",
    "en": {
-    "prompt": "The New York Times sues OpenAI and Microsoft (Dec 2023): in what month and year?",
+    "prompt": "The New York Times sues OpenAI and Microsoft: in what month and year?",
     "unit": "month"
    },
    "answer": 202312,
@@ -88318,7 +88318,7 @@
    "difficulty_hint": "unknown",
    "volatile": false,
    "generated_at": "2026-10-04",
-   "name": "The New York Times sues OpenAI and Microsoft (Dec 2023)",
+   "name": "The New York Times sues OpenAI and Microsoft",
    "ref_quality": "none",
    "fact_checked": true,
    "tier": 2,
@@ -88336,7 +88336,7 @@
    "category": "ai_drama",
    "domain": "history",
    "en": {
-    "prompt": "The Authors Guild and 17 authors sue OpenAI (Sep 2023): in what month and year?",
+    "prompt": "The Authors Guild and 17 authors sue OpenAI: in what month and year?",
     "unit": "month"
    },
    "answer": 202309,
@@ -88348,7 +88348,7 @@
    "difficulty_hint": "unknown",
    "volatile": false,
    "generated_at": "2026-10-04",
-   "name": "The Authors Guild and 17 authors sue OpenAI (Sep 2023)",
+   "name": "The Authors Guild and 17 authors sue OpenAI",
    "ref_quality": "none",
    "fact_checked": true,
    "tier": 2,
@@ -88364,7 +88364,7 @@
    "category": "ai_drama",
    "domain": "history",
    "en": {
-    "prompt": "Anthropic agrees to pay authors $1.5 billion (Sep 2025): in what month and year?",
+    "prompt": "Anthropic agrees to pay authors $1.5 billion: in what month and year?",
     "unit": "month"
    },
    "answer": 202509,
@@ -88376,7 +88376,7 @@
    "difficulty_hint": "unknown",
    "volatile": false,
    "generated_at": "2026-10-04",
-   "name": "Anthropic agrees to pay authors $1.5 billion (Sep 2025)",
+   "name": "Anthropic agrees to pay authors $1.5 billion",
    "ref_quality": "none",
    "fact_checked": true,
    "tier": 2,
@@ -88394,7 +88394,7 @@
    "category": "ai_drama",
    "domain": "history",
    "en": {
-    "prompt": "OpenAI's superalignment team is dissolved (May 2024): in what month and year?",
+    "prompt": "OpenAI's superalignment team is dissolved: in what month and year?",
     "unit": "month"
    },
    "answer": 202405,
@@ -88406,7 +88406,7 @@
    "difficulty_hint": "unknown",
    "volatile": false,
    "generated_at": "2026-10-04",
-   "name": "OpenAI's superalignment team is dissolved (May 2024)",
+   "name": "OpenAI's superalignment team is dissolved",
    "ref_quality": "none",
    "fact_checked": true,
    "tier": 2,
@@ -88424,7 +88424,7 @@
    "category": "ai_drama",
    "domain": "history",
    "en": {
-    "prompt": "Ilya Sutskever leaves OpenAI (May 2024): in what month and year?",
+    "prompt": "Ilya Sutskever leaves OpenAI: in what month and year?",
     "unit": "month"
    },
    "answer": 202405,
@@ -88436,7 +88436,7 @@
    "difficulty_hint": "unknown",
    "volatile": false,
    "generated_at": "2026-10-04",
-   "name": "Ilya Sutskever leaves OpenAI (May 2024)",
+   "name": "Ilya Sutskever leaves OpenAI",
    "ref_quality": "none",
    "fact_checked": true,
    "tier": 2,
@@ -88454,7 +88454,7 @@
    "category": "ai_drama",
    "domain": "history",
    "en": {
-    "prompt": "Ilya Sutskever announces Safe Superintelligence (Jun 2024): in what month and year?",
+    "prompt": "Ilya Sutskever announces Safe Superintelligence: in what month and year?",
     "unit": "month"
    },
    "answer": 202406,
@@ -88466,7 +88466,7 @@
    "difficulty_hint": "unknown",
    "volatile": false,
    "generated_at": "2026-10-04",
-   "name": "Ilya Sutskever announces Safe Superintelligence (Jun 2024)",
+   "name": "Ilya Sutskever announces Safe Superintelligence",
    "ref_quality": "none",
    "fact_checked": true,
    "tier": 2,
@@ -88484,7 +88484,7 @@
    "category": "ai_drama",
    "domain": "history",
    "en": {
-    "prompt": "Jan Leike joins Anthropic (May 2024): in what month and year?",
+    "prompt": "Jan Leike joins Anthropic: in what month and year?",
     "unit": "month"
    },
    "answer": 202405,
@@ -88496,7 +88496,7 @@
    "difficulty_hint": "unknown",
    "volatile": false,
    "generated_at": "2026-10-04",
-   "name": "Jan Leike joins Anthropic (May 2024)",
+   "name": "Jan Leike joins Anthropic",
    "ref_quality": "none",
    "fact_checked": true,
    "tier": 2,
@@ -88513,7 +88513,7 @@
    "category": "ai_drama",
    "domain": "history",
    "en": {
-    "prompt": "Andrej Karpathy leaves OpenAI again (Feb 2024): in what month and year?",
+    "prompt": "Andrej Karpathy leaves OpenAI again: in what month and year?",
     "unit": "month"
    },
    "answer": 202402,
@@ -88525,7 +88525,7 @@
    "difficulty_hint": "unknown",
    "volatile": false,
    "generated_at": "2026-10-04",
-   "name": "Andrej Karpathy leaves OpenAI again (Feb 2024)",
+   "name": "Andrej Karpathy leaves OpenAI again",
    "ref_quality": "none",
    "fact_checked": true,
    "tier": 2,
@@ -88542,7 +88542,7 @@
    "category": "ai_drama",
    "domain": "history",
    "en": {
-    "prompt": "Inflection's founders join Microsoft (Mar 2024): in what month and year?",
+    "prompt": "Inflection's founders join Microsoft: in what month and year?",
     "unit": "month"
    },
    "answer": 202403,
@@ -88554,7 +88554,7 @@
    "difficulty_hint": "unknown",
    "volatile": false,
    "generated_at": "2026-10-04",
-   "name": "Inflection's founders join Microsoft (Mar 2024)",
+   "name": "Inflection's founders join Microsoft",
    "ref_quality": "none",
    "fact_checked": true,
    "tier": 2,
@@ -88571,7 +88571,7 @@
    "category": "ai_drama",
    "domain": "history",
    "en": {
-    "prompt": "Character.AI's founders return to Google (Aug 2024): in what month and year?",
+    "prompt": "Character.AI's founders return to Google: in what month and year?",
     "unit": "month"
    },
    "answer": 202408,
@@ -88583,7 +88583,7 @@
    "difficulty_hint": "unknown",
    "volatile": false,
    "generated_at": "2026-10-04",
-   "name": "Character.AI's founders return to Google (Aug 2024)",
+   "name": "Character.AI's founders return to Google",
    "ref_quality": "none",
    "fact_checked": true,
    "tier": 2,
@@ -88600,7 +88600,7 @@
    "category": "ai_drama",
    "domain": "history",
    "en": {
-    "prompt": "John Schulman joins Anthropic (Aug 2024): in what month and year?",
+    "prompt": "John Schulman joins Anthropic: in what month and year?",
     "unit": "month"
    },
    "answer": 202408,
@@ -88612,7 +88612,7 @@
    "difficulty_hint": "unknown",
    "volatile": false,
    "generated_at": "2026-10-04",
-   "name": "John Schulman joins Anthropic (Aug 2024)",
+   "name": "John Schulman joins Anthropic",
    "ref_quality": "none",
    "fact_checked": true,
    "tier": 2,
@@ -88629,7 +88629,7 @@
    "category": "ai_drama",
    "domain": "history",
    "en": {
-    "prompt": "Mira Murati leaves OpenAI (Sep 2024): in what month and year?",
+    "prompt": "Mira Murati leaves OpenAI: in what month and year?",
     "unit": "month"
    },
    "answer": 202409,
@@ -88641,7 +88641,7 @@
    "difficulty_hint": "unknown",
    "volatile": false,
    "generated_at": "2026-10-04",
-   "name": "Mira Murati leaves OpenAI (Sep 2024)",
+   "name": "Mira Murati leaves OpenAI",
    "ref_quality": "none",
    "fact_checked": true,
    "tier": 2,
@@ -88658,7 +88658,7 @@
    "category": "ai_drama",
    "domain": "history",
    "en": {
-    "prompt": "Mira Murati launches Thinking Machines Lab (Feb 2025): in what month and year?",
+    "prompt": "Mira Murati launches Thinking Machines Lab: in what month and year?",
     "unit": "month"
    },
    "answer": 202502,
@@ -88670,7 +88670,7 @@
    "difficulty_hint": "unknown",
    "volatile": false,
    "generated_at": "2026-10-04",
-   "name": "Mira Murati launches Thinking Machines Lab (Feb 2025)",
+   "name": "Mira Murati launches Thinking Machines Lab",
    "ref_quality": "none",
    "fact_checked": true,
    "tier": 2,
@@ -88687,7 +88687,7 @@
    "category": "ai_drama",
    "domain": "history",
    "en": {
-    "prompt": "Meta launches Superintelligence Labs under Alexandr Wang (Jun 2025): in what month and year?",
+    "prompt": "Meta launches Superintelligence Labs under Alexandr Wang: in what month and year?",
     "unit": "month"
    },
    "answer": 202506,
@@ -88699,7 +88699,7 @@
    "difficulty_hint": "unknown",
    "volatile": false,
    "generated_at": "2026-10-04",
-   "name": "Meta launches Superintelligence Labs under Alexandr Wang (Jun 2025)",
+   "name": "Meta launches Superintelligence Labs under Alexandr Wang",
    "ref_quality": "none",
    "fact_checked": true,
    "tier": 2,
@@ -88717,7 +88717,7 @@
    "category": "ai_drama",
    "domain": "history",
    "en": {
-    "prompt": "Scarlett Johansson objects to ChatGPT's 'Sky' voice (May 2024): in what month and year?",
+    "prompt": "Scarlett Johansson objects to ChatGPT's 'Sky' voice: in what month and year?",
     "unit": "month"
    },
    "answer": 202405,
@@ -88729,7 +88729,7 @@
    "difficulty_hint": "unknown",
    "volatile": false,
    "generated_at": "2026-10-04",
-   "name": "Scarlett Johansson objects to ChatGPT's 'Sky' voice (May 2024)",
+   "name": "Scarlett Johansson objects to ChatGPT's 'Sky' voice",
    "ref_quality": "none",
    "fact_checked": true,
    "tier": 2,
@@ -88747,7 +88747,7 @@
    "category": "ai_drama",
    "domain": "history",
    "en": {
-    "prompt": "Google pauses Gemini's images of people (Feb 2024): in what month and year?",
+    "prompt": "Google pauses Gemini's images of people: in what month and year?",
     "unit": "month"
    },
    "answer": 202402,
@@ -88759,7 +88759,7 @@
    "difficulty_hint": "unknown",
    "volatile": false,
    "generated_at": "2026-10-04",
-   "name": "Google pauses Gemini's images of people (Feb 2024)",
+   "name": "Google pauses Gemini's images of people",
    "ref_quality": "none",
    "fact_checked": true,
    "tier": 2,
@@ -88777,7 +88777,7 @@
    "category": "ai_drama",
    "domain": "history",
    "en": {
-    "prompt": "Alphabet loses about $100 billion in value after a Bard demo (Feb 2023): in what month and year?",
+    "prompt": "Alphabet loses about $100 billion in value after a Bard demo: in what month and year?",
     "unit": "month"
    },
    "answer": 202302,
@@ -88789,7 +88789,7 @@
    "difficulty_hint": "unknown",
    "volatile": false,
    "generated_at": "2026-10-04",
-   "name": "Alphabet loses about $100 billion in value after a Bard demo (Feb 2023)",
+   "name": "Alphabet loses about $100 billion in value after a Bard demo",
    "ref_quality": "none",
    "fact_checked": true,
    "tier": 2,
@@ -88807,7 +88807,7 @@
    "category": "ai_drama",
    "domain": "history",
    "en": {
-    "prompt": "Stability AI's CEO resigns (Mar 2024): in what month and year?",
+    "prompt": "Stability AI's CEO resigns: in what month and year?",
     "unit": "month"
    },
    "answer": 202403,
@@ -88819,7 +88819,7 @@
    "difficulty_hint": "unknown",
    "volatile": false,
    "generated_at": "2026-10-04",
-   "name": "Stability AI's CEO resigns (Mar 2024)",
+   "name": "Stability AI's CEO resigns",
    "ref_quality": "none",
    "fact_checked": true,
    "tier": 2,
@@ -88836,7 +88836,7 @@
    "category": "ai_drama",
    "domain": "history",
    "en": {
-    "prompt": "DeepSeek-R1 sets off Nvidia's $600 billion one-day fall (Jan 2025): in what month and year?",
+    "prompt": "DeepSeek-R1 sets off Nvidia's $600 billion one-day fall: in what month and year?",
     "unit": "month"
    },
    "answer": 202501,
@@ -88848,7 +88848,7 @@
    "difficulty_hint": "unknown",
    "volatile": false,
    "generated_at": "2026-10-04",
-   "name": "DeepSeek-R1 sets off Nvidia's $600 billion one-day fall (Jan 2025)",
+   "name": "DeepSeek-R1 sets off Nvidia's $600 billion one-day fall",
    "ref_quality": "none",
    "fact_checked": true,
    "tier": 2,
@@ -88866,7 +88866,7 @@
    "category": "ai_drama",
    "domain": "history",
    "en": {
-    "prompt": "Grok posts antisemitic content and xAI deletes it (Jul 2025): in what month and year?",
+    "prompt": "Grok posts antisemitic content and xAI deletes it: in what month and year?",
     "unit": "month"
    },
    "answer": 202507,
@@ -88878,7 +88878,7 @@
    "difficulty_hint": "unknown",
    "volatile": false,
    "generated_at": "2026-10-04",
-   "name": "Grok posts antisemitic content and xAI deletes it (Jul 2025)",
+   "name": "Grok posts antisemitic content and xAI deletes it",
    "ref_quality": "none",
    "fact_checked": true,
    "tier": 2,
@@ -88896,7 +88896,7 @@
    "category": "ai_drama",
    "domain": "history",
    "en": {
-    "prompt": "OpenAI becomes a public benefit corporation (Oct 2025): in what month and year?",
+    "prompt": "OpenAI becomes a public benefit corporation: in what month and year?",
     "unit": "month"
    },
    "answer": 202510,
@@ -88908,7 +88908,7 @@
    "difficulty_hint": "unknown",
    "volatile": false,
    "generated_at": "2026-10-04",
-   "name": "OpenAI becomes a public benefit corporation (Oct 2025)",
+   "name": "OpenAI becomes a public benefit corporation",
    "ref_quality": "none",
    "fact_checked": true,
    "tier": 2,
@@ -88926,7 +88926,7 @@
    "category": "ai_drama",
    "domain": "history",
    "en": {
-    "prompt": "Musk-led group bids $97.4 billion for OpenAI's nonprofit (Feb 2025): in what month and year?",
+    "prompt": "Musk-led group bids $97.4 billion for OpenAI's nonprofit: in what month and year?",
     "unit": "month"
    },
    "answer": 202502,
@@ -88938,7 +88938,7 @@
    "difficulty_hint": "unknown",
    "volatile": false,
    "generated_at": "2026-10-04",
-   "name": "Musk-led group bids $97.4 billion for OpenAI's nonprofit (Feb 2025)",
+   "name": "Musk-led group bids $97.4 billion for OpenAI's nonprofit",
    "ref_quality": "none",
    "fact_checked": true,
    "tier": 2,
@@ -88956,7 +88956,7 @@
    "category": "ai_drama",
    "domain": "history",
    "en": {
-    "prompt": "OpenAI opens Sora to the public (Dec 2024): in what month and year?",
+    "prompt": "OpenAI opens Sora to the public: in what month and year?",
     "unit": "month"
    },
    "answer": 202412,
@@ -88968,7 +88968,7 @@
    "difficulty_hint": "unknown",
    "volatile": false,
    "generated_at": "2026-10-04",
-   "name": "OpenAI opens Sora to the public (Dec 2024)",
+   "name": "OpenAI opens Sora to the public",
    "ref_quality": "none",
    "fact_checked": true,
    "tier": 2,
@@ -88985,7 +88985,7 @@
    "category": "ai_drama",
    "domain": "history",
    "en": {
-    "prompt": "HP buys Humane and the AI Pin is switched off (Feb 2025): in what month and year?",
+    "prompt": "HP buys Humane and the AI Pin is switched off: in what month and year?",
     "unit": "month"
    },
    "answer": 202502,
@@ -88997,7 +88997,7 @@
    "difficulty_hint": "unknown",
    "volatile": false,
    "generated_at": "2026-10-04",
-   "name": "HP buys Humane and the AI Pin is switched off (Feb 2025)",
+   "name": "HP buys Humane and the AI Pin is switched off",
    "ref_quality": "none",
    "fact_checked": true,
    "tier": 2,
@@ -89014,7 +89014,7 @@
    "category": "ai_drama",
    "domain": "history",
    "en": {
-    "prompt": "Microsoft delays its Recall feature (Jun 2024): in what month and year?",
+    "prompt": "Microsoft delays its Recall feature: in what month and year?",
     "unit": "month"
    },
    "answer": 202406,
@@ -89026,7 +89026,7 @@
    "difficulty_hint": "unknown",
    "volatile": false,
    "generated_at": "2026-10-04",
-   "name": "Microsoft delays its Recall feature (Jun 2024)",
+   "name": "Microsoft delays its Recall feature",
    "ref_quality": "none",
    "fact_checked": true,
    "tier": 2,
@@ -89043,7 +89043,7 @@
    "category": "ai_drama",
    "domain": "history",
    "en": {
-    "prompt": "Anthropic publishes Claude's 'blackmail' safety test (May 2025): in what month and year?",
+    "prompt": "Anthropic publishes Claude's 'blackmail' safety test: in what month and year?",
     "unit": "month"
    },
    "answer": 202505,
@@ -89055,7 +89055,7 @@
    "difficulty_hint": "unknown",
    "volatile": false,
    "generated_at": "2026-10-04",
-   "name": "Anthropic publishes Claude's 'blackmail' safety test (May 2025)",
+   "name": "Anthropic publishes Claude's 'blackmail' safety test",
    "ref_quality": "none",
    "fact_checked": true,
    "tier": 2,
@@ -89073,7 +89073,7 @@
    "category": "ai_drama",
    "domain": "history",
    "en": {
-    "prompt": "OpenAI rolls back a 'sycophantic' GPT-4o update (Apr 2025): in what month and year?",
+    "prompt": "OpenAI rolls back a 'sycophantic' GPT-4o update: in what month and year?",
     "unit": "month"
    },
    "answer": 202504,
@@ -89085,7 +89085,7 @@
    "difficulty_hint": "unknown",
    "volatile": false,
    "generated_at": "2026-10-04",
-   "name": "OpenAI rolls back a 'sycophantic' GPT-4o update (Apr 2025)",
+   "name": "OpenAI rolls back a 'sycophantic' GPT-4o update",
    "ref_quality": "none",
    "fact_checked": true,
    "tier": 2,
@@ -89102,7 +89102,7 @@
    "category": "ai_drama",
    "domain": "history",
    "en": {
-    "prompt": "Meta's Llama 4 and its leaderboard score (Apr 2025): in what month and year?",
+    "prompt": "Meta's Llama 4 and its leaderboard score: in what month and year?",
     "unit": "month"
    },
    "answer": 202504,
@@ -89114,7 +89114,7 @@
    "difficulty_hint": "unknown",
    "volatile": false,
    "generated_at": "2026-10-04",
-   "name": "Meta's Llama 4 and its leaderboard score (Apr 2025)",
+   "name": "Meta's Llama 4 and its leaderboard score",
    "ref_quality": "none",
    "fact_checked": true,
    "tier": 2,
@@ -89131,7 +89131,7 @@
    "category": "ai_drama",
    "domain": "history",
    "en": {
-    "prompt": "Builder.ai enters insolvency (May 2025): in what month and year?",
+    "prompt": "Builder.ai enters insolvency: in what month and year?",
     "unit": "month"
    },
    "answer": 202505,
@@ -89143,7 +89143,7 @@
    "difficulty_hint": "unknown",
    "volatile": false,
    "generated_at": "2026-10-04",
-   "name": "Builder.ai enters insolvency (May 2025)",
+   "name": "Builder.ai enters insolvency",
    "ref_quality": "none",
    "fact_checked": true,
    "tier": 2,
@@ -89160,7 +89160,7 @@
    "category": "ai_drama",
    "domain": "history",
    "en": {
-    "prompt": "SpaceX buys xAI (Feb 2026): in what month and year?",
+    "prompt": "SpaceX buys xAI: in what month and year?",
     "unit": "month"
    },
    "answer": 202602,
@@ -89172,7 +89172,7 @@
    "difficulty_hint": "unknown",
    "volatile": false,
    "generated_at": "2026-10-04",
-   "name": "SpaceX buys xAI (Feb 2026)",
+   "name": "SpaceX buys xAI",
    "ref_quality": "none",
    "fact_checked": true,
    "tier": 2,
@@ -89189,7 +89189,7 @@
    "category": "ai_drama",
    "domain": "history",
    "en": {
-    "prompt": "OpenAI confirms it has filed for an IPO (Jun 2026): in what month and year?",
+    "prompt": "OpenAI confirms it has filed for an IPO: in what month and year?",
     "unit": "month"
    },
    "answer": 202606,
@@ -89201,7 +89201,7 @@
    "difficulty_hint": "unknown",
    "volatile": false,
    "generated_at": "2026-10-04",
-   "name": "OpenAI confirms it has filed for an IPO (Jun 2026)",
+   "name": "OpenAI confirms it has filed for an IPO",
    "ref_quality": "none",
    "fact_checked": true,
    "tier": 2,
@@ -89219,7 +89219,7 @@
    "category": "ai_drama",
    "domain": "history",
    "en": {
-    "prompt": "Hugging Face reports an attack by autonomous AI agents (Jul 2026): in what month and year?",
+    "prompt": "Hugging Face reports an attack by autonomous AI agents: in what month and year?",
     "unit": "month"
    },
    "answer": 202607,
@@ -89231,7 +89231,7 @@
    "difficulty_hint": "unknown",
    "volatile": false,
    "generated_at": "2026-10-04",
-   "name": "Hugging Face reports an attack by autonomous AI agents (Jul 2026)",
+   "name": "Hugging Face reports an attack by autonomous AI agents",
    "ref_quality": "none",
    "fact_checked": true,
    "tier": 2,
@@ -89249,7 +89249,7 @@
    "category": "ai_drama",
    "domain": "history",
    "en": {
-    "prompt": "Nvidia agrees to buy Hugging Face (Sep 2026): in what month and year?",
+    "prompt": "Nvidia agrees to buy Hugging Face: in what month and year?",
     "unit": "month"
    },
    "answer": 202609,
@@ -89261,7 +89261,7 @@
    "difficulty_hint": "unknown",
    "volatile": false,
    "generated_at": "2026-10-04",
-   "name": "Nvidia agrees to buy Hugging Face (Sep 2026)",
+   "name": "Nvidia agrees to buy Hugging Face",
    "ref_quality": "none",
    "fact_checked": true,
    "tier": 2,
@@ -89279,7 +89279,7 @@
    "category": "ai_drama",
    "domain": "history",
    "en": {
-    "prompt": "Anthropic accuses three Chinese labs of distilling Claude (Feb 2026): in what month and year?",
+    "prompt": "Anthropic accuses three Chinese labs of distilling Claude: in what month and year?",
     "unit": "month"
    },
    "answer": 202602,
@@ -89291,7 +89291,7 @@
    "difficulty_hint": "unknown",
    "volatile": false,
    "generated_at": "2026-10-04",
-   "name": "Anthropic accuses three Chinese labs of distilling Claude (Feb 2026)",
+   "name": "Anthropic accuses three Chinese labs of distilling Claude",
    "ref_quality": "none",
    "fact_checked": true,
    "tier": 2,
@@ -89309,7 +89309,7 @@
    "category": "ai_drama",
    "domain": "history",
    "en": {
-    "prompt": "Anthropic turns down the Pentagon's demand on Claude (Feb 2026): in what month and year?",
+    "prompt": "Anthropic turns down the Pentagon's demand on Claude: in what month and year?",
     "unit": "month"
    },
    "answer": 202602,
@@ -89321,7 +89321,7 @@
    "difficulty_hint": "unknown",
    "volatile": false,
    "generated_at": "2026-10-04",
-   "name": "Anthropic turns down the Pentagon's demand on Claude (Feb 2026)",
+   "name": "Anthropic turns down the Pentagon's demand on Claude",
    "ref_quality": "none",
    "fact_checked": true,
    "tier": 2,
@@ -89339,7 +89339,7 @@
    "category": "ai_drama",
    "domain": "history",
    "en": {
-    "prompt": "Geoffrey Hinton leaves Google (May 2023): in what month and year?",
+    "prompt": "Geoffrey Hinton leaves Google: in what month and year?",
     "unit": "month"
    },
    "answer": 202305,
@@ -89351,7 +89351,7 @@
    "difficulty_hint": "unknown",
    "volatile": false,
    "generated_at": "2026-10-04",
-   "name": "Geoffrey Hinton leaves Google (May 2023)",
+   "name": "Geoffrey Hinton leaves Google",
    "ref_quality": "none",
    "fact_checked": true,
    "tier": 2,
@@ -89369,7 +89369,7 @@
    "category": "ai_drama",
    "domain": "history",
    "en": {
-    "prompt": "Yann LeCun leaves Meta to start AMI Labs (Nov 2025): in what month and year?",
+    "prompt": "Yann LeCun leaves Meta to start AMI Labs: in what month and year?",
     "unit": "month"
    },
    "answer": 202511,
@@ -89381,7 +89381,7 @@
    "difficulty_hint": "unknown",
    "volatile": false,
    "generated_at": "2026-10-04",
-   "name": "Yann LeCun leaves Meta to start AMI Labs (Nov 2025)",
+   "name": "Yann LeCun leaves Meta to start AMI Labs",
    "ref_quality": "none",
    "fact_checked": true,
    "tier": 2,
@@ -89398,7 +89398,7 @@
    "category": "ai_drama",
    "domain": "history",
    "en": {
-    "prompt": "California's SB 1047 is vetoed (Sep 2024): in what month and year?",
+    "prompt": "California's SB 1047 is vetoed: in what month and year?",
     "unit": "month"
    },
    "answer": 202409,
@@ -89410,7 +89410,7 @@
    "difficulty_hint": "unknown",
    "volatile": false,
    "generated_at": "2026-10-04",
-   "name": "California's SB 1047 is vetoed (Sep 2024)",
+   "name": "California's SB 1047 is vetoed",
    "ref_quality": "none",
    "fact_checked": true,
    "tier": 2,
@@ -89427,7 +89427,7 @@
    "category": "ai_drama",
    "domain": "history",
    "en": {
-    "prompt": "The US AI executive order 14110 is rescinded (Jan 2025): in what month and year?",
+    "prompt": "The US AI executive order 14110 is rescinded: in what month and year?",
     "unit": "month"
    },
    "answer": 202501,
@@ -89439,7 +89439,7 @@
    "difficulty_hint": "unknown",
    "volatile": false,
    "generated_at": "2026-10-04",
-   "name": "The US AI executive order 14110 is rescinded (Jan 2025)",
+   "name": "The US AI executive order 14110 is rescinded",
    "ref_quality": "none",
    "fact_checked": true,
    "tier": 2,
@@ -89456,7 +89456,7 @@
    "category": "ai_drama",
    "domain": "history",
    "en": {
-    "prompt": "The EU AI Act enters into force (Aug 2024): in what month and year?",
+    "prompt": "The EU AI Act enters into force: in what month and year?",
     "unit": "month"
    },
    "answer": 202408,
@@ -89468,7 +89468,7 @@
    "difficulty_hint": "unknown",
    "volatile": false,
    "generated_at": "2026-10-04",
-   "name": "The EU AI Act enters into force (Aug 2024)",
+   "name": "The EU AI Act enters into force",
    "ref_quality": "none",
    "fact_checked": true,
    "tier": 2,
