@@ -325,7 +325,7 @@ test('home page: the Discord, Slack and web mocks say what the bots and the game
   const picker = confidencePicker('2026-10-05', q.round_id, q.item_id, 0);
   for (const line of shown(picker.content)) has(discord, line, 'Discord private reply');
   for (const row of picker.components) has(discord, row.components.map((b) => b.label).join(' '), 'Discord confidence row');
-  const names = ['Ethan']; // the owner; the other four have no name on the page, so the bot prints 'a member'
+  const names = ['Jerry']; // the owner's name on the page; the other four have no name on the page, so the bot prints 'a member'
   const top = [100, 96, 84, 64, 36].map((points, i) => ({ anon_id: `m${i}`, points })); // right at 100, 90, 80, 70, 60% sure
   const r = { n: 12, pct_a: 75, pct_b: 25, correct: 0, a_value: 6650, b_value: 2850, unit: 'km', a_source: 'https://www.wikidata.org/wiki/Q3392', b_source: 'https://www.wikidata.org/wiki/Q1653' };
   const reveal = revealMessage({ q, r, top, names: new Map(top.slice(0, 1).map((t, i) => [t.anon_id, names[i]])), bluff: { anon_id: 'x', conf: 90, choice: 1 }, roast: 0 });
