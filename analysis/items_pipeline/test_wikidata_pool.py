@@ -290,7 +290,8 @@ class AiPack(unittest.TestCase):
         self.assertTrue(all(len(v) >= 15 for v in by_cat.values()), {k: len(v) for k, v in by_cat.items()})
         for e in by_cat["ai_drama"]:
             self.assertTrue(e["fun"] and len(e["fun"]) <= 140 and re.search(r"(19|20)\d\d", e["note"]), e["name"])
-            self.assertRegex(e["name"], r"\((Jan|Feb|Mar|Apr|May|Jun|Jul|Aug|Sep|Oct|Nov|Dec) 20\d\d\)$")
+            # The date is the answer to "Which came first?", so it must not sit in the name (it showed in the options).
+            self.assertNotRegex(e["name"], r"\((Jan|Feb|Mar|Apr|May|Jun|Jul|Aug|Sep|Oct|Nov|Dec) 20\d\d\)$")
             self.assertIn("famous", e)  # decided per event from its subject's pageviews
         timeline = {e["name"]: e["month"] for e in by_cat["ai_timeline"]}
         for name, month in (("OpenAI (founded)", "2015-12"), ("Anthropic (founded)", "2021-01"), ("ChatGPT (released)", "2022-11"),
