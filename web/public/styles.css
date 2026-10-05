@@ -846,3 +846,6 @@ button.pick:hover { border-color: var(--accent); }
 .lab-table .is-mine > * { background: var(--accent-soft); }
 .lab-you { color: var(--accent); font-size: var(--fs-6); font-weight: 700; }
 .lab-need { color: var(--muted); }
+
+/* The member in the Discord mock is the owner, with his real avatar. */
+img.dc-avatar { display: block; object-fit: cover; }
