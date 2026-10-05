@@ -132,7 +132,7 @@ export const REACTIONS = {
     "Shipped before the competitor's blog post. Nice.",
     "Correct, and released without a waitlist.",
     "Right. No system card needed for that one.",
-    "Correct at {conf}%. Better calibrated than most launch dates.",
+    "Correct at {conf}%. More reliable than most launch dates.",
     "Right, and nobody had to rename it afterwards.",
     "Right. In a lab, that answer would ship as v2-pro-max-preview.",
     "Correct, in less time than a model naming meeting.",

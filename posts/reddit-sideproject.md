@@ -15,7 +15,7 @@ text twice. Replace `{URL}` with `https://whosbluffing.com`. Fill the "So far" l
 
 I built Who's Bluffing? ({URL}), a one-minute game about knowing what you know.
 
-**What it is.** Ten comparison questions, like "Which is longer: the Nile or the Danube?" You pick one and stake how sure you are, from 50% to 100%. The quadratic scoring rule from forecasting pays for honesty: 50% always scores 0, 100% right is +100, 100% wrong is −300. Each round ends with your type (Bluffer, Hot-headed, Calibrated, Modest or Hedger) and a link that lets a friend play the same ten questions against your score. One ranked round a day, unlimited quick rounds.
+**What it is.** Ten comparison questions, like "Which is longer: the Nile or the Danube?" You pick one and stake how sure you are, from 50% to 100%. The quadratic scoring rule from forecasting pays for honesty: 50% always scores 0, 100% right is +100, 100% wrong is −300. Each round ends with your type (Bluffer, Too sure, Spot on, Too modest or Playing it safe) and a link that lets a friend play the same ten questions against your score. One ranked round a day, unlimited quick rounds.
 
 **Why.** In calibration studies, answers people call "90% sure" come out right about 70% of the time. I wanted a game that shows you your own number in a minute.
 

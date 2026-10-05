@@ -14,7 +14,7 @@ Read the sidebar before posting (rules unverified). Replace `{URL}` with `https:
 
 Ten either-or questions. Pick one, then stake how sure you are, from 50% to 100%. 100% right is +100, 100% wrong is −300 and 50% always scores 0, so honest confidence scores best.
 
-At the end you get your type (Bluffer, Hot-headed, Calibrated, Modest or Hedger) and a link to challenge a friend on the same ten questions. Every answer shows its source. There are Discord and Slack apps too, for one question a day in a channel.
+At the end you get your type (Bluffer, Too sure, Spot on, Too modest or Playing it safe) and a link to challenge a friend on the same ten questions. Every answer shows its source. There are Discord and Slack apps too, for one question a day in a channel.
 
 Free, no accounts, no ads. {URL}
 

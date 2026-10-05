@@ -16,6 +16,6 @@ Ten either-or questions: which river is longer, which mountain is higher, which 
 
 Pick one and stake 50% to 100%. Right at 100% is +100, wrong at 100% is −300, and 50% always scores 0.
 
-No sign-up. You finish with your type, from Bluffer to Hedger. Bluff and it shows.
+No sign-up. You finish with your type, from Bluffer to Playing it safe. Bluff and it shows.
 
 {URL}

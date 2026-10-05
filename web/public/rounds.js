@@ -452,7 +452,9 @@ export async function renderRounds(ctx) {
     return;
   }
   if (saved) clearRound();
-  if (store.get(RANKED_KEY, {})[today] != null) {
+  // A link that names a pack or difficulty (?pack=ai&difficulty=brutal) is a dare to that round: quick at once.
+  const linked = ['pack', 'difficulty'].some((k) => new URLSearchParams(location.search).has(k));
+  if (linked || store.get(RANKED_KEY, {})[today] != null) {
     ctx.setPlay(t('rounds.play'), () => playQuick(ctx));
     return;
   }

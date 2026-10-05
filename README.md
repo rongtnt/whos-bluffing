@@ -21,7 +21,7 @@
   <a href="https://whosbluffing.com"><img src="web/public/press/readme-hero.png" alt="A question, a result card and the Discord reveal" width="900"></a>
 </p>
 
-Ten comparison questions ("Which is longer: the Nile or the Danube?"). Pick one, then stake how sure you are, from 50% to 100%. The scoring rule pays for honesty: 50% scores nothing, 100% right is +100, 100% wrong is −300. At the end you get your type (Bluffer, Hot-headed, Calibrated, Modest or Hedger), a roast if you earned one, and a link to challenge a friend on the same ten.
+Ten comparison questions ("Which is longer: the Nile or the Danube?"). Pick one, then stake how sure you are, from 50% to 100%. The scoring rule pays for honesty: 50% scores nothing, 100% right is +100, 100% wrong is −300. At the end you get your type (Bluffer, Too sure, Spot on, Too modest or Playing it safe), a roast if you earned one, and a link to challenge a friend on the same ten.
 
 ## Play
 

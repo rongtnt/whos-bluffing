@@ -203,7 +203,7 @@
     "consent": "About a minute. Anonymous — no account, no tracking. Your answers go into a public research dataset.",
     "start": "Play today’s game",
     "resume": "Continue ({done} of {n} answered)",
-    "full_note": "Want the 5-minute version with a calibration chart?",
+    "full_note": "Want the 5-minute version with the full chart?",
     "lock_in": "Lock in",
     "sending": "Checking…",
     "offline": "We couldn’t reach the server. Your answer is still here.",

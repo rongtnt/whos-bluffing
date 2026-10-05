@@ -96,7 +96,7 @@ plus Wordle's share line (#1). Structure: "I got X, what did you get?" with the 
 >
 > I came out {type}, {x}% right at {y}% sure.
 >
-> Which type did you get, Bluffer, Hot-headed, Calibrated, Modest or Hedger?
+> Which type did you get, Bluffer, Too sure, Spot on, Too modest or Playing it safe?
 >
 > whosbluffing.com
 

@@ -25,7 +25,7 @@ Say 50%: nothing, either way.
 Being loud is free everywhere else on the internet. Here it costs you.
 
 **3/**
-Ten questions. At the end it names you: Bluffer, Hot-headed, Calibrated, Modest or Hedger.
+Ten questions. At the end it names you: Bluffer, Too sure, Spot on, Too modest or Playing it safe.
 
 Then it hands you a link for the friend who's never wrong. Same ten questions. Loser buys coffee.
 

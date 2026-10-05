@@ -2,7 +2,7 @@ Title: Show HN: Who's Bluffing? – a one-minute trivia game that scores your co
 
 Ten comparison questions ("Which is longer, the Nile or the Danube?"). You pick one, then stake how sure you are, from 50% to 100%. Scoring is the quadratic rule from forecasting: 50% scores zero either way, 100% right is +100, 100% wrong is −300, so honest confidence maximizes expected points. In calibration studies, answers people call "90% sure" come out right about 70% of the time; the game shows you your own number.
 
-Each round ends with a type (Bluffer, Hot-headed, Calibrated, Modest, Hedger), a one-line roast if you earned one, and a challenge link that lets a friend play the same ten questions against your score. One ranked round a day, unlimited quick rounds.
+Each round ends with a type (Bluffer, Too sure, Spot on, Too modest, Playing it safe), a one-line roast if you earned one, and a challenge link that lets a friend play the same ten questions against your score. One ranked round a day, unlimited quick rounds.
 
 Slack and Discord apps post one question a day in a channel; everyone answers, and the reveal shows the channel who was right and the day's biggest bluff (anonymous by default; servers can turn on roast mode).
 

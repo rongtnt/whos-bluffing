@@ -82,7 +82,7 @@ threads, and TikTok hashtag view counts (TikTok pages need a logged-in browser).
 ### 5. Reply with your type
 - **Pattern:** a short test that ends in a label people want to show.
 - **Real example:** BuzzFeed's city quiz, 20M+ views (#16).
-- **Our version:** 10 questions → one of five types (Bluffer, Hot-headed, Calibrated, Modest, Hedger) → "reply with
+- **Our version:** 10 questions → one of five types (Bluffer, Too sure, Spot on, Too modest, Playing it safe) → "reply with
   yours". Our own reply sets the example.
 - **Where:** X, Threads, Discord, Instagram stories.
 - **Trap:** types that insult. A label people hide does not spread; keep every type funny or flattering.
