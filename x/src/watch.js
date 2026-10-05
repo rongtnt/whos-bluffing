@@ -2,6 +2,8 @@
 // field. Ids are resolved once through GET /2/users/by and cached in KV ("ids"), so a renamed handle only needs an
 // edit here. People only, never organisations: the dare is addressed to a person.
 export const SITE = 'https://whosbluffing.com/';
+// People with a dare page (dares/dares.json): their link is the page that keeps score of their silence.
+export const DARES = {"sama":"altman","elonmusk":"musk","gdb":"brockman","karpathy":"karpathy","ylecun":"lecun","demishassabis":"hassabis","mustafasuleyman":"suleyman","AravSrinivas":"srinivas","satyanadella":"nadella","sundarpichai":"pichai","OfficialLoganK":"kilpatrick","jackclarkSF":"clark","dwarkesh_sp":"dwarkesh","emollick":"mollick","GaryMarcus":"marcus","paulg":"graham","pmarca":"andreessen","naval":"naval","BillGates":"gates","JeffBezos":"bezos"};
 
 export const WATCH = [
   // AI labs and researchers: the AI pack, brutal for the people who would find normal easy.
@@ -46,7 +48,7 @@ export const WATCH = [
   ['reidhoffman', 'Mr. Hoffman', 'companies', 'normal'],
   ['balajis', 'Mr. Srinivasan', 'countries', 'brutal'],
   ['CathieDWood', 'Ms. Wood', 'companies', 'normal'],
-].map(([handle, address, pack, difficulty]) => ({ handle, address, link: `${SITE}?pack=${pack}&difficulty=${difficulty}` }));
+].map(([handle, address, pack, difficulty]) => ({ handle, address, link: DARES[handle] ? `${SITE}dare/${DARES[handle]}` : `${SITE}?pack=${pack}&difficulty=${difficulty}` }));
 
 // Polite dares, as the owner asked for them. Rotated by post id so the same wording does not repeat all day.
 const LINES = [

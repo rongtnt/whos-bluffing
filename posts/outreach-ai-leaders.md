@@ -27,7 +27,7 @@ short.
 
 ## Universal lines (fill `{Name}` and the pack link)
 
-Pack links: AI insiders `https://whosbluffing.com/?pack=ai&difficulty=brutal`; founders and investors
+Each named person has a dare page (whosbluffing.com/dare/<name>) that counts plays and shows "no score yet" until they post; the per-person lines below link to it. Pack links for everyone else: AI insiders `https://whosbluffing.com/?pack=ai&difficulty=brutal`; founders and investors
 `https://whosbluffing.com/?pack=companies&difficulty=normal`; general `https://whosbluffing.com/`.
 
 - U1 (competence): `{Name}, ten questions from your own field, about a minute. I would bet you can't get all ten with the confidence you claim: {link}`
@@ -41,26 +41,26 @@ Pack links: AI insiders `https://whosbluffing.com/?pack=ai&difficulty=brutal`; f
 
 | Who | Address | Lever | Line (≤ 280 as X counts, link = 23) |
 |---|---|---|---|
-| Sam Altman | Mr. Altman | rivalry | Mr. Altman, ten questions about OpenAI, Anthropic, xAI and Google, every date sourced. Being sure only pays when you're right. I doubt anyone gets all ten: https://whosbluffing.com/?pack=ai&difficulty=brutal |
-| Elon Musk | Mr. Musk | competence | Mr. Musk, a one-minute test from your own field. Most people are surest on the ones they get wrong. I would bet you can't get all ten: https://whosbluffing.com/?pack=ai&difficulty=brutal |
-| Greg Brockman | Mr. Brockman | foot in the door | Mr. Brockman, which came first, OpenAI's founding or the Transformer paper? Say how sure you are before you check. The other nine: https://whosbluffing.com/?pack=ai&difficulty=brutal |
-| Andrej Karpathy | Mr. Karpathy | curiosity | Mr. Karpathy, question 7 on the brutal AI round is the one almost everyone misses. About a minute to find out whether you do: https://whosbluffing.com/?pack=ai&difficulty=brutal |
-| Yann LeCun | Professor LeCun | competence | Professor LeCun, ten questions on the field's own history, scored on how sure you are, not just on being right. I would like to see your score: https://whosbluffing.com/?pack=ai&difficulty=brutal |
-| Demis Hassabis | Sir Demis | reciprocity | Sir Demis, we built a round from DeepMind's and its rivals' timelines, every date sourced. If you play, I'll send you how the room did on the DeepMind questions: https://whosbluffing.com/?pack=ai&difficulty=brutal |
-| Mustafa Suleyman | Mr. Suleyman | rivalry | Mr. Suleyman, the round covers DeepMind, Inflection, Microsoft and the rest. Which lab's people bluff least? Your ten: https://whosbluffing.com/?pack=ai&difficulty=brutal |
-| Aravind Srinivas | Mr. Srinivas | competence | Mr. Srinivas, your product answers questions all day. Here are ten about your own industry where the score depends on how sure you are: https://whosbluffing.com/?pack=ai&difficulty=brutal |
-| Satya Nadella | Mr. Nadella | commitment | Mr. Nadella, ten questions about the industry you invest in, scored on confidence. I'll post my score if you post yours: https://whosbluffing.com/?pack=ai&difficulty=normal |
-| Sundar Pichai | Mr. Pichai | reciprocity | Mr. Pichai, a round built from Google's, OpenAI's and Anthropic's own dates, sourced. Play it and I'll send you where the room was surest and wrong: https://whosbluffing.com/?pack=ai&difficulty=normal |
-| Logan Kilpatrick | Mr. Kilpatrick | foot in the door | Mr. Kilpatrick, which came first, Gemini's announcement or Claude 2's release? Pick one, say how sure. The other nine: https://whosbluffing.com/?pack=ai&difficulty=brutal |
-| Jack Clark | Mr. Clark | commitment | Mr. Clark, a calibration test built from the industry's own timeline. I would bet the Import AI readers beat the labs. Your ten: https://whosbluffing.com/?pack=ai&difficulty=brutal |
-| Dwarkesh Patel | Mr. Patel | competence | Mr. Patel, you ask people to put numbers on their beliefs. Ten questions where the number is the score: https://whosbluffing.com/?pack=ai&difficulty=brutal |
-| Ethan Mollick | Professor Mollick | reciprocity | Professor Mollick, a one-minute overconfidence test with sourced answers, and the anonymous data will be released. Your students would enjoy beating you on it: https://whosbluffing.com/?pack=ai&difficulty=brutal |
-| Gary Marcus | Professor Marcus | competence | Professor Marcus, ten questions on what the labs actually shipped and when. Being sure only pays when you're right. I would like to see your score: https://whosbluffing.com/?pack=ai&difficulty=brutal |
-| Paul Graham | Mr. Graham | curiosity | Mr. Graham, ten questions about companies, scored on how sure you are. The founders' round is the one people are most confident about and get most wrong: https://whosbluffing.com/?pack=companies&difficulty=brutal |
-| Marc Andreessen | Mr. Andreessen | rivalry | Mr. Andreessen, which came first is easy; how sure you are is the test. Ten questions about the companies you have written about: https://whosbluffing.com/?pack=companies&difficulty=brutal |
-| Naval Ravikant | Mr. Ravikant | competence | Mr. Ravikant, a one-minute test of how sure you should be. Most people are surest on the ones they get wrong: https://whosbluffing.com/?pack=companies&difficulty=normal |
-| Bill Gates | Mr. Gates | curiosity | Mr. Gates, ten questions on history, scored on confidence. Question 4 is the one most people are sure about and wrong: https://whosbluffing.com/?pack=history&difficulty=normal |
-| Jeff Bezos | Mr. Bezos | foot in the door | Mr. Bezos, which company is older, NVIDIA or Amazon? Say how sure you are before you look. The other nine: https://whosbluffing.com/?pack=companies&difficulty=normal |
+| Sam Altman | Mr. Altman | rivalry | Mr. Altman, ten questions about OpenAI, Anthropic, xAI and Google, every date sourced. Being sure only pays when you're right. I doubt anyone gets all ten: https://whosbluffing.com/dare/altman |
+| Elon Musk | Mr. Musk | competence | Mr. Musk, a one-minute test from your own field. Most people are surest on the ones they get wrong. I would bet you can't get all ten: https://whosbluffing.com/dare/musk |
+| Greg Brockman | Mr. Brockman | foot in the door | Mr. Brockman, which came first, OpenAI's founding or the Transformer paper? Say how sure you are before you check. The other nine: https://whosbluffing.com/dare/brockman |
+| Andrej Karpathy | Mr. Karpathy | curiosity | Mr. Karpathy, question 7 on the brutal AI round is the one almost everyone misses. About a minute to find out whether you do: https://whosbluffing.com/dare/karpathy |
+| Yann LeCun | Professor LeCun | competence | Professor LeCun, ten questions on the field's own history, scored on how sure you are, not just on being right. I would like to see your score: https://whosbluffing.com/dare/lecun |
+| Demis Hassabis | Sir Demis | reciprocity | Sir Demis, we built a round from DeepMind's and its rivals' timelines, every date sourced. If you play, I'll send you how the room did on the DeepMind questions: https://whosbluffing.com/dare/hassabis |
+| Mustafa Suleyman | Mr. Suleyman | rivalry | Mr. Suleyman, the round covers DeepMind, Inflection, Microsoft and the rest. Which lab's people bluff least? Your ten: https://whosbluffing.com/dare/suleyman |
+| Aravind Srinivas | Mr. Srinivas | competence | Mr. Srinivas, your product answers questions all day. Here are ten about your own industry where the score depends on how sure you are: https://whosbluffing.com/dare/srinivas |
+| Satya Nadella | Mr. Nadella | commitment | Mr. Nadella, ten questions about the industry you invest in, scored on confidence. I'll post my score if you post yours: https://whosbluffing.com/dare/nadella |
+| Sundar Pichai | Mr. Pichai | reciprocity | Mr. Pichai, a round built from Google's, OpenAI's and Anthropic's own dates, sourced. Play it and I'll send you where the room was surest and wrong: https://whosbluffing.com/dare/pichai |
+| Logan Kilpatrick | Mr. Kilpatrick | foot in the door | Mr. Kilpatrick, which came first, Gemini's announcement or Claude 2's release? Pick one, say how sure. The other nine: https://whosbluffing.com/dare/kilpatrick |
+| Jack Clark | Mr. Clark | commitment | Mr. Clark, a calibration test built from the industry's own timeline. I would bet the Import AI readers beat the labs. Your ten: https://whosbluffing.com/dare/clark |
+| Dwarkesh Patel | Mr. Patel | competence | Mr. Patel, you ask people to put numbers on their beliefs. Ten questions where the number is the score: https://whosbluffing.com/dare/dwarkesh |
+| Ethan Mollick | Professor Mollick | reciprocity | Professor Mollick, a one-minute overconfidence test with sourced answers, and the anonymous data will be released. Your students would enjoy beating you on it: https://whosbluffing.com/dare/mollick |
+| Gary Marcus | Professor Marcus | competence | Professor Marcus, ten questions on what the labs actually shipped and when. Being sure only pays when you're right. I would like to see your score: https://whosbluffing.com/dare/marcus |
+| Paul Graham | Mr. Graham | curiosity | Mr. Graham, ten questions about companies, scored on how sure you are. The founders' round is the one people are most confident about and get most wrong: https://whosbluffing.com/dare/graham |
+| Marc Andreessen | Mr. Andreessen | rivalry | Mr. Andreessen, which came first is easy; how sure you are is the test. Ten questions about the companies you have written about: https://whosbluffing.com/dare/andreessen |
+| Naval Ravikant | Mr. Ravikant | competence | Mr. Ravikant, a one-minute test of how sure you should be. Most people are surest on the ones they get wrong: https://whosbluffing.com/dare/naval |
+| Bill Gates | Mr. Gates | curiosity | Mr. Gates, ten questions on history, scored on confidence. Question 4 is the one most people are sure about and wrong: https://whosbluffing.com/dare/gates |
+| Jeff Bezos | Mr. Bezos | foot in the door | Mr. Bezos, which company is older, NVIDIA or Amazon? Say how sure you are before you look. The other nine: https://whosbluffing.com/dare/bezos |
 
 Facts behind the questions used above: OpenAI was founded in December 2015 and the Transformer paper was posted in
 June 2017 (items/ai_curated.json, sourced); Gemini was announced in December 2023, Claude 2 released in July 2023
