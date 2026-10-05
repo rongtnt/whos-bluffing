@@ -260,7 +260,8 @@ async function resolveRound(db, data, roundId, now) {
 }
 
 // The same shuffled order for everyone, seeded by the date (the file lists hard, easy, medium).
-const orderRanked = (ids, date) => [...ids].sort((x, y) => hash(`${date}|${x}`) - hash(`${date}|${y}`));
+// The file's first id stays first (from 2026-10-05 it is the day's AI question); the other nine are shuffled, same for everyone.
+const orderRanked = (ids, date) => (date >= '2026-10-05' ? [ids[0], ...ids.slice(1).sort((x, y) => hash(`${date}|${x}`) - hash(`${date}|${y}`))] : [...ids].sort((x, y) => hash(`${date}|${x}`) - hash(`${date}|${y}`)));
 
 // Statements that find which of the pair ids are retired or share a retired item (PREREG: a pair sharing a retired
 // value retires too); deadFrom reads their results.
