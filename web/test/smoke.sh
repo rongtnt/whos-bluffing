@@ -111,6 +111,7 @@ content /stats '<section class="live" aria-labelledby="live-title" data-live>' '
 content /support '<h2 id="faq">Answers that may help</h2>' 'support: the FAQ moved from the home page'
 content /test '<title>Full assessment' 'full assessment shell'
 content /stats '<title>Live stats' 'stats shell'
+content /labs '<title>Which lab bluffs least?' 'labs shell'
 content /class '<title>Create a class code' 'class shell'
 content /class/d/AAAAAAAAAAAAAAAAAAAAAAAA '<script type="module" src="/app.js">' 'class dashboard (rewritten to the class shell, URL kept)'
 content /slack "<h1 id=\"slack-title\">Who's Bluffing? for Slack</h1>" 'Slack page'
@@ -846,5 +847,58 @@ expect "GET /api/round/stats -> 5 players, 3 bluffs {prompt, pick, conf, points}
 # 100% wrong and 90% right; the day was rebuilt without the retired pair, and the new plays were added without it.
 expect "GET /api/round/stats -> calibration per confidence: 45 answers, 18 at 100% (9 right), 9 at 90% (9), 9 at 80% (4), 9 at 60% (0)" 200 \
   'r.calibration.map((c) => `${c.conf}:${c.n}/${c.right}`).join() === "50:0/0,60:9/0,70:0/0,80:9/4,90:9/9,100:18/9"'
+
+# After the bluffs too, so this extra player leaves every count above alone.
+echo "== labs: a claim after an AI-pack round, moved, refusals, the board (POST /api/round/lab, GET /api/labs)"
+LABBER=smokeLabberLLLLLLLLLLL
+lbody() { node -e 'const [r, a, l] = process.argv.slice(1); process.stdout.write(JSON.stringify({ round_id: r, anon_id: a, lab: l }))' "$@"; }
+req GET "/api/round?mode=quick&pack=ai&difficulty=normal"
+expect "GET quick pack=ai difficulty=normal -> 10 pairs" 200 'r.pack === "ai" && r.items.length === 10'
+printf '%s' "$BODY" > "$STATE/ai.json"
+in_pack "$STATE/ai.json" ai || fail "pack=ai: every pair from the AI categories" "$BODY"
+LROUND=$(field round_id)
+req POST /api/round/lab "$(lbody "$LROUND" "$LABBER" anthropic)"
+expect "claim before finishing the round -> 404" 404 'r.error === "finish this round first"'
+play_round "$STATE/ai.json" "$LABBER" web 1111100000 80
+req POST /api/round/complete "$(cbody "$LROUND" "$LABBER" web)"
+expect "complete the AI round (half right at 80%) -> -360, overconfidence 30" 200 'r.score === -360 && r.overconfidence === 30'
+req POST /api/round/lab "$(lbody "$LROUND" "$LABBER" anthropic)"
+expect "claim anthropic -> ok and the board: six labs, anthropic first with 1 player, no averages under 10" 200 \
+  'r.ok === true && r.lab === "anthropic" && r.board.range === "all" && r.board.min_players === 10 && r.board.labs.length === 6 && r.board.labs[0].lab === "anthropic" && r.board.labs[0].name === "Anthropic" && r.board.labs[0].players === 1 && r.board.labs.every((l) => l.mean_score === null && l.mean_overconfidence === null)'
+req POST /api/round/lab "$(lbody "$LROUND" "$LABBER" openai)"
+expect "the same round with another lab moves the claim: openai 1, anthropic 0" 200 \
+  'r.lab === "openai" && r.board.labs[0].lab === "openai" && r.board.labs[0].players === 1 && r.board.labs.find((l) => l.lab === "anthropic").players === 0'
+req POST /api/round/lab "$(lbody "$LROUND" "$LABBER" deepmind)"
+expect "unknown lab -> 400" 400 'r.error === "lab must be openai, anthropic, google, xai, meta or other"'
+req POST /api/round/lab "$(lbody "$QROUND" "$HOST" openai)"
+expect "a finished quick round outside the AI pack -> 400" 400 'r.error === "only quick rounds in the AI pack can be claimed"'
+req POST /api/round/lab "$(lbody "rk-$TODAY" "$HOST" openai)"
+expect "a ranked round -> 400" 400 'r.error === "only quick rounds in the AI pack can be claimed"'
+req POST /api/round/lab "$(lbody ZZZZZZZZZZZZ "$LABBER" openai)"
+expect "an unknown round -> 404" 404 'r.error === "unknown round"'
+req POST /api/round/lab '{not json'
+expect "invalid JSON -> 400" 400 'r.error === "invalid JSON"'
+STATUS=$(curl -s -D "$STATE/labs.h" -o "$STATE/labs.json" -w '%{http_code}' "$BASE/api/labs"); BODY=$(cat "$STATE/labs.json")
+grep -qi '^cache-control: public, max-age=60' "$STATE/labs.h" || fail "GET /api/labs is cached for 60 s" "$(cat "$STATE/labs.h")"
+expect "GET /api/labs -> all time: openai first with the one claim, every average hidden, cache-control 60 s" 200 \
+  'r.range === "all" && r.min_players === 10 && r.labs.map((l) => l.lab).join() === "openai,anthropic,google,xai,meta,other" && r.labs[0].players === 1 && r.labs.every((l) => Object.keys(l).join() === "lab,name,players,mean_score,mean_overconfidence" && l.mean_score === null) && !Number.isNaN(Date.parse(r.as_of))'
+req GET "/api/labs?range=30d"
+expect "GET /api/labs?range=30d -> the claim (played today)" 200 'r.range === "30d" && r.labs[0].lab === "openai" && r.labs[0].players === 1'
+req GET "/api/labs?range=week"
+expect "GET /api/labs?range=week -> 400" 400 'r.error === "range must be all or 30d"'
+"${WRANGLER[@]}" d1 execute whosbluffing --local --persist-to "$STATE" --json --command \
+  "SELECT * FROM lab_claims; SELECT lab, players, sum_score, sum_overconf FROM lab_agg ORDER BY lab" \
+  > "$STATE/labs_db.json" 2>/dev/null || fail "d1 execute (lab tables)"
+CHECK=$(node -e '
+  const [claims, agg] = JSON.parse(require("fs").readFileSync(process.argv[1], "utf8")).map((x) => x.results);
+  const c = claims[0] ?? {};
+  const problems = [];
+  if (claims.length !== 1 || Object.keys(c).sort().join() !== "created_at,date,difficulty,lab,overconfidence,round_id,score") problems.push(`claims ${JSON.stringify(claims)}`);
+  if (c.round_id !== process.argv[2] || c.lab !== "openai" || c.date !== process.env.TODAY || c.difficulty !== "normal" || c.score !== -360 || c.overconfidence !== 30) problems.push(`claim ${JSON.stringify(c)}`);
+  if (JSON.stringify(agg.map((a) => [a.lab, a.players, a.sum_score, a.sum_overconf])) !== JSON.stringify([["anthropic", 0, 0, 0], ["openai", 1, -360, 30]])) problems.push(`lab_agg ${JSON.stringify(agg)}`);
+  if (problems.length) { console.log(problems.join("; ")); process.exit(1); }
+  console.log("one claim: round, lab, day, difficulty, score, overconfidence, time, no anonymous id; lab_agg moved from anthropic to openai");
+' "$STATE/labs_db.json" "$LROUND") || fail "lab tables" "$CHECK"
+pass "lab tables ($CHECK)"
 
 echo "smoke: $PASSED checks passed, 0 failed"

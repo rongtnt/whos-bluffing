@@ -4,7 +4,8 @@
 // Scoring is server-side (docs/api-rounds.md). Local state: whosbluffing_anon (ui.js), whosbluffing_seen_pairs (the newest 300 pair ids
 // played; the server keeps the last 300 it is sent), whosbluffing_round (the round in progress, so a reload resumes), whosbluffing_ranked
 // ({date: score} of finished ranked rounds), whosbluffing_nick (the nickname for challenge links: null = never asked, '' =
-// skipped), whosbluffing_mine (this browser's challenge tokens); pack and difficulty in picker.js, sound in site.js.
+// skipped), whosbluffing_mine (this browser's challenge tokens); pack and difficulty in picker.js, the lab after AI
+// rounds (whosbluffing_lab) in round-end.js, sound in site.js.
 import { html, api, store, anonId, calibrationChart, chartLabels, signed } from './ui.js';
 import { bins } from './metrics.js';
 import { renderRoundShare } from './share.js';
@@ -12,7 +13,7 @@ import { initPicker, quickLabel, shareWith } from './picker.js';
 import { pickReaction, bestLine } from './reactions.js';
 import { createSound } from './sound.js';
 import { countTo, raceTo, confetti } from './motion.js';
-import { resultGrid, wireGrid, fmtValue, fmtPoints } from './round-end.js';
+import { resultGrid, wireGrid, fmtValue, fmtPoints, labBlock, wireLab, savedLab, withLabLine } from './round-end.js';
 import { typeName } from './types.js';
 
 export { fmtValue, fmtPoints };
@@ -319,6 +320,7 @@ ${resultGrid(st, t)}
   <p class="type-def">${t(typeKey(res.type))}</p>
   <p class="type-line">${t('rounds.score_sub', { accuracy: Math.round(res.accuracy), mean_conf: Math.round(res.mean_conf) })} · ${t('rounds.overconf', { x: signed(Math.round(res.overconfidence)) })}</p>
 </section>
+${st.pack === 'ai' ? labBlock(t, savedLab()) : ''}
 ${res.roast ? html`<p class="roast">${res.roast}</p>` : ''}
 ${counters(t, res)}
 <figure class="mini">${calibrationChart([{ name: t('rounds.you'), bins: calib, cls: 's0' }], chartLabels(t))}<figcaption>${t('rounds.chart_note')}</figcaption></figure>
@@ -334,6 +336,7 @@ ${counters(t, res)}
 <section id="board-panel" class="card" hidden></section>`;
   app.scrollIntoView(); // the result sits below the hero, which is back now
   wireGrid(app, st, t);
+  const lab = st.pack === 'ai' ? wireLab(app, st.round_id, t) : null; // challenge rounds load as pack all: no claim
   for (const b of app.querySelectorAll('.counters [data-to]')) {
     countTo(b, 0, Number(b.dataset.to), { ms: 700, format: (n) => `${b.dataset.prefix}${n}${b.dataset.suffix}` });
   }
@@ -352,7 +355,7 @@ ${counters(t, res)}
   acts.share.onclick = () => toggle(acts.share, panel('share-panel'), (el) => renderRoundShare(ctx, el, {
     lines: { kicker: st.mode === 'ranked' ? t('rounds.ranked') : t('rounds.card_kicker'), type: typeName(res.type), score: t('rounds.card_score', { score: fmtTotal(res.score) }),
       line: t('rounds.score_sub', { accuracy: Math.round(res.accuracy), mean_conf: Math.round(res.mean_conf) }), cta: t('rounds.card_cta') },
-    copy, url: res.challenge_url, onShare: () => event('share', st.round_id),
+    copy: withLabLine(copy, lab?.shareLine(), res.challenge_url), url: res.challenge_url, onShare: () => event('share', st.round_id),
   }));
   acts.board.onclick = () => toggle(acts.board, panel('board-panel'), (el) => leaderboard(ctx, el, res.today));
   if (st.mode === 'ranked') acts.board.click(); // the ranked round ends with its leaderboard

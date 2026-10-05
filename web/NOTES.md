@@ -1,5 +1,18 @@
 # Builder notes
 
+## Lab claims (2026-10-04) — "Which lab bluffs least?"
+
+After an AI-pack round a player can say which lab they are with; `/labs` shows each lab's players, average score and overconfidence. Brief: the coordinator's `BRIEF_labs.md` text (not in `briefs/` in this worktree). New: `migrations/0008_labs.sql`, `functions/_labs.js`, `functions/api/labs.js`, `functions/api/round/lab.js`, `public/labs.{html,js}`, `test/labs.test.js`. Changed: `public/{round-end.js,rounds.js,packs.js,app.js,styles.css,sitemap.xml,i18n/en.json}`, `test/smoke.sh`, `docs/api-rounds.md`, `PRIVACY.md`.
+
+1. **A claim is one D1 batch**: take the stored claim (if any) off its `lab_agg` row (`UPDATE … FROM lab_claims`), add the new one to its row, upsert the claim, read the board. So `lab_agg` always equals the sums over `lab_claims`: a first claim, a moved claim (the old lab's row −1, the new +1), the same lab again (nets out) and concurrent claims all keep it exact. `test/labs.test.js` checks the rows against the claims.
+2. **"In pack ai" is derived**: `rounds` does not store the pack, so a round counts when every stored pair's category is one of `PACKS.ai.categories` (only that pack has `ai_*` categories). A pack-All round of ten AI pairs would also count; in practice it does not happen.
+3. **One claim per round** (the brief's `round_id` key). A challenge link replays the same round id, so a friend's claim would move the challenger's. The end screen offers the block only when `st.pack === 'ai'`, and challenge rounds load as pack All, so only a direct API call can do that; the totals stay exact either way (point 1).
+4. **Values**: `date` = the play's day (`round_plays.day`), `difficulty` = `rounds.difficulty` (null before migration 0006, read as normal), score and overconfidence = the stored play's. `players` = claimed rounds: auto-claim makes every later AI round count, so one person can count many times; the page and the API doc say so.
+5. **No CORS on `/api/labs`**: the brief asks for the 60 s cache "like stats.js", not a public read; `web/docs/public-api.md` still lists two public reads.
+6. **End screen**: the block sits under the type card; the lab is saved only after a claim succeeds; a failed claim says so and the chips stay usable. The share line ("I'm with {Lab}. {Lab} averages {score} on the AI round.") goes before the link, which stays last.
+
+Known limits: the share text is built when the Share panel first opens, so a panel opened before the claim returns keeps the text without the lab line. The board sums every `lab_agg` row in its range (up to 18 a day, a `ponytail:` note in `_labs.js`); add an all-time totals row if the days pile up. `/labs` shows nothing without JavaScript, like `/stats`.
+
 ## Live panel in the home hero (2026-10-04)
 
 Owner request: fill the empty space under the example card at ≥ 900 px with something alive and social; a first, text version was rejected by the owner ("draw something"), so the panel is graphics with one short label each. Changed: `public/{index.html,styles.css,home.js,app.js}`, `functions/_rounds.js`, `test/{rounds,site}.test.js`, `test/smoke.sh`, `docs/public-api.md`, screenshots `design/screens/home-*`. New: `migrations/0007_live_panel.sql`.
