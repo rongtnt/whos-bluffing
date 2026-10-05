@@ -1,7 +1,6 @@
 import { json, fail, safe } from '../../_util.js';
 import { authorized, runKpi } from '../../_kpi.js';
 import { isDate, todayUTC } from '../../_daily.js';
-import { storeAnkiKpi } from '../../_anki.js';
 import { settleQuestions } from '../../_rounds.js';
 import { ROUNDS } from '../../_rounds_data.js';
 
@@ -15,5 +14,5 @@ export const onRequestPost = safe(async ({ request, env }) => {
   const now = new Date();
   await settleQuestions(env.DB, ROUNDS, now);
   const row = await runKpi(env.DB, asOf, now);
-  return json({ ...row, anki_contributors_30d: await storeAnkiKpi(env.DB, asOf) }, 200, { 'cache-control': 'no-store' });
+  return json({ ...row, anki_contributors_30d: 0 }, 200, { 'cache-control': 'no-store' });
 });
