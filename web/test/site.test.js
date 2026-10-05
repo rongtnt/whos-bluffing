@@ -86,7 +86,7 @@ const words = (text) => text.trim().split(/\s+/).length;
 test('home page: one headline and short copy per section, in the house register; the old sections are gone', () => {
   const home = read(new URL('index.html', PUBLIC));
   assert.match(home, /<h1 id="hero-title">Who's <span class="h1-accent">bluffing<\/span>\?<\/h1>/);
-  assert.match(home, /<p class="hero-sub">[^<]+<\/p>\n {6}<p class="hero-note">Every answer comes with a source, so you learn as you play\. One round a day keeps you up to date on AI\.<\/p>/);
+  assert.match(home, /<p class="hero-sub">[^<]+<\/p>\n {6}<p class="hero-note">Every answer comes with a source, so you learn as you play\.<\/p>/);
   assert.equal([...home.match(/<div class="home-copy">[\s\S]*?<div class="actions">/)[0].matchAll(/<p /g)].length, 2, 'the hero copy: the sentence and the note');
   assert.match(home, /<button class="primary" id="play" type="button" data-play>/);
   const budgets = [ // [paragraph, at most this many words]
