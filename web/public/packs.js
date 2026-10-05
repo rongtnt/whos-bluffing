@@ -32,3 +32,7 @@ export const DEFAULT_DIFFICULTY = 'normal';
 
 export const packLabel = (pack) => PACKS[pack]?.label ?? PACKS.all.label;
 export const difficultyLabel = (d) => DIFFICULTY_LABELS[d] ?? DIFFICULTY_LABELS.normal;
+
+// The labs a player of an AI-pack round can say they are with (POST /api/round/lab, GET /api/labs, the end screen and
+// /labs), in board order for ties: id -> display name.
+export const LABS = { openai: 'OpenAI', anthropic: 'Anthropic', google: 'Google', xai: 'xAI', meta: 'Meta', other: 'Other' };

@@ -1,10 +1,11 @@
 // Entry point for the app pages: loads strings and items, routes by path. / = rounds (index.html), /c/<round>/<token> =
-// a challenge (HTML from the Pages Function functions/c/[round_id]/[player].js), /test = full assessment, /stats,
+// a challenge (HTML from the Pages Function functions/c/[round_id]/[player].js), /test = full assessment, /stats, /labs,
 // /class and /class/d/<secret> (their own HTML shells; _redirects maps the dashboard to class.html).
 import { html, api } from './ui.js';
 import { startTest } from './test.js';
 import { renderRounds, renderChallenge } from './rounds.js';
 import { renderStats } from './stats.js';
+import { renderLabs } from './labs.js';
 import { renderClassCreate, renderDashboard } from './class.js';
 import { renderProof, renderLive } from './home.js';
 
@@ -85,6 +86,7 @@ function route() {
   if (challenge) return renderChallenge(ctx, challenge[1], challenge[2]);
   if (/^\/test\/?$/.test(p)) return renderTestLanding();
   if (/^\/stats\/?$/.test(p)) return renderStats(ctx);
+  if (/^\/labs\/?$/.test(p)) return renderLabs(ctx);
   if (/^\/class\/?$/.test(p)) return renderClassCreate(ctx);
   if (dash) return renderDashboard(ctx, dash[1]);
   app.innerHTML = html`<p>${t('dash.not_found')}</p><p><a href="/">${t('nav.daily')}</a></p>`;

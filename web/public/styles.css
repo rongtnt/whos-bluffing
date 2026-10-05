@@ -723,3 +723,14 @@ button.pick:hover { border-color: var(--accent); }
   .tilt .card-img, .conf button[aria-pressed="true"], .sq:hover, .sq.is-open { transform: none; }
   .type-tile:hover .i, .type-tile[aria-pressed="true"] .i, .type-tip { transform: none; }
 }
+
+/* labs: the lab block after an AI-pack round and the /labs board (round-end.js, labs.js); the table is .vs */
+.lab-claim h3 { font-size: var(--fs-4); }
+.lab-with { margin-top: 0; }
+.lab-with .link { padding-inline: 4px; }
+.lab-claim .msg { min-height: 0; margin: 0; }
+.lab-chips { flex-wrap: wrap; overflow: visible; }
+.lab-table { margin: 14px 0; }
+.lab-table .is-mine > * { background: var(--accent-soft); }
+.lab-you { color: var(--accent); font-size: var(--fs-6); font-weight: 700; }
+.lab-need { color: var(--muted); }

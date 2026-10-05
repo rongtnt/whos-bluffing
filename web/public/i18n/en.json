@@ -324,5 +324,33 @@
     "detail_n": "Question {i} of {n}",
     "detail_pick": "You picked {letter} · {name} at {conf}% sure.",
     "fun_label": "Did you know"
+  },
+  "labs": {
+    "question": "Which lab are you with?",
+    "with": "You’re with {lab}",
+    "change": "change",
+    "save_failed": "Couldn’t save your lab. Try again.",
+    "full_board": "Full board",
+    "col_lab": "Lab",
+    "col_players": "Players",
+    "col_score": "Average score",
+    "col_over": "Overconfidence",
+    "yours": "your lab",
+    "need": "{k} more players needed",
+    "need_one": "1 more player needed",
+    "over_more": "{x} points more sure than right",
+    "over_more_one": "1 point more sure than right",
+    "over_even": "as sure as right",
+    "over_less_one": "1 point less sure than right",
+    "over_less": "{x} points less sure than right",
+    "share_line": "I'm with {lab}. {lab} averages {score} on the AI round.",
+    "title": "Which lab bluffs least?",
+    "lead": "Self-reported: anyone who finishes an AI round can say which lab they’re with; nothing else is stored.",
+    "range_label": "Period",
+    "all_time": "All time",
+    "last_30": "Last 30 days",
+    "note": "Each AI round whose player names a lab counts once, so someone who plays three rounds counts three times. Averages appear from 10 players.",
+    "play": "Play the AI round",
+    "failed": "Couldn’t load the board. Try again later."
   }
 }
