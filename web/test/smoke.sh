@@ -964,6 +964,11 @@ pass "GET /dare/altman -> 200: og:title, og:description and og:url of its own, t
 grep -qi '^content-security-policy: default-src' "$STATE/dare_h.txt" && grep -qi '^x-content-type-options: nosniff' "$STATE/dare_h.txt" \
   && grep -qi '^content-type: text/html' "$STATE/dare_h.txt" || fail "dare page security headers" "$(cat "$STATE/dare_h.txt")"
 pass "the dare page carries the CSP, nosniff and text/html headers itself (a Function response)"
+[[ "$DPAGE" == *'<img class="dare-face" src="/img/dares/altman.jpg" alt="Sam Altman" width="64" height="64">'* ]] && [[ "$DPAGE" == *'<div class="dare-credits fine"><p>Photo credits</p>'* ]] \
+  || fail "GET /dare/altman -> his portrait (grey while open) and the photo credits" "$(head -c 400 "$STATE/dare.html")"
+pass "GET /dare/altman -> his portrait (grey while open) and the photo credits"
+META=$(curl -s -o /dev/null -w '%{http_code} %{content_type}' "$BASE/img/dares/altman.jpg")
+[[ "$META" == "200 image/jpeg"* ]] || fail "GET /img/dares/altman.jpg -> 200 image/jpeg" "$META"; pass "GET /img/dares/altman.jpg -> 200 image/jpeg (a static asset)"
 content /dares '<h1>The dare board</h1>' 'the dare board'
 content /dares '<a href="/dare/altman">Sam Altman</a></th><td>OpenAI</td><td>2</td>' 'the dare board: Sam Altman, OpenAI, 2 people'
 req GET /dare/nobody

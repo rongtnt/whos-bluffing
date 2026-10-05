@@ -44,6 +44,38 @@ export const boardStatus = (d) => (d.status === 'played' ? `posted ${num(d.their
 
 const OPT_OUT = 'Public figures only. If your name is here and you would rather it weren’t, write to <a href="mailto:hello@whosbluffing.com">hello@whosbluffing.com</a> and it comes off within a day.';
 
+// --- portraits ------------------------------------------------------------------------------------------------------
+
+// The person's portrait (an official congressional portrait or a freely licensed Commons photo, dares.json `avatar`),
+// else their initials on a neutral tile; grey until they have played (styles.css, "dare avatars"). size: 64 or 32.
+const initials = (name) => {
+  const words = name.trim().split(/\s+/);
+  return `${words[0][0]}${words.length > 1 ? words[words.length - 1][0] : ''}`.toUpperCase();
+};
+function face(name, avatar, status, size) {
+  const cls = `dare-face${size === 32 ? ' dare-face-sm' : ''}${status === 'played' ? ' is-played' : ''}`;
+  return avatar
+    ? `<img class="${cls}" src="${esc(avatar)}" alt="${esc(name)}" width="${size}" height="${size}"${size === 32 ? ' loading="lazy"' : ''}>`
+    : `<span class="${cls} dare-mono" role="img" aria-label="${esc(name)}">${esc(initials(name))}</span>`;
+}
+
+// The credits CC BY and CC BY-SA ask for: author, licence (linked to its deed) and source page, the crop noted. The
+// official portraits are public domain and share one line. people = [{name, credit}]; '' when none has a portrait.
+export const OFFICIAL = 'Official portrait, U.S. Congress';
+const deed = (license) => {
+  const m = /^CC (BY(?:-SA)?) (\d\.\d)$/.exec(license);
+  return m ? `https://creativecommons.org/licenses/${m[1].toLowerCase()}/${m[2]}/` : null;
+};
+function credits(people) {
+  const withPhoto = people.filter((p) => p.credit);
+  const official = withPhoto.filter((p) => p.credit.author === OFFICIAL).length;
+  const lines = [...withPhoto.filter((p) => p.credit.author !== OFFICIAL).map(({ name, credit: c }) => {
+    const license = deed(c.license) ? `<a href="${deed(c.license)}" rel="license noopener noreferrer">${esc(c.license)}</a>` : esc(c.license);
+    return `<li>${esc(name)}: <a href="${esc(c.source_url)}" rel="noopener noreferrer">photo</a> by ${esc(c.author)} (cropped), ${license}</li>`;
+  }), ...(official ? [`<li>Official portrait${official > 1 ? 's' : ''}: U.S. Congress, public domain</li>`] : [])];
+  return lines.length ? `<div class="dare-credits fine"><p>Photo credits</p><ul>${lines.join('')}</ul></div>` : '';
+}
+
 // --- numbers --------------------------------------------------------------------------------------------------------
 
 const STATS_SQL = 'SELECT COUNT(*) AS players, MAX(score) AS best, AVG(score) AS mean, AVG(overconf) AS overconf FROM round_plays WHERE round_id = ?';
@@ -93,7 +125,8 @@ const tile = (n, label) => `<div class="tile"><b>${n}</b><span>${label}</span></
 // v = dareView's body; dares = the bundled dares (the heading's `topic`, which defaults to the org, and the rival's
 // status line).
 export function darePage(template, v, dares) {
-  const h1 = `Ten questions about ${dares.get(v.slug)?.topic ?? v.org}, written for ${v.address}`;
+  const d = dares.get(v.slug);
+  const h1 = `Ten questions about ${d?.topic ?? v.org}, written for ${v.address}`;
   const rival = v.rival && dares.get(v.rival.slug);
   const rivalCard = rival ? `<div class="card dare-rival"><p><a href="/dare/${v.rival.slug}">${esc(v.rival.address)}’s round</a>: ${num(v.rival.players)} taken${
     v.rival.players ? `, average ${avg(v.rival.mean_score)}` : ''}; ${statusLine(rival)}</p></div>` : '';
@@ -103,7 +136,7 @@ export function darePage(template, v, dares) {
     <h1 id="hero-title">${esc(h1)}</h1>
     <p class="hero-sub">Same ten for everyone. Being sure only pays when you're right.</p>
     <div class="tiles dare-tiles">${tile(num(v.players), v.players === 1 ? 'person has taken it' : 'people have taken it')}${tile(v.best == null ? '–' : num(v.best), 'best score')}${tile(avg(v.mean_score), 'average score')}</div>
-    <div class="card dare-status"><p>${statusLine(v)}</p>${v.dare_url ? `<p class="fine">Read <a href="${esc(v.dare_url)}" rel="noopener noreferrer">the dare</a> on X.</p>` : ''}</div>
+    <div class="card dare-status">${face(v.name, d?.avatar, v.status, 64)}<div><p>${statusLine(v)}</p>${v.dare_url ? `<p class="fine">Read <a href="${esc(v.dare_url)}" rel="noopener noreferrer">the dare</a> on X.</p>` : ''}</div></div>
     <div class="actions"><button class="primary" id="play" type="button" data-play>${PLAY_ICON}<span>Play</span></button></div>
     <p class="fine">About a minute. Anonymous: no account, no tracking. Your answers go into a public research dataset.</p>
   </div>
@@ -116,6 +149,7 @@ export function darePage(template, v, dares) {
       ${rivalCard}
       <p><a href="/dares">The dare board</a></p>
       <p class="fine">${OPT_OUT}</p>
+      ${credits([{ name: v.name, credit: d?.credit }])}
     </div>
   </section>
 </div>`;
@@ -125,9 +159,9 @@ export function darePage(template, v, dares) {
 // v = boardView's body; dares = the bundled dares (for the link to each one's post on X).
 export function boardPage(template, v, dares) {
   const row = (e) => {
-    const url = dares.get(e.slug)?.dare_url;
-    return `<tr><th scope="row"><a href="/dare/${e.slug}">${esc(e.name)}</a></th><td>${esc(e.org)}</td><td>${num(e.players)}</td><td>${avg(e.mean_score)}</td><td>${boardStatus(e)}</td><td>${
-      url ? `<a href="${esc(url)}" rel="noopener noreferrer">the dare</a>` : '–'}</td></tr>`;
+    const d = dares.get(e.slug);
+    return `<tr><th scope="row">${face(e.name, d?.avatar, e.status, 32)}<a href="/dare/${e.slug}">${esc(e.name)}</a></th><td>${esc(e.org)}</td><td>${num(e.players)}</td><td>${avg(e.mean_score)}</td><td>${boardStatus(e)}</td><td>${
+      d?.dare_url ? `<a href="${esc(d.dare_url)}" rel="noopener noreferrer">the dare</a>` : '–'}</td></tr>`;
   };
   const sentence = 'Each person got ten questions about their own field. Everyone can take the same ten. The board shows who has answered.';
   const main = `<section class="page-head">
@@ -143,6 +177,7 @@ export function boardPage(template, v, dares) {
       <tbody>${v.dares.map(row).join('\n') || '<tr><td colspan="6">No dares yet.</td></tr>'}</tbody>
     </table></div>
     <p class="fine">${OPT_OUT}</p>
+    ${credits(v.dares.map((e) => ({ name: e.name, credit: dares.get(e.slug)?.credit })))}
   </div>
 </section>`;
   return fill(template, { title: 'The dare board', description: sentence, path: '/dares', main });

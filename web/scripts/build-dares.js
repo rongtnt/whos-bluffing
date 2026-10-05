@@ -29,6 +29,9 @@ const MON = '(?:Jan|Feb|Mar|Apr|May|Jun|Jul|Aug|Sep|Oct|Nov|Dec)';
 export const DATED = new RegExp(`\\b(?:19|20)\\d{2}\\b|\\b${MON}[a-z]*\\.? \\d|\\b\\d{1,2} ${MON}`);
 const MAX_STEPS = 200000; // depth-first search budget per dare
 const HTTPS = /^https:\/\/\S+$/;
+// A portrait (optional): web/public/img/dares/<slug>.jpg with the credit its licence asks for, under a free licence only.
+export const FREE_LICENSE = /^(public domain|CC0( 1\.0)?|CC BY(-SA)? \d\.\d( [a-z]{2})?)$/i;
+const PUBLIC = new URL('../public/', import.meta.url);
 const DARES = new URL('../../dares/dares.json', import.meta.url);
 const BUNDLE = new URL('../functions/_dares.json', import.meta.url);
 
@@ -65,6 +68,11 @@ export function seedErrors(dares) {
     if (d.status === 'played' && !scoreOk(d.their_score)) e('a played dare needs their_score {score, url, date}');
     if (d.status !== 'played' && d.their_score != null) e('their_score only when status is played');
     if (d.items != null && !(Array.isArray(d.items) && d.items.every((id) => typeof id === 'string'))) e('items must be a list of pair ids');
+    if (d.avatar != null && (d.avatar !== `/img/dares/${d.slug}.jpg` || !existsSync(new URL(d.avatar.slice(1), PUBLIC)))) e('avatar must be /img/dares/<slug>.jpg, a file in web/public');
+    if (d.avatar != null && !(isObject(d.credit) && HTTPS.test(d.credit.source_url ?? '') && text(d.credit.author) && FREE_LICENSE.test(d.credit.license ?? ''))) {
+      e('an avatar needs credit {source_url (https), author, license (public domain, CC0, CC BY or CC BY-SA)}');
+    }
+    if (d.avatar == null && d.credit != null) e('credit only with an avatar');
   }
   return errs;
 }
@@ -161,9 +169,9 @@ export function pinnedErrors(dare, ctx) {
 }
 
 // The runtime's copy of a dare on the board (functions/_dares.json).
-const compactDare = ({ slug, name, address, org, topic, pronoun, pack, difficulty, rival, issued, dare_url: dareUrl, status, their_score: theirs, items }) => ({
+const compactDare = ({ slug, name, address, org, topic, pronoun, pack, difficulty, rival, issued, dare_url: dareUrl, status, their_score: theirs, avatar, credit, items }) => ({
   slug, name, address, org, ...(topic ? { topic } : {}), pronoun: pronoun ?? 'they', pack, difficulty, rival: rival ?? null, issued,
-  dare_url: dareUrl ?? null, status, their_score: theirs ?? null, items,
+  dare_url: dareUrl ?? null, status, their_score: theirs ?? null, ...(avatar ? { avatar, credit } : {}), items,
 });
 
 // The board's dares with members of Congress in equal numbers per side: the first n of each side in file order, n = the

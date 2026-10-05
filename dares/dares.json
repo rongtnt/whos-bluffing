@@ -14,6 +14,12 @@
     "dare_url": null,
     "status": "open",
     "their_score": null,
+    "avatar": "/img/dares/altman.jpg",
+    "credit": {
+      "source_url": "https://commons.wikimedia.org/wiki/File:Sam_Altman_speaking_at_TED_(cropped).jpg",
+      "author": "Steve Jurvetson",
+      "license": "CC BY 2.0"
+    },
     "items": ["p37282", "p37263", "p39129", "p39070", "p39096", "p38986", "p38700", "p38980", "p36645", "p36787"]
   },
   {
@@ -31,6 +37,12 @@
     "dare_url": null,
     "status": "open",
     "their_score": null,
+    "avatar": "/img/dares/musk.jpg",
+    "credit": {
+      "source_url": "https://commons.wikimedia.org/wiki/File:Elon_Musk_(54816836217).jpg",
+      "author": "Gage Skidmore",
+      "license": "CC BY-SA 4.0"
+    },
     "items": ["p39014", "p38974", "p38739", "p38736", "p38695", "p39076", "p39057", "p38971", "p39099", "p39090"]
   },
   {
@@ -48,6 +60,12 @@
     "dare_url": null,
     "status": "open",
     "their_score": null,
+    "avatar": "/img/dares/brockman.jpg",
+    "credit": {
+      "source_url": "https://commons.wikimedia.org/wiki/File:Disrupt_SF_TechCrunch_Disrupt_San_Francisco_2019_-_Day_2_(48838200316).jpg",
+      "author": "TechCrunch",
+      "license": "CC BY 2.0"
+    },
     "items": ["p36805", "p39113", "p39115", "p38584", "p39084", "p36645", "p39096", "p38696", "p38697", "p38689"]
   },
   {
@@ -83,6 +101,12 @@
     "dare_url": null,
     "status": "open",
     "their_score": null,
+    "avatar": "/img/dares/lecun.jpg",
+    "credit": {
+      "source_url": "https://commons.wikimedia.org/wiki/File:Conf%C3%A9rence_IP_Paris_%22AI,_Science_and_Society%22_%C3%A0_l%27Ecole_polytechnique_(54320377276).jpg",
+      "author": "Ecole polytechnique",
+      "license": "CC BY-SA 2.0"
+    },
     "items": ["p38546", "p36699", "p38561", "p39103", "p37170", "p38985", "p37178", "p38689", "p36650", "p39108"]
   },
   {
@@ -100,6 +124,12 @@
     "dare_url": null,
     "status": "open",
     "their_score": null,
+    "avatar": "/img/dares/hassabis.jpg",
+    "credit": {
+      "source_url": "https://commons.wikimedia.org/wiki/File:Demis_Hassabis,_2024_Nobel_Prize_Laureate_in_Chemistry_7.jpg",
+      "author": "John Sears",
+      "license": "CC BY-SA 4.0"
+    },
     "items": ["p37178", "p38981", "p38701", "p39076", "p36710", "p36645", "p36656", "p36964", "p38980", "p38983"]
   },
   {
@@ -117,6 +147,12 @@
     "dare_url": null,
     "status": "open",
     "their_score": null,
+    "avatar": "/img/dares/suleyman.jpg",
+    "credit": {
+      "source_url": "https://commons.wikimedia.org/wiki/File:Mustafa_Suleyman_(29099346447).jpg",
+      "author": "Joi Ito",
+      "license": "CC BY 2.0"
+    },
     "items": ["p37070", "p37140", "p38754", "p39076", "p38747", "p38986", "p36787", "p36710", "p36701", "p39119"]
   },
   {
@@ -134,6 +170,12 @@
     "dare_url": null,
     "status": "open",
     "their_score": null,
+    "avatar": "/img/dares/srinivas.jpg",
+    "credit": {
+      "source_url": "https://commons.wikimedia.org/wiki/File:Aravind_Srinivas_2024.jpg",
+      "author": "TechCrunch",
+      "license": "CC BY 2.0"
+    },
     "items": ["p37282", "p37263", "p39130", "p39132", "p39153", "p38679", "p38670", "p38676", "p38677", "p39084"]
   },
   {
@@ -151,6 +193,12 @@
     "dare_url": null,
     "status": "open",
     "their_score": null,
+    "avatar": "/img/dares/nadella.jpg",
+    "credit": {
+      "source_url": "https://commons.wikimedia.org/wiki/File:Satya_Nadella.jpg",
+      "author": "Official LeWeb Photos",
+      "license": "CC BY 2.0"
+    },
     "items": ["p39046", "p37763", "p38792", "p38795", "p38705", "p38700", "p36735", "p38783", "p36825", "p36821"]
   },
   {
@@ -168,6 +216,12 @@
     "dare_url": null,
     "status": "open",
     "their_score": null,
+    "avatar": "/img/dares/pichai.jpg",
+    "credit": {
+      "source_url": "https://commons.wikimedia.org/wiki/File:Sundar_Pichai_-_2023_(cropped).jpg",
+      "author": "Lukasz Kobus / European Commission",
+      "license": "CC BY 4.0"
+    },
     "items": ["p38810", "p37781", "p37903", "p37452", "p38780", "p37441", "p36732", "p36733", "p38701", "p36848"]
   },
   {
@@ -220,6 +274,12 @@
     "dare_url": null,
     "status": "open",
     "their_score": null,
+    "avatar": "/img/dares/dwarkesh.jpg",
+    "credit": {
+      "source_url": "https://commons.wikimedia.org/wiki/File:Dwarkesh_Patel_2025_(cropped).jpg",
+      "author": "TechCrunch",
+      "license": "CC BY 4.0"
+    },
     "items": ["p39125", "p37072", "p39034", "p39027", "p39082", "p36695", "p39090", "p38677", "p38670", "p38671"]
   },
   {
@@ -256,6 +316,12 @@
     "dare_url": null,
     "status": "open",
     "their_score": null,
+    "avatar": "/img/dares/marcus.jpg",
+    "credit": {
+      "source_url": "https://commons.wikimedia.org/wiki/File:Gary_Marcus_at_Web_Summit_2022.jpeg",
+      "author": "Web Summit",
+      "license": "CC BY 2.0"
+    },
     "items": ["p37140", "p37072", "p37392", "p37399", "p36881", "p38693", "p38697", "p39114", "p38698", "p38688"]
   },
   {
@@ -273,6 +339,12 @@
     "dare_url": null,
     "status": "open",
     "their_score": null,
+    "avatar": "/img/dares/graham.jpg",
+    "credit": {
+      "source_url": "https://commons.wikimedia.org/wiki/File:Paul_Graham_and_Ashton_Kutcher_attend_TechCrunch_Disrupt_New_York_May_2011.jpg",
+      "author": "TechCrunch",
+      "license": "CC BY 2.0"
+    },
     "items": ["p38701", "p38749", "p38765", "p38673", "p37554", "p38748", "p38707", "p36749", "p36861", "p36873"],
     "topic": "AI"
   },
@@ -291,6 +363,12 @@
     "dare_url": null,
     "status": "open",
     "their_score": null,
+    "avatar": "/img/dares/andreessen.jpg",
+    "credit": {
+      "source_url": "https://commons.wikimedia.org/wiki/File:Marc_Andreessen-9_(cropped).jpg",
+      "author": "JD Lasica",
+      "license": "CC BY 2.0"
+    },
     "items": ["p37416", "p38790", "p38791", "p38721", "p36964", "p38794", "p38746", "p36787", "p36810", "p38673"],
     "topic": "AI"
   },
@@ -309,6 +387,12 @@
     "dare_url": null,
     "status": "open",
     "their_score": null,
+    "avatar": "/img/dares/naval.jpg",
+    "credit": {
+      "source_url": "https://commons.wikimedia.org/wiki/File:Naval_Ravikant.jpg",
+      "author": "Elias Bizannes",
+      "license": "CC BY-SA 2.0"
+    },
     "items": ["p37075", "p37016", "p37067", "p37066", "p37052", "p36900", "p36873", "p37018", "p36932", "p38994"],
     "topic": "AI"
   },
@@ -327,6 +411,12 @@
     "dare_url": null,
     "status": "open",
     "their_score": null,
+    "avatar": "/img/dares/gates.jpg",
+    "credit": {
+      "source_url": "https://commons.wikimedia.org/wiki/File:Bill_Gates_at_the_European_Commission_-_2025_-_P067383-987995_(cropped).jpg",
+      "author": "Bogdan Hoyaux / European Union",
+      "license": "CC BY 4.0"
+    },
     "items": ["p38880", "p38864", "p38688", "p38862", "p37282", "p37295", "p37296", "p37287", "p36777", "p36739"],
     "topic": "AI"
   },
@@ -345,6 +435,12 @@
     "dare_url": null,
     "status": "open",
     "their_score": null,
+    "avatar": "/img/dares/bezos.jpg",
+    "credit": {
+      "source_url": "https://commons.wikimedia.org/wiki/File:Jeff_Bezos_at_Amazon_Spheres_Grand_Opening_in_Seattle_-_2018_(39074799225)_(cropped).jpg",
+      "author": "Seattle City Council",
+      "license": "CC BY 2.0"
+    },
     "items": ["p38708", "p37223", "p37397", "p38779", "p37248", "p38706", "p38869", "p38988", "p36821", "p36733"],
     "topic": "AI"
   },
@@ -366,6 +462,12 @@
     "dare_url": null,
     "status": "open",
     "their_score": null,
+    "avatar": "/img/dares/ocasio-cortez.jpg",
+    "credit": {
+      "source_url": "https://commons.wikimedia.org/wiki/File:Alexandria_Ocasio-Cortez_Official_Portrait.jpg",
+      "author": "Official portrait, U.S. Congress",
+      "license": "public domain"
+    },
     "items": ["p40538", "p41131", "p39876", "p39854", "p39815", "p40233", "p40234", "p39470", "p39485", "p39204"]
   },
   {
@@ -387,6 +489,12 @@
     "dare_url": null,
     "status": "open",
     "their_score": null,
+    "avatar": "/img/dares/sanders.jpg",
+    "credit": {
+      "source_url": "https://commons.wikimedia.org/wiki/File:Bernie_Sanders_113th_Congress.jpg",
+      "author": "Official portrait, U.S. Congress",
+      "license": "public domain"
+    },
     "items": ["p39698", "p41218", "p39857", "p39887", "p39854", "p39710", "p39696", "p39470", "p39467", "p39466"]
   },
   {
@@ -407,6 +515,12 @@
     "dare_url": null,
     "status": "open",
     "their_score": null,
+    "avatar": "/img/dares/warren.jpg",
+    "credit": {
+      "source_url": "https://commons.wikimedia.org/wiki/File:Elizabeth_Warren,_official_portrait,_114th_Congress.jpg",
+      "author": "Official portrait, U.S. Congress",
+      "license": "public domain"
+    },
     "items": ["p40651", "p40943", "p39307", "p40193", "p41255", "p39366", "p39365", "p39393", "p39248", "p39455"]
   },
   {
@@ -427,6 +541,12 @@
     "dare_url": null,
     "status": "open",
     "their_score": null,
+    "avatar": "/img/dares/schumer.jpg",
+    "credit": {
+      "source_url": "https://commons.wikimedia.org/wiki/File:Chuck_Schumer_official_photo.jpg",
+      "author": "Official portrait, U.S. Congress",
+      "license": "public domain"
+    },
     "items": ["p39349", "p39543", "p40107", "p40167", "p40242", "p40170", "p40162", "p39413", "p40714", "p40706"]
   },
   {
@@ -447,6 +567,12 @@
     "dare_url": null,
     "status": "open",
     "their_score": null,
+    "avatar": "/img/dares/fetterman.jpg",
+    "credit": {
+      "source_url": "https://commons.wikimedia.org/wiki/File:John_Fetterman_US_Senate_portrait.jpg",
+      "author": "Official portrait, U.S. Congress",
+      "license": "public domain"
+    },
     "items": ["p40706", "p40714", "p41103", "p39379", "p40713", "p40238", "p40228", "p39841", "p39470", "p39466"]
   },
   {
@@ -467,6 +593,12 @@
     "dare_url": null,
     "status": "open",
     "their_score": null,
+    "avatar": "/img/dares/booker.jpg",
+    "credit": {
+      "source_url": "https://commons.wikimedia.org/wiki/File:Cory_Booker,_official_portrait_(119th_Congress).jpg",
+      "author": "Official portrait, U.S. Congress",
+      "license": "public domain"
+    },
     "items": ["p40603", "p39569", "p39350", "p40605", "p39641", "p40073", "p39567", "p40070", "p39575", "p40018"]
   },
   {
@@ -487,6 +619,12 @@
     "dare_url": null,
     "status": "open",
     "their_score": null,
+    "avatar": "/img/dares/khanna.jpg",
+    "credit": {
+      "source_url": "https://commons.wikimedia.org/wiki/File:Ro_Khanna,_official_portrait,_115th_Congress.jpg",
+      "author": "Official portrait, U.S. Congress",
+      "license": "public domain"
+    },
     "items": ["p41184", "p39198", "p40664", "p39798", "p39914", "p39612", "p39911", "p39549", "p39543", "p39534"]
   },
   {
@@ -507,6 +645,12 @@
     "dare_url": null,
     "status": "open",
     "their_score": null,
+    "avatar": "/img/dares/crockett.jpg",
+    "credit": {
+      "source_url": "https://commons.wikimedia.org/wiki/File:Rep._Jasmine_Crockett_-_118th_Congress.jpg",
+      "author": "Official portrait, U.S. Congress",
+      "license": "public domain"
+    },
     "items": ["p39280", "p41068", "p39841", "p40346", "p40290", "p39323", "p39353", "p39878", "p39282", "p39320"]
   },
   {
@@ -527,6 +671,12 @@
     "dare_url": null,
     "status": "open",
     "their_score": null,
+    "avatar": "/img/dares/omar.jpg",
+    "credit": {
+      "source_url": "https://commons.wikimedia.org/wiki/File:Ilhan_Omar,_official_portrait,_116th_Congress.jpg",
+      "author": "Official portrait, U.S. Congress",
+      "license": "public domain"
+    },
     "items": ["p39504", "p39528", "p41123", "p39531", "p40501", "p39508", "p40536", "p39590", "p39552", "p39485"]
   },
   {
@@ -547,6 +697,12 @@
     "dare_url": null,
     "status": "open",
     "their_score": null,
+    "avatar": "/img/dares/schiff.jpg",
+    "credit": {
+      "source_url": "https://commons.wikimedia.org/wiki/File:Schiff_Adam_119th_Congress.jpg",
+      "author": "Official portrait, U.S. Congress",
+      "license": "public domain"
+    },
     "items": ["p40714", "p40870", "p40706", "p39738", "p41049", "p39743", "p39733", "p39946", "p39552", "p39543"]
   },
   {
@@ -567,6 +723,12 @@
     "dare_url": null,
     "status": "open",
     "their_score": null,
+    "avatar": "/img/dares/chris-murphy.jpg",
+    "credit": {
+      "source_url": "https://commons.wikimedia.org/wiki/File:Chris_Murphy,_official_portrait,_113th_Congress.jpg",
+      "author": "Official portrait, U.S. Congress",
+      "license": "public domain"
+    },
     "items": ["p41240", "p39482", "p39463", "p40352", "p39328", "p39303", "p39977", "p39337", "p39258", "p40234"]
   },
   {
@@ -587,6 +749,12 @@
     "dare_url": null,
     "status": "open",
     "their_score": null,
+    "avatar": "/img/dares/mark-kelly.jpg",
+    "credit": {
+      "source_url": "https://commons.wikimedia.org/wiki/File:Mark_Kelly_Official_Portrait_119th.jpg",
+      "author": "Official portrait, U.S. Congress",
+      "license": "public domain"
+    },
     "items": ["p40544", "p41104", "p39531", "p39520", "p40511", "p40512", "p39522", "p39587", "p39543", "p39492"]
   },
   {
@@ -607,6 +775,12 @@
     "dare_url": null,
     "status": "open",
     "their_score": null,
+    "avatar": "/img/dares/cruz.jpg",
+    "credit": {
+      "source_url": "https://commons.wikimedia.org/wiki/File:Ted_Cruz_senatorial_portrait.jpg",
+      "author": "Official portrait, U.S. Congress",
+      "license": "public domain"
+    },
     "items": ["p40336", "p40480", "p41214", "p39243", "p40332", "p39443", "p39440", "p39218", "p39310", "p39318"]
   },
   {
@@ -627,6 +801,12 @@
     "dare_url": null,
     "status": "open",
     "their_score": null,
+    "avatar": "/img/dares/rand-paul.jpg",
+    "credit": {
+      "source_url": "https://commons.wikimedia.org/wiki/File:Rand_Paul_Portrait.jpg",
+      "author": "Official portrait, U.S. Congress",
+      "license": "public domain"
+    },
     "items": ["p41057", "p40057", "p40027", "p40087", "p40762", "p40026", "p40090", "p39514", "p39282", "p39289"]
   },
   {
@@ -647,6 +827,12 @@
     "dare_url": null,
     "status": "open",
     "their_score": null,
+    "avatar": "/img/dares/hawley.jpg",
+    "credit": {
+      "source_url": "https://commons.wikimedia.org/wiki/File:Josh_Hawley,_official_portrait,_116th_congress.jpg",
+      "author": "Official portrait, U.S. Congress",
+      "license": "public domain"
+    },
     "items": ["p40009", "p39808", "p40087", "p40035", "p40084", "p39803", "p40167", "p39204", "p39463", "p39278"]
   },
   {
@@ -667,6 +853,12 @@
     "dare_url": null,
     "status": "open",
     "their_score": null,
+    "avatar": "/img/dares/tim-scott.jpg",
+    "credit": {
+      "source_url": "https://commons.wikimedia.org/wiki/File:Tim_Scott_official_portrait.jpg",
+      "author": "Official portrait, U.S. Congress",
+      "license": "public domain"
+    },
     "items": ["p39859", "p40290", "p40242", "p40234", "p39854", "p39825", "p39848", "p39289", "p39278", "p39366"]
   },
   {
@@ -687,6 +879,12 @@
     "dare_url": null,
     "status": "open",
     "their_score": null,
+    "avatar": "/img/dares/mike-lee.jpg",
+    "credit": {
+      "source_url": "https://commons.wikimedia.org/wiki/File:Mike_Lee,_official_portrait.jpg",
+      "author": "Official portrait, U.S. Congress",
+      "license": "public domain"
+    },
     "items": ["p39463", "p40179", "p40101", "p39460", "p40118", "p40198", "p40151", "p39470", "p39303", "p40056"]
   },
   {
@@ -707,6 +905,12 @@
     "dare_url": null,
     "status": "open",
     "their_score": null,
+    "avatar": "/img/dares/cotton.jpg",
+    "credit": {
+      "source_url": "https://commons.wikimedia.org/wiki/File:Tom_Cotton_official_Senate_photo.jpg",
+      "author": "Official portrait, U.S. Congress",
+      "license": "public domain"
+    },
     "items": ["p40359", "p41306", "p40876", "p39964", "p39871", "p39328", "p39869", "p39349", "p39353", "p39350"]
   },
   {
@@ -727,6 +931,12 @@
     "dare_url": null,
     "status": "open",
     "their_score": null,
+    "avatar": "/img/dares/jordan.jpg",
+    "credit": {
+      "source_url": "https://commons.wikimedia.org/wiki/File:Jim_Jordan_official_photo,_114th_Congress.jpg",
+      "author": "Official portrait, U.S. Congress",
+      "license": "public domain"
+    },
     "items": ["p41329", "p39963", "p40228", "p39914", "p40306", "p40317", "p39911", "p39282", "p39216", "p39298"]
   },
   {
@@ -747,6 +957,12 @@
     "dare_url": null,
     "status": "open",
     "their_score": null,
+    "avatar": "/img/dares/mike-johnson.jpg",
+    "credit": {
+      "source_url": "https://commons.wikimedia.org/wiki/File:Speaker_Mike_Johnson_Official_Portrait_(cropped)(b).jpg",
+      "author": "Official portrait, U.S. Congress",
+      "license": "public domain"
+    },
     "items": ["p39236", "p41229", "p39237", "p39364", "p40191", "p39234", "p40119", "p40198", "p40117", "p40114"]
   },
   {
@@ -767,6 +983,12 @@
     "dare_url": null,
     "status": "open",
     "their_score": null,
+    "avatar": "/img/dares/massie.jpg",
+    "credit": {
+      "source_url": "https://commons.wikimedia.org/wiki/File:Thomas_Massie_official_portrait,_2022.jpg",
+      "author": "Official portrait, U.S. Congress",
+      "license": "public domain"
+    },
     "items": ["p39278", "p40870", "p40822", "p40142", "p40123", "p39414", "p39380", "p40141", "p40155", "p39250"]
   },
   {
@@ -787,6 +1009,12 @@
     "dare_url": null,
     "status": "open",
     "their_score": null,
+    "avatar": "/img/dares/crenshaw.jpg",
+    "credit": {
+      "source_url": "https://commons.wikimedia.org/wiki/File:Rep._Dan_Crenshaw,_official_portrait,_118th_Congress.jpg",
+      "author": "Official portrait, U.S. Congress",
+      "license": "public domain"
+    },
     "items": ["p40341", "p40379", "p39606", "p39510", "p39696", "p40264", "p39518", "p39854", "p39440", "p39534"]
   },
   {
@@ -807,6 +1035,12 @@
     "dare_url": null,
     "status": "open",
     "their_score": null,
+    "avatar": "/img/dares/stefanik.jpg",
+    "credit": {
+      "source_url": "https://commons.wikimedia.org/wiki/File:Elise_Stefanik,_115th_official_photo.jpg",
+      "author": "Official portrait, U.S. Congress",
+      "license": "public domain"
+    },
     "items": ["p39360", "p41002", "p39367", "p39307", "p39354", "p40371", "p39841", "p39803", "p41080", "p39244"]
   },
   {
@@ -827,6 +1061,12 @@
     "dare_url": null,
     "status": "open",
     "their_score": null,
+    "avatar": "/img/dares/john-kennedy.jpg",
+    "credit": {
+      "source_url": "https://commons.wikimedia.org/wiki/File:John_Kennedy,_official_portrait,_115th_Congress.jpg",
+      "author": "Official portrait, U.S. Congress",
+      "license": "public domain"
+    },
     "items": ["p39473", "p40118", "p40670", "p40107", "p40117", "p40671", "p40873", "p39445", "p39204", "p39229"]
   }
 ]

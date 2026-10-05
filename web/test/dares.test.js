@@ -3,10 +3,10 @@
 // the real dares/dares.json. HTTP wiring is covered by test/smoke.sh.
 import { test } from 'node:test';
 import assert from 'node:assert/strict';
-import { readFileSync } from 'node:fs';
+import { readFileSync, readdirSync, statSync } from 'node:fs';
 import { openD1 } from './d1.js';
 import { loadRounds, getRound, answer, complete, compare } from '../functions/_rounds.js';
-import { dareView, boardView, darePage, boardPage, statusLine, dareShareText, fmtDate } from '../functions/_dares.js';
+import { dareView, boardView, darePage, boardPage, statusLine, dareShareText, fmtDate, OFFICIAL } from '../functions/_dares.js';
 import { HEADERS } from '../functions/_challenge.js';
 import { serverPool, compactPairs } from '../scripts/sync-items.js';
 import { pickDare, pinnedErrors, buildDares, seedErrors, dareContext, pretty, balanced, sideOf, DATED, EXAMPLE_PAIR, KEYWORD_FLOOR, SIDES } from '../scripts/build-dares.js';
@@ -129,6 +129,29 @@ test('build: seed rules stop the build; removed and unfilled dares stay off the 
   assert.deepEqual(JSON.parse(pretty(r.dares)), JSON.parse(JSON.stringify(r.dares)));
 });
 
+// --- portraits (dares.json `avatar` + `credit`; the files in public/img/dares) -------------------------------------------
+const CREDIT = { source_url: 'https://commons.wikimedia.org/wiki/File:Portrait.jpg', author: 'A. Photographer', license: 'CC BY-SA 4.0' };
+
+test('seed: an avatar is the file /img/dares/<slug>.jpg with a credit under a free licence; a credit needs an avatar', () => {
+  const real = (slug, extra = {}) => seed(slug, { avatar: `/img/dares/${slug}.jpg`, credit: CREDIT, ...extra });
+  assert.deepEqual(seedErrors([real('altman'), seed('acme')]), []);
+  for (const license of ['public domain', 'CC0', 'CC BY 2.0', 'CC BY-SA 2.5 ar']) assert.deepEqual(seedErrors([real('altman', { credit: { ...CREDIT, license } })]), [], license);
+  const bad = [
+    real('ghost'), real('musk', { avatar: '/img/dares/altman.jpg' }), real('brockman', { avatar: 'https://example.com/brockman.jpg' }),
+    real('lecun', { credit: undefined }), real('hassabis', { credit: { ...CREDIT, source_url: 'http://commons.wikimedia.org/wiki/File:X.jpg' } }),
+    real('suleyman', { credit: { ...CREDIT, author: ' ' } }), real('srinivas', { credit: { ...CREDIT, license: 'CC BY-NC 4.0' } }),
+    real('nadella', { credit: { ...CREDIT, license: undefined } }), seed('pichai', { credit: CREDIT }),
+  ];
+  assert.deepEqual(seedErrors(bad).map((e) => e.split(': ')), [
+    ['ghost', 'avatar must be /img/dares/<slug>.jpg, a file in web/public'], ['musk', 'avatar must be /img/dares/<slug>.jpg, a file in web/public'],
+    ['brockman', 'avatar must be /img/dares/<slug>.jpg, a file in web/public'],
+    ...['lecun', 'hassabis', 'suleyman', 'srinivas', 'nadella'].map((slug) => [slug, 'an avatar needs credit {source_url (https), author, license (public domain, CC0, CC BY or CC BY-SA)}']),
+    ['pichai', 'credit only with an avatar'],
+  ]);
+  const r = buildDares([seed('acme', { avatar: '/img/dares/acme.jpg', credit: CREDIT })], CTX);
+  assert.match(r.errors[0], /^acme: avatar must be/, 'the build stops on a missing file');
+});
+
 // --- the fixed rounds dr-<slug> on D1 ----------------------------------------------------------------------------------
 const NOW = new Date('2026-11-10T12:00:00Z');
 const ORIGIN = 'https://whosbluffing.example';
@@ -227,7 +250,7 @@ test('pages: /dare/:slug and /dares on the site template; status lines; Open Gra
   want('<h1 id="hero-title">Ten questions about Acme, written for Ms. Acme</h1>');
   want('<p class="hero-sub">Same ten for everyone. Being sure only pays when you\'re right.</p>');
   want('<div class="tile"><b>1</b><span>person has taken it</span></div><div class="tile"><b>120</b><span>best score</span></div><div class="tile"><b>120</b><span>average score</span></div>');
-  want('<div class="card dare-status"><p>Ms. Acme: no score yet</p><p class="fine">Read <a href="https://x.com/whosbluffing/status/9" rel="noopener noreferrer">the dare</a> on X.</p></div>');
+  want('<div class="card dare-status"><span class="dare-face dare-mono" role="img" aria-label="Ada Acme">AA</span><div><p>Ms. Acme: no score yet</p><p class="fine">Read <a href="https://x.com/whosbluffing/status/9" rel="noopener noreferrer">the dare</a> on X.</p></div></div>');
   want('<button class="primary" id="play" type="button" data-play>');
   want('<a href="/dare/bolt">Mr. Bolt’s round</a>: 0 taken; Mr. Bolt: 640, <a href="https://x.com/bolt/status/1" rel="noopener noreferrer">posted 12 October 2026</a>');
   want('<p><a href="/dares">The dare board</a></p>');
@@ -245,7 +268,7 @@ test('pages: /dare/:slug and /dares on the site template; status lines; Open Gra
   }
   assert.ok(boardHtml.includes('<h1>The dare board</h1>'));
   assert.ok(boardHtml.includes('<p class="lead">Each person got ten questions about their own field. Everyone can take the same ten. The board shows who has answered.</p>'));
-  assert.ok(boardHtml.includes('<tr><th scope="row"><a href="/dare/acme">Ada Acme</a></th><td>Acme</td><td>1</td><td>120</td><td>no score yet</td><td><a href="https://x.com/whosbluffing/status/9" rel="noopener noreferrer">the dare</a></td></tr>'));
+  assert.ok(boardHtml.includes('<tr><th scope="row"><span class="dare-face dare-face-sm dare-mono" role="img" aria-label="Ada Acme">AA</span><a href="/dare/acme">Ada Acme</a></th><td>Acme</td><td>1</td><td>120</td><td>no score yet</td><td><a href="https://x.com/whosbluffing/status/9" rel="noopener noreferrer">the dare</a></td></tr>'));
   assert.ok(boardHtml.includes('<td>Bolt &amp; Co</td><td>0</td><td>–</td><td>posted 640</td><td>–</td>'));
   assert.ok(boardHtml.includes('<td>declined</td>') && !boardHtml.includes('/dare/gone'));
   assert.ok(boardHtml.indexOf('/dare/acme') < boardHtml.indexOf('/dare/bolt'), 'most played first');
@@ -332,4 +355,60 @@ test('real dares/dares.json: 24 members of Congress, 12 per side, addressed by c
     assert.ok(rival.keywords[1] === d.keywords[1] || rival.org === d.org, `${d.slug}: the rival shares the state or the chamber`);
   }
   assert.equal(new Set(members.map((d) => d.handle.toLowerCase())).size, 24);
+});
+
+test('pages: the portrait (64 px by the status line, 32 on the board) or the initials, grey until played; the photo credits', async () => {
+  const template = readFileSync(new URL('../scripts/page.html', import.meta.url), 'utf8');
+  const db = openD1();
+  const official = { source_url: 'https://commons.wikimedia.org/wiki/File:Bo_Bolt.jpg', author: OFFICIAL, license: 'public domain' };
+  const extra = { acme: { avatar: '/img/dares/acme.jpg', credit: CREDIT }, bolt: { avatar: '/img/dares/bolt.jpg', credit: official } };
+  const dares = new Map([...DATA.dares].map(([slug, d]) => [slug, { ...d, ...extra[slug] }]));
+  const page = async (slug, map = dares) => darePage(template, (await dareView(db, DATA, slug, NOW)).body, map);
+  const acme = await page('acme'); // open: grey and tilted (no is-played)
+  assert.ok(acme.includes('<div class="card dare-status"><img class="dare-face" src="/img/dares/acme.jpg" alt="Ada Acme" width="64" height="64"><div><p>Ms. Acme: no score yet</p>'));
+  const ccLine = '<li>Ada Acme: <a href="https://commons.wikimedia.org/wiki/File:Portrait.jpg" rel="noopener noreferrer">photo</a> by A. Photographer (cropped), '
+    + '<a href="https://creativecommons.org/licenses/by-sa/4.0/" rel="license noopener noreferrer">CC BY-SA 4.0</a></li>';
+  assert.ok(acme.includes(`<p class="fine">Public figures only.`) && acme.includes(`<div class="dare-credits fine"><p>Photo credits</p><ul>${ccLine}</ul></div>`));
+  assert.ok(acme.indexOf('dare-credits') > acme.indexOf('Public figures only.'), 'at the bottom, after the opt-out line');
+  const bolt = await page('bolt'); // played: full colour, straight
+  assert.ok(bolt.includes('<img class="dare-face is-played" src="/img/dares/bolt.jpg" alt="Bo Bolt" width="64" height="64"><div><p>Mr. Bolt: 640,'));
+  assert.ok(bolt.includes('<ul><li>Official portrait: U.S. Congress, public domain</li></ul>'));
+  const cole = await page('cole'); // declined, no portrait: initials, grey; nothing to credit
+  assert.ok(cole.includes('<div class="card dare-status"><span class="dare-face dare-mono" role="img" aria-label="Cy Cole">CC</span><div><p>Professor Cole declined</p>'));
+  assert.ok(!cole.includes('dare-credits'));
+  const board = boardPage(template, (await boardView(db, DATA, NOW)).body, dares);
+  assert.ok(board.includes('<th scope="row"><img class="dare-face dare-face-sm" src="/img/dares/acme.jpg" alt="Ada Acme" width="32" height="32" loading="lazy"><a href="/dare/acme">Ada Acme</a></th>'));
+  assert.ok(board.includes('<th scope="row"><img class="dare-face dare-face-sm is-played" src="/img/dares/bolt.jpg" alt="Bo Bolt" width="32" height="32" loading="lazy"><a href="/dare/bolt">Bo Bolt</a></th>'));
+  assert.ok(board.includes('<th scope="row"><span class="dare-face dare-face-sm dare-mono" role="img" aria-label="Cy Cole">CC</span><a href="/dare/cole">Cy Cole</a></th>'));
+  assert.ok(board.includes(`<div class="dare-credits fine"><p>Photo credits</p><ul>${ccLine}<li>Official portrait: U.S. Congress, public domain</li></ul></div>`));
+  assert.ok(board.indexOf('dare-credits') > board.indexOf('</table>'), 'under the table');
+  const allOfficial = new Map([...dares].map(([slug, d]) => [slug, { ...d, avatar: `/img/dares/${slug}.jpg`, credit: official }]));
+  const plural = boardPage(template, (await boardView(db, DATA, NOW)).body, allOfficial);
+  assert.ok(plural.includes('<ul><li>Official portraits: U.S. Congress, public domain</li></ul>'), 'public-domain portraits share one line');
+  const none = boardPage(template, (await boardView(db, DATA, NOW)).body, DATA.dares);
+  assert.ok(!none.includes('dare-credits') && none.includes('aria-label="Ada Acme">AA</span>'), 'no portraits: initials only, no credits');
+  const hostile = new Map([...dares].map(([slug, d]) => [slug, { ...d, credit: { source_url: 'https://x.example/"><b>', author: '<i>Evil</i>', license: 'CC BY 2.0' } }]));
+  const evil = await page('acme', hostile);
+  assert.ok(evil.includes('<a href="https://x.example/&quot;&gt;&lt;b&gt;" rel="noopener noreferrer">photo</a> by &lt;i&gt;Evil&lt;/i&gt; (cropped)') && !evil.includes('<i>Evil</i>'));
+  for (const h of [acme, bolt, cole, board]) assert.doesNotMatch(h, /\sstyle=|<style/i, 'no inline style (CSP)');
+  assert.ok(darePage(template, { ...(await dareView(db, DATA, 'cole', NOW)).body, name: 'Alexandria Ocasio-Cortez' }, dares).includes('>AO</span>'), 'initials: first and last word');
+});
+
+// The real portraits: one per dare except the four with no usable free photo (web/NOTES.md), each a 160 x 160 JPEG under
+// 25 KB in public/img/dares, members of Congress by their official portrait, every file referenced.
+const jpegSize = (buf) => { // [width, height] from the first SOF marker
+  for (let i = 2; i + 9 < buf.length; i += 2 + buf.readUInt16BE(i + 2)) if (buf[i + 1] >= 0xc0 && buf[i + 1] <= 0xc3) return [buf.readUInt16BE(i + 7), buf.readUInt16BE(i + 5)];
+  return null;
+};
+test('real dares/dares.json: every portrait file exists, 160 x 160, under 25 KB; members by official portrait; four by initials', () => {
+  const dares = JSON.parse(readFileSync(new URL('../../dares/dares.json', import.meta.url), 'utf8'));
+  assert.deepEqual(dares.filter((d) => !d.avatar).map((d) => d.slug), ['karpathy', 'kilpatrick', 'clark', 'mollick']);
+  for (const d of dares.filter((x) => x.avatar)) {
+    const file = new URL(`../public${d.avatar}`, import.meta.url);
+    assert.ok(statSync(file).size < 25 * 1024, `${d.slug}: ${statSync(file).size} bytes`);
+    assert.deepEqual(jpegSize(readFileSync(file)), [160, 160], d.slug);
+    assert.match(d.credit.source_url, /^https:\/\/commons\.wikimedia\.org\/wiki\/File:\S+$/, d.slug);
+    assert.equal(d.credit.author === OFFICIAL && d.credit.license === 'public domain', Boolean(d.party), `${d.slug}: official portraits are the members'`);
+  }
+  assert.deepEqual(readdirSync(new URL('../public/img/dares/', import.meta.url)).sort(), dares.filter((d) => d.avatar).map((d) => `${d.slug}.jpg`).sort(), 'no stray file');
 });
