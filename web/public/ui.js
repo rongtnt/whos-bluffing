@@ -58,6 +58,32 @@ export const num = (x) => x.toLocaleString('en-US', { maximumFractionDigits: 3 }
 const MONTHS = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'];
 export const fmtMonth = (v) => `${MONTHS[(v % 100) - 1] ?? '?'} ${Math.floor(v / 100)}`;
 
+// From a million up, a number in words: 157e9 -> "157 billion", 1.2e12 -> "1.2 trillion" (one decimal when needed);
+// null below a million.
+const SCALES = [[1e12, 'trillion'], [1e9, 'billion'], [1e6, 'million']];
+export function bigWords(v) {
+  const a = Math.abs(v);
+  if (a < 1e6) return null;
+  const at = (i) => Math.round((a / SCALES[i][0]) * 10) / 10;
+  let i = SCALES.findIndex(([s]) => a >= s);
+  if (i > 0 && at(i) >= 1000) i -= 1; // 999,960,000 reads "1 billion", not "1,000 million"
+  return `${v < 0 ? '-' : ''}${at(i).toLocaleString('en-US', { maximumFractionDigits: 1 })} ${SCALES[i][1]}`;
+}
+
+// Counts that read better in words from a million up (the AI pack's parameters, transistors, tokens, images). Other
+// units keep the digits: "38,000 petaFLOP-days", "8,849 m".
+const WORD_UNITS = /\b(parameters|transistors|tokens|images)\b/;
+
+// A true value as the game shows it: years ("2560 BC"), months ("Nov 2022"), dollars ("$157 billion", "$650,000"),
+// big counts ("175 billion parameters", "100,000 tokens of context"), otherwise digits and the unit.
+export function fmtValue(v, unit) {
+  if (unit === 'year') return v < 0 ? `${-v} BC` : String(v);
+  if (unit === 'month') return fmtMonth(v);
+  if (unit === 'USD') return `$${bigWords(v) ?? num(v)}`;
+  if (WORD_UNITS.test(unit) && Math.abs(v) >= 1e6) return `${bigWords(v)} ${unit}`;
+  return `${num(v)} ${unit}`;
+}
+
 export const chartLabels = (t) => ({
   title: t('results.chart_title'), x: t('results.chart_x'), y: t('results.chart_y'), diag: t('results.chart_diag'),
 });

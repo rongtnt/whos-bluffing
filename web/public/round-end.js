@@ -2,13 +2,9 @@
 // red wrong) and the detail card a square opens. Pure HTML builders plus one wiring function, so node tests can render
 // them. st = the round state of rounds.js: {items: [{id, prompt, a, b}], answers: {id: {choice, conf, correct, points,
 // truth, line}}}.
-import { html, fmtMonth } from './ui.js';
+import { html, fmtValue } from './ui.js';
 
-export const fmtValue = (v, unit) => {
-  if (unit === 'year') return v < 0 ? `${-v} BC` : String(v);
-  if (unit === 'month') return fmtMonth(v); // YYYYMM
-  return `${v.toLocaleString('en-US', { maximumFractionDigits: 3 })} ${unit}`;
-};
+export { fmtValue }; // the shared formatter: years, months, dollars, big counts (ui.js)
 export const fmtPoints = (p) => (p > 0 ? `+${p}` : p < 0 ? `−${-p}` : '0');
 
 // The squares pop in one after another (styles.css staggers them); misses shake once after their pop.

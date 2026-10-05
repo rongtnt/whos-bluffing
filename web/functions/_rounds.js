@@ -69,7 +69,7 @@ const pairId = (n) => `p${String(n).padStart(5, '0')}`;
 const itemId = (n) => `w${String(n).padStart(4, '0')}`;
 const cap = (s) => s.charAt(0).toUpperCase() + s.slice(1);
 
-// pool: items/pool.json; compact: functions/_pairs.json ({templates, pairs: [[n, a, b, truth, level, band, ref]]},
+// pool: items/pool.json; compact: functions/_pairs.json ({templates, pairs: [[n, a, b, truth, level, band, ref, tier]]},
 // written by sync-items); rounds: daily/rounds.json ({date: {ranked: [10 ids], question: id}}).
 // packLists[pack][difficulty][level] = the pair ids that difficulty may draw for that pack (lists = packLists.all);
 // available[difficulty] = the set of packs offered there (minPackPairs: a lower bar for small test fixtures).
@@ -80,11 +80,15 @@ export function loadRounds(pool, compact, rounds, { minPackPairs = MIN_PACK_PAIR
   const packLists = Object.fromEntries(Object.keys(PACKS).map((k) => [k, Object.fromEntries(Object.keys(DIFFICULTIES).map((d) => [d, { easy: [], medium: [], hard: [] }]))]));
   const packsOf = new Map(); // category -> the packs it belongs to, `all` first
   for (const [k, pack] of Object.entries(PACKS)) for (const c of pack.categories ?? []) packsOf.set(c, [...(packsOf.get(c) ?? ['all']), k]);
-  for (const [n, a, b, truth, level, band = 0, ref = 0] of compact.pairs) {
-    const p = { id: pairId(n), a_id: itemId(a), b_id: itemId(b), truth, level: LEVELS[level], band, ref };
+  for (const [n, a, b, truth, level, band = 0, ref = 0, tier = 0] of compact.pairs) {
+    const p = { id: pairId(n), a_id: itemId(a), b_id: itemId(b), truth, level: LEVELS[level], band, ref, tier };
     pairs.set(p.id, p);
     const packs = packsOf.get(items.get(p.a_id)?.category) ?? ['all'];
-    for (const [d, spec] of Object.entries(DIFFICULTIES)) if (spec.ok(p)) for (const k of packs) packLists[k][d][p.level].push(p.id);
+    // A pack with `tiers` (the AI pack) also draws by tier at each difficulty; `all` has none.
+    for (const [d, spec] of Object.entries(DIFFICULTIES)) {
+      if (!spec.ok(p)) continue;
+      for (const k of packs) if (!PACKS[k].tiers || PACKS[k].tiers[d].includes(p.tier)) packLists[k][d][p.level].push(p.id);
+    }
   }
   const lists = packLists.all;
   const available = Object.fromEntries(Object.entries(DIFFICULTIES).map(([d, spec]) => [d, new Set(Object.keys(PACKS).filter((k) => k === 'all'

@@ -211,7 +211,7 @@ test('AI pack: month values (YYYYMM) read as a short month and a four-digit year
   assert.equal(fmtMonth(199304), 'Apr 1993');
   assert.equal(endValue(1969, 'year'), '1969'); // unchanged
   assert.equal(endValue(-2560, 'year'), '2560 BC');
-  assert.equal(endValue(175000000000, 'parameters'), '175,000,000,000 parameters');
+  assert.equal(endValue(175000000000, 'parameters'), '175 billion parameters'); // big counts read as words (AI pack v2)
 });
 
 test('AI pack: the answer carries the pair\'s reveal fact and category; the fact never reaches the browser\'s pool.json', async () => {
@@ -333,4 +333,58 @@ test('types: display names and one-liners everywhere players read them; the API 
   assert.match(rounds, /<p class="type-name">\$\{typeName\(res\.type\)\}<\/p>/);
   assert.match(rounds, /type: typeName\(res\.type\),/); // the share card's canvas text
   assert.match(rounds, /\(p\) => typeName\(p\.type\)/); // the side-by-side
+});
+
+
+// --- AI pack v2: tiers per difficulty, big values in words -------------------------------------------------------
+
+test('AI pack v2: a pack with tiers draws by tier at each difficulty; `all` does not; the real AI pack counts', () => {
+  const items = [1, 2, 3, 4].map((k) => ({ id: `w000${k}`, category: 'ai_tech', en: { prompt: 'p', unit: 'transistors' }, answer: 10 ** (6 + k),
+    accept: [0, 1e18], source: `https://www.wikidata.org/wiki/Q${k}#P1`, name: `chip ${k}` }));
+  const templates = [{ category: 'ai_tech', unit: 'transistors', prompt: 'Which chip has more transistors?', more: 'had more', less: 'had fewer' }];
+  // [n, a, b, truth, level (0 easy, 1 medium, 2 hard), band (2 famous), ref, tier]
+  const pairs = [[1, 1, 2, 1, 2, 2, 1, 3], [2, 3, 4, 1, 0, 2, 1, 1], [3, 1, 3, 1, 1, 2, 1, 2]];
+  const data = loadRounds({ items }, { templates, pairs }, {}, { minPackPairs: 1 });
+  const ids = (k, d) => Object.values(data.packLists[k][d]).flat();
+  assert.equal(data.pairs.get('p00001').tier, 3);
+  assert.ok(!ids('ai', 'easy').includes('p00001'), 'tier 3 is not Easy');
+  assert.ok(ids('ai', 'brutal').includes('p00001'), 'tier 3 is Brutal');
+  assert.ok(ids('ai', 'easy').includes('p00002') && !ids('ai', 'brutal').includes('p00002'), 'tier 1: Easy, not Brutal');
+  assert.ok(ids('ai', 'normal').includes('p00003') && ids('ai', 'brutal').includes('p00003') && !ids('ai', 'easy').includes('p00003'), 'tier 2: Normal and Brutal');
+  assert.ok(ids('all', 'easy').includes('p00001'), '`all` has no tiers');
+  assert.deepEqual(loadRounds({ items }, { templates, pairs: [[1, 1, 2, 1, 2, 2, 1]] }, {}).pairs.get('p00001').tier, 0); // older rows: tier 0
+  // The real AI pack: pairs each difficulty can put in its mix (brief: Easy 403, Normal 1,725, Brutal 359 at the time of v2).
+  const count = (d) => Object.entries(DATA.packLists.ai[d]).reduce((n, [level, list]) => n + (DIFFICULTIES[d].mix[level] ? list.length : 0), 0);
+  const real = { easy: count('easy'), normal: count('normal'), brutal: count('brutal') };
+  for (const d of ['easy', 'normal', 'brutal']) assert.ok(real[d] >= 200, `${d}: ${real[d]}`);
+  for (const id of Object.values(DATA.packLists.ai.easy).flat()) assert.equal(DATA.pairs.get(id).tier, 1);
+  for (const id of Object.values(DATA.packLists.ai.brutal).flat()) assert.ok([2, 3].includes(DATA.pairs.get(id).tier));
+});
+
+test('AI pack v2: dollars and big counts read as words; small counts, compute and other units keep their digits', async () => {
+  const { fmtValue, bigWords } = await import('../public/ui.js');
+  const { fmtValue: endValue, detailCard } = await import('../public/round-end.js');
+  const { fmtValue: dailyValue } = await import('../public/daily.js');
+  const cases = [
+    [157e9, 'USD', '$157 billion'], [14e9, 'USD', '$14 billion'], [650e6, 'USD', '$650 million'], [1.2e12, 'USD', '$1.2 trillion'],
+    [13000000000.0, 'USD', '$13 billion'], [1.25e9, 'USD', '$1.3 billion'], [500000, 'USD', '$500,000'],
+    [1.2e12, 'transistors', '1.2 trillion transistors'], [15e12, 'training tokens', '15 trillion training tokens'],
+    [175e9, 'parameters', '175 billion parameters'], [14e6, 'images', '14 million images'], [2e6, 'tokens of context', '2 million tokens of context'],
+    [100000, 'tokens of context', '100,000 tokens of context'], [38000, 'petaFLOP-days', '38,000 petaFLOP-days'],
+    [3.14e9, 'petaFLOP-days', '3,140,000,000 petaFLOP-days'], [999960000, 'parameters', '1 billion parameters'],
+    [1428627663, 'people', '1,428,627,663 people'], [8849, 'm', '8,849 m'], [202211, 'month', 'Nov 2022'], [-2560, 'year', '2560 BC'],
+  ];
+  for (const [v, unit, want] of cases) {
+    assert.equal(fmtValue(v, unit), want, `${v} ${unit}`);
+    assert.equal(endValue(v, unit), want, `round-end: ${v} ${unit}`);
+    if (unit !== 'year') assert.equal(dailyValue(v, unit), want, `daily: ${v} ${unit}`);
+  }
+  assert.equal(bigWords(999999), null);
+  assert.equal(bigWords(-2.5e9), '-2.5 billion');
+  const truth = { a_value: 13e9, b_value: 4e9, unit: 'USD', a_source: 'https://www.anthropic.com/news', b_source: 'https://openai.com/news' };
+  const card = String(detailCard({ items: [{ id: 'p00001', prompt: 'Which is bigger?', a: 'round A', b: 'round B' }],
+    answers: { p00001: { choice: 0, conf: 80, correct: true, points: 84, truth } } }, 0, (k, vars = {}) => k.split('.').reduce((o, x) => o?.[x], json('public/i18n/en.json')).replace(/\{(\w+)\}/g, (m, x) => (x in vars ? vars[x] : m))));
+  assert.match(card, /round A<\/span>: \$13 billion /);
+  assert.match(card, /round B<\/span>: \$4 billion /);
+  assert.match(read('public/rounds.js'), /fmtValue\(values\[c\], a\.truth\.unit\)/); // the reveal uses the same formatter
 });

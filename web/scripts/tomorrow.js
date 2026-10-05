@@ -5,7 +5,7 @@
 import { readFileSync } from 'node:fs';
 import { fileURLToPath } from 'node:url';
 import { addDays, dayNumber, todayUTC, isDate } from '../functions/_daily.js';
-import { fmtValue as fmt } from '../public/round-end.js'; // years as "2560 BC", months (YYYYMM) as "Nov 2022"
+import { fmtValue as fmt } from '../public/ui.js'; // years as "2560 BC", months as "Nov 2022", "$157 billion", "175 billion parameters"
 
 
 // The daily range game's review for one date (throws if nothing is scheduled).

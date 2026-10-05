@@ -566,6 +566,25 @@ printf '%s' "$BODY" | node -e 'const s = require("fs").readFileSync(0, "utf8"); 
   || fail "public/pool.json must not carry the reveal fact"
 pass "GET /pool.json -> no reveal facts"
 
+echo "== AI pack v2: an ai_money pair in a quick round; its dollar values as the reveal and the end-screen card show them"
+MONEY_PAIR=$(node -e '
+  const cat = new Map(require("./functions/_pool.json").items.map((i) => [i.id, i.category]));
+  const p = require("./functions/_pairs.json").pairs.find((x) => cat.get("w" + String(x[1]).padStart(4, "0")) === "ai_money");
+  process.stdout.write("p" + String(p[0]).padStart(5, "0"));')
+"${WRANGLER[@]}" d1 execute whosbluffing --local --persist-to "$STATE" --command \
+  "INSERT INTO rounds (round_id, mode, date, items, created_at, difficulty) VALUES ('MNMNMNMNMNM2', 'quick', '$TODAY', '[\"$MONEY_PAIR\"]', '${TODAY}T00:00:00Z', 'normal')" > /dev/null 2>&1 \
+  || fail "insert the ai_money pair's quick round"
+req POST /api/round/answer "$(rbody MNMNMNMNMNM2 "$MONEY_PAIR" "$HOST" web 1 80)"
+expect "answer the ai_money pair $MONEY_PAIR -> unit USD, raw dollar values, category ai_money" 200 \
+  "r.correct === true && r.truth.unit === 'USD' && r.truth.category === 'ai_money' && r.truth.a_value >= 1e6 && r.truth.b_value >= 1e6"
+SHOWN=$(printf '%s' "$BODY" | node --input-type=module -e '
+  import { readFileSync } from "node:fs";
+  import { fmtValue } from "./public/round-end.js";
+  const t = JSON.parse(readFileSync(0, "utf8")).truth;
+  process.stdout.write([fmtValue(t.a_value, t.unit), fmtValue(t.b_value, t.unit)].join(" | "));')
+[[ "$SHOWN" =~ ^\$[0-9.,]+\ (million|billion|trillion)\ \|\ \$[0-9.,]+\ (million|billion|trillion)$ ]] || fail "ai_money values read as dollars in words" "$SHOWN"
+pass "ai_money values as the reveal and the end-screen card show them: $SHOWN"
+
 echo "== public reads: CORS on GET /api/round/stats and /api/kpi only"
 # Through another host name, so the 60 s stats cache that later checks read stays untouched; the stats are asked twice,
 # so the second answer comes from the cache and must carry the header too.
