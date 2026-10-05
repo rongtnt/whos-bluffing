@@ -156,7 +156,8 @@ export function revealMessage(q, r, top, names, bluff) {
     lines.push(`${who} was ${bluff.conf}% sure it was ${LETTERS[bluff.choice]} (${esc(option(q, bluff.choice))}). It wasn't.`);
   }
   const text = lines.join('\n');
-  return { text, blocks: [section(text)] };
+  // The install loop that carried Truth or Dare (docs/TOD_TRACTION.md): every reveal says where to get the app.
+  return { text, blocks: [section(text), context('Add Who\u2019s Bluffing to another workspace: <https://whosbluffing.com/slack|whosbluffing.com/slack>')] };
 }
 
 // The 30-day workspace leaderboard. `rows` = the rows to name.

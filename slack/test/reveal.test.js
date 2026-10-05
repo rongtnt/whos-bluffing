@@ -42,6 +42,7 @@ test('reveal, roast off: the post becomes the answer with values and sources, co
   assert.deepEqual([update.body.channel, update.body.ts, update.headers.authorization], ['C1', POST_TS, 'Bearer xoxb-T1']);
   const blocks = JSON.parse(update.body.blocks);
   assert.ok(!blocks.some((b) => b.type === 'actions'), 'the revealed post keeps no buttons');
+  assert.match(blocks.at(-1).elements[0].text, /whosbluffing\.com\/slack/, 'the reveal ends with the install line');
   assert.equal(updatedText(calls), [
     "*Who's Bluffing?* · Which is longer: the Nile or the Danube?",
     '*Answer: A, the Nile.* the Nile: 6,650 km (<https://www.wikidata.org/wiki/Q3392|source>) · the Danube: 2,850 km (<https://www.wikidata.org/wiki/Q1653|source>)',
