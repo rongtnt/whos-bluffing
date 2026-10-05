@@ -42,7 +42,6 @@ Every question comes from a Wikidata fact with the source shown under both answe
 |---|---|
 | `web/` | The site and API: Cloudflare Pages Functions, D1, vanilla JS |
 | `discord/`, `slack/` | The Discord and Slack apps: Cloudflare Workers, no dependencies |
-| `anki/` | Anki add-on: rate your confidence before each card |
 | `items/`, `daily/` | The question bank built from Wikidata and the ranked rounds |
 | `analysis/` | Pipeline, metric definitions shared by JS and Python, fact checks |
 | `prereg/` | The frozen pre-registration |

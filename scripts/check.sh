@@ -13,16 +13,6 @@ if [ -f "$root/web/test/smoke.sh" ]; then ( cd "$root/web" && bash test/smoke.sh
 say "web: forbidden strings"
 if grep -rniE "x-forwarded-for|user-agent|analytics|gtag|fonts\.googleapis|cdn\." "$root/web/public" "$root/web/functions" 2>/dev/null | grep -v "_items.json"; then echo "forbidden string found"; fail=1; else echo "clean"; fi
 
-say "anki: pytest"
-( cd "$root/anki" && uv run pytest -q tests ) || fail=1
-
-say "anki: build"
-( cd "$root/anki" && bash scripts/build.sh && unzip -l dist/whosbluffing.ankiaddon | grep -q " manifest.json$" && echo "manifest at top level" ) || fail=1
-
-say "anki: network code only in upload.py (opt-in sharing)"
-hits=$(grep -rlIE --exclude-dir=__pycache__ "\b(http|urllib|requests|socket)\b" "$root/anki/src" 2>/dev/null | sed "s#$root/##" | sort | tr '\n' ' ')
-if [ "$hits" = "anki/src/whosbluffing/upload.py " ] || [ -z "$hits" ]; then echo "ok: ${hits:-none}"; else echo "unexpected network reference in: $hits"; fail=1; fi
-
 
 say "slack: tests"
 ( cd "$root/slack" && npm test --silent 2>&1 | grep -E "^# (tests|pass|fail)" ) || fail=1

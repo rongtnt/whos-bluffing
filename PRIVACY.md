@@ -30,12 +30,6 @@ Who's Bluffing is an independent, unaffiliated, non-commercial project. No accou
 
 - **Home page panel.** The home page shows, for the current day, a calibration chart built from everyone's answers and up to three of the day's costliest confident misses (the question, the wrong pick, the stake and the points). These are aggregates: no name, id or link to any player is shown or stored for this purpose.
 
-## Anki add-on (Who's Bluffing? for Anki)
-
-**v0.1 is local only.** Your ratings are stored in a SQLite file inside the add-on's `user_files` folder on your computer. Nothing is sent anywhere. You can export or delete the file at any time.
-
-**From v0.2, sharing is opt-in and off by default.** If you turn it on, the add-on sends: a random installation id, hashed card and deck identifiers (never card text), your rating, the grade you gave, response times, the scheduled interval, days since last review, FSRS memory state when available, interface language, add-on and Anki versions. A "Delete my data" button removes every rating stored under your installation id; the server keeps only the id and the deletion time so that later uploads from that installation are refused, and the add-on then switches to a fresh id if you ever opt in again.
-
 ## Contact
 
 Open an issue on the GitHub repository.
