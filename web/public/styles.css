@@ -704,12 +704,11 @@ button.pick:hover { border-color: var(--accent); }
 }
 
 /* Set constants (site.js marks <html> before the first paint) show their links at once and hide the "soon" lines */
-.has-community [data-community-soon], .has-actions [data-actions-soon] { display: none !important; }
-.has-community [data-community-join][hidden] { display: inline-flex !important; }
+.has-actions [data-actions-soon] { display: none !important; }
 .has-contact p[data-contact][hidden] { display: block !important; }
 .has-contact span[data-contact][hidden], .has-actions a[data-actions][hidden] { display: inline !important; }
 
-/* Community, status, press */
+/* Status, press */
 .status { padding-bottom: 40px; }
 .status-grid { display: grid; gap: 12px; margin: 8px 0 16px; }
 @media (min-width: 700px) { .status-grid { grid-template-columns: 1fr 1fr; } }
@@ -883,5 +882,3 @@ img.dc-avatar { display: block; object-fit: cover; }
 .dare-credits ul { margin: 4px 0 0; padding: 0; list-style: none; }
 
 /* Get started band: the community line under the buttons */
-.band-more { margin: 14px 0 0; font-size: var(--fs-6); }
-.band-more a { color: var(--accent); font-weight: 700; }

@@ -37,7 +37,7 @@ const WEB = fileURLToPath(new URL('../', import.meta.url));
 const CHROME = process.env.CHROME ?? '/Applications/Google Chrome.app/Contents/MacOS/Google Chrome';
 const DEBUG_PORT = 9339;
 const READY_TIMEOUT_MS = 6000;
-const PAGES = ['/', '/play', '/results', '/discord', '/slack', '/commands', '/teachers', '/research', '/support', '/community', '/status', '/press',
+const PAGES = ['/', '/play', '/results', '/discord', '/slack', '/commands', '/teachers', '/research', '/support', '/status', '/press',
   '/changelog', '/docs/api', '/privacy', '/terms', '/test', '/stats', '/class', '/tests/overconfidence-test',
   '/tests/estimation-test', '/tests/calibration-test', '/no-such-page'];
 const sleep = (ms) => new Promise((r) => setTimeout(r, ms));

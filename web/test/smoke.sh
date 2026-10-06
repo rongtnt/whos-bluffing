@@ -129,7 +129,11 @@ content /discord '<code>/bluff setup</code>' 'Discord page: command cards from c
 content /commands 'role="tablist" aria-label="Platform"' 'commands page with its tabs'
 content /commands '<code>/bluff setup roast on|off</code>' 'commands page: Slack cards'
 content /commands '<code>5 6 7 8 9 0</code>' 'commands page: web shortcuts'
-content /community 'data-community-soon>The server is opening soon.' 'community page (opening soon until COMMUNITY_INVITE_URL is set)'
+for p in /community /community.html; do
+  META=$(curl -s -o /dev/null -w '%{http_code} %{redirect_url}' "$BASE$p")
+  [ "$META" = "301 $BASE/discord" ] || fail "$p should redirect to the Discord app page" "$META"
+  pass "$p -> /discord (no hosted community server)"
+done
 content /status '<script type="module" src="/status.js"></script>' 'status page and its script'
 content /press '<p class="boilerplate">' 'press kit'
 content /changelog '<h1 id="changelog">Changelog</h1>' 'changelog (generated from CHANGELOG.md)'

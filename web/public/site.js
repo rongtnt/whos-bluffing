@@ -5,7 +5,6 @@
 // Addresses that exist only once the owner has set them up. An empty string hides whatever depends on it.
 const SLACK_INSTALL_URL = 'https://whosbluffing-slack.rongaijun41.workers.dev/slack/oauth/start'; // the Slack Worker's install URL (slack/README.md, step 8)
 const DISCORD_INSTALL_URL = 'https://discord.com/oauth2/authorize?client_id=1556371051439587461'; // set to 'https://whosbluffing-discord.rongaijun41.workers.dev/install' once the Discord app exists; hidden while empty // the Discord Worker's /install (discord/README.md, step 8)
-const COMMUNITY_INVITE_URL = 'https://discord.gg/V5wcSC7cd'; // invite link to the Who's Bluffing Discord server (/community shows "opening soon" until set)
 const CONTACT_EMAIL = 'hello@whosbluffing.com'; // e.g. hello@whosbluffing.com once email routing works (hidden until set)
 const GITHUB_URL = 'https://github.com/rongtnt/whos-bluffing';
 const X_URL = 'https://x.com/whos_bluffing'; // e.g. https://x.com/<handle>
@@ -23,7 +22,6 @@ const ACTIONS_URL = 'https://github.com/rongtnt/whos-bluffing/actions'; // the r
   } catch { /* storage blocked: follow the system theme */ }
   root.classList.add('js'); // styles.css hides below-the-game content until the page is .ready
   // Before the first paint: what the constants switch on is shown by styles.css at once, so nothing moves at load.
-  if (COMMUNITY_INVITE_URL) root.classList.add('has-community');
   if (CONTACT_EMAIL) root.classList.add('has-contact');
   if (ACTIONS_URL) root.classList.add('has-actions');
   const isDark = () => (root.dataset.theme ? root.dataset.theme === 'dark' : prefersDark.matches);
@@ -58,13 +56,11 @@ const ACTIONS_URL = 'https://github.com/rongtnt/whos-bluffing/actions'; // the r
   function wireLinks() {
     for (const a of all('[data-slack-install]')) a.href = SLACK_INSTALL_URL;
     for (const a of all('[data-discord-install]')) { if (DISCORD_INSTALL_URL) a.href = DISCORD_INSTALL_URL; else a.hidden = true; }
-    const social = { github: GITHUB_URL, community: COMMUNITY_INVITE_URL, x: X_URL, bluesky: BLUESKY_URL };
+    const social = { github: GITHUB_URL, x: X_URL, bluesky: BLUESKY_URL };
     for (const a of all('[data-social]')) {
       const url = social[a.dataset.social];
       if (url) { a.href = url; a.hidden = false; }
     }
-    for (const a of all('[data-community-join]')) if (COMMUNITY_INVITE_URL) { a.href = COMMUNITY_INVITE_URL; a.hidden = false; }
-    for (const el of all('[data-community-soon]')) el.hidden = Boolean(COMMUNITY_INVITE_URL);
     for (const el of all('[data-contact]')) el.hidden = !CONTACT_EMAIL;
     for (const a of all('[data-contact-link]')) if (CONTACT_EMAIL) { a.href = `mailto:${CONTACT_EMAIL}`; a.textContent = CONTACT_EMAIL; }
     for (const a of all('[data-actions]')) if (ACTIONS_URL) { a.href = ACTIONS_URL; a.hidden = false; }

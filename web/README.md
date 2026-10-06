@@ -21,14 +21,14 @@ Every page is a static HTML file in `public/` with the same head (title, descrip
 | `/teachers` | `teachers.html` | Classroom mode pitch, 3 steps, privacy points, link to `/class` |
 | `/research` | `research.html` | The question, why honest confidence scores best (the quadratic rule; Brier 1950, Gneiting and Raftery 2007), H1–H3 in plain words, the MAU and community definitions quoted from PREREG, open data, pre-registration, how to cite |
 | `/support` | `support.html` | GitHub issues, the FAQ (`#faq`, "Answers that may help"), what to put in a bug report |
-| `/community` | `community.html` | The Discord server ("opening soon" until `COMMUNITY_INVITE_URL` is set): daily reveals, feedback, play with others; GitHub issues; email once `CONTACT_EMAIL` is set |
+| `/community` | redirect | Redirects to `/discord` to add the game to an existing server |
 | `/status` | `status.html` + `status.js` | Live: one timed request to `/api/round/stats`, the latest KPI run (`as_of`) and its numbers; the GitHub Actions link once `ACTIONS_URL` is set |
 | `/press` | `press.html` | Boilerplate, logo (SVG mark, PNG wordmark light and dark, 512 px icon), `og.png`, four screenshots, contact |
 | `/privacy`, `/terms`, `/changelog`, `/docs/api` | generated | Rendered from `PRIVACY.md`, `TERMS.md`, `CHANGELOG.md` and, for the API, `web/docs/public-api.md` (public reads, CORS, rate limits, attribution, open data) + `docs/api-rounds.md` + `docs/api-daily.md` by `scripts/sync-docs.js` (git-ignored, see below) |
 | `/tests/overconfidence-test`, `/tests/estimation-test`, `/tests/calibration-test` | `tests/*.html` | Static explainer pages |
 | anything else | `404.html` | Branded "Page not found" with status 404 (with a `404.html`, Pages no longer falls back to `index.html`) |
 
-**Constants at the top of `public/site.js`** (set them before launch; an empty one hides what depends on it): `SLACK_INSTALL_URL` (the Slack Worker's `/slack/oauth/start`, `slack/README.md` step 8) and `DISCORD_INSTALL_URL` (the Discord Worker's `/install`, `discord/README.md` step 8) feed the Add buttons on `/slack` and `/discord` (the home page's buttons go to those pages); `COMMUNITY_INVITE_URL` (the community server's invite: the `/community` button and the footer icon), `CONTACT_EMAIL`, `GITHUB_URL`, `X_URL`, `BLUESKY_URL` (footer icons) and `ACTIONS_URL` (the `/status` link to the test runs, once the repository is public).
+**Constants at the top of `public/site.js`** (set them before launch; an empty one hides what depends on it): `SLACK_INSTALL_URL` (the Slack Worker's `/slack/oauth/start`, `slack/README.md` step 8) and `DISCORD_INSTALL_URL` (the Discord Worker's `/install`, `discord/README.md` step 8) feed the Add buttons on `/slack` and `/discord` (the home page's buttons go to those pages); `CONTACT_EMAIL`, `GITHUB_URL`, `X_URL`, `BLUESKY_URL` (footer icons) and `ACTIONS_URL` (the `/status` link to the test runs, once the repository is public).
 
 **Docs pages:** `npm run sync-items` (also run by `npm run dev`, `npm test` and `test/smoke.sh`) runs `scripts/sync-docs.js`, which converts `PRIVACY.md`, `TERMS.md`, `CHANGELOG.md` and the API docs into `public/privacy.html`, `public/terms.html`, `public/changelog.html` and `public/docs/api.html` inside the page template `scripts/page.html`. Edit the Markdown, never the generated HTML; run `npm run sync-items` before a deploy.
 
@@ -135,7 +135,7 @@ No request reads an unbounded number of rows: a round touches its own 10 answers
 
 ## Manual checklist (after each deploy)
 
-1. Phone, 375 px wide: `/`, `/discord`, `/slack`, `/commands`, `/community`, `/status`, `/press`, `/teachers`, `/research`, `/test`, `/stats`, `/class`, one `/tests/...` page; no sideways scrolling anywhere; the menu button opens the links; the theme toggle switches and stays switched on the next page.
+1. Phone, 375 px wide: `/`, `/discord`, `/slack`, `/commands`, `/status`, `/press`, `/teachers`, `/research`, `/test`, `/stats`, `/class`, one `/tests/...` page; no sideways scrolling anywhere; the menu button opens the links; the theme toggle switches and stays switched on the next page.
 2. `/`: "Play" starts today's ranked round at once (badge "Today's ranked round"); pick A or B, then a confidence: both values with units, both source links, the points and the running total.
 3. Reload halfway through: the hero button reads "Continue (3 of 10)" and resumes.
 4. End screen: score, type card, calibration chart, roast after a confident miss, streak, rank of today's players and the leaderboard; "Play again" starts a quick round with no other tap; "Challenge a friend" asks once for a name, then copies the link; "Share" shows the card (square and wide) and copies the text.
