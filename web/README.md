@@ -8,7 +8,9 @@ Every page is a static HTML file in `public/` with the same head (title, descrip
 
 | Path | File | What |
 |---|---|---|
-| `/` | `index.html` | Hero: the mark, "Who's bluffing?", one sentence and one note, "Play now" (today's ranked round first, then quick rounds; `rounds.js`), "Add to Discord", "Add to Slack", and a Discord · Slack · Web switch over three chat mocks in HTML (`home.js`); then the round or its result; then four bands: the reveal (a Discord reveal mock), the packs (the pack chips and difficulty, `picker.js`; a tap writes `?pack=…&difficulty=…` into the address, and from then Play starts a quick round in that pack), "N+ questions, each with a source" over a drifting list of real prompts (with a pause button), and Get started (with "N played today" from 100 players in the ranked round). `/?pack=…&difficulty=…` preselects a pack and plays it |
+| `/` | `index.html` | Existing homepage, demonstrations and pack preview. Every Play button opens `/play`, carrying the selected topic and difficulty. No questions or results render on the homepage. |
+| `/play` | `play.html` | Topic and difficulty picker, Start Playing, a separate Continue action for an unfinished round, and an optional fixed daily ranked round. Questions run here with a Home Page link. |
+| `/results` | `results.html` | Score, answer review, sharing and challenge comparison, with Home Page and Play Again. The browser history entry retains the result across refresh and Back/Forward; a direct visit has a start-round prompt. Play Again returns to the picker. |
 | `/c/<round>/<token>` | Pages Function `functions/c/[round_id]/[player].js` | Challenge page: the page template with per-link Open Graph tags ("Sam scored 640. Can you beat them?"), `noindex`, its own security headers; plays the same round, then shows the side-by-side. Counts one `challenge_view` per load; an unknown link gets the branded 404 |
 | `/test` | `test.html` | Full assessment (`/test?c=CODE` joins a class) |
 | `/stats` | `stats.html` | The live panel first (today's room, the day's biggest bluffs, the five types; `home.js`), then MAU / DAU / communities per surface and platform (from the daily KPI job, with the PREREG definitions), the engagement numbers with one-line definitions, Anki contributors as a separate line, today's ranked-round histogram, full-assessment curve |
@@ -57,6 +59,8 @@ npm run dev                  # syncs items, pool and schedule, then serves http:
 ```
 
 Tests: `npm test` (metric vectors, unit tests on a real SQLite database through `node:sqlite`, the static-site checks in `test/site.test.js`, packs, host gate, commands and licence checks in `test/parity.test.js`, the result grid, reduced-motion fallback, reaction lines and sound in `test/motion.test.js`, and the Python item-pipeline tests on a saved SPARQL fixture; no network) and `bash test/smoke.sh` (fresh local D1, real `wrangler pages dev`, curls every page and endpoint, plays a full day for three players, flags an item until it retires, runs the KPI job, checks packs, CORS and the bots' host through a `Host` header).
+
+Browser flow regression: with the local dev server running, `node design/render.js flow http://127.0.0.1:8788` checks selection, resume, a failed completion, results after reload and Back/Forward, replay, and ranked access. It requires Chrome and refuses a non-local base URL.
 
 ## Deploy (you run these; needs a free Cloudflare account)
 

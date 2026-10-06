@@ -11,10 +11,11 @@ const fmt = (v) => (v instanceof Raw ? v.s : Array.isArray(v) ? v.map(fmt).join(
 export const html = (strings, ...vals) => new Raw(strings.reduce((out, s, i) => out + s + (i < vals.length ? fmt(vals[i]) : ''), ''));
 
 // Never throws. status 0 = network failure.
-export async function api(path, { method = 'GET', body } = {}) {
+export async function api(path, { method = 'GET', body, keepalive = false } = {}) {
   try {
     const res = await fetch(path, {
       method,
+      keepalive,
       headers: body ? { 'content-type': 'application/json' } : {},
       body: body ? JSON.stringify(body) : undefined,
     });

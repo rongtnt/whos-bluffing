@@ -1,6 +1,8 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
   <url><loc>https://whosbluffing.com/</loc></url>
+  <url><loc>https://whosbluffing.com/play</loc></url>
+  <url><loc>https://whosbluffing.com/results</loc></url>
   <url><loc>https://whosbluffing.com/discord</loc></url>
   <url><loc>https://whosbluffing.com/slack</loc></url>
   <url><loc>https://whosbluffing.com/commands</loc></url>

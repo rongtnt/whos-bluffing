@@ -1,4 +1,4 @@
-// Rounds at / and on challenge pages (/c/<round>/<token>): ten comparison pairs per round. Pick A or B, say how sure
+// Rounds at /play and on challenge pages (/c/<round>/<token>): ten comparison pairs per round. Pick A or B, say how sure
 // you are, see both values and sources at once, with a line from the game (reactions.js), a sound (sound.js) and a
 // little motion (motion.js); at the end your score, the result grid, type, calibration chart and challenge link.
 // Scoring is server-side (docs/api-rounds.md). Local state: whosbluffing_anon (ui.js), whosbluffing_seen_pairs (the newest 300 pair ids
@@ -117,7 +117,8 @@ function bindKeys() {
 // --- one item ---------------------------------------------------------------------------------------------------
 
 function head(t, st, k) {
-  return html`<div class="round-head">
+  return html`<p><a href="/">${t('rounds.home')}</a></p>
+<div class="round-head">
   <span class="badge">${roundLabel(t, st)}</span>
   <span class="round-tools"><span class="round-total" aria-label="${t('rounds.total_label')}"><b class="anim" data-total>${fmtTotal(st.total)}</b> ${t('rounds.pts')}</span>
   <button class="icon-btn" type="button" data-sound-toggle aria-pressed="${String(site()?.soundOn() ?? true)}" aria-label="${t('rounds.sound')}">${SPEAKER}</button></span>
@@ -297,6 +298,8 @@ async function finish(ctx, st) {
   const token = r.data.challenge_url.split('/').at(-1);
   if (!r.data.dare) store.set(MINE_KEY, [...store.get(MINE_KEY, []).filter((x) => x !== token), token].slice(-KEEP_MINE));
   clearRound();
+  // Browser history keeps this tab's result across reloads without a new database write or another storage key.
+  history.pushState({ round: st, result: r.data }, '', '/results');
   return showEnd(ctx, st, r.data);
 }
 
@@ -314,11 +317,16 @@ function counters(t, res) {
 
 function showEnd(ctx, st, res) {
   const { app, t } = ctx;
-  ctx.chrome(true);
+  ctx.chrome(false);
+  document.title = `${t('rounds.results_title')} | Who's Bluffing?`;
   ctx.setPlay(t('rounds.play_again'), () => playAgain(ctx));
   const answers = st.items.map((i) => st.answers[i.id]).filter(Boolean);
   const calib = bins(answers.map((a) => a.conf / 100), answers.map((a) => (a.correct ? 1 : 0)));
-  app.innerHTML = html`<h2 class="result-title">${t('rounds.score_title', { score: fmtTotal(res.score) })}</h2>
+  app.innerHTML = html`<nav class="row" aria-label="${t('rounds.results_title')}">
+  <a class="button" href="/">${t('rounds.home')}</a>
+  <button class="primary" type="button" data-again>${t('rounds.play_again')}</button>
+</nav>
+<h2 class="result-title">${t('rounds.score_title', { score: fmtTotal(res.score) })}</h2>
 <p class="round-kind">${roundLabel(t, st)}</p>
 ${resultGrid(st, t)}
 <section class="type-card type-${TYPES[res.type]} anim anim-flip" aria-label="${t('rounds.type_label')}">
@@ -356,6 +364,7 @@ ${counters(t, res)}
   };
   const acts = Object.fromEntries([...app.querySelectorAll('[data-act]')].map((b) => [b.dataset.act, b]));
   acts.again.onclick = () => playAgain(ctx);
+  app.querySelector('[data-again]').onclick = () => playAgain(ctx);
   acts.challenge.onclick = () => challengeFriend(ctx, panel('challenge-panel'), res, st);
   const copy = res.dare ? res.share_text // the dare's sentence as the server wrote it
     : shareWith(res.share_text, { pack: st.mode === 'quick' ? st.pack : null, line: bestLine(st.items, st.answers), url: res.challenge_url, type: res.type });
@@ -369,11 +378,11 @@ ${counters(t, res)}
   if (st.challenge) showVs(ctx, panel('vs-panel'), st.round_id, st.challenge);
 }
 
-const event = (type, roundId) => api('/api/event', { method: 'POST', body: { type, round_id: roundId } });
+const event = (type, roundId) => api('/api/event', { method: 'POST', keepalive: true, body: { type, round_id: roundId } });
 
 function playAgain(ctx) {
   event('play_again');
-  return playQuick(ctx);
+  location.assign('/play');
 }
 
 // Copies the challenge link; the first time, asks once for an optional nickname (kept in this browser).
@@ -447,31 +456,61 @@ ${row(t('rounds.vs_sure'), (p) => `${Math.round(p.mean_conf)}%`)}
 
 // --- entry points -----------------------------------------------------------------------------------------------
 
-// `/`: the Play buttons start today's ranked round if it is still to play (prefetched: reading it writes nothing), else
-// a quick round in the picked pack and difficulty; an unfinished round from today resumes. A pick on the page dares
-// that round, as a link with ?pack= does: Play then starts a quick round.
-export async function renderRounds(ctx) {
+// Home keeps its existing layout. Every Play button opens the picker, carrying its selected pack and difficulty.
+export function renderRoundHome(ctx) {
+  const homePicker = initPicker();
+  const saved = loadRound();
+  const done = saved?.items.filter((i) => saved.answers[i.id]).length;
+  const label = saved?.date === todayUTC()
+    ? done === saved.items.length ? ctx.t('rounds.see_score') : ctx.t('rounds.continue', { done, n: saved.items.length })
+    : ctx.t('rounds.play');
+  ctx.setPlay(label, () => location.assign(`/play?${new URLSearchParams(homePicker.current())}`));
+}
+
+// /play always offers a choice. A saved round has a separate Continue button, and ranked has a separate fixed round.
+export function renderRounds(ctx) {
   const { app, t } = ctx;
   app.replaceChildren();
   bindKeys();
-  let picked = false;
-  picker = initPicker(document, { onPick: () => { picked = true; } });
+  picker = initPicker();
+  ctx.setPlay(t('rounds.start'), () => playQuick(ctx));
   const today = todayUTC();
   const saved = loadRound();
-  if (saved && saved.date === today && !saved.challenge && saved.items.some((i) => !saved.answers[i.id])) {
+  if (saved && saved.date === today) {
     const done = saved.items.filter((i) => saved.answers[i.id]).length;
-    ctx.setPlay(t('rounds.continue', { done, n: saved.items.length }), () => step(ctx, saved));
-    return;
-  }
-  if (saved) clearRound();
-  // A link that names a pack or difficulty (?pack=ai&difficulty=brutal) is a dare to that round: quick at once.
-  const linked = ['pack', 'difficulty'].some((k) => new URLSearchParams(location.search).has(k));
-  if (linked || store.get(RANKED_KEY, {})[today] != null) {
-    ctx.setPlay(t('rounds.play'), () => playQuick(ctx));
-    return;
-  }
-  const r = await api('/api/round?mode=ranked');
-  ctx.setPlay(t('rounds.play'), () => (r.ok && r.data.items.length && !picked ? begin(ctx, r.data) : playQuick(ctx)));
+    const resume = document.getElementById('resume-round');
+    resume.hidden = false;
+    resume.querySelector('p').textContent = roundLabel(t, saved);
+    const button = resume.querySelector('button');
+    button.textContent = done === saved.items.length ? t('rounds.see_score') : t('rounds.continue', { done, n: saved.items.length });
+    button.onclick = () => step(ctx, saved);
+  } else if (saved) clearRound();
+  const ranked = document.getElementById('play-ranked');
+  ranked.disabled = store.get(RANKED_KEY, {})[today] != null;
+  if (ranked.disabled) ranked.textContent = t('rounds.ranked_done');
+  ranked.onclick = async () => {
+    ranked.disabled = true;
+    ctx.chrome(false);
+    app.innerHTML = html`<p class="muted" role="status">${t('rounds.loading')}</p>`;
+    const r = await api('/api/round?mode=ranked');
+    ranked.disabled = false;
+    if (!r.ok) {
+      ctx.chrome(true);
+      app.replaceChildren();
+      document.getElementById('ranked-status').textContent = t('rounds.failed');
+      return;
+    }
+    begin(ctx, r.data);
+  };
+}
+
+// The result belongs to this browser-history entry, so another tab cannot overwrite it. Direct visits have no result.
+export function renderRoundResults(ctx) {
+  const { round, result } = history.state ?? {};
+  if (round?.items?.length && result?.score != null) return showEnd(ctx, round, result);
+  ctx.app.innerHTML = html`<p><a href="/">${ctx.t('rounds.home')}</a></p>
+<h1>${ctx.t('rounds.results_title')}</h1><p>${ctx.t('rounds.no_result')}</p>
+<a class="button primary" href="/play">${ctx.t('rounds.start')}</a>`;
 }
 
 // `/c/<round>/<token>`: plays the challenger's round, then shows the side-by-side. A finished round shows it at once.
@@ -481,7 +520,7 @@ export async function renderChallenge(ctx, roundId, token) {
   bindKeys();
   if (store.get(MINE_KEY, []).includes(token)) {
     app.innerHTML = html`<p class="note">${t('rounds.own_link')}</p><p class="url small">${location.href}</p>`;
-    ctx.setPlay(t('rounds.play'), () => playQuick(ctx));
+    ctx.setPlay(t('rounds.play'), () => location.assign('/play'));
     return;
   }
   const saved = loadRound();
@@ -494,13 +533,13 @@ export async function renderChallenge(ctx, roundId, token) {
   if (vs.ok && vs.data.me) {
     app.innerHTML = html`<div id="vs-panel" class="card"></div>`;
     showVs(ctx, app.querySelector('#vs-panel'), roundId, token);
-    ctx.setPlay(t('rounds.play_again'), () => playQuick(ctx));
+    ctx.setPlay(t('rounds.play_again'), () => location.assign('/play'));
     return;
   }
   const r = await api(`/api/round?round_id=${encodeURIComponent(roundId)}`);
   if (!r.ok) {
     app.innerHTML = html`<p class="msg">${t('rounds.challenge_gone')}</p>`;
-    ctx.setPlay(t('rounds.play'), () => playQuick(ctx));
+    ctx.setPlay(t('rounds.play'), () => location.assign('/play'));
     return;
   }
   ctx.setPlay(t('rounds.play'), () => begin(ctx, r.data, { challenge: token }));
@@ -522,13 +561,13 @@ export async function renderDare(ctx, slug) {
   const score = store.get(DARES_KEY, {})[roundId];
   if (score != null) {
     app.innerHTML = html`<p class="note">${dareDone(score)}</p>`;
-    ctx.setPlay(t('rounds.play'), () => playQuick(ctx));
+    ctx.setPlay(t('rounds.play'), () => location.assign('/play'));
     return;
   }
   const r = await api(`/api/round?round_id=${encodeURIComponent(roundId)}`);
   if (!r.ok) {
     app.innerHTML = html`<p class="msg">${t('rounds.failed')}</p>`;
-    ctx.setPlay(t('rounds.play'), () => playQuick(ctx));
+    ctx.setPlay(t('rounds.play'), () => location.assign('/play'));
     return;
   }
   ctx.setPlay(t('rounds.play'), () => begin(ctx, r.data, { pack: r.data.pack, difficulty: r.data.difficulty }));

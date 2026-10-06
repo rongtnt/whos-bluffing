@@ -1,9 +1,10 @@
-// Entry point for the app pages: loads strings and items, routes by path. / = rounds (index.html), /c/<round>/<token> =
+// Entry point for the app pages: loads strings and items, routes by path. / = home, /play = picker and rounds,
+// /results = this tab's completed round, /c/<round>/<token> =
 // a challenge (HTML from the Pages Function functions/c/[round_id]/[player].js), /test = full assessment, /stats, /labs,
 // /parties, /class and /class/d/<secret> (their own HTML shells; _redirects maps the dashboard to class.html).
 import { html, api } from './ui.js';
 import { startTest } from './test.js';
-import { renderRounds, renderChallenge, renderDare } from './rounds.js';
+import { renderRoundHome, renderRounds, renderRoundResults, renderChallenge, renderDare } from './rounds.js';
 import { renderStats } from './stats.js';
 import { renderBoard } from './labs.js';
 import { renderClassCreate, renderDashboard } from './class.js';
@@ -26,8 +27,8 @@ function chrome(visible) {
   document.body.classList.toggle('playing', !visible);
 }
 
-// The Play buttons ([data-play]; the hero's is #play) run whatever the game says they do now: today's ranked round, a
-// quick round, resume, or play again. A tap before the game has loaded runs as soon as it has.
+// The home buttons open /play; the play page starts the chosen round. Challenge pages start their fixed round.
+// A tap before the game has loaded runs as soon as it has.
 let playAction = null;
 let playPending = false;
 for (const b of document.querySelectorAll('[data-play]')) {
@@ -84,7 +85,9 @@ function route() {
   const p = location.pathname;
   const dash = p.match(/^\/class\/d\/([A-Za-z0-9_-]{24})\/?$/);
   const challenge = p.match(/^\/c\/((?:rk-\d{4}-\d{2}-\d{2})|[A-Z2-9]{12})\/([A-Za-z0-9_-]{10})\/?$/);
-  if (p === '/') return Promise.all([renderRounds(ctx), renderPlayed(document.querySelector('[data-played]'))]);
+  if (p === '/') return Promise.all([renderRoundHome(ctx), renderPlayed(document.querySelector('[data-played]'))]);
+  if (/^\/play\/?$/.test(p)) return renderRounds(ctx);
+  if (/^\/results\/?$/.test(p)) return renderRoundResults(ctx);
   if (challenge) return renderChallenge(ctx, challenge[1], challenge[2]);
   const dare = p.match(/^\/dare\/([a-z][a-z0-9-]{1,30})\/?$/); // functions/dare/[slug].js
   if (dare) return renderDare(ctx, dare[1]);
@@ -113,4 +116,6 @@ async function boot() {
   try { await route(); } finally { ready(); }
 }
 
+// Finishing a round changes the URL without discarding its result. Back/Forward loads the matching page shell.
+window.addEventListener('popstate', () => location.reload());
 boot();

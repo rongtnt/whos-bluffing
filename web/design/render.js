@@ -9,6 +9,7 @@
 //                                          (home-v2) shoots that page under the new name and keeps the earlier set
 //   node design/render.js checks [BASE]    overflow at 375 px and layout shift on every page, keyboard walk on /, /slack,
 //                                          /discord and /commands, theme toggle label and persistence
+//   node design/render.js flow [BASE]      local-only: home -> picker -> resume -> results, reload/back/forward, replay
 //   node design/render.js rounds [BASE]    design/screens/rounds-{item,reveal-right,reveal-wrong,end,challenge}-<width>-
 //                                          <theme>.png at 375 and 1280 px, motion on: plays today's ranked round in the
 //                                          page (the first answer right at 100%, the second wrong at 100%) after four API
@@ -28,6 +29,7 @@ import { mkdtempSync, mkdirSync, writeFileSync, readFileSync, rmSync, copyFileSy
 import { tmpdir } from 'node:os';
 import { join } from 'node:path';
 import { fileURLToPath } from 'node:url';
+import assert from 'node:assert/strict';
 import { SR, bed, effects, mix, wav, fromPcm } from './soundtrack.js';
 import { PACKS } from '../public/packs.js';
 
@@ -35,7 +37,7 @@ const WEB = fileURLToPath(new URL('../', import.meta.url));
 const CHROME = process.env.CHROME ?? '/Applications/Google Chrome.app/Contents/MacOS/Google Chrome';
 const DEBUG_PORT = 9339;
 const READY_TIMEOUT_MS = 6000;
-const PAGES = ['/', '/discord', '/slack', '/commands', '/teachers', '/research', '/support', '/community', '/status', '/press',
+const PAGES = ['/', '/play', '/results', '/discord', '/slack', '/commands', '/teachers', '/research', '/support', '/community', '/status', '/press',
   '/changelog', '/docs/api', '/privacy', '/terms', '/test', '/stats', '/class', '/tests/overconfidence-test',
   '/tests/estimation-test', '/tests/calibration-test', '/no-such-page'];
 const sleep = (ms) => new Promise((r) => setTimeout(r, ms));
@@ -155,6 +157,63 @@ const waitFor = (sel) => `await new Promise((done, fail) => { const t0 = Date.no
   const el = document.querySelector(${JSON.stringify(sel)}); if (el && !el.disabled) done(el);
   else if (Date.now() - t0 > 8000) fail(new Error('timeout: ' + ${JSON.stringify(sel)})); else setTimeout(poll, 40); })(); })`;
 
+async function flowCheck(cdp, base) {
+  assert.ok(['localhost', '127.0.0.1'].includes(new URL(base).hostname), 'flow checks create test plays: use a local server');
+  const js = (expression) => evaluate(cdp, expression);
+  const check = async (expression, message) => assert.equal(await js(expression), true, message);
+  const navigate = async (expression) => {
+    const loaded = cdp.next('Page.loadEventFired');
+    await js(`${expression}; true`);
+    await loaded;
+    await js(`(async () => { ${waitFor('html.ready')}; return true; })()`);
+  };
+  await open(cdp, `${base}/`, { width: 375 });
+  await js("localStorage.clear(); localStorage.setItem('whosbluffing_sound', 'off'); true");
+  await open(cdp, `${base}/`, { width: 375 });
+  await js(`document.querySelector('[data-pack="ai"]').click(); document.querySelector('[data-difficulty="easy"]').click(); true`);
+  await navigate("document.getElementById('play').click()");
+  await check("location.pathname === '/play' && !document.querySelector('button.pick')", 'home opens the picker, not a question');
+  await check(`document.querySelector('[data-pack="ai"]').getAttribute('aria-pressed') === 'true' && document.querySelector('[data-difficulty="easy"]').getAttribute('aria-pressed') === 'true'`, 'home choices carry into the picker');
+  await js(`(async () => { document.getElementById('play').click(); ${waitFor('button.pick')}; return true; })()`);
+  await check(`(() => { const r = JSON.parse(localStorage.getItem('whosbluffing_round')); return r.pack === 'ai' && r.difficulty === 'easy' && r.mode === 'quick'; })()`, 'the chosen topic and difficulty reach the API');
+  const answer = `(async () => { document.querySelector('button.pick').click(); document.querySelector('[data-conf="70"]').click(); ${waitFor('#next')}; return true; })()`;
+  await js(answer);
+  const roundId = await js("JSON.parse(localStorage.getItem('whosbluffing_round')).round_id");
+  await navigate("document.querySelector('#app a[href=\"/\"]').click()");
+  await navigate("document.getElementById('play').click()");
+  await check("!document.getElementById('resume-round').hidden", 'unfinished round has an explicit Continue action');
+  await js(`(async () => { document.querySelector('#resume-round button').click(); ${waitFor('button.pick')}; return true; })()`);
+  await check(`JSON.parse(localStorage.getItem('whosbluffing_round')).round_id === ${JSON.stringify(roundId)}`, 'Continue resumes the same round');
+  for (let i = 1; i < 10; i += 1) {
+    await js(answer);
+    if (i === 9) await js(`(() => { const original = window.fetch; window.fetch = (...args) => {
+      if (args[0] === '/api/round/complete') { window.fetch = original; return Promise.resolve(new Response('{}', { status: 503 })); }
+      return original(...args);
+    }; return true; })()`);
+    await js(`(async () => { document.getElementById('next').click(); ${waitFor(i === 9 ? '#app .msg' : 'button.pick')}; return true; })()`);
+  }
+  await navigate('location.reload()');
+  await check("!document.getElementById('resume-round').hidden && document.querySelector('#resume-round button').textContent === 'See your score'", 'all answers survive a failed completion and refresh');
+  await js(`(async () => { document.querySelector('#resume-round button').click(); ${waitFor('.result-title')}; return true; })()`);
+  await check("location.pathname === '/results' && document.body.classList.contains('playing') && !document.querySelector('#round-setup').getBoundingClientRect().height", 'completion stays on a dedicated result view');
+  const score = await js("document.querySelector('.result-title').textContent");
+  await navigate('location.reload()');
+  await check(`document.querySelector('.result-title')?.textContent === ${JSON.stringify(score)}`, 'refresh retains the score');
+  await navigate('history.back()');
+  await check("location.pathname === '/play' && document.getElementById('round-setup').getBoundingClientRect().height > 0", 'Back returns to the picker');
+  await navigate('history.forward()');
+  await check(`location.pathname === '/results' && document.querySelector('.result-title')?.textContent === ${JSON.stringify(score)}`, 'Forward restores the result');
+  await navigate("document.querySelector('[data-again]').click()");
+  await check("location.pathname === '/play' && !document.querySelector('button.pick')", 'Play Again offers choices before creating another round');
+  await check('document.documentElement.scrollWidth <= innerWidth', 'picker has no mobile horizontal overflow');
+  await open(cdp, `${base}/results`, { width: 375 });
+  await check("!document.querySelector('.result-title') && !!document.querySelector('#app a[href=\"/play\"]')", 'a direct result link has a useful empty state');
+  await open(cdp, `${base}/play`, { width: 375 });
+  await js(`(async () => { document.getElementById('play-ranked').click(); ${waitFor('button.pick')}; return true; })()`);
+  await check("JSON.parse(localStorage.getItem('whosbluffing_round')).mode === 'ranked'", 'ranked is still available as a separate action');
+  console.log('PASS home, choices, resume, result, refresh, Back/Forward, replay, empty state, ranked, mobile overflow');
+}
+
 // The truth (0 = A, 1 = B) of every pair, from the synced compact pairs.
 const truthOf = () => new Map(JSON.parse(readFileSync(join(WEB, 'functions/_pairs.json'), 'utf8')).pairs.map(([n, , , t]) => [`p${String(n).padStart(5, '0')}`, t]));
 
@@ -180,8 +239,8 @@ async function roundScreens(cdp, base) {
       const file = (name) => join(WEB, `design/screens/rounds-${name}-${w}-${theme}.png`);
       await open(cdp, `${base}/support`, { width: w, height: h, dark }); // a fresh player in this browser
       await evaluate(cdp, `localStorage.clear(); localStorage.setItem('whosbluffing_anon', ${JSON.stringify(JSON.stringify(`shot${theme}${w}`.padEnd(22, 'y')))}); localStorage.setItem('whosbluffing_sound', 'off'); true`);
-      await open(cdp, `${base}/`, { width: w, height: h, dark, motion: 'no-preference' });
-      await evaluate(cdp, `(async () => { document.getElementById('play').click(); (${waitFor('button.pick')}).click(); ${waitFor('#conf:not([hidden]) [data-conf="80"]')}; return true; })()`);
+      await open(cdp, `${base}/play`, { width: w, height: h, dark, motion: 'no-preference' });
+      await evaluate(cdp, `(async () => { document.getElementById('play-ranked').click(); (${waitFor('button.pick')}).click(); ${waitFor('#conf:not([hidden]) [data-conf="80"]')}; return true; })()`);
       await sleep(300);
       await capture(cdp, file('item'), w, h);
       await evaluate(cdp, answerInPage(truth, true, 100)); // right at 100%: confetti, the gold stamp
@@ -417,7 +476,7 @@ async function gameTake(cdp, base, dir, truth, { cut: CUT }, round) {
   await freshPlayer(cdp, base, view);
   if (round) await evaluate(cdp, `localStorage.setItem('whosbluffing_round', ${JSON.stringify(JSON.stringify(round))}), true`);
   const { identifier } = await cdp.send('Page.addScriptToEvaluateOnNewDocument', { source: VIRTUAL_CLOCK });
-  await open(cdp, `${base}/`, { ...view, motion: 'no-preference', waitReady: false });
+  await open(cdp, `${base}/play`, { ...view, motion: 'no-preference', waitReady: false });
   await cdp.send('Page.removeScriptToEvaluateOnNewDocument', { identifier });
   const js = (expr) => evaluate(cdp, expr);
   const until = async (expr) => {
@@ -425,7 +484,8 @@ async function gameTake(cdp, base, dir, truth, { cut: CUT }, round) {
     throw new Error(`timeout: ${expr}`);
   };
   await js(`document.querySelector('.nav').style.display = 'none', document.getElementById('app').style.scrollMarginTop = '0', __tick(1500), true`);
-  await js(`document.getElementById('play').click(), true`);
+  await until(`document.documentElement.classList.contains('ready')`);
+  await js(`${round ? "document.querySelector('#resume-round button')" : "document.getElementById('play-ranked')"}.click(), true`);
   await until(`!!document.querySelector('button.pick')`);
   await js('__tick(600)');
   const film = async (seg) => {
@@ -579,10 +639,11 @@ try {
   if (mode === 'assets') await assets(cdp);
   else if (mode === 'screens') await screens(cdp, base, part);
   else if (mode === 'checks') failed = await checks(cdp, base);
+  else if (mode === 'flow') await flowCheck(cdp, base);
   else if (mode === 'rounds') await roundScreens(cdp, base);
   else if (mode === 'results') await resultScreens(cdp, base);
   else if (mode === 'demo') await demo(cdp, base, part, music, edition);
-  else throw new Error(`unknown mode ${mode} (assets | screens | checks | rounds | results | demo)`);
+  else throw new Error(`unknown mode ${mode} (assets | screens | checks | flow | rounds | results | demo)`);
 } finally {
   cdp.close();
 }

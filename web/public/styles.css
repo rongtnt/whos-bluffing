@@ -330,12 +330,14 @@ label input, label select { font-weight: 400; }
 @media (min-width: 768px) { .foot-note { max-width: 1088px; padding: 18px 24px 32px; } }
 
 /* While questions are on screen only the game shows; below-the-game content waits for the app's first render */
-.playing .hero, .playing .after-app, .playing .site-foot { display: none; }
+.playing .hero, .playing .after-app, .playing .site-foot, .playing #round-setup { display: none; }
 .js:not(.ready) .after-app, .js:not(.ready) .site-foot { display: none; }
 
 /* The game: one column inside the page */
 #app { max-width: 640px; margin: 0 auto; padding: 24px 16px 40px; scroll-margin-top: calc(var(--nav-h) + 12px); }
 #app:empty { display: none; }
+#round-setup { max-width: 640px; margin: 0 auto; padding: 24px 16px 40px; }
+#round-setup h1 { font-size: var(--fs-2); }
 #app h2 { font-size: var(--fs-3); }
 #app h2.result-title { font-size: var(--fs-2); }
 .progress { display: flex; align-items: center; gap: 10px; margin-top: 8px; color: var(--muted); font-size: var(--fs-6); }

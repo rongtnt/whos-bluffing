@@ -100,6 +100,7 @@ export function syncPages({ pool, compact, rounds, pairs, curated = [] }) {
   const count = servablePairs(data).size;
   rewrite('public/index.html', (h) => inject(inject(inject(h, 'questions', questionCount(count)), 'packs', packChips(packAvailability(data))),
     'prompts', promptList(promptLines(pairs))));
+  rewrite('public/play.html', (h) => inject(h, 'packs', packChips(packAvailability(data))));
 
   const commands = JSON.parse(readFileSync(new URL('public/commands.json', WEB), 'utf8'));
   const pages = { 'public/commands.html': ['discord', 'slack', 'web'], 'public/discord.html': ['discord'], 'public/slack.html': ['slack'] };
@@ -118,5 +119,5 @@ export function syncPages({ pool, compact, rounds, pairs, curated = [] }) {
     const [w, h] = pngSize(readFileSync(from)); // the page's width/height match the image, so it reserves the right space
     rewrite('public/press.html', (p) => p.replace(new RegExp(`(src="/press/${dest}") width="\\d+" height="\\d+"`), `$1 width="${w}" height="${h}"`));
   }
-  return { count, files: ['public/index.html', ...Object.keys(pages), 'public/press.html'] };
+  return { count, files: ['public/index.html', 'public/play.html', ...Object.keys(pages), 'public/press.html'] };
 }
