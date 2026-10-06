@@ -337,8 +337,6 @@ function showEnd(ctx, st, res) {
 ${resultGrid(st, t)}
 <section class="type-card type-${TYPES[res.type]} anim anim-flip" aria-label="${t('rounds.type_label')}">
   <p class="type-name">${typeName(res.type)}</p>
-  <p class="type-def">${t(typeKey(res.type))}</p>
-  <p class="type-line">${t('rounds.score_sub', { accuracy: Math.round(res.accuracy), mean_conf: Math.round(res.mean_conf) })} · ${t('rounds.overconf', { x: signed(Math.round(res.overconfidence)) })}</p>
 </section>
 ${boardOf(st) ? sideBlock(st.pack, t, savedSide(st.pack)) : ''}
 ${res.roast ? html`<p class="roast">${res.roast}</p>` : ''}

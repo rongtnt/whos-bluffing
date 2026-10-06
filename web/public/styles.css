@@ -412,8 +412,6 @@ button.pick:hover { border-color: var(--accent); }
 .type-card { margin: 14px 0; padding: 18px 20px; border-radius: var(--radius); background: var(--accent-soft); }
 .type-card p { margin: 0; }
 .type-name { color: var(--accent); font-size: var(--fs-2); font-weight: 800; letter-spacing: -0.02em; line-height: 1.15; }
-.type-def { margin-top: 6px !important; font-size: var(--fs-4); }
-.type-line { margin-top: 10px !important; font-weight: 700; }
 .roast { margin: 14px 0; padding: 12px 16px; border-left: 4px solid var(--focus); border-radius: 0 12px 12px 0; background: var(--surface); font-style: italic; }
 .end-actions { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; margin: 18px 0; }
 .end-actions .primary { grid-column: 1 / -1; }
