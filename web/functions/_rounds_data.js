@@ -4,6 +4,7 @@ import pool from './_pool.json';
 import pairs from './_pairs.json';
 import rounds from './_rounds.json';
 import dares from './_dares.json';
+import curated from '../../items/quick_curated.json';
 import { loadRounds } from './_rounds.js';
 
-export const ROUNDS = loadRounds(pool, pairs, rounds, { dares });
+export const ROUNDS = loadRounds(pool, pairs, rounds, { dares, curated: curated.items });

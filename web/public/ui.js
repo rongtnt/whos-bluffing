@@ -77,6 +77,7 @@ const WORD_UNITS = /\b(parameters|transistors|tokens|images)\b/;
 // A true value as the game shows it: years ("2560 BC"), months ("Nov 2022"), dollars ("$157 billion", "$650,000"),
 // big counts ("175 billion parameters", "100,000 tokens of context"), otherwise digits and the unit.
 export function fmtValue(v, unit) {
+  if (typeof v === 'string') return v; // authored quick questions reveal verdicts, not invented measurements
   if (unit === 'year') return v < 0 ? `${-v} BC` : String(v);
   if (unit === 'month') return fmtMonth(v);
   if (unit === 'USD') return `$${bigWords(v) ?? num(v)}`;

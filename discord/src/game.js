@@ -243,6 +243,7 @@ export function playResult(state, step, choice, conf, res) {
       `${res.correct ? 'Right' : 'Wrong'} at ${conf}%: **${signed(Math.round(res.points))}** · total ${plural(state.total, 'point')}`,
       side(it, truth, 0),
       side(it, truth, 1),
+      ...(truth.fun ? [esc(truth.fun)] : []),
     ].join('\n'),
     components: [row(button(`pn:${state.round_id}:${step + 1}`, last ? 'See your score' : 'Next', 1))],
   };

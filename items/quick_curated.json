@@ -1,0 +1,847 @@
+{
+  "version": 1,
+  "checked_at": "2026-10-05",
+  "about": "Authored quick-round questions only. Difficulty is an editorial estimate, not measured accuracy. IDs and answer meanings are immutable once deployed: retire a flawed ID and add a new one. Ranked schedules and the full assessment use their existing banks.",
+  "items": [
+    {
+      "id": "q00001",
+      "topic": "science",
+      "family": "comparison",
+      "difficulty": "easy",
+      "prompt": "Mercury is closest to the Sun. Which planet has the hotter surface?",
+      "options": [
+        "Mercury",
+        "Venus"
+      ],
+      "answer": 1,
+      "explanation": "Venus wins: its thick atmosphere traps heat. Being closer to the Sun is not enough to make Mercury hotter.",
+      "source": "https://science.nasa.gov/venus/venus-facts/"
+    },
+    {
+      "id": "q00002",
+      "topic": "science",
+      "family": "mechanism",
+      "difficulty": "easy",
+      "prompt": "An ice cube floats in water. What makes that possible?",
+      "options": [
+        "Ice is less dense than liquid water",
+        "Ice is denser than liquid water"
+      ],
+      "answer": 0,
+      "explanation": "Water expands as it freezes, so the same mass takes up more space. That lower density lets ordinary ice float.",
+      "source": "https://pubs.usgs.gov/gip/219/gip219.pdf"
+    },
+    {
+      "id": "q00003",
+      "topic": "science",
+      "family": "comparison",
+      "difficulty": "medium",
+      "prompt": "A sound has to travel one kilometre. Where does it arrive sooner?",
+      "options": [
+        "Through air",
+        "Through seawater"
+      ],
+      "answer": 1,
+      "explanation": "Sound travels about 1,500 m/s in seawater versus roughly 340 m/s in air. Water carries the vibration much faster.",
+      "source": "https://oceanservice.noaa.gov/facts/sound.html"
+    },
+    {
+      "id": "q00004",
+      "topic": "science",
+      "family": "mechanism",
+      "difficulty": "medium",
+      "prompt": "What makes the Moon look like a crescent on an ordinary night?",
+      "options": [
+        "We see only part of its sunlit half",
+        "Earth's shadow covers most of it"
+      ],
+      "answer": 0,
+      "explanation": "The Moon's phases come from our changing view of its sunlit half. Earth's shadow causes a lunar eclipse, not the monthly phases.",
+      "source": "https://science.nasa.gov/moon/moon-phases/"
+    },
+    {
+      "id": "q00005",
+      "topic": "science",
+      "family": "comparison",
+      "difficulty": "hard",
+      "prompt": "Two solid cubes are the same size: one gold, one lead. Which weighs more?",
+      "options": [
+        "Gold",
+        "Lead"
+      ],
+      "answer": 0,
+      "explanation": "Gold is denser: about 19.3 g/cm³ versus 11.3 for lead. Lead feels heavy until you give gold the same volume.",
+      "source": "https://periodic-table.rsc.org/element/79/gold"
+    },
+    {
+      "id": "q00006",
+      "topic": "science",
+      "family": "comparison",
+      "difficulty": "hard",
+      "prompt": "Which visible light has the longer wavelength?",
+      "options": [
+        "Blue",
+        "Red"
+      ],
+      "answer": 1,
+      "explanation": "Red sits at the long-wavelength end of visible light; blue sits nearer the short-wavelength end. Bluer does not mean longer.",
+      "source": "https://science.nasa.gov/ems/09_visiblelight/"
+    },
+    {
+      "id": "q00007",
+      "topic": "nature",
+      "family": "comparison",
+      "difficulty": "medium",
+      "prompt": "How many hearts does an octopus have?",
+      "options": [
+        "Three",
+        "One"
+      ],
+      "answer": 0,
+      "explanation": "Two hearts send blood to the gills. A third sends it around the body. Eight arms, three hearts.",
+      "source": "https://www.nhm.ac.uk/discover/octopuses-keep-surprising-us-here-are-eight-examples-how.html"
+    },
+    {
+      "id": "q00008",
+      "topic": "nature",
+      "family": "classification",
+      "difficulty": "hard",
+      "prompt": "Which living animal is more closely related to a whale?",
+      "options": [
+        "A seal",
+        "A hippopotamus"
+      ],
+      "answer": 1,
+      "explanation": "Hippos are whales' closest living relatives. A shared swimming lifestyle makes seals look like the better guess.",
+      "source": "https://pmc.ncbi.nlm.nih.gov/articles/PMC17876/"
+    },
+    {
+      "id": "q00009",
+      "topic": "nature",
+      "family": "comparison",
+      "difficulty": "hard",
+      "prompt": "Whose typical body cell has more chromosomes?",
+      "options": [
+        "A chimpanzee's",
+        "A human's"
+      ],
+      "answer": 0,
+      "explanation": "Chimpanzees have 48; humans have 46. Human chromosome 2 formed from the fusion of two ancestral chromosomes.",
+      "source": "https://pmc.ncbi.nlm.nih.gov/articles/PMC3814392/"
+    },
+    {
+      "id": "q00010",
+      "topic": "nature",
+      "family": "classification",
+      "difficulty": "medium",
+      "prompt": "In 'small intestine' and 'large intestine', what does 'large' mainly describe?",
+      "options": [
+        "Length",
+        "Diameter"
+      ],
+      "answer": 1,
+      "explanation": "The large intestine is wider. The small intestine is actually the longer one, despite its name.",
+      "source": "https://training.seer.cancer.gov/anatomy/digestive/regions/intestine.html"
+    },
+    {
+      "id": "q00011",
+      "topic": "nature",
+      "family": "mechanism",
+      "difficulty": "easy",
+      "prompt": "A bat uses echolocation. Does that mean it cannot see?",
+      "options": [
+        "Yes, bats are blind",
+        "No, bats can see too"
+      ],
+      "answer": 1,
+      "explanation": "Bats have working eyes. Echolocation adds information about their surroundings; it does not replace vision because they are blind.",
+      "source": "https://www.usgs.gov/faqs/are-bats-blind"
+    },
+    {
+      "id": "q00012",
+      "topic": "nature",
+      "family": "classification",
+      "difficulty": "easy",
+      "prompt": "Under all that pale fur, what colour is a polar bear's skin?",
+      "options": [
+        "Black",
+        "White"
+      ],
+      "answer": 0,
+      "explanation": "The skin is black. The pale appearance comes from the fur, so the colour you see is not the colour underneath.",
+      "source": "https://assets.wwf.org.uk/downloads/polar_bear_resource_green_ambassadors.pdf"
+    },
+    {
+      "id": "q00013",
+      "topic": "world",
+      "family": "mechanism",
+      "difficulty": "easy",
+      "prompt": "Why is it summer in Australia when it is winter in Europe?",
+      "options": [
+        "Earth's distance from the Sun changes",
+        "Earth's axis is tilted"
+      ],
+      "answer": 1,
+      "explanation": "The hemispheres tilt toward the Sun at opposite times of year. A change in Earth's distance would affect both hemispheres together.",
+      "source": "https://spaceplace.nasa.gov/seasons/en/"
+    },
+    {
+      "id": "q00014",
+      "topic": "world",
+      "family": "comparison",
+      "difficulty": "easy",
+      "prompt": "Which ocean covers more area?",
+      "options": [
+        "The Pacific",
+        "The Atlantic"
+      ],
+      "answer": 0,
+      "explanation": "The Pacific is the largest ocean basin. NOAA notes that all the continents could fit inside it.",
+      "source": "https://oceanservice.noaa.gov/facts/biggestocean.html"
+    },
+    {
+      "id": "q00015",
+      "topic": "world",
+      "family": "classification",
+      "difficulty": "medium",
+      "prompt": "Much of Antarctica is a desert. What qualifies it?",
+      "options": [
+        "Very little precipitation",
+        "Very high temperatures"
+      ],
+      "answer": 0,
+      "explanation": "Deserts are defined by dryness, not heat. Antarctica's interior receives very little snowfall despite all the ice already there.",
+      "source": "https://www.bas.ac.uk/about/where-we-work/antarctica/"
+    },
+    {
+      "id": "q00016",
+      "topic": "world",
+      "family": "scenario",
+      "difficulty": "medium",
+      "prompt": "You stand at the North Pole in June. On a clear day, does the Sun set?",
+      "options": [
+        "Yes, once every 24 hours",
+        "No, it stays above the horizon"
+      ],
+      "answer": 1,
+      "explanation": "The North Pole tilts toward the Sun during northern summer. Earth keeps spinning, but the pole stays on the sunlit side.",
+      "source": "https://arctic.noaa.gov/essays/why-is-the-arctic-so-sensitive-to-climate-change-and-why-do-we-care/"
+    },
+    {
+      "id": "q00017",
+      "topic": "world",
+      "family": "comparison",
+      "difficulty": "hard",
+      "prompt": "Which summit is farther from the centre of Earth?",
+      "options": [
+        "Mount Everest",
+        "Chimborazo"
+      ],
+      "answer": 1,
+      "explanation": "Everest is higher above sea level. Chimborazo is nearer the equator, where Earth's bulge puts its summit farther from the centre.",
+      "source": "https://oceanservice.noaa.gov/facts/highestpoint.html"
+    },
+    {
+      "id": "q00018",
+      "topic": "world",
+      "family": "comparison",
+      "difficulty": "hard",
+      "prompt": "Put Everest in the ocean with its base at Challenger Deep. Would its summit reach the surface?",
+      "options": [
+        "No, it would still be underwater",
+        "Yes, it would stick out"
+      ],
+      "answer": 0,
+      "explanation": "Challenger Deep is roughly 11 km below the surface; Everest rises about 8.85 km above sea level. There would still be about 2 km of water overhead.",
+      "source": "https://www.ncei.noaa.gov/news/planet-postcard-mariana-trench"
+    },
+    {
+      "id": "q00019",
+      "topic": "culture",
+      "family": "origin",
+      "difficulty": "easy",
+      "prompt": "Before Mario, what did Nintendo originally make?",
+      "options": [
+        "Playing cards",
+        "Arcade machines"
+      ],
+      "answer": 0,
+      "explanation": "Nintendo began making hanafuda playing cards in Kyoto in 1889. Video games came much later.",
+      "source": "https://www.nintendo.co.jp/corporate/en/history/index.html"
+    },
+    {
+      "id": "q00020",
+      "topic": "culture",
+      "family": "origin",
+      "difficulty": "easy",
+      "prompt": "Before streaming, which format did Netflix rent by mail?",
+      "options": [
+        "VHS tapes",
+        "DVDs"
+      ],
+      "answer": 1,
+      "explanation": "Netflix launched its online DVD rental store in 1998. The red envelope came before the streaming queue.",
+      "source": "https://about.netflix.com/en/news/first-online-dvd-rental-store-opens"
+    },
+    {
+      "id": "q00021",
+      "topic": "culture",
+      "family": "classification",
+      "difficulty": "medium",
+      "prompt": "LEGO started making toys in 1932. What were those early toys mainly made of?",
+      "options": [
+        "Plastic",
+        "Wood"
+      ],
+      "answer": 1,
+      "explanation": "Ole Kirk Kristiansen's early toys were wooden, including cars and aeroplanes. The plastic brick was a later chapter.",
+      "source": "https://www.lego.com/en-us/history/articles/b-the-beginning-of-the-lego-group"
+    },
+    {
+      "id": "q00022",
+      "topic": "culture",
+      "family": "origin",
+      "difficulty": "medium",
+      "prompt": "Where was Tetris created?",
+      "options": [
+        "Moscow",
+        "Tokyo"
+      ],
+      "answer": 0,
+      "explanation": "Alexey Pajitnov created Tetris in Moscow in 1984 on an Electronika 60 computer. Its later Nintendo success can make Tokyo feel like the obvious answer.",
+      "source": "https://tetris.com/news/the-history-of-tetris"
+    },
+    {
+      "id": "q00023",
+      "topic": "culture",
+      "family": "classification",
+      "difficulty": "hard",
+      "prompt": "The Oscar statuette design introduced in 2016 is made from what?",
+      "options": [
+        "Solid gold",
+        "Bronze with a gold finish"
+      ],
+      "answer": 1,
+      "explanation": "The Academy returned to a cast-bronze statuette finished in 24-karat gold. The gold is the finish, not the whole statue.",
+      "source": "https://www.oscars.org/news/academy-and-polich-tallix-fine-art-foundry-revive-art-oscarr-statuettes"
+    },
+    {
+      "id": "q00024",
+      "topic": "culture",
+      "family": "scenario",
+      "difficulty": "hard",
+      "prompt": "Your queen is still on the chessboard. Can you promote a pawn to a second queen?",
+      "options": [
+        "Yes",
+        "No"
+      ],
+      "answer": 0,
+      "explanation": "Promotion is not limited to pieces that have been captured. A pawn reaching the last rank can become another queen.",
+      "source": "https://handbook.fide.com/chapter/e012023"
+    },
+    {
+      "id": "q00025",
+      "topic": "everyday",
+      "family": "origin",
+      "difficulty": "medium",
+      "prompt": "Bubble Wrap began as an attempt to make what?",
+      "options": [
+        "Textured wallpaper",
+        "Protective packaging"
+      ],
+      "answer": 0,
+      "explanation": "The inventors first tried to sell it as textured wallpaper. Protecting packages turned out to be the better use.",
+      "source": "https://www.sealedair.com/"
+    },
+    {
+      "id": "q00026",
+      "topic": "everyday",
+      "family": "origin",
+      "difficulty": "hard",
+      "prompt": "QR codes were originally developed for which setting?",
+      "options": [
+        "Restaurant menus",
+        "Automotive production"
+      ],
+      "answer": 1,
+      "explanation": "DENSO WAVE released the QR code in 1994. The auto industry used it to track production and logistics long before phone menus.",
+      "source": "https://www.qrcode.com/en/history/"
+    },
+    {
+      "id": "q00027",
+      "topic": "everyday",
+      "family": "mechanism",
+      "difficulty": "medium",
+      "prompt": "What inspired the hooks in VELCRO fasteners?",
+      "options": [
+        "Sticky tree sap",
+        "Burrs caught in fur and fabric"
+      ],
+      "answer": 1,
+      "explanation": "George de Mestral examined clinging burrs and found tiny hooks. He copied that hook-and-loop mechanism into a reusable fastener.",
+      "source": "https://www.loc.gov/everyday-mysteries/item/who-came-up-with-the-idea-for-velcro/"
+    },
+    {
+      "id": "q00028",
+      "topic": "everyday",
+      "family": "classification",
+      "difficulty": "easy",
+      "prompt": "What is the dark writing material in an ordinary 'lead' pencil?",
+      "options": [
+        "Graphite",
+        "Lead metal"
+      ],
+      "answer": 0,
+      "explanation": "The core uses graphite, usually mixed with clay. The everyday name 'pencil lead' does not describe the metal lead.",
+      "source": "https://pencils.com/pages/faq"
+    },
+    {
+      "id": "q00029",
+      "topic": "everyday",
+      "family": "mechanism",
+      "difficulty": "hard",
+      "prompt": "A thick potato is in a microwave. Is it cooked from the inside out?",
+      "options": [
+        "Yes, the centre heats first",
+        "No, heat also has to conduct inward"
+      ],
+      "answer": 1,
+      "explanation": "Microwaves penetrate only so far into thick food. The outer layers absorb energy, and heat conducts toward the centre.",
+      "source": "https://www.fda.gov/radiation-emitting-products/resources-you-radiation-emitting-products/microwave-ovens"
+    },
+    {
+      "id": "q00030",
+      "topic": "everyday",
+      "family": "classification",
+      "difficulty": "easy",
+      "prompt": "Botanically, the potato you eat is a swollen what?",
+      "options": [
+        "Stem",
+        "Root"
+      ],
+      "answer": 0,
+      "explanation": "A potato is a stem tuber. Its 'eyes' are buds that can grow new shoots, a clue to what it really is.",
+      "source": "https://extension.umn.edu/garden-and-home/yard-and-garden/gardening-in-minnesota/growing-potatoes"
+    },
+    {
+      "id": "q00031",
+      "topic": "math",
+      "family": "probability",
+      "difficulty": "easy",
+      "prompt": "A fair coin lands heads five times in independent flips. Chance of tails next?",
+      "options": [
+        "More than 50%",
+        "Exactly 50%"
+      ],
+      "answer": 1,
+      "explanation": "The coin has no memory. With independent fair flips, the next result is still 50–50; tails is not 'due'.",
+      "source": "https://openstax.org/books/introductory-statistics-2e/pages/3-2-independent-and-mutually-exclusive-events"
+    },
+    {
+      "id": "q00032",
+      "topic": "math",
+      "family": "scenario",
+      "difficulty": "easy",
+      "prompt": "A $100 price rises 20%, then falls 20%. Where does it end?",
+      "options": [
+        "$96",
+        "$100"
+      ],
+      "answer": 0,
+      "explanation": "$100 × 1.20 = $120, then $120 × 0.80 = $96. The second percentage applies to a different starting amount.",
+      "source": "https://openstax.org/books/prealgebra-2e/pages/6-2-solve-general-applications-of-percent"
+    },
+    {
+      "id": "q00033",
+      "topic": "math",
+      "family": "probability",
+      "difficulty": "hard",
+      "prompt": "For 23 independent, uniformly distributed birthdays on 365 days, is the chance of a shared birthday above 50%?",
+      "options": [
+        "Yes",
+        "No"
+      ],
+      "answer": 0,
+      "explanation": "It is about 50.7%. There are 253 pairs of people, so there are many more chances for a match than 23 might suggest.",
+      "source": "https://mathworld.wolfram.com/BirthdayProblem.html"
+    },
+    {
+      "id": "q00034",
+      "topic": "math",
+      "family": "scenario",
+      "difficulty": "hard",
+      "prompt": "You drive 60 miles at 30 mph, then 60 miles at 60 mph. Average speed for the whole trip?",
+      "options": [
+        "45 mph",
+        "40 mph"
+      ],
+      "answer": 1,
+      "explanation": "The trip takes 2 hours plus 1 hour. That's 120 miles in 3 hours: 40 mph. You spend more time at the slower speed.",
+      "source": "https://openstax.org/books/elementary-algebra-2e/pages/2-6-solve-a-formula-for-a-specific-variable"
+    },
+    {
+      "id": "q00035",
+      "topic": "math",
+      "family": "probability",
+      "difficulty": "medium",
+      "prompt": "Roll two independent fair six-sided dice. Which total is more likely?",
+      "options": [
+        "7",
+        "12"
+      ],
+      "answer": 0,
+      "explanation": "Six ordered outcomes make 7; only (6, 6) makes 12. That is 6 chances in 36 versus 1 in 36.",
+      "source": "https://openstax.org/books/introductory-statistics-2e/pages/3-1-terminology"
+    },
+    {
+      "id": "q00036",
+      "topic": "math",
+      "family": "scenario",
+      "difficulty": "medium",
+      "prompt": "A bat and ball cost $1.10 together. The bat costs $1 more than the ball. Ball's price?",
+      "options": [
+        "10 cents",
+        "5 cents"
+      ],
+      "answer": 1,
+      "explanation": "At 5 cents for the ball, the bat is $1.05 and the total is $1.10. A 10-cent ball would make the total $1.20.",
+      "source": "https://openstax.org/books/elementary-algebra-2e/pages/2-6-solve-a-formula-for-a-specific-variable"
+    },
+    {
+      "id": "q00037",
+      "topic": "ai",
+      "family": "origin",
+      "difficulty": "easy",
+      "prompt": "AlphaGo's famous match against Lee Sedol was played in which game?",
+      "options": [
+        "Go",
+        "Chess"
+      ],
+      "answer": 0,
+      "explanation": "Lee Sedol faced AlphaGo at Go in 2016. AlphaZero later tackled chess, shogi and Go.",
+      "source": "https://deepmind.google/research/alphago/"
+    },
+    {
+      "id": "q00038",
+      "topic": "ai",
+      "family": "origin",
+      "difficulty": "easy",
+      "prompt": "Why did OpenAI initially withhold the full GPT-2 model in 2019?",
+      "options": [
+        "It could not generate text yet",
+        "Concerns about malicious uses"
+      ],
+      "answer": 1,
+      "explanation": "OpenAI released a smaller model first while studying misuse risks. The full 1.5-billion-parameter model came later that year.",
+      "source": "https://openai.com/index/better-language-models/"
+    },
+    {
+      "id": "q00039",
+      "topic": "ai",
+      "family": "classification",
+      "difficulty": "easy",
+      "prompt": "In a language model, is one token always one whole word?",
+      "options": [
+        "No, it can be part of a word",
+        "Yes, one word always equals one token"
+      ],
+      "answer": 0,
+      "explanation": "Tokens can be word pieces, whole words, punctuation or characters. A word count is not a reliable token count.",
+      "source": "https://help.openai.com/en/articles/4936856-understanding-and-counting-tokens"
+    },
+    {
+      "id": "q00040",
+      "topic": "ai",
+      "family": "classification",
+      "difficulty": "easy",
+      "prompt": "ImageNet was built around which kind of data?",
+      "options": [
+        "Audio recordings",
+        "Labelled images"
+      ],
+      "answer": 1,
+      "explanation": "ImageNet organises images into a hierarchy of concepts. Its image-recognition challenge helped make deep learning famous.",
+      "source": "https://image-net.org/about.php"
+    },
+    {
+      "id": "q00041",
+      "topic": "ai",
+      "family": "mechanism",
+      "difficulty": "easy",
+      "prompt": "What powered the original 1966 ELIZA chatbot?",
+      "options": [
+        "Rules that matched and rearranged text",
+        "A large neural language model"
+      ],
+      "answer": 0,
+      "explanation": "ELIZA used keyword rules and response templates. Convincing conversation existed long before today's large language models.",
+      "source": "https://web.stanford.edu/class/cs124/p36-weizenabaum.pdf"
+    },
+    {
+      "id": "q00042",
+      "topic": "ai",
+      "family": "mechanism",
+      "difficulty": "easy",
+      "prompt": "The original Transformer replaced recurrence with what main mechanism?",
+      "options": [
+        "A larger recurrent loop",
+        "Attention"
+      ],
+      "answer": 1,
+      "explanation": "The 2017 paper built the Transformer around attention, removing recurrent and convolutional layers from that architecture.",
+      "source": "https://arxiv.org/abs/1706.03762"
+    },
+    {
+      "id": "q00043",
+      "topic": "ai",
+      "family": "probability",
+      "difficulty": "easy",
+      "prompt": "A classifier assigns 90% confidence. Does that number alone prove it is right 90% of the time?",
+      "options": [
+        "No, its confidence needs checking",
+        "Yes, that is guaranteed"
+      ],
+      "answer": 0,
+      "explanation": "A score is not a guarantee of calibration. A model can be confident more often than it is correct, just like a player here.",
+      "source": "https://arxiv.org/abs/1706.04599"
+    },
+    {
+      "id": "q00044",
+      "topic": "ai",
+      "family": "comparison",
+      "difficulty": "easy",
+      "prompt": "For the same number of weights, which needs less raw storage, ignoring overhead?",
+      "options": [
+        "16 bits per weight",
+        "4 bits per weight"
+      ],
+      "answer": 1,
+      "explanation": "Four bits per weight is one quarter of sixteen. Real memory use also includes scales, activations and other overhead.",
+      "source": "https://huggingface.co/docs/transformers/v4.52.2/en/quantization/concept_guide"
+    },
+    {
+      "id": "q00045",
+      "topic": "ai",
+      "family": "scenario",
+      "difficulty": "easy",
+      "prompt": "A RAG assistant needs today's policy document. What is the retrieval step for?",
+      "options": [
+        "Finding relevant text to supply to the model",
+        "Retraining every model weight"
+      ],
+      "answer": 0,
+      "explanation": "Retrieval supplies outside information for generation. Fetching a document is different from updating the model's learned weights.",
+      "source": "https://arxiv.org/abs/2005.11401"
+    },
+    {
+      "id": "q00046",
+      "topic": "ai",
+      "family": "mechanism",
+      "difficulty": "medium",
+      "prompt": "During BERT's masked-word pretraining, which context can help fill a blank?",
+      "options": [
+        "Only words to the left",
+        "Words on both sides"
+      ],
+      "answer": 1,
+      "explanation": "BERT was designed to learn from left and right context together. The 'B' stands for bidirectional.",
+      "source": "https://arxiv.org/abs/1810.04805"
+    },
+    {
+      "id": "q00047",
+      "topic": "ai",
+      "family": "origin",
+      "difficulty": "easy",
+      "prompt": "How did AlphaZero learn game strategy, given the rules?",
+      "options": [
+        "Self-play",
+        "A database of human expert games"
+      ],
+      "answer": 0,
+      "explanation": "AlphaZero trained by playing against itself. Unlike the original AlphaGo, it did not need human game records to learn its strategy.",
+      "source": "https://deepmind.google/blog/alphazero-shedding-new-light-on-chess-shogi-and-go/"
+    },
+    {
+      "id": "q00048",
+      "topic": "ai",
+      "family": "chronology",
+      "difficulty": "medium",
+      "prompt": "Which was published first?",
+      "options": [
+        "The GPT-3 paper",
+        "The original Transformer paper"
+      ],
+      "answer": 1,
+      "explanation": "The Transformer paper appeared in 2017; GPT-3's paper appeared in 2020. GPT-3 built on the Transformer family.",
+      "source": "https://arxiv.org/abs/2005.14165"
+    },
+    {
+      "id": "q00049",
+      "topic": "ai",
+      "family": "comparison",
+      "difficulty": "medium",
+      "prompt": "The largest model in the original GPT-3 paper had how many parameters?",
+      "options": [
+        "175 billion",
+        "17.5 billion"
+      ],
+      "answer": 0,
+      "explanation": "The paper's largest GPT-3 model had 175 billion parameters. The decimal point changes the answer by a factor of ten.",
+      "source": "https://arxiv.org/abs/2005.14165"
+    },
+    {
+      "id": "q00050",
+      "topic": "ai",
+      "family": "mechanism",
+      "difficulty": "medium",
+      "prompt": "In a standard denoising diffusion model, how is a new image generated?",
+      "options": [
+        "By retrieving an unchanged training image",
+        "By progressively removing noise"
+      ],
+      "answer": 1,
+      "explanation": "The model learns a reverse process that turns noise into an image step by step. It is not simply an image-search engine.",
+      "source": "https://arxiv.org/abs/2006.11239"
+    },
+    {
+      "id": "q00051",
+      "topic": "ai",
+      "family": "classification",
+      "difficulty": "medium",
+      "prompt": "In neural-network training, what does 'dropout' mean?",
+      "options": [
+        "Temporarily dropping randomly selected units",
+        "Permanently deleting the weakest neurons"
+      ],
+      "answer": 0,
+      "explanation": "Dropout randomly omits units during training to reduce overfitting. It is not the same operation as permanently pruning a network.",
+      "source": "https://www.jmlr.org/papers/volume15/srivastava14a/srivastava14a.pdf"
+    },
+    {
+      "id": "q00052",
+      "topic": "ai",
+      "family": "scenario",
+      "difficulty": "medium",
+      "prompt": "GPT-3 gets a few worked examples in its prompt, with no training step. What changes?",
+      "options": [
+        "Its learned weights",
+        "Its input context"
+      ],
+      "answer": 1,
+      "explanation": "The original few-shot setup supplied examples as text, with no gradient updates. The model used a new context, not newly trained weights.",
+      "source": "https://arxiv.org/abs/2005.14165"
+    },
+    {
+      "id": "q00053",
+      "topic": "ai",
+      "family": "scenario",
+      "difficulty": "hard",
+      "prompt": "Only 1% of emails are spam. A filter labels every email 'not spam'. Its accuracy?",
+      "options": [
+        "99%",
+        "0%"
+      ],
+      "answer": 0,
+      "explanation": "It gets the 99% non-spam messages right while catching zero spam. High accuracy can hide complete failure on the class you care about.",
+      "source": "https://developers.google.com/machine-learning/crash-course/classification/accuracy-precision-recall"
+    },
+    {
+      "id": "q00054",
+      "topic": "ai",
+      "family": "comparison",
+      "difficulty": "hard",
+      "prompt": "A filter flags 100 emails as spam; 20 really are spam. Its precision?",
+      "options": [
+        "80%",
+        "20%"
+      ],
+      "answer": 1,
+      "explanation": "Precision asks how many positive predictions were correct: 20 divided by 100. It is not the fraction of all spam caught.",
+      "source": "https://developers.google.com/machine-learning/crash-course/classification/accuracy-precision-recall"
+    },
+    {
+      "id": "q00055",
+      "topic": "ai",
+      "family": "classification",
+      "difficulty": "hard",
+      "prompt": "Did the original GPT-4 technical report disclose its parameter count?",
+      "options": [
+        "No",
+        "Yes"
+      ],
+      "answer": 0,
+      "explanation": "The report withheld model-size and architecture details. A widely repeated parameter count is not the same as a number disclosed in that report.",
+      "source": "https://arxiv.org/abs/2303.08774"
+    },
+    {
+      "id": "q00056",
+      "topic": "ai",
+      "family": "origin",
+      "difficulty": "hard",
+      "prompt": "What task was the original Transformer paper mainly evaluated on?",
+      "options": [
+        "Image generation",
+        "Machine translation"
+      ],
+      "answer": 1,
+      "explanation": "Its main experiments translated English to German and French. Chatbots were not the original paper's benchmark.",
+      "source": "https://arxiv.org/abs/1706.03762"
+    },
+    {
+      "id": "q00057",
+      "topic": "ai",
+      "family": "probability",
+      "difficulty": "hard",
+      "prompt": "For a two-token output: P(A)=0.6, P(B)=0.4; best continuations have P(x|A)=0.5, P(y|B)=0.9. Which sequence is likelier?",
+      "options": [
+        "By",
+        "Ax"
+      ],
+      "answer": 0,
+      "explanation": "P(Ax)=0.6×0.5=0.30; P(By)=0.4×0.9=0.36. Taking the most likely first token need not give the most likely whole sequence.",
+      "source": "https://arxiv.org/abs/1904.09751"
+    },
+    {
+      "id": "q00058",
+      "topic": "ai",
+      "family": "classification",
+      "difficulty": "hard",
+      "prompt": "In top-p (nucleus) sampling, does p set a fixed number of candidate tokens?",
+      "options": [
+        "Yes, a fixed token count",
+        "No, a cumulative probability threshold"
+      ],
+      "answer": 1,
+      "explanation": "The nucleus grows or shrinks with the probability distribution. Top-k fixes a token count; top-p uses cumulative probability.",
+      "source": "https://arxiv.org/abs/1904.09751"
+    },
+    {
+      "id": "q00059",
+      "topic": "ai",
+      "family": "probability",
+      "difficulty": "hard",
+      "prompt": "A perfectly calibrated model makes many 70%-confidence predictions. Roughly how many should be right?",
+      "options": [
+        "70% of those predictions",
+        "100% of those predictions"
+      ],
+      "answer": 0,
+      "explanation": "Calibration means the confidence matches the long-run success rate. Being well calibrated still allows mistakes.",
+      "source": "https://arxiv.org/abs/1706.04599"
+    },
+    {
+      "id": "q00060",
+      "topic": "ai",
+      "family": "mechanism",
+      "difficulty": "hard",
+      "prompt": "In the original LoRA method, what gets trained?",
+      "options": [
+        "All the original model weights",
+        "Added low-rank matrices"
+      ],
+      "answer": 1,
+      "explanation": "LoRA freezes the pretrained weights and trains low-rank updates. Adapting a model does not always mean updating every original weight.",
+      "source": "https://arxiv.org/abs/2106.09685"
+    }
+  ]
+}

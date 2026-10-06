@@ -2,6 +2,11 @@
 
 Deviations from `prereg/PREREG.md` after it is finalized are logged here with a date and a reason.
 
+## 2026-10-05 (authored quick questions; pending deployment)
+- Added 60 short, sourced questions with explanatory reveals, including 24 AI questions. Reason: launch feedback described the generated comparisons as dull and similar. New All and AI quick rounds prefer this bank, cap topic and format repetition, and prefer unseen questions. Other specialist packs retain their comparison banks.
+- Deviation from the frozen comparison-only design: authored questions include misconceptions, origins, scenarios and probability. Their easy/medium/hard labels are editorial estimates, not pageview/ratio-derived or empirically calibrated. The existing difficulty mixes and confidence scoring stay the same. Question IDs beginning with `q` identify this content in stored answers; deployment time and revision must be recorded when published. Analysis must distinguish this bank and exposure period from earlier quick rounds.
+- Ranked schedules, daily chat questions, fixed dares and the full assessment are unchanged. Existing question IDs and answers are preserved. Authored IDs are immutable after deployment; retire errors and assign replacement IDs. No engagement or retention improvement has yet been measured.
+
 ## 2026-10-03
 - Repo created. Design docs, pre-registration draft v0, privacy policy, item schema, shared metric test vectors.
 

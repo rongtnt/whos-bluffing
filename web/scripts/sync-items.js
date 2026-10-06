@@ -61,6 +61,30 @@ export function validateBank(bank) {
   return errs;
 }
 
+// Authored quick questions are bundled server-side only. Once deployed, retire IDs instead of changing their answer.
+export function validateCurated(bank) {
+  if (!Number.isInteger(bank?.version) || !Array.isArray(bank?.items)) return ['bank needs integer version and items array'];
+  const errs = [], ids = new Set(), prompts = new Set();
+  for (const q of bank.items) {
+    const e = (msg) => errs.push(`${q?.id ?? '?'}: ${msg}`);
+    if (!q || typeof q !== 'object') { e('question must be an object'); continue; }
+    if (!/^q\d{5}$/.test(q.id ?? '') || ids.has(q.id)) e('bad or duplicate id');
+    ids.add(q.id);
+    if (!['science', 'nature', 'world', 'culture', 'everyday', 'math', 'ai'].includes(q.topic)) e('bad topic');
+    if (!['comparison', 'mechanism', 'origin', 'classification', 'probability', 'scenario', 'chronology'].includes(q.family)) e('bad family');
+    if (!LEVELS.includes(q.difficulty)) e('bad difficulty');
+    if (!text(q.prompt) || q.prompt.length > 180 || prompts.has(q.prompt)) e('bad or duplicate prompt');
+    prompts.add(q.prompt);
+    if (!Array.isArray(q.options) || q.options.length !== 2 || !q.options.every((x) => text(x) && x.length <= 80)
+      || q.options[0] === q.options[1]) e('need two distinct options of at most 80 characters');
+    if (![0, 1].includes(q.answer)) e('answer must be 0 or 1');
+    if (!text(q.explanation) || q.explanation.length > 300) e('need explanation of at most 300 characters');
+    try { if (!text(q.source) || new URL(q.source).protocol !== 'https:' || /\s/.test(q.source)) throw Error(); }
+    catch { e('source must be an https URL'); }
+  }
+  return errs;
+}
+
 const POOL_DOMAINS = new Set(DOMAINS);
 
 // Problems with the daily pool (items/pool.json); empty means usable.
@@ -180,6 +204,9 @@ function main() {
   const bank = JSON.parse(readFileSync(new URL('items/items.json', ROOT), 'utf8'));
   const errs = validateBank(bank);
   if (errs.length) fail('items/items.json', errs);
+  const curated = JSON.parse(readFileSync(new URL('items/quick_curated.json', ROOT), 'utf8'));
+  const curatedErrs = validateCurated(curated);
+  if (curatedErrs.length) fail('items/quick_curated.json', curatedErrs);
   const pool = readOptional('items/pool.json', { version: 1, items: [] });
   const poolErrs = validatePool(pool);
   if (poolErrs.length) fail('items/pool.json', poolErrs);
@@ -214,7 +241,7 @@ function main() {
   console.log(`synced dares: ${dares.compact.length} on the board`);
   for (const u of dares.unfilled) console.warn(`DARE NOT FILLED, left off the board: ${u.slug}: ${u.reason}`);
   console.log(`synced docs: ${syncDocs().join(', ')}`);
-  const pages = syncPages({ pool: server, compact, rounds, pairs });
+  const pages = syncPages({ pool: server, compact, rounds, pairs, curated: curated.items });
   console.log(`synced pages: ${pages.files.join(', ')} (${pages.count.toLocaleString('en-US')} servable pairs)`);
 }
 

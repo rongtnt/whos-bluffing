@@ -1,4 +1,4 @@
-// Rounds (docs/api-rounds.md): ten comparison pairs per round, quadratic points, calibration types, challenge links,
+// Rounds (docs/api-rounds.md): ten two-choice questions per round, quadratic points, calibration types, challenge links,
 // the Slack/Discord daily question, pair flags. Pairs and ranked days come in as data from loadRounds (unit tests use
 // fixtures; _rounds_data.js loads the bundled copies). Request functions return {status, body}.
 // Bounded: a request reads the round's own rows (<= 10 answers, its pairs and their items, one play, the day's <= 4
@@ -31,7 +31,7 @@ export const MAX_SEEN = 300;
 export const TYPES =['Bluffer', 'Hot-headed', 'Calibrated', 'Modest', 'Hedger'];
 export const EVENT_TYPES = ['share', 'challenge_view', 'play_again'];
 export const TOKEN_RE = /^[A-Za-z0-9_-]{10}$/;
-export const PAIR_RE = /^p\d{5}$/;
+export const PAIR_RE = /^[pq]\d{5}$/; // p: generated comparisons; q: immutable authored questions
 export const HIST_MIN = -3000; // ten answers at 100% and wrong
 export const HIST_BUCKETS = 1001; // scores are multiples of 4 from -3000 to 1000
 export const BIN_WIDTH = 100; // /api/round/stats bins
@@ -75,7 +75,7 @@ const cap = (s) => s.charAt(0).toUpperCase() + s.slice(1);
 // packLists[pack][difficulty][level] = the pair ids that difficulty may draw for that pack (lists = packLists.all);
 // available[difficulty] = the set of packs offered there (minPackPairs: a lower bar for small test fixtures).
 // dares: functions/_dares.json (the dare board's fixed rounds dr-<slug>, _dares.js), kept as data.dares by slug.
-export function loadRounds(pool, compact, rounds, { minPackPairs = MIN_PACK_PAIRS, dares = [] } = {}) {
+export function loadRounds(pool, compact, rounds, { minPackPairs = MIN_PACK_PAIRS, dares = [], curated = [] } = {}) {
   const items = new Map(pool.items.map((i) => [i.id, i]));
   const templates = new Map(compact.templates.map((t) => [`${t.category}|${t.unit}`, t]));
   const pairs = new Map();
@@ -98,6 +98,19 @@ export function loadRounds(pool, compact, rounds, { minPackPairs = MIN_PACK_PAIR
   const available = Object.fromEntries(Object.entries(DIFFICULTIES).map(([d, spec]) => [d, new Set(Object.keys(PACKS).filter((k) => k === 'all'
     || fillable(spec, packLists[k][d], pairs, minPackPairs)))]));
   const entity = new Map([...items.values()].map((i) => [i.id, (i.replaces || i.source).match(/\/(Q\d+)#/)?.[1] ?? i.id]));
+  // Adapt authored choices to the existing scoring, retirement and challenge paths. Their ids never overlap the
+  // generated bank, and they never enter ranked schedules or fixed dares. Text verdicts use the same reveal fields.
+  for (const q of curated) {
+    const ids = q.options.map((name, k) => {
+      const id = `${q.id}-${k}`;
+      items.set(id, { id, name, category: q.topic === 'ai' ? 'ai_curated' : q.topic, en: { unit: '' },
+        answer: k === q.answer ? 'Correct' : 'Incorrect', source: q.source });
+      entity.set(id, id);
+      return id;
+    });
+    pairs.set(q.id, { id: q.id, a_id: ids[0], b_id: ids[1], truth: q.answer, level: q.difficulty,
+      authored: q, ref: 1, topic: q.topic, family: q.family });
+  }
   const rankedDatesByItem = new Map(); // for the recompute after a retirement
   for (const [date, day] of Object.entries(rounds)) {
     for (const id of day.ranked) {
@@ -105,7 +118,8 @@ export function loadRounds(pool, compact, rounds, { minPackPairs = MIN_PACK_PAIR
       for (const i of [p.a_id, p.b_id]) rankedDatesByItem.set(i, [...(rankedDatesByItem.get(i) ?? []), date]);
     }
   }
-  return { items, pairs, templates, lists, packLists, available, rounds, entity, rankedDatesByItem, dares: new Map(dares.map((d) => [d.slug, d])) };
+  return { items, pairs, templates, lists, packLists, available, rounds, entity, rankedDatesByItem,
+    curated: curated.map((q) => q.id), dares: new Map(dares.map((d) => [d.slug, d])) };
 }
 
 // Can a pack's lists for one difficulty fill its mix? Counts the pairs that may take a main slot at each level the mix
@@ -130,6 +144,7 @@ export function servablePairs(data) {
   const ids = new Set();
   for (const [d, spec] of Object.entries(DIFFICULTIES)) for (const level of LEVELS) if (spec.mix[level]) data.lists[d][level].forEach((id) => ids.add(id));
   for (const day of Object.values(data.rounds)) [...day.ranked, day.question].forEach((id) => ids.add(id));
+  data.curated.forEach((id) => ids.add(id));
   return ids;
 }
 
@@ -206,6 +221,7 @@ export function roastFor(data, roundId, ids, byItem) {
   }
   if (!miss) return null;
   const p = data.pairs.get(miss.id);
+  if (p.authored) return `You backed "${p.authored.options[1 - p.truth]}" at ${miss.a.conf}%. The answer was "${p.authored.options[p.truth]}".`;
   const t = template(data, p);
   const names = [data.items.get(p.a_id).name, data.items.get(p.b_id).name];
   const fill = { conf: miss.a.conf, right: names[p.truth], wrong: names[1 - p.truth], more: t.more, less: t.less };
@@ -222,14 +238,14 @@ const template = (data, p) => {
 
 export function pairView(data, id) {
   const p = data.pairs.get(id);
-  return { id, prompt: template(data, p).prompt, a: data.items.get(p.a_id).name, b: data.items.get(p.b_id).name };
+  return { id, prompt: p.authored?.prompt ?? template(data, p).prompt, a: data.items.get(p.a_id).name, b: data.items.get(p.b_id).name };
 }
 
 // Both values and sources; `fun`, a curated reveal fact (the AI pack), when either item has one (the first non-empty).
 function truthView(data, p) {
   const a = data.items.get(p.a_id);
   const b = data.items.get(p.b_id);
-  const fun = a.fun || b.fun;
+  const fun = p.authored?.explanation || a.fun || b.fun;
   return { a_value: a.answer, b_value: b.answer, unit: a.en.unit, a_source: a.source, b_source: b.source, ...(fun && { fun }) };
 }
 
@@ -296,9 +312,14 @@ function deadFrom(data, ids, [pairRows, itemRows]) {
   return dead;
 }
 async function liveIds(db, data, ids) {
-  if (!ids.length) return [];
-  const dead = deadFrom(data, ids, await db.batch(deadStatements(db, data, ids)));
-  return ids.filter((id) => !dead.has(id));
+  const live = [];
+  // D1 allows 100 bindings per statement; each question has two underlying items.
+  for (let k = 0; k < ids.length; k += 40) {
+    const chunk = ids.slice(k, k + 40);
+    const dead = deadFrom(data, chunk, await db.batch(deadStatements(db, data, chunk)));
+    live.push(...chunk.filter((id) => !dead.has(id)));
+  }
+  return live;
 }
 
 // --- GET /api/round -----------------------------------------------------------------------------------------------
@@ -339,6 +360,55 @@ const shuffle = (xs, rand) => {
   return a;
 };
 
+// New quick rounds only: authored questions first, topic-balanced, with a real explanation on every authored reveal.
+// Keep the 3/4/3 difficulty contract; generated candidates cover sparse/retired levels. A bounded search
+// avoids greedy dead ends where the last difficulty has only topics already used. Seen questions are a last resort.
+export function sampleVaried(data, ids, seen, rand, difficulty, pack) {
+  const candidates = shuffle(ids, rand).map((id) => {
+    const p = data.pairs.get(id);
+    const a = data.items.get(p.a_id);
+    const topic = p.topic ?? (a.category.startsWith('ai_') ? 'ai'
+      : a.category.startsWith('country_') ? 'world' : a.category);
+    const family = p.family ?? (['year', 'month'].includes(a.en.unit) ? 'chronology' : 'comparison');
+    return { id, p, topic, family, entities: [data.entity.get(p.a_id), data.entity.get(p.b_id)] };
+  });
+  for (const [freshOnly, authoredOnly] of [[true, true], [true, false], [false, false]]) {
+    const mix = DIFFICULTIES[difficulty].mix;
+    const pool = candidates.filter((c) => mix[c.p.level] && (!freshOnly || !seen.has(c.id)) && (!authoredOnly || c.p.authored));
+    if (LEVELS.some((lv) => pool.filter((c) => c.p.level === lv).length < mix[lv])) continue;
+    const familyCounts = {};
+    for (const c of pool) familyCounts[c.family] = (familyCounts[c.family] ?? 0) + 1;
+    if (Object.entries(familyCounts).reduce((sum, [f, n]) => sum + Math.min(n, f === 'chronology' ? 2 : 3), 0) < 10) continue;
+    const aiFirst = pack === 'all' && pool.some((c) => c.topic === 'ai' && DIFFICULTIES[difficulty].mix[c.p.level]);
+    const left = { ...DIFFICULTIES[difficulty].mix }, topics = {}, families = {}, entities = new Set(), picked = [];
+    let visits = 0;
+    const search = () => {
+      if (picked.length === 10) return true;
+      if (++visits > 10000) return false;
+      const options = pool.filter((c) => left[c.p.level] > 0 && !picked.includes(c)
+        && !c.entities.some((e) => entities.has(e))
+        && (pack !== 'all' || (topics[c.topic] ?? 0) < (c.topic === 'ai' ? 1 : 2))
+        && (families[c.family] ?? 0) < (c.family === 'chronology' ? 2 : 3)
+        && c.family !== picked.at(-1)?.family
+        && (!aiFirst || picked.length !== 0 || c.topic === 'ai'));
+      // Stable sort preserves the initial random order within equally underrepresented topics and formats.
+      options.sort((a, b) => Number(seen.has(a.id)) - Number(seen.has(b.id))
+        || Number(Boolean(b.p.authored)) - Number(Boolean(a.p.authored))
+        || (topics[a.topic] ?? 0) - (topics[b.topic] ?? 0) || (families[a.family] ?? 0) - (families[b.family] ?? 0));
+      for (const c of options) {
+        picked.push(c); left[c.p.level]--; topics[c.topic] = (topics[c.topic] ?? 0) + 1;
+        families[c.family] = (families[c.family] ?? 0) + 1; c.entities.forEach((e) => entities.add(e));
+        if (search()) return true;
+        picked.pop(); left[c.p.level]++; topics[c.topic]--; families[c.family]--;
+        c.entities.forEach((e) => entities.delete(e));
+      }
+      return false;
+    };
+    if (search()) return picked.map((c) => c.id);
+  }
+  return null;
+}
+
 const parseSeen = (s) => new Set((typeof s === 'string' ? s.split(',') : []).filter((x) => PAIR_RE.test(x)).slice(-MAX_SEEN));
 
 // params: {mode, seen, round_id, difficulty, pack}. round_id (an addition to the contract) loads an existing round, for
@@ -370,10 +440,14 @@ export async function getRound(db, data, params, now, rand = Math.random) {
   if (!data.available[difficulty].has(pack)) return err(400, 'not enough questions in this pack at this difficulty');
   const day = data.rounds[today];
   const avoid = new Set(day ? [...day.ranked, day.question] : []); // never today's ranked pairs or chat question
-  const candidates = sampleQuick(data, avoid, parseSeen(params.seen), rand, difficulty, pack);
-  const live = new Set(await liveIds(db, data, candidates.map((c) => c.id)));
+  const seen = parseSeen(params.seen);
+  const candidates = sampleQuick(data, avoid, seen, rand, difficulty, pack);
+  const authored = ['all', 'ai'].includes(pack) ? data.curated.filter((id) => pack === 'all' || data.pairs.get(id).topic === 'ai') : [];
+  const live = new Set(await liveIds(db, data, [...authored, ...candidates.map((c) => c.id)]));
   const mix = DIFFICULTIES[difficulty].mix;
-  const ids = shuffle(LEVELS.flatMap((level) => candidates.filter((c) => c.level === level && live.has(c.id)).slice(0, mix[level]).map((c) => c.id)), rand);
+  const ids = authored.length ? sampleVaried(data, [...live], seen, rand, difficulty, pack)
+    : shuffle(LEVELS.flatMap((level) => candidates.filter((c) => c.level === level && live.has(c.id)).slice(0, mix[level]).map((c) => c.id)), rand);
+  if (!ids || ids.length !== 10) return err(503, 'Not enough live questions for this round. Try another pack or difficulty.');
   const roundId = randomString(12, CODE_ALPHABET);
   await db.prepare('INSERT INTO rounds (round_id, mode, date, items, created_at, difficulty) VALUES (?, ?, ?, ?, ?, ?)')
     .bind(roundId, 'quick', today, JSON.stringify(ids), now.toISOString(), difficulty).run();

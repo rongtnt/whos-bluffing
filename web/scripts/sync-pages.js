@@ -95,8 +95,8 @@ function rewrite(file, edit) {
 
 // pool, compact, rounds, pairs: items/pool.json (server copy), the compact pairs, daily/rounds.json and items/pairs.json,
 // as sync-items has them.
-export function syncPages({ pool, compact, rounds, pairs }) {
-  const data = loadRounds(pool, compact, rounds);
+export function syncPages({ pool, compact, rounds, pairs, curated = [] }) {
+  const data = loadRounds(pool, compact, rounds, { curated });
   const count = servablePairs(data).size;
   rewrite('public/index.html', (h) => inject(inject(inject(h, 'questions', questionCount(count)), 'packs', packChips(packAvailability(data))),
     'prompts', promptList(promptLines(pairs))));

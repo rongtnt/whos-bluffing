@@ -402,7 +402,8 @@ rbody() {
   node -e '
     const [round, item, anon, surface, right, conf, community, extra] = process.argv.slice(1);
     const pair = JSON.parse(require("fs").readFileSync("functions/_pairs.json", "utf8")).pairs.find((p) => "p" + String(p[0]).padStart(5, "0") === item);
-    const body = { round_id: round, item_id: item, choice: right === "1" ? pair[3] : 1 - pair[3], conf: Number(conf), rt_ms: 2500, anon_id: anon, surface };
+    const truth = item.startsWith("q") ? require("../items/quick_curated.json").items.find((q) => q.id === item).answer : pair[3];
+    const body = { round_id: round, item_id: item, choice: right === "1" ? truth : 1 - truth, conf: Number(conf), rt_ms: 2500, anon_id: anon, surface };
     if (community) body.community = community;
     process.stdout.write(JSON.stringify(Object.assign(body, extra ? JSON.parse(extra) : {})));
   ' "$@"
@@ -435,8 +436,8 @@ printf '%s' "$BODY" > "$STATE/quick.json"
 QROUND=$(field round_id)
 QFIRST=$(items_of "$STATE/quick.json" | head -1)
 req POST /api/round/answer "$(rbody "$QROUND" "$QFIRST" "$HOST" web 1 80)"
-expect "answer (right at 80%) -> correct, both values and sources, 84 points, total 84" 200 \
-  'r.correct === true && r.points === 84 && r.total === 84 && typeof r.truth.a_value === "number" && typeof r.truth.b_value === "number" && /^https:\/\//.test(r.truth.a_source) && /^https:\/\//.test(r.truth.b_source) && r.truth.unit'
+expect "authored answer (right at 80%) -> verdicts, sources, explanation, 84 points" 200 \
+  'r.correct === true && r.points === 84 && r.total === 84 && [r.truth.a_value, r.truth.b_value].sort().join() === "Correct,Incorrect" && /^https:\/\//.test(r.truth.a_source) && /^https:\/\//.test(r.truth.b_source) && r.truth.unit === "" && r.truth.fun'
 QFIRST_ANSWER=$BODY
 req POST /api/round/answer "$(rbody "$QROUND" "$QFIRST" "$HOST" web 0 100)"
 [ "$STATUS" = 200 ] && [ "$BODY" = "$QFIRST_ANSWER" ] || fail "repeat answer -> the first result" "$BODY"
@@ -486,13 +487,15 @@ req GET "/api/round/$QROUND/compare?me=$FRIEND&them=BBBBBBBBBB"
 expect "compare with an unknown token -> 404" 404 'r.error'
 
 echo "== rounds: difficulty (fame bands from items/pairs.json via functions/_pairs.json)"
-# bands ROUND_JSON... -> per round "band:ref:level" for each pair (band 2 famous, 1 known, 0 obscure; level 0 easy)
+# bands ROUND_JSON... -> "band:ref:level" (c = authored; its difficulty is editorial, not a fame band)
 bands() {
   node -e '
     const pairs = new Map(require("./functions/_pairs.json").pairs.map((p) => ["p" + String(p[0]).padStart(5, "0"), p]));
+    const curated = new Map(require("../items/quick_curated.json").items.map((q) => [q.id, q]));
     for (const f of process.argv.slice(1)) {
       const r = JSON.parse(require("fs").readFileSync(f, "utf8"));
-      console.log(r.items.map((i) => { const p = pairs.get(i.id); return `${p[5]}:${p[6]}:${p[4]}`; }).join(" "));
+      console.log(r.items.map((i) => { const q = curated.get(i.id); if (q) return `c:1:${["easy", "medium", "hard"].indexOf(q.difficulty)}`;
+        const p = pairs.get(i.id); return `${p[5]}:${p[6]}:${p[4]}`; }).join(" "));
     }' "$@"
 }
 for k in 1 2 3; do
@@ -502,13 +505,13 @@ for k in 1 2 3; do
   req GET "/api/round?mode=quick"; printf '%s' "$BODY" > "$STATE/q-default-$k.json"
 done
 BRUTAL=$(bands "$STATE"/q-brutal-*.json); DEFAULT=$(bands "$STATE"/q-default-*.json); EASY=$(bands "$STATE"/q-easy-*.json)
-[[ "$BRUTAL" == *"0:1:"* ]] && ! [[ "$BRUTAL" == *":0:"* ]] || fail "difficulty=brutal -> referenced pairs, obscure ones included" "$BRUTAL"
-pass "difficulty=brutal -> only referenced pairs, and obscure ones among them"
+node -e 'process.exit(process.argv[1].trim().split("\n").every((l) => { const r = l.split(" "); return r.length === 10 && r.every((x) => x.split(":")[1] === "1") && r.filter((x) => x.endsWith(":1")).length === 4 && r.filter((x) => x.endsWith(":2")).length === 6; }) ? 0 : 1)' "$BRUTAL" || fail "brutal: sourced, 4 medium + 6 hard" "$BRUTAL"
+pass "difficulty=brutal -> sourced, 4 medium + 6 hard"
 node -e 'const rows = process.argv[1].trim().split("\n").map((l) => l.split(" ").map((x) => Number(x[0]))); process.exit(rows.length === 3 && rows.every((r) => r.length === 10 && !r.includes(0) && r.filter((b) => b === 1).length <= 1) ? 0 : 1)' "$DEFAULT" \
   || fail "default (normal) -> no obscure pair, at most one under 50,000 views" "$DEFAULT"
 pass "default difficulty (normal) -> no obscure pair, at most one under 50,000 views per round"
-node -e 'process.exit(process.argv[1].trim().split(/\s+/).every((x) => x[0] === "2" && x.endsWith(":0")) ? 0 : 1)' "$EASY" || fail "difficulty=easy -> famous and far apart" "$EASY"
-pass "difficulty=easy -> both items famous and the pair easy"
+node -e 'process.exit(process.argv[1].trim().split(/\s+/).every((x) => ["2", "c"].includes(x[0]) && x.endsWith(":0")) ? 0 : 1)' "$EASY" || fail "difficulty=easy -> authored easy or famous easy comparisons" "$EASY"
+pass "difficulty=easy -> authored easy or famous easy comparisons"
 req GET "/api/round?mode=quick&difficulty=nightmare"
 expect "unknown difficulty -> 400" 400 'r.error === "difficulty must be easy, normal or brutal"'
 
@@ -521,6 +524,7 @@ in_pack() {
     const [file, pack] = process.argv.slice(1);
     const cat = new Map(JSON.parse(readFileSync("functions/_pool.json", "utf8")).items.map((i) => [i.id, i.category]));
     const pairs = new Map(JSON.parse(readFileSync("functions/_pairs.json", "utf8")).pairs.map((p) => ["p" + String(p[0]).padStart(5, "0"), "w" + String(p[1]).padStart(4, "0")]));
+    for (const q of JSON.parse(readFileSync("../items/quick_curated.json", "utf8")).items) { pairs.set(q.id, q.id); cat.set(q.id, q.topic === "ai" ? "ai_curated" : q.topic); }
     const r = JSON.parse(readFileSync(file, "utf8"));
     process.exit(r.items.length === 10 && r.items.every((i) => PACKS[pack].categories.includes(cat.get(pairs.get(i.id)))) ? 0 : 1);
   ' "$@"

@@ -18,7 +18,8 @@ import { USAGE, questionMessage } from '../../slack/src/game.js';
 const WEB = new URL('../', import.meta.url);
 const read = (path) => readFileSync(new URL(path, WEB), 'utf8');
 const json = (path) => JSON.parse(read(path));
-const DATA = loadRounds(json('functions/_pool.json'), json('functions/_pairs.json'), json('functions/_rounds.json'));
+const DATA = loadRounds(json('functions/_pool.json'), json('functions/_pairs.json'), json('functions/_rounds.json'),
+  { curated: json('../items/quick_curated.json').items });
 const NOW = new Date(`${Object.keys(DATA.rounds).sort()[3]}T12:00:00Z`); // a day with a ranked round
 const seeded = (seed) => { let s = seed; return () => ((s = (s * 1103515245 + 12345) % 2147483648) / 2147483648); };
 
@@ -38,7 +39,7 @@ test('packs: every offered pack and difficulty fills full rounds from its own ca
         const pairs = r.body.items.map((i) => DATA.pairs.get(i.id));
         assert.equal(pairs.length, 10, `${pack}/${difficulty} seed ${seed}`);
         if (cats) assert.ok(pairs.every((p) => cats.includes(DATA.items.get(p.a_id).category)), `${pack}: a pair from outside the pack`);
-        assert.ok(pairs.every((p) => DIFFICULTIES[difficulty].ok(p)), `${pack}/${difficulty}: a pair the difficulty does not allow`);
+        assert.ok(pairs.every((p) => p.authored || DIFFICULTIES[difficulty].ok(p)), `${pack}/${difficulty}: a pair the difficulty does not allow`);
         if (difficulty === 'normal') assert.ok(pairs.filter((p) => p.band < 2).length <= 1, `${pack}: more than one lesser-known pair`);
       }
     }

@@ -4,7 +4,7 @@ import { flagPair, PAIR_RE } from '../_rounds.js';
 import { DAILY } from '../_daily_data.js';
 import { ROUNDS } from '../_rounds_data.js';
 
-// POST /api/flag: a pair id (p00001, with round_id) flags a rounds pair; a pool id (w0001) a daily-game item.
+// POST /api/flag: p00001 or q00001 (with round_id) flags a round question; w0001 flags a daily-game item.
 export const onRequestPost = safe(async ({ request, env }) => {
   const { body, error } = await readJson(request);
   if (error) return error;
