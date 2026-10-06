@@ -219,7 +219,7 @@ async function flowCheck(cdp, base) {
     await js(`(async () => { document.getElementById('play').click(); ${waitFor('.deal-card')};
       for (const a of document.getAnimations()) { a.pause(); a.currentTime = 180; } return true; })()`);
     await check("(() => { const n = [...document.querySelectorAll('.deal-card')].filter(c => Number(getComputedStyle(c).opacity) > .1).length; return n > 0 && n < 10; })()", 'cards enter one at a time');
-    await js('for (const a of document.getAnimations()) a.currentTime = 950; true');
+    await js('for (const a of document.getAnimations()) a.currentTime = .45 * a.effect.getTiming().duration; true');
     await check("document.querySelectorAll('.deal-card').length === 10 && !document.querySelector('button.pick')", 'ten card backs before the first question');
     await check("[...document.querySelectorAll('.deal-card')].every(c => Number(getComputedStyle(c).opacity) > .99)", 'all ten cards are dealt before shuffling');
     await check('document.documentElement.scrollWidth <= innerWidth', `deck has no overflow at ${width}px`);

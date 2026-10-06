@@ -23,6 +23,7 @@ const easeOut = (f) => 1 - (1 - f) ** 3;
 // Deal each card into its slot, gather the deck, riffle, then spread it. Skip cancels both motion and pending ticks.
 export async function dealCards(host, skip, tick = () => {}) {
   if (reducedMotion() || !host?.firstElementChild?.animate) return;
+  const duration = 2600;
   const box = host.getBoundingClientRect();
   const timers = [];
   const animations = [...host.children].map((card, i) => {
@@ -32,7 +33,7 @@ export async function dealCards(host, skip, tick = () => {}) {
     const side = i % 2 ? 1 : -1;
     const stack = `translate(${x}px, ${y}px) rotate(${side * 4}deg) scale(.92)`;
     const at = .01 + i * .035;
-    timers.push(setTimeout(tick, at * 2100));
+    timers.push(setTimeout(tick, at * duration));
     return card.animate([
       { offset: 0, opacity: 0, transform: stack },
       { offset: at, opacity: 0, transform: stack, easing: 'ease-out' },
@@ -42,7 +43,7 @@ export async function dealCards(host, skip, tick = () => {}) {
       { offset: .73, opacity: 1, transform: `translate(${x + side * 55}px, ${y - 12}px) rotate(${side * 14}deg)` },
       { offset: .82, opacity: 1, transform: stack },
       { offset: 1, opacity: 0, transform: 'scale(.9)' },
-    ], { duration: 2100, fill: 'both' });
+    ], { duration, fill: 'both' });
   });
   const cancel = () => { timers.forEach(clearTimeout); animations.forEach((a) => a.cancel()); };
   skip.onclick = cancel;
