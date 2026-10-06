@@ -53,7 +53,7 @@ test('setup: Manage Server only; sets channel, hour, reveal and roast; a new cha
   assert.deepEqual(await res.json(), { type: 5, data: { flags: 64 } });
   const [hello] = channelPosts(calls);
   assert.equal(channelOfPost(hello), C2);
-  assert.equal(hello.body.content, `Who's Bluffing will post a question here every day at ${nine}. Tap A or B, then say how sure you are.`);
+  assert.equal(hello.body.content, `Who's Bluffing will post a question here every day at ${nine}. Tap A or B, then say how sure you are.\nTry a private ten-question round now, then challenge a friend.`);
   // A new server: the reveal comes 20 hours after the post.
   assert.equal(lastReply(calls),
     `Done. Who's Bluffing posts a question in <#${C2}> every day at ${nine} (09:00 UTC) and reveals the answer 20 hours later. Roast mode is on: the reveal names the biggest bluffer.`);

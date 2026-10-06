@@ -3,13 +3,14 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
-<title>Who's Bluffing? for Slack: one question a day for your team</title>
-<meta name="description" content="Install once and your team gets one question a day: tap A or B, say how sure you are, and see the workspace's points and the biggest bluff at the reveal. Free; no message text stored.">
+<title>Free Slack Trivia App for Teams | Who's Bluffing?</title>
+<meta name="description" content="Bring daily trivia to Slack. Pick an answer, say how sure you are, and find out who's bluffing when the answer is revealed. Free, with a team leaderboard.">
+<meta name="robots" content="max-image-preview:large">
 <link rel="canonical" href="https://whosbluffing.com/slack">
 <meta property="og:type" content="website">
 <meta property="og:site_name" content="Who's Bluffing?">
-<meta property="og:title" content="Who's Bluffing? for Slack: one question a day for your team">
-<meta property="og:description" content="Install once and your team gets one question a day: tap A or B, say how sure you are, and see the workspace's points and the biggest bluff at the reveal. Free; no message text stored.">
+<meta property="og:title" content="Free Slack Trivia App for Teams | Who's Bluffing?">
+<meta property="og:description" content="Bring daily trivia to Slack. Pick an answer, say how sure you are, and find out who's bluffing when the answer is revealed. Free, with a team leaderboard.">
 <meta property="og:url" content="https://whosbluffing.com/slack">
 <meta property="og:image" content="https://whosbluffing.com/og.png">
 <meta property="og:image:width" content="1200">
@@ -23,6 +24,21 @@
 <meta name="theme-color" content="#FBFAF7" media="(prefers-color-scheme: light)">
 <meta name="theme-color" content="#0E1116" media="(prefers-color-scheme: dark)">
 <link rel="stylesheet" href="/styles.css">
+<script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@type": "SoftwareApplication",
+  "@id": "https://whosbluffing.com/slack#app",
+  "name": "Who's Bluffing? for Slack",
+  "url": "https://whosbluffing.com/slack",
+  "description": "A free Slack trivia app with daily channel questions, private answers and a team leaderboard.",
+  "applicationCategory": "GameApplication",
+  "operatingSystem": "Slack",
+  "isAccessibleForFree": true,
+  "inLanguage": "en",
+  "installUrl": "https://whosbluffing-slack.rongaijun41.workers.dev/slack/oauth/start"
+}
+</script>
 <script src="/site.js"></script>
 </head>
 <body>
@@ -47,9 +63,9 @@
 <section class="hero" aria-labelledby="slack-title">
   <div class="wrap hero-grid">
     <div>
-      <p class="eyebrow">Slack app</p>
+      <p class="eyebrow">Free Slack trivia app</p>
       <h1 id="slack-title">Who's Bluffing? for Slack</h1>
-      <p class="hero-sub">Install once and your team gets one question a day in a channel. Members tap A or B and say how sure they are, privately; eight hours later the post turns into the answer, with the workspace’s points and the day’s biggest bluff.</p>
+      <p class="hero-sub">A little trivia for the coworker who always has an answer. Add a daily question to a Slack channel. Everyone picks an answer and says how sure they are, privately. When the answer is revealed, see who knew their stuff and who was bluffing.</p>
       <div class="actions">
         <a class="button primary" href="/slack" data-slack-install><svg class="i" viewBox="0 0 24 24" aria-hidden="true" focusable="false"><path d="M4.5 9h15M4.5 15h15M10 3.5 8 20.5M16 3.5l-2 17"/></svg><span>Add to Slack</span></a>
         <a class="button" href="#commands"><span>See the commands</span><svg class="i" viewBox="0 0 24 24" aria-hidden="true" focusable="false"><path d="M5 12h14M13 6l6 6-6 6"/></svg></a>

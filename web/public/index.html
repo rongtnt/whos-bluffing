@@ -3,13 +3,14 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
-<title>Who's Bluffing? Find out who's bluffing.</title>
-<meta name="description" content="A one-minute game: ten either-or questions. Say how sure you are and find out whether your confidence matches what you know.">
+<title>Who's Bluffing? | Free Trivia Game to Challenge Friends</title>
+<meta name="description" content="Play ten trivia questions, say how sure you are, and challenge a friend to the same round. Free, with no account or ads. Also available on Discord and Slack.">
+<meta name="robots" content="max-image-preview:large">
 <link rel="canonical" href="https://whosbluffing.com/">
 <meta property="og:type" content="website">
 <meta property="og:site_name" content="Who's Bluffing?">
-<meta property="og:title" content="Who's Bluffing? Find out who's bluffing.">
-<meta property="og:description" content="A one-minute game: ten either-or questions. Say how sure you are and find out whether your confidence matches what you know.">
+<meta property="og:title" content="Who's Bluffing? | Free Trivia Game to Challenge Friends">
+<meta property="og:description" content="Play ten trivia questions, say how sure you are, and challenge a friend to the same round. Free, with no account or ads. Also available on Discord and Slack.">
 <meta property="og:url" content="https://whosbluffing.com/">
 <meta property="og:image" content="https://whosbluffing.com/og.png">
 <meta property="og:image:width" content="1200">
@@ -23,6 +24,21 @@
 <meta name="theme-color" content="#FBFAF7" media="(prefers-color-scheme: light)">
 <meta name="theme-color" content="#0E1116" media="(prefers-color-scheme: dark)">
 <link rel="stylesheet" href="/styles.css">
+<script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@type": "WebApplication",
+  "@id": "https://whosbluffing.com/#game",
+  "name": "Who's Bluffing?",
+  "url": "https://whosbluffing.com/",
+  "description": "A free trivia game: answer ten questions, say how sure you are, and challenge friends to the same round. Every answer comes with a source.",
+  "applicationCategory": "GameApplication",
+  "operatingSystem": "Web browser",
+  "isAccessibleForFree": true,
+  "inLanguage": "en",
+  "image": "https://whosbluffing.com/og.png"
+}
+</script>
 <script src="/site.js"></script>
 <script type="module" src="/app.js"></script>
 </head>
@@ -50,7 +66,7 @@
     <div class="home-copy">
       <svg class="mark hero-mark anim" data-mark viewBox="0 0 38 44" aria-hidden="true" focusable="false"><g transform="rotate(-14 16.5 20)"><rect class="back" x="4.00" y="2.50" width="25" height="35" rx="5.5"/></g><g transform="rotate(9 22.5 24)"><rect class="front" x="10.00" y="6.50" width="25" height="35" rx="5.5"/><g transform="rotate(45 22.5 24)"><rect class="pip" x="17.75" y="19.25" width="9.5" height="9.5" rx="1.6"/></g></g></svg>
       <h1 id="hero-title">Who's <span class="h1-accent">bluffing</span>?</h1>
-      <p class="hero-sub">Ten questions. Stake how sure you are. Being sure only pays when you're right.</p>
+      <p class="hero-sub">Ten trivia questions. Say how sure you are. Find out which of your friends is bluffing.</p>
       <p class="hero-note">Every answer comes with a source, so you learn as you play.</p>
       <div class="actions">
         <button class="primary" id="play" type="button" data-play><svg class="i i-fill" viewBox="0 0 24 24" aria-hidden="true" focusable="false"><path d="M8 5.6v12.8a.6.6 0 0 0 .92.5l10.08-6.4a.6.6 0 0 0 0-1L8.92 5.1a.6.6 0 0 0-.92.5z"/></svg><span>Play now</span></button>

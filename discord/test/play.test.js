@@ -1,6 +1,6 @@
 import { test } from 'node:test';
 import assert from 'node:assert/strict';
-import { playEnd } from '../src/game.js';
+import { WELCOME, channelHello, playEnd } from '../src/game.js';
 import {
   COMPLETE, GUILD, TRUTH, USER, anon, apiCalls, buttonPayload, commandPayload, community, fakeD1, followUps, makeEnv, mockFetch,
   originalEdits, send, signedRequest,
@@ -10,6 +10,26 @@ const press = (env, customId) => send(env, signedRequest(buttonPayload(customId)
 const lastEdit = (calls) => originalEdits(calls).at(-1).body;
 const ids = (msg) => msg.components.flatMap((r) => r.components.map((b) => b.custom_id));
 const labels = (msg) => msg.components.flatMap((r) => r.components.map((b) => b.label));
+
+test('public Play now buttons start separate private rounds and report failures privately', async () => {
+  const env = makeEnv();
+  let calls = mockFetch();
+  for (const [index, message] of [WELCOME, channelHello(14, Date.now())].entries()) {
+    const user = String(BigInt(USER) + BigInt(index));
+    const res = await send(env, signedRequest(buttonPayload(ids(message)[0], { user })));
+    assert.deepEqual(await res.json(), { type: 5, data: { flags: 64 } });
+    assert.match(lastEdit(calls).content, /Question 1 of 10/);
+  }
+  assert.equal(env.DB.rows('SELECT * FROM play_state').length, 2);
+  assert.ok(calls.filter((c) => c.host === 'discord.com').every((c) =>
+    c.method === 'PATCH' && c.path.endsWith('/messages/@original')));
+
+  calls = mockFetch({ apiDown: true });
+  const res = await press(env, 'start');
+  assert.deepEqual(await res.json(), { type: 5, data: { flags: 64 } });
+  assert.equal(lastEdit(calls).content, "Who's Bluffing is taking a break, try again in a minute.");
+  assert.equal(followUps(calls).length, 0, 'resolve the private deferred reply on failure');
+});
 
 // Plays question k: A at 90% on even k (right, +96), B at 60% on odd k (wrong, -44).
 async function answer(env, calls, round, k) {

@@ -3,13 +3,14 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
-<title>Who's Bluffing? for Discord: one question a day for your server</title>
-<meta name="description" content="Add it once and your server gets one question a day: tap A or B, say how sure you are, and see who was bluffing at the reveal. Free; no messages or usernames stored.">
+<title>Free Discord Trivia Bot | Who's Bluffing?</title>
+<meta name="description" content="A free Discord trivia bot for the friend who knows everything. Play ten questions, challenge friends, or set up daily trivia and a leaderboard for your server.">
+<meta name="robots" content="max-image-preview:large">
 <link rel="canonical" href="https://whosbluffing.com/discord">
 <meta property="og:type" content="website">
 <meta property="og:site_name" content="Who's Bluffing?">
-<meta property="og:title" content="Who's Bluffing? for Discord: one question a day for your server">
-<meta property="og:description" content="Add it once and your server gets one question a day: tap A or B, say how sure you are, and see who was bluffing at the reveal. Free; no messages or usernames stored.">
+<meta property="og:title" content="Free Discord Trivia Bot | Who's Bluffing?">
+<meta property="og:description" content="A free Discord trivia bot for the friend who knows everything. Play ten questions, challenge friends, or set up daily trivia and a leaderboard for your server.">
 <meta property="og:url" content="https://whosbluffing.com/discord">
 <meta property="og:image" content="https://whosbluffing.com/og.png">
 <meta property="og:image:width" content="1200">
@@ -23,6 +24,22 @@
 <meta name="theme-color" content="#FBFAF7" media="(prefers-color-scheme: light)">
 <meta name="theme-color" content="#0E1116" media="(prefers-color-scheme: dark)">
 <link rel="stylesheet" href="/styles.css">
+<script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@type": "SoftwareApplication",
+  "@id": "https://whosbluffing.com/discord#app",
+  "name": "Who's Bluffing? for Discord",
+  "url": "https://whosbluffing.com/discord",
+  "description": "A free Discord trivia bot with ten-question rounds, friend challenges, daily server questions and a leaderboard.",
+  "applicationCategory": "GameApplication",
+  "operatingSystem": "Discord",
+  "isAccessibleForFree": true,
+  "inLanguage": "en",
+  "installUrl": "https://discord.com/oauth2/authorize?client_id=1556371051439587461",
+  "sameAs": "https://discord.com/discovery/applications/1556371051439587461"
+}
+</script>
 <script src="/site.js"></script>
 </head>
 <body>
@@ -47,9 +64,9 @@
 <section class="hero" aria-labelledby="discord-title">
   <div class="wrap hero-grid">
     <div>
-      <p class="eyebrow">Discord app</p>
+      <p class="eyebrow">Free Discord trivia bot</p>
       <h1 id="discord-title">Who's Bluffing? for Discord</h1>
-      <p class="hero-sub">Add it once and your server gets one question a day. Members tap A or B and say how sure they are; eight hours later the post turns into the answer, with your server’s top 5 and the bluff of the day.</p>
+      <p class="hero-sub">Everyone has that friend who thinks they know everything. Put them to the test with trivia. Play ten questions with <code>/bluff play</code>, then challenge a friend to the same round. Want a daily question for your server? An admin can choose a channel with <code>/bluff setup</code>.</p>
       <div class="actions">
         <a class="button primary" href="/discord" data-discord-install><svg class="i" viewBox="0 0 24 24" aria-hidden="true" focusable="false"><path d="M4 5.5h11a2 2 0 0 1 2 2V13a2 2 0 0 1-2 2H9l-4 3.5V15H4a2 2 0 0 1-2-2V7.5a2 2 0 0 1 2-2z"/><path d="M19.5 9.5H20a2 2 0 0 1 2 2V17a2 2 0 0 1-2 2h-1v3l-3.5-3H12"/></svg><span>Add to Discord</span></a>
         <a class="button" href="#commands"><span>See the commands</span><svg class="i" viewBox="0 0 24 24" aria-hidden="true" focusable="false"><path d="M5 12h14M13 6l6 6-6 6"/></svg></a>
@@ -187,7 +204,7 @@
         <details><summary>Who can change the channel or the hour?</summary><p>Members with the Manage Server or Administrator permission, with <code>/bluff setup</code>. Everyone else can post the question, play and see the leaderboard.</p></details>
         <details><summary>How are points worked out?</summary><p>Each answer scores 100 − 400 × (confidence − outcome)², where the outcome is 1 if right and 0 if not: 50% scores 0, and 100% scores +100 when right and −300 when wrong. Honest confidence earns the most over time.</p></details>
         <details><summary>What is roast mode?</summary><p>Off by default: the reveal says “Someone was 90% sure…”, and nobody is named next to a loss. <code>/bluff setup roast:on</code> names the biggest bluffer in the reveal.</p></details>
-        <details><summary>Is it on top.gg or in the App Directory?</summary><p>Not yet. Add it with the Add to Discord button on this page.</p></details>
+        <details><summary>Where can I find the Discord app?</summary><p>Find <a href="https://discord.com/discovery/applications/1556371051439587461">Who's Bluffing? in Discord's App Directory</a>, or use the Add to Discord button on this page. After adding it, try <code>/bluff play</code> for a ten-question round.</p></details>
       </div>
   </div>
 </section>

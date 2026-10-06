@@ -19,9 +19,9 @@ this server's top 5 and the bluff of the day.
 - **Mondays:** a recap of last week. It shows how often the server was right at each confidence level, the most
   calibrated member (named), the bluff count (80%+ sure and wrong), and the streak of days with an answer.
 - **When a server adds it:** one welcome message, in the server's system channel or else the text channel nearest the
-  top of the list that Who's Bluffing may post in: "Who's Bluffing? is in. One question a day, everyone stakes how sure
-  they are, the reveal shows who was bluffing. An admin runs /bluff setup channel:#channel to pick where it posts, and
-  anyone can try /bluff play right now." Daily questions start once an admin picks a channel. This needs the Webhook
+  top of the list that Who's Bluffing may post in. Its **Play now** button opens a private ten-question round for each
+  member who taps it; Challenge at the end shares their result only when pressed. Daily questions start once an admin
+  picks a channel with `/bluff setup`; that channel's hello also has Play now. The install welcome needs the Webhook
   Events URL (step 7).
 
 ## Commands

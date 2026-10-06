@@ -50,15 +50,40 @@ test('every page: title, description, canonical, Open Graph, icons, theme colour
   }
 });
 
-test('markup is CSP-safe (no inline scripts, styles or handlers) and every page is in the sitemap', () => {
+test('markup is CSP-safe and the sitemap lists only indexable pages', () => {
   for (const file of pages) {
     const h = read(new URL(file, PUBLIC));
-    assert.doesNotMatch(h, /<script(?![^>]*\bsrc=)[^>]*>/, `${file}: inline script`);
+    const executable = h.replace(/<script type="application\/ld\+json">([\s\S]*?)<\/script>/g, (_, data) => {
+      JSON.parse(data); // Structured data is an inert JSON block, not executable JavaScript.
+      return '';
+    });
+    assert.doesNotMatch(executable, /<script(?![^>]*\bsrc=)[^>]*>/, `${file}: inline script`);
     assert.doesNotMatch(h, /\sstyle=|<style|\son[a-z]+=/i, `${file}: inline style or event handler`);
   }
   const listed = [...read(new URL('sitemap.xml', PUBLIC)).matchAll(/<loc>https:\/\/whosbluffing\.com(\/[^<]*)<\/loc>/g)].map((m) => m[1]).sort();
-  const expected = pages.filter((f) => f !== '404.html').map(pathOf).sort();
+  const expected = [...pages.filter((f) => !/<meta name="robots" content="[^"]*noindex/.test(read(new URL(f, PUBLIC)))).map(pathOf), '/dares'].sort();
   assert.deepEqual(listed, expected);
+});
+
+test('search metadata describes the real apps; session pages stay out of search', () => {
+  for (const file of ['index.html', 'discord.html', 'slack.html']) {
+    const h = read(new URL(file, PUBLIC));
+    const data = JSON.parse(h.match(/<script type="application\/ld\+json">([\s\S]*?)<\/script>/)[1]);
+    assert.equal(data['@context'], 'https://schema.org');
+    assert.equal(data.url, `https://whosbluffing.com${pathOf(file)}`);
+    assert.equal(data.isAccessibleForFree, true);
+    assert.equal(data.applicationCategory, 'GameApplication');
+    assert.ok(!data.aggregateRating && !data.review, 'no invented ratings');
+    assert.match(h.match(/<title>(.*?)<\/title>/)[1], /Trivia/);
+    assert.match(data.description, /trivia/);
+  }
+  for (const file of ['results.html', 'class.html', 'stats.html']) {
+    assert.match(read(new URL(file, PUBLIC)), /<meta name="robots" content="noindex, follow">/);
+  }
+  assert.doesNotMatch(read(new URL('robots.txt', PUBLIC)), /Disallow:\s*\/\s*$/m, 'public pages remain crawlable');
+  const discord = read(new URL('discord.html', PUBLIC));
+  assert.match(discord, /href="https:\/\/discord.com\/discovery\/applications\/1556371051439587461"/);
+  assert.doesNotMatch(discord, /<p>Not yet\. Add it with/);
 });
 
 test('/research quotes the MAU and community definitions from PREREG word for word', () => {

@@ -122,7 +122,7 @@ const say = (data, { ephemeral = true } = {}) =>
 
 // Defers now and finishes in the background. On failure a command's deferred reply becomes the "taking a break"
 // notice; a pressed button keeps its message (so it can be pressed again) and the notice comes as a private follow-up.
-function defer(ctx, env, i, work, { ephemeral = true } = {}) {
+function defer(ctx, env, i, work, { ephemeral = true, update = i.type === COMPONENT } = {}) {
   const run = async () => {
     const msg = await work();
     if (msg) await editOriginal(env, i.token, msg); // null: nothing to change (a repeated tap)
@@ -130,11 +130,11 @@ function defer(ctx, env, i, work, { ephemeral = true } = {}) {
   const fail = (err) => {
     logError('task', err);
     const notice = { content: game.FAIL_TEXT };
-    const send = i.type === COMPONENT ? followUp(env, i.token, notice) : editOriginal(env, i.token, notice);
+    const send = update ? followUp(env, i.token, notice) : editOriginal(env, i.token, notice);
     return send.catch((e) => logError('notice', e));
   };
   ctx.waitUntil(run().catch(fail));
-  return i.type === COMPONENT ? respond(6) : respond(5, ephemeral ? { flags: EPHEMERAL } : {});
+  return update ? respond(6) : respond(5, ephemeral ? { flags: EPHEMERAL } : {});
 }
 
 const canManage = (i) => (BigInt(i.member.permissions ?? '0') & MANAGE) !== 0n;
@@ -173,6 +173,8 @@ function component(i, env, ctx) {
   const [kind, ...args] = i.data.custom_id.split(':');
   const later = (work) => defer(ctx, env, i, work);
   switch (kind) {
+    // Public welcome buttons open a private round; never replace the server's welcome message.
+    case 'start': return defer(ctx, env, i, () => playStart(env, i), { update: false });
     case 'q': return say(game.confidencePicker(args[0], args[1], args[2], Number(args[3])));
     case 'c': return later(() => lockIn(env, i, args));
     case 'pa': return later(() => playChoose(env, i, args));
