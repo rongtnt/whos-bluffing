@@ -3,13 +3,13 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
-<title>Live stats | Who's Bluffing?</title>
-<meta name="description" content="Monthly players, communities, today’s daily game and the full assessment’s calibration curve, with the definition behind every number.">
+<title>Player stats | Who's Bluffing?</title>
+<meta name="description" content="See how many people have played Who's Bluffing? A free trivia game about how sure you are.">
 <link rel="canonical" href="https://whosbluffing.com/stats">
 <meta property="og:type" content="website">
 <meta property="og:site_name" content="Who's Bluffing?">
-<meta property="og:title" content="Live stats | Who's Bluffing?">
-<meta property="og:description" content="Monthly players, communities, today’s daily game and the full assessment’s calibration curve, with the definition behind every number.">
+<meta property="og:title" content="Player stats | Who's Bluffing?">
+<meta property="og:description" content="See the total number of players on Who's Bluffing?.">
 <meta property="og:url" content="https://whosbluffing.com/stats">
 <meta property="og:image" content="https://whosbluffing.com/og.png">
 <meta property="og:image:width" content="1200">
@@ -24,7 +24,6 @@
 <meta name="theme-color" content="#0E1116" media="(prefers-color-scheme: dark)">
 <link rel="stylesheet" href="/styles.css">
 <script src="/site.js"></script>
-<script type="module" src="/app.js"></script>
 </head>
 <body>
 <a class="skip" href="#main">Skip to content</a>
@@ -45,34 +44,14 @@
   </div>
 </header>
 <main id="main">
-<div class="stats-top">
-  <h1>Live stats</h1>
-  <section class="live" aria-labelledby="live-title" data-live>
-    <h2 class="sr-only" id="live-title">Today’s room</h2>
-    <div class="live-top" data-live-top>
-      <figure class="live-room">
-        <div class="room-box" data-room-chart><svg class="room-chart is-example" viewBox="0 0 200 160" role="img" aria-label="How sure against how often right"><path class="room-axis" d="M40 8V138H192"/><path class="room-ideal" d="M40 73L192 8"/><circle cx="40" cy="73" r="5.1"/><circle cx="70.4" cy="66.5" r="5.4"/><circle cx="100.8" cy="60" r="5.7"/><circle cx="131.2" cy="55.7" r="6"/><circle cx="161.6" cy="52.2" r="5.7"/><circle cx="192" cy="47" r="5.4"/><text x="35" y="15" text-anchor="end">100%</text><text x="35" y="138" text-anchor="end">0%</text><text x="40" y="154">50%</text><text x="116" y="154" text-anchor="middle">sure</text><text x="192" y="154" text-anchor="end">100%</text><text transform="rotate(-90)" x="-73" y="10" text-anchor="middle">right</text></svg></div>
-        <figcaption class="live-cap" data-room-cap>Example</figcaption>
-      </figure>
-      <figure class="live-bluffs">
-        <ol class="receipts is-example" data-receipts><li class="receipt"><span class="receipt-q">Which is longer?</span><span class="receipt-pick"><s>The Danube</s><b>−300</b></span><span class="stamp stamp-bluff" data-stake="100">BLUFF</span></li><li class="receipt"><span class="receipt-q">Which is higher?</span><span class="receipt-pick"><s>K2</s><b>−224</b></span><span class="stamp stamp-bluff" data-stake="90">BLUFF</span></li></ol>
-        <figcaption class="live-cap" data-receipts-cap>Example</figcaption>
-      </figure>
-    </div>
-    <div class="live-types">
-      <div class="type-tiles" role="group" aria-labelledby="types-title">
-        <button type="button" class="type-tile" data-type="bluffer" aria-pressed="false"><svg class="i" viewBox="0 0 24 24" aria-hidden="true" focusable="false"><path d="M12 3c3 3.5 5.5 6 5.5 10a5.5 5.5 0 0 1-11 0c0-2.2 1-4 2.6-5.5.3 1.6 1 2.6 2 3.2C11.3 8.6 11 5.6 12 3z"/></svg><span>Bluffer</span><span class="type-band" aria-hidden="true"><i></i><i></i><i></i><i></i><i></i></span><span class="type-tip">Way more sure than right: 15 or more points over.</span></button>
-        <button type="button" class="type-tile" data-type="hot-headed" aria-pressed="false"><svg class="i" viewBox="0 0 24 24" aria-hidden="true" focusable="false"><path d="M12 19V5M6 11l6-6 6 6"/></svg><span>Too sure</span><span class="type-band" aria-hidden="true"><i></i><i></i><i></i><i></i><i></i></span><span class="type-tip">5 to 15 points more sure than right.</span></button>
-        <button type="button" class="type-tile" data-type="calibrated" aria-pressed="false"><svg class="i" viewBox="0 0 24 24" aria-hidden="true" focusable="false"><path d="M12 4v16M8 20h8M5 8h14M5 8l-3 6h6zM19 8l-3 6h6z"/></svg><span>Spot on</span><span class="type-band" aria-hidden="true"><i></i><i></i><i></i><i></i><i></i></span><span class="type-tip">Your confidence matches how often you're right, within 5 points.</span></button>
-        <button type="button" class="type-tile" data-type="modest" aria-pressed="false"><svg class="i" viewBox="0 0 24 24" aria-hidden="true" focusable="false"><path d="M12 5v14M6 13l6 6 6-6"/></svg><span>Too modest</span><span class="type-band" aria-hidden="true"><i></i><i></i><i></i><i></i><i></i></span><span class="type-tip">5 to 15 points less sure than right.</span></button>
-        <button type="button" class="type-tile" data-type="hedger" aria-pressed="false"><svg class="i" viewBox="0 0 24 24" aria-hidden="true" focusable="false"><path d="M5 12h14"/></svg><span>Playing it safe</span><span class="type-band" aria-hidden="true"><i></i><i></i><i></i><i></i><i></i></span><span class="type-tip">15 or more points less sure than right.</span></button>
-      </div>
-      <p class="live-cap" id="types-title">Which one are you?</p>
-    </div>
-  </section>
-</div>
-<div id="app"><p class="muted">Loading…</p></div>
-<noscript><p class="wrap">This page needs JavaScript.</p></noscript>
+<section class="player-status wrap" aria-labelledby="player-count-title">
+  <h1 id="player-count-title">Total Players</h1>
+  <p class="player-count" data-player-count aria-live="polite">–</p>
+  <p class="muted">People testing how sure they are.</p>
+  <p class="small muted">Counts anonymous player IDs with a completed game or a daily chat answer. One person can use more than one ID.</p>
+  <p class="status-line" role="status"><span class="status-dot" data-api-dot></span><span data-api-text>Loading…</span></p>
+  <a class="button primary" href="/play">Start Playing</a>
+</section>
 </main>
 <footer class="site-foot">
   <div class="foot-grid">
@@ -120,5 +99,6 @@
   </div>
   <p class="foot-note">An independent, non-commercial project. Source published for transparency; all rights reserved (see <a href="https://github.com/rongtnt/whos-bluffing/blob/main/LICENSE">LICENSE on GitHub</a>).</p>
 </footer>
+<script type="module" src="/status.js"></script>
 </body>
 </html>

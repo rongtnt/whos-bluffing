@@ -288,6 +288,7 @@
     "streak": "day streak",
     "rank_of": "of {players} in today’s ranked round",
     "rank_quick": "quick rounds have no rank",
+    "confidence_label": "average confidence",
     "right_label": "right",
     "you": "You",
     "chart_note": "Each dot is one confidence level; dots below the dashed line mean you were surer than right.",

@@ -2,6 +2,13 @@
 
 Deviations from `prereg/PREREG.md` after it is finalized are logged here with a date and a reason.
 
+## 2026-10-06 (question variety and private activity counts; pending deployment)
+- Added 80 authored History and 80 Languages questions with sources and short explanations. New rounds in these packs use only the authored bank, at all three difficulties. Rounds cap formats and subtopics, avoid repeating a subject within a round, and prefer unseen subjects across rounds. History also caps each era and region at four of ten questions. Reason: user feedback found company/aircraft dates and speaker counts repetitive.
+- Difficulty labels remain editorial estimates, not empirically calibrated. New question IDs are q00101–q00260; earlier IDs, scheduled chat questions, fixed dares, and full-assessment items are preserved. Analysis must distinguish the content and exposure periods.
+- Removed daily ranked from the picker and results. Requests to start it return HTTP 410; stored records and old challenge links remain readable for continuity.
+- Public status now shows Total Players only. Owner access exposes four counts: Total Players, DAU (UTC day), MAU (30 UTC dates including today), and annual active users (365 UTC dates including today). A qualifying activity is a completed round/assessment or daily chat answer. IDs are deduplicated across surfaces; separate IDs belonging to the same person cannot be linked. Chat activity uses its answer timestamp. Historical research KPI snapshots retain their frozen definitions privately; these product definitions are a dated deviation, not a retroactive rewrite.
+- Existing activity/statistics endpoints require the owner key and responses are not publicly cacheable. No measured retention or conversion improvement is claimed.
+
 ## 2026-10-05 (authored quick questions; pending deployment)
 - Added 60 short, sourced questions with explanatory reveals, including 24 AI questions. Reason: launch feedback described the generated comparisons as dull and similar. New All and AI quick rounds prefer this bank, cap topic and format repetition, and prefer unseen questions. Other specialist packs retain their comparison banks.
 - Deviation from the frozen comparison-only design: authored questions include misconceptions, origins, scenarios and probability. Their easy/medium/hard labels are editorial estimates, not pageview/ratio-derived or empirically calibrated. The existing difficulty mixes and confidence scoring stay the same. Question IDs beginning with `q` identify this content in stored answers; deployment time and revision must be recorded when published. Analysis must distinguish this bank and exposure period from earlier quick rounds.

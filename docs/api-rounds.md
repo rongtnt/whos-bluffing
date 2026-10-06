@@ -1,5 +1,15 @@
 # Rounds API contract (replaces the daily-item loop for the viral game; the full assessment at /test keeps intervals)
 
+Current product contract (2026-10-06): use `mode=quick`; `mode=ranked` returns 410. Old `rk-<date>` challenge links remain readable. History and Languages each have 80 authored questions with mixed formats, subtopic caps, and subject reuse avoidance; History also balances eras and regions. These packs do not fall back to generated comparisons.
+
+- `GET /api/players` is the only public product count: `{total_players}` (cached 60 seconds, CORS `*`).
+- `GET /api/kpi` requires `x-kpi-key: <KPI_KEY>` and returns `{as_of, total_players, dau, mau, yau}`. DAU uses one UTC date; MAU and YAU use rolling 30/365 UTC dates including `as_of`. Counts deduplicate anonymous IDs across completed rounds, completed assessments, and daily chat answers. Page views and unfinished rounds do not count. One person with several IDs may count several times.
+- `POST /api/kpi/run` retains private historical research snapshots and returns the same four product counts for its `as_of` date.
+- Legacy aggregate reads `/api/stats`, `/api/daily/stats`, and `/api/round/stats` also require the owner key. Unauthorized requests return 401; authorized responses have `Cache-Control: private, no-store` and no CORS header. Keys belong in headers, never URLs or client-side code.
+
+The original contract below documents stored data and legacy replay behaviour; the access and creation rules above supersede its public-read and ranked-start descriptions.
+
+
 Authored quick questions (2026-10-05): new `all` and `ai` quick rounds prefer `items/quick_curated.json`, with generated comparisons as fallback. IDs are `q` plus five digits; existing comparisons keep `p` plus five digits. IDs and answers are immutable after deployment; flawed questions are retired, never rewritten under an existing ID. Ranked schedules, daily chat questions, dares and the full assessment are unchanged.
 - `pack=memes` draws from 40 authored meme questions (16 easy, 12 medium, 12 hard) in the same bank. It is offered only when the varied sampler can fill a whole round at that difficulty. Memes stay out of All; a shared source identifies questions about the same meme so it cannot appear twice in one round.
 - The difficulty mixes remain 10 easy, 3/4/3 normal and 0/4/6 brutal. Authored difficulty labels are editorial estimates, exempt from the generated bank's pageview, ratio and AI-tier rules. They are not measured accuracy or a claim of psychometric equivalence.

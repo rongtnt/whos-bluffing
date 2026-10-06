@@ -11,7 +11,7 @@
 //                                          /discord and /commands, theme toggle label and persistence
 //   node design/render.js flow [BASE]      local-only: home -> picker -> resume -> results, reload/back/forward, replay
 //   node design/render.js rounds [BASE]    design/screens/rounds-{item,reveal-right,reveal-wrong,end,challenge}-<width>-
-//                                          <theme>.png at 375 and 1280 px, motion on: plays today's ranked round in the
+//                                          <theme>.png at 375 and 1280 px, motion on: plays a saved topic round in the
 //                                          page (the first answer right at 100%, the second wrong at 100%) after four API
 //                                          players for the leaderboard, and opens a challenge link from a fifth
 //   node design/render.js results [BASE]   design/screens/results-<width>-<theme>.png at 375, 768 and 1280 px: the full
@@ -19,7 +19,7 @@
 //   node design/render.js demo [BASE] [vertical|square] [--music FILE] [--edition ai]
 //                                          public/press/demo-vertical.mp4 (1080x1920) and demo.mp4 (1080x1080), one
 //                                          20 s edit with sound; demo.gif, demo-poster.png, demo-vertical-poster.png and
-//                                          design/screens/demo-vertical-frames.png: today's ranked round played in the
+//                                          design/screens/demo-vertical-frames.png: a saved topic round played in the
 //                                          page on a stand-in clock, composed by design/demo.html, sound from
 //                                          design/soundtrack.js (FILE: the music instead of the synthesised bed; see
 //                                          design/MEDIA_NOTES.md), cut by ffmpeg (FFMPEG=/path/to/ffmpeg picks another)
@@ -213,8 +213,7 @@ async function flowCheck(cdp, base) {
   await open(cdp, `${base}/results`, { width: 375 });
   await check("!document.querySelector('.result-title') && !!document.querySelector('#app a[href=\"/play\"]')", 'a direct result link has a useful empty state');
   await open(cdp, `${base}/play`, { width: 375 });
-  await js(`(async () => { document.getElementById('play-ranked').click(); ${waitFor('button.pick')}; return true; })()`);
-  await check("JSON.parse(localStorage.getItem('whosbluffing_round')).mode === 'ranked'", 'ranked is still available as a separate action');
+  await check("!document.getElementById('play-ranked')", 'daily ranked is absent from the picker');
   for (const width of [375, 1280]) {
     await open(cdp, `${base}/play`, { width, motion: 'no-preference', dark: width === 375 });
     await js(`(async () => { document.getElementById('play').click(); ${waitFor('.deal-card')};
@@ -235,11 +234,11 @@ async function flowCheck(cdp, base) {
   await js(`window.fetch = () => Promise.resolve(new Response('{}', { status: 503 })); true`);
   await js(`(async () => { document.getElementById('play').click(); ${waitFor('#app .msg')}; return true; })()`);
   await check("!document.querySelector('.round-deal') && !!document.querySelector('#app button')", 'failed loading offers retry without leaving an animation running');
-  console.log('PASS home, choices, resume, result, refresh, Back/Forward, replay, ranked, ten-card deal, skip, reduced motion, failed loading, mobile overflow');
+  console.log('PASS home, choices, resume, result, refresh, Back/Forward, replay, no daily ranked, ten-card deal, skip, reduced motion, failed loading, mobile overflow');
 }
 
 // The truth (0 = A, 1 = B) of every pair, from the synced compact pairs.
-const truthOf = () => new Map(JSON.parse(readFileSync(join(WEB, 'functions/_pairs.json'), 'utf8')).pairs.map(([n, , , t]) => [`p${String(n).padStart(5, '0')}`, t]));
+const truthOf = () => new Map([...JSON.parse(readFileSync(join(WEB, 'functions/_pairs.json'), 'utf8')).pairs.map(([n, , , t]) => [`p${String(n).padStart(5, '0')}`, t]), ...JSON.parse(readFileSync(join(WEB, '../items/quick_curated.json'), 'utf8')).items.map((q) => [q.id, q.answer])]);
 
 // In the page: answers the question on screen (right or wrong, at conf), using the saved round to know which pair it is.
 const answerInPage = (truth, right, conf) => `(async () => { ${waitFor('button.pick')};
@@ -250,11 +249,9 @@ const answerInPage = (truth, right, conf) => `(async () => { ${waitFor('button.p
 
 async function roundScreens(cdp, base) {
   const get = (path) => fetch(`${base}${path}`).then((r) => r.json());
-  const ranked = await get('/api/round?mode=ranked');
+  const sample = { ...(await get('/api/round?mode=quick')), answers: {}, total: 0 };
   const all = truthOf();
-  const truth = new Map(ranked.items.map((i) => [i.id, all.get(i.id)])); // today's ten
-  const players = [['1111111110', [90]], ['1101101101', [80, 70]], ['1010101010', [100, 60]], ['1111110000', [70]]];
-  for (const [i, [pattern, confs]] of players.entries()) await playRoundApi(base, ranked, `shotRanked${i}`.padEnd(22, 'x'), pattern, confs);
+  const truth = new Map(sample.items.map((i) => [i.id, all.get(i.id)])); // a fixed preview round
   const host = await playRoundApi(base, await get('/api/round?mode=quick'), 'shotHostSam'.padEnd(22, 'x'), '1110111011', [90, 80, 70], { nickname: 'Sam' });
   const challenge = new URL(host.challenge_url).pathname;
   for (const dark of [false, true]) {
@@ -262,9 +259,9 @@ async function roundScreens(cdp, base) {
       const theme = dark ? 'dark' : 'light';
       const file = (name) => join(WEB, `design/screens/rounds-${name}-${w}-${theme}.png`);
       await open(cdp, `${base}/support`, { width: w, height: h, dark }); // a fresh player in this browser
-      await evaluate(cdp, `localStorage.clear(); localStorage.setItem('whosbluffing_anon', ${JSON.stringify(JSON.stringify(`shot${theme}${w}`.padEnd(22, 'y')))}); localStorage.setItem('whosbluffing_sound', 'off'); true`);
+      await evaluate(cdp, `localStorage.clear(); localStorage.setItem('whosbluffing_anon', ${JSON.stringify(JSON.stringify(`shot${theme}${w}`.padEnd(22, 'y')))}); localStorage.setItem('whosbluffing_sound', 'off'); localStorage.setItem('whosbluffing_round', ${JSON.stringify(JSON.stringify(sample))}); true`);
       await open(cdp, `${base}/play`, { width: w, height: h, dark, motion: 'no-preference' });
-      await evaluate(cdp, `(async () => { document.getElementById('play-ranked').click(); (${waitFor('button.pick')}).click(); ${waitFor('#conf:not([hidden]) [data-conf="80"]')}; return true; })()`);
+      await evaluate(cdp, `(async () => { document.querySelector('#resume-round button').click(); (${waitFor('button.pick')}).click(); ${waitFor('#conf:not([hidden]) [data-conf="80"]')}; return true; })()`);
       await sleep(300);
       await capture(cdp, file('item'), w, h);
       await evaluate(cdp, answerInPage(truth, true, 100)); // right at 100%: confetti, the gold stamp
@@ -277,7 +274,7 @@ async function roundScreens(cdp, base) {
       await evaluate(cdp, `(async () => { for (let k = 2; k < 10; k += 1) { (${waitFor('#next')}).click(); ${waitFor('button.pick')};
         document.querySelectorAll('button.pick')[k % 2].click(); (${waitFor('[data-conf="70"]')}).click(); ${waitFor('.reveal')}; }
         (${waitFor('#next')}).click(); ${waitFor('.result-title')}; return true; })()`);
-      await sleep(2200); // squares, the type card's flip, the counters and the ranked leaderboard
+      await sleep(2200); // squares, the type card's flip, the counters and the results
       const box = await evaluate(cdp, `(() => { window.scrollTo(0, 0); const r = document.getElementById('app').getBoundingClientRect();
         return { y: Math.max(0, Math.round(r.top - 72)), h: Math.round(r.height + 96) }; })()`);
       await capture(cdp, file('end'), w, box.h, box.y); // the result, from the nav's height above it
@@ -389,7 +386,7 @@ const stampAt = (reveal) => reveal + Math.round(STAMP_S * FPS);
 // wrong option tapped at tapA, 100% tapped at tap100, the reveal at reveal); the end screen from b; the end card from
 // end. words: the frames the hook's words pop on, a tick each; sheet: the review frames, in seconds.
 const EDITIONS = {
-  // "You're not as smart as you think. Prove it." (design/demo.html's own hook), on today's ranked round.
+  // "You're not as smart as you think. Prove it." (design/demo.html's own hook), on a saved topic round.
   v3: { name: 'demo', cut: { hookEnd: 36, a: 36, tapA: 117, tap100: 177, reveal: 185, b: 296, end: 516, total: 600 },
     words: [2, 5, 8, 11, 14, 17, 20, 25, 28],
     captions: [{ html: 'Pick one.', from: 46, to: 177 }, { html: '100% sure. <b>100% wrong.</b>', from: stampAt(185), to: 296 },
@@ -498,7 +495,7 @@ async function quickRound(base, ed) {
 async function gameTake(cdp, base, dir, truth, { cut: CUT }, round) {
   const view = { width: 375, height: 667, scale: GAME_SCALE };
   await freshPlayer(cdp, base, view);
-  if (round) await evaluate(cdp, `localStorage.setItem('whosbluffing_round', ${JSON.stringify(JSON.stringify(round))}), true`);
+  await evaluate(cdp, `localStorage.setItem('whosbluffing_round', ${JSON.stringify(JSON.stringify(round))}), true`);
   const { identifier } = await cdp.send('Page.addScriptToEvaluateOnNewDocument', { source: VIRTUAL_CLOCK });
   await open(cdp, `${base}/play`, { ...view, motion: 'no-preference', waitReady: false });
   await cdp.send('Page.removeScriptToEvaluateOnNewDocument', { identifier });
@@ -509,7 +506,7 @@ async function gameTake(cdp, base, dir, truth, { cut: CUT }, round) {
   };
   await js(`document.querySelector('.nav').style.display = 'none', document.getElementById('app').style.scrollMarginTop = '0', __tick(1500), true`);
   await until(`document.documentElement.classList.contains('ready')`);
-  await js(`${round ? "document.querySelector('#resume-round button')" : "document.getElementById('play-ranked')"}.click(), true`);
+  await js("document.querySelector('#resume-round button').click(), true");
   await until(`!!document.querySelector('button.pick')`);
   await js('__tick(600)');
   const film = async (seg) => {
@@ -603,17 +600,9 @@ async function demo(cdp, base, part, music, edition = 'v3') {
   const ed = EDITIONS[edition];
   if (!ed) throw new Error(`unknown edition ${edition} (${Object.keys(EDITIONS).join(' | ')})`);
   const { cut, name } = ed;
-  let ids;
-  const round = ed.pair ? await quickRound(base, ed) : null;
-  if (round) ids = round.items.map((i) => i.id);
-  else {
-    const ranked = await fetch(`${base}/api/round?mode=ranked`).then((r) => r.json());
-    ids = ranked.items.map((i) => i.id);
-    const players = [['1111111110', [90]], ['1101101101', [80, 70]], ['1010101010', [100, 60]], ['1111110000', [70]]];
-    for (const [i, [pattern, confs]] of players.entries()) {
-      await playRoundApi(base, ranked, `demoApi${Date.now().toString(36)}${i}`.padEnd(22, 'x'), pattern, confs); // for the rank tile
-    }
-  }
+  const round = ed.pair ? await quickRound(base, ed)
+    : { ...(await fetch(`${base}/api/round?mode=quick`).then((r) => r.json())), answers: {}, total: 0 };
+  const ids = round.items.map((i) => i.id);
   const all = truthOf();
   const truth = new Map(ids.map((id) => [id, all.get(id)]));
   const dir = mkdtempSync(join(tmpdir(), 'whosbluffing-demo-'));

@@ -1,5 +1,8 @@
 # Daily API contract (web implements; Slack consumes)
 
+Access amendment (2026-10-06): `/api/daily/stats` and `/api/kpi` are owner-only (`x-kpi-key`, 401 without it, private/no-store). `/api/kpi` now returns `{as_of,total_players,dau,mau,yau}`. Only `/api/players` exposes a public product count, `{total_players}`. The retired daily range game's plays are not part of the current product counts.
+
+
 Base: the web deployment (`https://<host>/api`). All JSON. Dates are UTC `YYYY-MM-DD`. `surface` ∈ {web, slack, classroom}.
 
 - `GET /api/daily?date=YYYY-MM-DD` (date optional, default today UTC) → `{date, number, items:[{id, prompt, unit, accept:[lo,hi]}]}` — never includes answers.

@@ -106,18 +106,18 @@ content() { req GET "$1"; [ "$STATUS" = 200 ] && [[ "$BODY" == *"$2"* ]] || fail
 content / 'id="play"' 'home with the Play button'
 content / '<button type="button" data-surface="discord" aria-pressed="true">Discord</button>' 'home: the Discord · Slack · Web switch over the mocks'
 content / '<ul class="prompts-list" aria-hidden="true">' 'home: the question list, twice for its loop (sync-pages.js)'
-content /stats '<h1>Live stats</h1>' 'stats: its title above the live panel'
-content /stats '<section class="live" aria-labelledby="live-title" data-live>' 'stats: the live panel moved from the home page'
+content /stats '>Total Players</h1>' 'stats: total players'
+content /status 'class="player-count" data-player-count' 'status: centered total'
 content /support '<h2 id="faq">Answers that may help</h2>' 'support: the FAQ moved from the home page'
 content /test '<title>Full assessment' 'full assessment shell'
-content /stats '<title>Live stats' 'stats shell'
+content /stats '<title>Player stats' 'stats shell'
 content /labs '<title>Which lab bluffs least?' 'labs shell'
 content /parties '<title>Which side bluffs less?' 'parties shell'
 content /class '<title>Create a class code' 'class shell'
 content /class/d/AAAAAAAAAAAAAAAAAAAAAAAA '<script type="module" src="/app.js">' 'class dashboard (rewritten to the class shell, URL kept)'
 content /slack "<h1 id=\"slack-title\">Who's Bluffing? for Slack</h1>" 'Slack page'
 content /teachers '<a class="button primary" href="/class">' 'teachers page'
-content /research '<h2 id="numbers">Numbers we publish</h2>' 'research page (definitions checked against PREREG in test/site.test.js)'
+content /research '<h2 id="numbers">Player counts and research definitions</h2>' 'research page (definitions checked against PREREG in test/site.test.js)'
 content /support 'What to include in a bug report' 'support page'
 content /privacy '<h1 id="privacy">Privacy</h1>' 'privacy page (generated from PRIVACY.md)'
 content /terms '<h1 id="terms-of-use">Terms of use</h1>' 'terms page (generated from TERMS.md)'
@@ -178,7 +178,7 @@ req POST /api/submit '{not json'
 expect "invalid JSON -> 400" 400 'r.error === "invalid JSON"'
 
 echo "== stats"
-req GET /api/stats
+req GET /api/stats '' "x-kpi-key: $KPI_KEY"
 expect "stats -> counts (passed sessions only)" 200 \
   'r.n_sessions === 1 && r.n_answers === 18 && r.by_lang.en.n === 1 && !("zh" in r.by_lang) && r.by_lang.en.bins.length === 6 && r.by_lang.en.overconf_mean === 0.083333 && r.updated_at'
 
@@ -237,7 +237,7 @@ req POST /api/submit "$(submission en mix:5)"
 expect "probe session gets a percentile" 200 'r.percentile !== null'
 printf '%s' "$BODY" > "$STATE/probe.json"
 # /api/stats is cached for 60 s per URL; asking through another host name returns a fresh read of the aggregates.
-curl -s "http://localhost:$PORT/api/stats" > "$STATE/fresh.json"
+curl -s -H "x-kpi-key: $KPI_KEY" "http://localhost:$PORT/api/stats" > "$STATE/fresh.json"
 "${WRANGLER[@]}" d1 execute whosbluffing --local --persist-to "$STATE" --json --command \
   "SELECT id, lang, country, n_2afc, n_interval, overconf, int_hit, passed_attention, answers FROM sessions; EXPLAIN QUERY PLAN SELECT overconf, int_hit, answers FROM sessions WHERE class_code = 'ABC234'" \
   > "$STATE/direct.json" 2>/dev/null || fail "d1 execute (direct read of the sessions table)"
@@ -353,7 +353,7 @@ play "$ANON_C" slack 00000 smoke-team-hash
 expect "complete (slack + community, 0 hits) -> today's histogram over 3 players" 200 \
   'r.hits === 0 && r.today.players === 3 && r.today.avg_hits === 2 && r.today.hist.join() === "1,0,1,0,1,0"'
 
-req GET "/api/daily/stats?date=$TODAY"
+req GET "/api/daily/stats?date=$TODAY" '' "x-kpi-key: $KPI_KEY"
 expect "GET /api/daily/stats -> players 3, average 2, histogram [1,0,1,0,1,0]" 200 \
   'r.players === 3 && r.avg_hits === 2 && r.hist.join() === "1,0,1,0,1,0"'
 req POST /api/daily/answer "$(answer_body "$ANON_A" web 0 0)"
@@ -395,7 +395,7 @@ req POST /api/flag "$(flag_body "$ANON_C")"; expect "flag 3 (C) retires the item
 req GET /api/daily
 expect "retired item left out of today's game" 200 "r.items.length === 4 && !r.items.some((i) => i.id === '$FLAGGED')"
 # /api/daily/stats is cached for 60 s per URL; asking through another host name reads the recomputed aggregates.
-STATUS=$(curl -s -o "$STATE/stats2.json" -w '%{http_code}' "http://localhost:$PORT/api/daily/stats?date=$TODAY"); BODY=$(cat "$STATE/stats2.json")
+STATUS=$(curl -s -H "x-kpi-key: $KPI_KEY" -o "$STATE/stats2.json" -w '%{http_code}' "http://localhost:$PORT/api/daily/stats?date=$TODAY"); BODY=$(cat "$STATE/stats2.json")
 expect "stats recomputed without the retired item (A 4->$EXP_A, B, C 0; average $EXP_AVG)" 200 'r.players === 3 && r.avg_hits === Number(process.env.EXP_AVG) && r.hist.join() === process.env.EXP_HIST'
 req POST /api/daily/complete "$(complete_body "$ANON_A" web)"
 expect "A's result now counts 4 items" 200 'r.hits === Number(process.env.EXP_A) && r.n === 4 && r.share_text.includes(`${process.env.EXP_GRID} ${process.env.EXP_A}/4 at 90%`)'
@@ -530,10 +530,10 @@ in_pack() {
     const pairs = new Map(JSON.parse(readFileSync("functions/_pairs.json", "utf8")).pairs.map((p) => ["p" + String(p[0]).padStart(5, "0"), "w" + String(p[1]).padStart(4, "0")]));
     for (const q of JSON.parse(readFileSync("../items/quick_curated.json", "utf8")).items) { pairs.set(q.id, q.id); cat.set(q.id, q.topic === "ai" ? "ai_curated" : q.topic); }
     const r = JSON.parse(readFileSync(file, "utf8"));
-    process.exit(r.items.length === 10 && r.items.every((i) => PACKS[pack].categories.includes(cat.get(pairs.get(i.id)))) ? 0 : 1);
+    process.exit(r.items.length === 10 && r.items.every((i) => cat.get(pairs.get(i.id)) === pack || PACKS[pack].categories.includes(cat.get(pairs.get(i.id)))) ? 0 : 1);
   ' "$@"
 }
-for combo in history:easy geography:normal countries:brutal; do
+for combo in history:easy languages:normal geography:normal countries:brutal; do
   req GET "/api/round?mode=quick&pack=${combo%%:*}&difficulty=${combo#*:}"
   expect "GET quick pack=${combo%%:*} difficulty=${combo#*:} -> 10 pairs, both echoed" 200 "r.items.length === 10 && r.pack === '${combo%%:*}' && r.difficulty === '${combo#*:}'"
   printf '%s' "$BODY" > "$STATE/pack.json"
@@ -600,33 +600,41 @@ SHOWN=$(printf '%s' "$BODY" | node --input-type=module -e '
 [[ "$SHOWN" =~ ^\$[0-9.,]+\ (million|billion|trillion)\ \|\ \$[0-9.,]+\ (million|billion|trillion)$ ]] || fail "ai_money values read as dollars in words" "$SHOWN"
 pass "ai_money values as the reveal and the end-screen card show them: $SHOWN"
 
-echo "== public reads: CORS on GET /api/round/stats and /api/kpi only"
-# Through another host name, so the 60 s stats cache that later checks read stays untouched; the stats are asked twice,
-# so the second answer comes from the cache and must carry the header too.
-for path in /api/round/stats /api/round/stats /api/kpi; do
-  H=$(curl -s -D - -o /dev/null -H 'Host: cors.localhost' "$BASE$path")
-  grep -qi '^access-control-allow-origin: \*' <<< "$H" || fail "GET $path carries Access-Control-Allow-Origin: *" "$H"
-  pass "GET $path -> Access-Control-Allow-Origin: *"
+echo "== public total and private activity endpoints"
+for path in /api/players /api/players; do
+  H=$(curl -s -D - -o "$STATE/public.json" -H 'Host: cors.localhost' "$BASE$path")
+  grep -qi '^access-control-allow-origin: \*' <<< "$H" || fail "public count CORS" "$H"
+  node -e 'const r=JSON.parse(require("fs").readFileSync(process.argv[1])); if(Object.keys(r).join()!=="total_players" || !Number.isInteger(r.total_players))process.exit(1)' "$STATE/public.json" || fail "public count contains only total_players"
+  pass "public count has only total_players, including cached reads"
 done
-H=$(curl -s -D - -o /dev/null "$BASE/api/round?mode=ranked")
-! grep -qi '^access-control-allow-origin' <<< "$H" || fail "GET /api/round has no CORS header (not a public read)" "$H"
-pass "GET /api/round -> no CORS header (it can write a row)"
+for path in /api/kpi /api/stats /api/daily/stats /api/round/stats /api/round/stats/; do
+  req GET "$path"
+  expect "private $path without key -> 401" 401 'r.error === "unauthorized"'
+  req GET "$path" '' 'x-kpi-key: wrong'
+  expect "private $path with wrong key -> 401" 401 'r.error === "unauthorized"'
+  # Isolate legacy aggregate caches from the score fixtures below.
+  H=$(curl -s -D - -o /dev/null -H 'Host: privacy.localhost' -H "x-kpi-key: $KPI_KEY" "$BASE$path")
+  grep -qi '^cache-control: private, no-store' <<< "$H" || fail "private read must not be cached" "$H"
+  ! grep -qi '^access-control-allow-origin' <<< "$H" || fail "private read has no CORS" "$H"
+done
+req GET '/api/round?mode=ranked'
+expect "daily ranked is retired" 410 '/retired/.test(r.error)'
 
 echo "== bots host: only /api/* and only with x-bluff-bot (Host header emulated by wrangler pages dev)"
-STATUS=$(curl -s -o "$STATE/bots.json" -w '%{http_code}' -H 'Host: bots.whosbluffing.com' "$BASE/api/kpi"); BODY=$(cat "$STATE/bots.json")
+STATUS=$(curl -s -o "$STATE/bots.json" -w '%{http_code}' -H 'Host: bots.whosbluffing.com' "$BASE/api/players"); BODY=$(cat "$STATE/bots.json")
 expect "bots host without the key -> 403" 403 'r.error === "bot host requires key"'
-STATUS=$(curl -s -o "$STATE/bots.json" -w '%{http_code}' -H 'Host: bots.whosbluffing.com' -H 'x-bluff-bot: wrong' "$BASE/api/kpi"); BODY=$(cat "$STATE/bots.json")
+STATUS=$(curl -s -o "$STATE/bots.json" -w '%{http_code}' -H 'Host: bots.whosbluffing.com' -H 'x-bluff-bot: wrong' "$BASE/api/players"); BODY=$(cat "$STATE/bots.json")
 expect "bots host with a wrong key -> 403" 403 'r.error === "bot host requires key"'
-STATUS=$(curl -s -o "$STATE/bots.json" -w '%{http_code}' -H 'Host: bots.whosbluffing.com' -H "x-bluff-bot: $BOT_KEY" "$BASE/api/kpi"); BODY=$(cat "$STATE/bots.json")
-expect "bots host with the key -> the API" 200 'typeof r.mau === "number"'
+STATUS=$(curl -s -o "$STATE/bots.json" -w '%{http_code}' -H 'Host: bots.whosbluffing.com' -H "x-bluff-bot: $BOT_KEY" "$BASE/api/players"); BODY=$(cat "$STATE/bots.json")
+expect "bots host with the key -> the API" 200 'typeof r.total_players === "number"'
 STATUS=$(curl -s -o "$STATE/bots.json" -w '%{http_code}' -H 'Host: bots.whosbluffing.com' -H "x-bluff-bot: $BOT_KEY" "$BASE/discord"); BODY=$(cat "$STATE/bots.json")
 [ "$STATUS" = 200 ] && grep -qi "<html" "$STATE/bots.json" || fail "bots host, a page -> the static page (public/_routes.json runs Functions only on /api/* and /c/*)" "$STATUS"; pass "bots host, a page -> the static page (Functions only on /api/* and /c/*)"
-STATUS=$(curl -s -o /dev/null -w '%{http_code}' -H 'Host: whosbluffing.com' "$BASE/api/kpi")
+STATUS=$(curl -s -o /dev/null -w '%{http_code}' -H 'Host: whosbluffing.com' "$BASE/api/players")
 [ "$STATUS" = 200 ] || fail "normal host without a key -> unchanged (200)" "$STATUS"; pass "normal host without a key -> unchanged (200)"
 
 echo "== rounds: today's ranked round, rank, stats"
-req GET /api/round?mode=ranked
-expect "GET /api/round?mode=ranked -> today's 10, the same for everyone" 200 "r.round_id === 'rk-$TODAY' && r.mode === 'ranked' && r.items.length === 10"
+req GET "/api/round?round_id=rk-$TODAY"
+expect "Legacy ranked challenge replay -> saved ten" 200 "r.round_id === 'rk-$TODAY' && r.mode === 'ranked' && r.items.length === 10"
 printf '%s' "$BODY" > "$STATE/ranked.json"
 play_round "$STATE/ranked.json" "$HOST" web 1111111111 100
 req POST /api/round/complete "$(cbody "rk-$TODAY" "$HOST" web)"
@@ -637,7 +645,7 @@ expect "ranked complete in Discord (all wrong at 60%) -> -440, Bluffer, rank 2 o
 play_round "$STATE/ranked.json" "$RANKER" web 1010101010 80
 req POST /api/round/complete "$(cbody "rk-$TODAY" "$RANKER" web)"
 expect "ranked complete (half right at 80%) -> -360, rank 2 of 3" 200 'r.score === -360 && r.rank_today === 2 && r.players_today === 3'
-req GET "/api/round/stats?date=$TODAY"
+req GET "/api/round/stats?date=$TODAY" '' "x-kpi-key: $KPI_KEY"
 expect "GET /api/round/stats -> 3 players, 41 bins of 100 points, mean overconfidence +30" 200 \
   'r.players === 3 && r.score_hist.length === 41 && r.score_hist.reduce((s, c) => s + c, 0) === 3 && r.score_hist[40] === 1 && r.score_hist[26] === 1 && r.score_hist[25] === 1 && r.mean_overconfidence === 30 && r.bin_from === -3000 && r.bin_width === 100'
 
@@ -651,13 +659,13 @@ expect "pair flag without round_id -> 400" 400 '/round_id/.test(r.error)'
 req POST /api/flag "$(pflag "$RFLAG" "rk-$TODAY" "$HOST")"; expect "pair flag 1 (host)" 200 'r.ok === true'
 req POST /api/flag "$(pflag "$RFLAG" "rk-$TODAY" "$HOST")"; expect "the same id again counts once" 200 'r.ok === true'
 req POST /api/flag "$(pflag "$RFLAG" "rk-$TODAY" "$DISCORD")"; expect "pair flag 2 (Discord member)" 200 'r.ok === true'
-req GET /api/round?mode=ranked
+req GET "/api/round?round_id=rk-$TODAY"
 expect "two flags: the pair is still in today's ranked round" 200 'r.items.length === 10'
 req POST /api/flag "$(pflag "$RFLAG" "rk-$TODAY" "$RANKER")"; expect "pair flag 3 retires it" 200 'r.ok === true'
-req GET /api/round?mode=ranked
+req GET "/api/round?round_id=rk-$TODAY"
 expect "retired pair left out of today's ranked round" 200 "r.items.length === 9 && !r.items.some((i) => i.id === '$RFLAG')"
 # /api/round/stats is cached for 60 s per URL; asking through another host name reads the recomputed aggregates.
-STATUS=$(curl -s -o "$STATE/rstats2.json" -w '%{http_code}' "http://localhost:$PORT/api/round/stats?date=$TODAY"); BODY=$(cat "$STATE/rstats2.json")
+STATUS=$(curl -s -H "x-kpi-key: $KPI_KEY" -o "$STATE/rstats2.json" -w '%{http_code}' "http://localhost:$PORT/api/round/stats?date=$TODAY"); BODY=$(cat "$STATE/rstats2.json")
 expect "ranked day recomputed without the pair (1000->900, -440->-396, -360->-444)" 200 \
   'r.players === 3 && r.score_hist[39] === 1 && r.score_hist[26] === 1 && r.score_hist[25] === 1 && r.score_hist.reduce((s, c) => s + c, 0) === 3 && r.mean_overconfidence === 31.9'
 req POST /api/round/complete "$(cbody "rk-$TODAY" "$HOST" web)"
@@ -724,13 +732,11 @@ expect "KPI run without the key -> 401" 401 'r.error === "unauthorized"'
 req POST /api/kpi/run '' 'x-kpi-key: wrong'
 expect "KPI run with a wrong key -> 401" 401 'r.error === "unauthorized"'
 req POST /api/kpi/run '' "x-kpi-key: $KPI_KEY"
-expect "KPI run -> MAU 7 (web 4: A, host, friend, ranker; Slack 2 chat answers; Discord 1), workspaces 1, guilds 1, classrooms 1" 200 \
-  'r.as_of === process.env.TODAY && r.mau === 7 && r.dau === 7 && r.mau_web === 4 && r.mau_slack === 2 && r.mau_discord === 1 && r.mau_room === 0 && r.mau_classroom === 0 && r.workspaces === 1 && r.guilds === 1 && r.rooms === 0 && r.classrooms === 1'
-expect "KPI run -> engagement: 1.25 rounds per player-day, challenge conversion 1, share rate 0.2, no return cohorts yet" 200 \
-  'r.rounds_per_player_day === 1.25 && r.challenge_conversion === 1 && r.share_rate === 0.2 && r.d1_return === null && r.d7_return === null'
-req GET /api/kpi
-expect "GET /api/kpi -> the stored row with surfaces, platforms and engagement" 200 \
-  'r.as_of === process.env.TODAY && r.mau === 7 && r.mau_by_surface.web === 4 && r.mau_by_surface.discord === 1 && r.communities.workspaces === 1 && r.communities.guilds === 1 && r.communities.classrooms === 1 && r.rounds_per_player_day === 1.25 && r.share_rate === 0.2'
+expect "private counts: total 7, DAU 7, MAU 7, annual 7" 200 \
+  'r.as_of === process.env.TODAY && r.total_players === 7 && r.dau === 7 && r.mau === 7 && r.yau === 7 && Object.keys(r).length === 5'
+req GET /api/kpi '' "x-kpi-key: $KPI_KEY"
+expect "private GET uses the same four metrics" 200 \
+  'r.as_of === process.env.TODAY && r.total_players === 7 && r.dau === 7 && r.mau === 7 && r.yau === 7 && Object.keys(r).length === 5'
 
 echo "== daily tables: counts, idempotency, no IP or user agent, request queries use indexes"
 "${WRANGLER[@]}" d1 execute whosbluffing --local --persist-to "$STATE" --json --command \
@@ -789,7 +795,7 @@ CHECK=$(node -e '
 ' "$STATE/rounds_db.json") || fail "rounds tables" "$CHECK"
 pass "rounds tables ($CHECK)"
 
-echo "== rounds: biggest bluffs and calibration in GET /api/round/stats (bluffs from 5 players; one per pair, at most 3, no ids; CORS kept)"
+echo "== rounds: biggest bluffs and calibration in GET /api/round/stats (bluffs from 5 players; one per pair, at most 3, no ids; owner-only)"
 BLUFF1=smokeBluffOneBBBBBBBBBB
 BLUFF2=smokeBluffTwoBBBBBBBBBB
 play_round "$STATE/ranked.json" "$BLUFF1" web 0000000000 100
@@ -798,9 +804,9 @@ expect "a fourth ranked player, every answer wrong at 100%" 200 'r.type === "Blu
 play_round "$STATE/ranked.json" "$BLUFF2" web 1111111111 90
 req POST /api/round/complete "$(cbody "rk-$TODAY" "$BLUFF2" web)"
 expect "a fifth ranked player" 200 'r.players_today === 5'
-STATUS=$(curl -s -D "$STATE/bluffs.h" -o "$STATE/bluffs.json" -w '%{http_code}' -H 'Host: bluffs.localhost' "$BASE/api/round/stats?date=$TODAY"); BODY=$(cat "$STATE/bluffs.json")
-grep -qi '^access-control-allow-origin: \*' "$STATE/bluffs.h" || fail "GET /api/round/stats with bluffs keeps Access-Control-Allow-Origin: *" "$(cat "$STATE/bluffs.h")"
-expect "GET /api/round/stats -> 5 players, 3 bluffs {prompt, pick, conf, points} at 100% on 3 different pairs, no ids, CORS header" 200 \
+STATUS=$(curl -s -H "x-kpi-key: $KPI_KEY" -D "$STATE/bluffs.h" -o "$STATE/bluffs.json" -w '%{http_code}' -H 'Host: bluffs.localhost' "$BASE/api/round/stats?date=$TODAY"); BODY=$(cat "$STATE/bluffs.json")
+! grep -qi '^access-control-allow-origin' "$STATE/bluffs.h" || fail "private stats cannot carry CORS" "$(cat "$STATE/bluffs.h")"
+expect "GET /api/round/stats -> 5 players, 3 bluffs {prompt, pick, conf, points} at 100% on 3 different pairs, no ids, owner-only" 200 \
   'r.players === 5 && r.bluffs.length === 3 && r.bluffs.every((b) => Object.keys(b).sort().join() === "conf,pick,points,prompt" && b.conf === 100 && b.points === -300 && b.prompt && b.pick) && new Set(r.bluffs.map((b) => b.prompt + "|" + b.pick)).size === 3 && !/smoke|p\d{5}|w\d{4}/.test(JSON.stringify(r.bluffs))'
 # 9 live pairs each: the host 100% right, the Discord member 60% wrong, the ranker 80% (4 right), the two new players
 # 100% wrong and 90% right; the day was rebuilt without the retired pair, and the new plays were added without it.

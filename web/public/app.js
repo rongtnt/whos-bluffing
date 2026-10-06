@@ -5,10 +5,9 @@
 import { html, api } from './ui.js';
 import { startTest } from './test.js';
 import { renderRoundHome, renderRounds, renderRoundResults, renderChallenge, renderDare } from './rounds.js';
-import { renderStats } from './stats.js';
 import { renderBoard } from './labs.js';
 import { renderClassCreate, renderDashboard } from './class.js';
-import { renderPlayed, renderLive, wireSurfaces, wirePause } from './home.js';
+import { renderPlayed, wireSurfaces, wirePause } from './home.js';
 
 const app = document.getElementById('app');
 wireSurfaces(document.querySelector('[data-surfaces]')); // the home page's switch and list work before the game loads
@@ -92,7 +91,6 @@ function route() {
   const dare = p.match(/^\/dare\/([a-z][a-z0-9-]{1,30})\/?$/); // functions/dare/[slug].js
   if (dare) return renderDare(ctx, dare[1]);
   if (/^\/test\/?$/.test(p)) return renderTestLanding();
-  if (/^\/stats\/?$/.test(p)) return Promise.all([renderStats(ctx), renderLive(document.querySelector('[data-live]'))]);
   if (/^\/labs\/?$/.test(p)) return renderBoard(ctx, 'ai');
   if (/^\/parties\/?$/.test(p)) return renderBoard(ctx, 'politics');
   if (/^\/class\/?$/.test(p)) return renderClassCreate(ctx);

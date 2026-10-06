@@ -5,9 +5,7 @@ import { test } from 'node:test';
 import assert from 'node:assert/strict';
 import { readFileSync, readdirSync } from 'node:fs';
 import { markdown, inline, renderPage, DOCS } from '../scripts/sync-docs.js';
-import { playedLine, MIN_PLAYERS, MIN_ROOM, roomView, roomChart, receipt, EXAMPLE_ROOM, EXAMPLE_BLUFFS } from '../public/home.js';
-import { TYPES } from '../functions/_rounds.js';
-import { typeName } from '../public/types.js';
+import { playedLine, MIN_PLAYERS } from '../public/home.js';
 
 const PUBLIC = new URL('../public/', import.meta.url);
 const read = (u) => readFileSync(u, 'utf8');
@@ -70,12 +68,12 @@ test('/research quotes the MAU and community definitions from PREREG word for wo
   assert.ok(research.includes(`<p>${prereg.match(/^- (Communities: .*)$/m)[1]}</p>`), 'Communities definition');
 });
 
-test('played today: from 100 players in today\'s ranked round, never a number under it', () => {
+test('homepage total: show from 100 players', () => {
   assert.equal(MIN_PLAYERS, 100);
   assert.equal(playedLine(null), null); // the stats request failed
-  assert.equal(playedLine({ players: MIN_PLAYERS - 1 }), null);
-  assert.equal(playedLine({ players: 100 }), '100 played today');
-  assert.equal(playedLine({ players: 4040 }), '4,040 played today');
+  assert.equal(playedLine({ total_players: MIN_PLAYERS - 1 }), null);
+  assert.equal(playedLine({ total_players: 100 }), '100 total players');
+  assert.equal(playedLine({ total_players: 4040 }), '4,040 total players');
   assert.match(read(new URL('index.html', PUBLIC)), /<p class="played" data-played hidden><\/p>/);
 });
 
@@ -110,25 +108,14 @@ test('the FAQ lives on /support under "Answers that may help", and nothing links
   for (const file of pages) assert.ok(!read(new URL(file, PUBLIC)).includes('href="/#faq"'), file);
 });
 
-test('live panel (the first section of /stats): the room chart from 20 players (today, else yesterday, else the grey example), stamped receipts, five type tiles', () => {
-  assert.equal(MIN_ROOM, 20);
-  const calibration = [50, 60, 70, 80, 90, 100].map((conf, k) => ({ conf, n: k ? 10 * k : 0, right: 4 * k }));
-  assert.equal(roomView(null, null), null); // the stats request failed: the page keeps its example
-  assert.equal(roomView({ players: 19, calibration }, { players: 19, calibration }), null);
-  assert.deepEqual(roomView({ players: 1204, calibration }, null), { points: calibration, cap: 'Today’s room · 1,204 played', live: true });
-  assert.deepEqual(roomView({ players: 3, calibration: [] }, { players: 25, calibration }), { points: calibration, cap: 'Yesterday’s room · 25 played', live: false });
-  const chart = String(roomChart(calibration));
-  assert.equal(chart.match(/<circle /g).length, 5, 'one dot per confidence with answers');
-  assert.match(chart, /^<svg class="room-chart" viewBox="0 0 200 160" role="img"/);
-  assert.match(chart, /<path class="room-ideal" d="M40 73L192 8"\/>/, 'the diagonal from 50% sure, 50% right to 100%, 100%');
-  assert.match(String(roomChart(EXAMPLE_ROOM, { example: true })), /^<svg class="room-chart is-example"/);
-  assert.equal(String(receipt({ prompt: 'Which came first?', pick: 'Tesla & Co', conf: 100, points: -300 })),
-    '<li class="receipt"><span class="receipt-q">Which came first?</span><span class="receipt-pick"><s>Tesla &amp; Co</s><b>−300</b></span><span class="stamp stamp-bluff" data-stake="100">BLUFF</span></li>');
-  const stats = read(new URL('stats.html', PUBLIC));
-  assert.match(stats, /<main id="main">\n<div class="stats-top">\n {2}<h1>Live stats<\/h1>\n {2}<section class="live" aria-labelledby="live-title" data-live>/);
-  assert.ok(stats.indexOf('data-live') < stats.indexOf('<div id="app">'));
-  assert.ok(stats.includes(`<div class="room-box" data-room-chart>${roomChart(EXAMPLE_ROOM, { example: true })}</div>`), 'the static example chart is the builder\'s');
-  assert.ok(stats.includes(`<ol class="receipts is-example" data-receipts>${EXAMPLE_BLUFFS.map(receipt).join('')}</ol>`), 'the static example receipts are the builder\'s');
-  assert.equal([...stats.matchAll(/<figcaption class="live-cap" data-(?:room|receipts)-cap>Example<\/figcaption>/g)].length, 2);
-  assert.deepEqual([...stats.matchAll(/<button type="button" class="type-tile" data-type="[a-z-]+" aria-pressed="false"><svg [^>]+><path d="[^"]+"\/><\/svg><span>([^<]+)<\/span><span class="type-band" aria-hidden="true">(?:<i><\/i>){5}<\/span><span class="type-tip">[^<]+<\/span><\/button>/g)].map((m) => m[1]), TYPES.map(typeName)); // the names players read (public/types.js)
+test('status and stats show only the public total; the picker has no daily ranked action', () => {
+  for (const file of ['status.html', 'stats.html']) {
+    const page = read(new URL(file, PUBLIC));
+    assert.match(page, /<h1[^>]*>Total Players<\/h1>/);
+    assert.match(page, /class="player-count" data-player-count/);
+    assert.doesNotMatch(page, /data-live|data-kpi|DAU|MAU|data-ranked/);
+    assert.match(page, /src="\/status.js"/);
+  }
+  assert.doesNotMatch(read(new URL('play.html', PUBLIC)), /data-ranked|Daily ranked/);
+  assert.doesNotMatch(read(new URL('status.js', PUBLIC)), /api\/kpi|api\/round\/stats/);
 });

@@ -28,6 +28,7 @@ export const DIFFICULTIES = {
 // the mix's count at every level the mix uses. `all` is always offered.
 export const MIN_PACK_PAIRS = 200;
 export const MAX_SEEN = 300;
+const AUTHORED_PACKS = ['memes', 'history', 'languages'];
 export const TYPES =['Bluffer', 'Hot-headed', 'Calibrated', 'Modest', 'Hedger'];
 export const EVENT_TYPES = ['share', 'challenge_view', 'play_again'];
 export const TOKEN_RE = /^[A-Za-z0-9_-]{10}$/;
@@ -106,7 +107,7 @@ export function loadRounds(pool, compact, rounds, { minPackPairs = MIN_PACK_PAIR
       items.set(id, { id, name, category: q.topic === 'ai' ? 'ai_curated' : q.topic, en: { unit: '' },
         answer: k === q.answer ? 'Correct' : 'Incorrect', source: q.source });
       // A meme may have several questions, but appears only once in a round.
-      entity.set(id, q.topic === 'memes' ? q.source : id);
+      entity.set(id, q.subjects?.[0] ?? (q.topic === 'memes' ? q.source : id));
       return id;
     });
     pairs.set(q.id, { id: q.id, a_id: ids[0], b_id: ids[1], truth: q.answer, level: q.difficulty,
@@ -122,9 +123,10 @@ export function loadRounds(pool, compact, rounds, { minPackPairs = MIN_PACK_PAIR
   const data = { items, pairs, templates, lists, packLists, available, rounds, entity, rankedDatesByItem,
     curated: curated.map((q) => q.id), dares: new Map(dares.map((d) => [d.slug, d])) };
   // This authored-only pack needs a complete, varied round, not 200 generated comparisons.
-  const memes = curated.filter((q) => q.topic === 'memes').map((q) => q.id);
-  for (const d of Object.keys(DIFFICULTIES)) {
-    if (sampleVaried(data, memes, new Set(), () => 0.5, d, 'memes')) available[d].add('memes');
+  for (const pack of AUTHORED_PACKS) for (const d of Object.keys(DIFFICULTIES)) {
+    available[d].delete(pack);
+    const ids = curated.filter((q) => q.topic === pack).map((q) => q.id);
+    if (sampleVaried(data, ids, new Set(), () => 0.5, d, pack)) available[d].add(pack);
   }
   return data;
 }
@@ -425,42 +427,55 @@ function orderQuick(data, ids, rand) {
 // Keep the 3/4/3 difficulty contract; generated candidates cover sparse/retired levels. A bounded search
 // avoids greedy dead ends where the last difficulty has only topics already used. Seen questions are a last resort.
 export function sampleVaried(data, ids, seen, rand, difficulty, pack) {
+  const variedTopic = ['history', 'languages'].includes(pack);
+  const recentSubjects = new Set([...seen].flatMap((id) => data.pairs.get(id)?.authored?.subjects ?? []));
   const candidates = shuffle(ids, rand).map((id) => {
     const p = data.pairs.get(id);
     const a = data.items.get(p.a_id);
     const topic = p.topic ?? (a.category.startsWith('ai_') ? 'ai'
       : a.category.startsWith('country_') ? 'world' : a.category);
     const family = p.family ?? (['year', 'month'].includes(a.en.unit) ? 'chronology' : 'comparison');
-    return { id, p, topic, family, entities: [data.entity.get(p.a_id), data.entity.get(p.b_id)] };
+    return { id, p, topic, family, entities: p.authored?.subjects ?? [data.entity.get(p.a_id), data.entity.get(p.b_id)],
+      subtopic: p.authored?.subtopic, era: p.authored?.era, region: p.authored?.region };
   });
-  for (const [freshOnly, authoredOnly] of [[true, true], [true, false], [false, false]]) {
+  for (const [freshOnly, authoredOnly, freshSubjects] of [[true, true, true], [true, true, false], [true, false, false], [false, false, false]]) {
     const mix = DIFFICULTIES[difficulty].mix;
-    const pool = candidates.filter((c) => mix[c.p.level] && (!freshOnly || !seen.has(c.id)) && (!authoredOnly || c.p.authored));
+    const pool = candidates.filter((c) => mix[c.p.level] && (!freshOnly || !seen.has(c.id)) && (!authoredOnly || c.p.authored)
+      && (!freshSubjects || !c.entities.some((s) => recentSubjects.has(s))));
     if (LEVELS.some((lv) => pool.filter((c) => c.p.level === lv).length < mix[lv])) continue;
     const familyCounts = {};
     for (const c of pool) familyCounts[c.family] = (familyCounts[c.family] ?? 0) + 1;
     if (Object.entries(familyCounts).reduce((sum, [f, n]) => sum + Math.min(n, f === 'chronology' ? 2 : 3), 0) < 10) continue;
     const includeAI = pack === 'all' && pool.some((c) => c.topic === 'ai' && DIFFICULTIES[difficulty].mix[c.p.level]);
-    const left = { ...DIFFICULTIES[difficulty].mix }, topics = {}, families = {}, entities = new Set(), picked = [];
+    const left = { ...DIFFICULTIES[difficulty].mix }, topics = {}, families = {}, subtopics = {}, eras = {}, regions = {}, entities = new Set(), picked = [];
     let visits = 0;
     const search = () => {
       if (picked.length === 10) return true;
       if (++visits > 10000) return false;
-      const options = pool.filter((c) => left[c.p.level] > 0 && !picked.includes(c)
+      const eligible = pool.filter((c) => left[c.p.level] > 0 && !picked.includes(c)
         && !c.entities.some((e) => entities.has(e))
         && (pack !== 'all' || (topics[c.topic] ?? 0) < (c.topic === 'ai' ? 1 : 2))
         && (families[c.family] ?? 0) < (c.family === 'chronology' ? 2 : 3)
-        && c.family !== picked.at(-1)?.family
+        && (!variedTopic || ((subtopics[c.subtopic] ?? 0) < 3
+          && (!['chronology', 'comparison'].includes(c.family) || (families.chronology ?? 0) + (families.comparison ?? 0) < 2)))
+        && (pack !== 'history' || ((eras[c.era] ?? 0) < 4 && (regions[c.region] ?? 0) < 4))
         && (!includeAI || picked.length !== 9 || topics.ai || c.topic === 'ai'));
+      // Stop a dead branch before permuting its remaining questions. Adjacency is checked afterwards:
+      // a family blocked for the next slot can still fill a later slot.
+      if (LEVELS.some((lv) => eligible.filter((c) => c.p.level === lv).length < left[lv])) return false;
+      const options = eligible.filter((c) => c.family !== picked.at(-1)?.family);
       // Stable sort preserves the initial random order within equally underrepresented topics and formats.
       options.sort((a, b) => Number(seen.has(a.id)) - Number(seen.has(b.id))
         || Number(Boolean(b.p.authored)) - Number(Boolean(a.p.authored))
         || (topics[a.topic] ?? 0) - (topics[b.topic] ?? 0) || (families[a.family] ?? 0) - (families[b.family] ?? 0));
       for (const c of options) {
         picked.push(c); left[c.p.level]--; topics[c.topic] = (topics[c.topic] ?? 0) + 1;
-        families[c.family] = (families[c.family] ?? 0) + 1; c.entities.forEach((e) => entities.add(e));
+        families[c.family] = (families[c.family] ?? 0) + 1;
+        for (const [counts, key] of [[subtopics, c.subtopic], [eras, c.era], [regions, c.region]]) counts[key] = (counts[key] ?? 0) + 1;
+        c.entities.forEach((e) => entities.add(e));
         if (search()) return true;
         picked.pop(); left[c.p.level]++; topics[c.topic]--; families[c.family]--;
+        for (const [counts, key] of [[subtopics, c.subtopic], [eras, c.era], [regions, c.region]]) counts[key]--;
         c.entities.forEach((e) => entities.delete(e));
       }
       return false;
@@ -502,7 +517,7 @@ export async function getRound(db, data, params, now, rand = Math.random) {
   const day = data.rounds[today];
   const avoid = new Set(day ? [...day.ranked, day.question] : []); // never today's ranked pairs or chat question
   const seen = parseSeen(params.seen);
-  const candidates = sampleQuick(data, avoid, seen, rand, difficulty, pack);
+  const candidates = AUTHORED_PACKS.includes(pack) ? [] : sampleQuick(data, avoid, seen, rand, difficulty, pack);
   const authored = data.curated.filter((id) => {
     const topic = data.pairs.get(id).topic;
     return pack === 'all' ? topic !== 'memes' : topic === pack;

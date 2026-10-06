@@ -1402,6 +1402,3046 @@
       "answer": 1,
       "explanation": "The early account describes a link disguised as a GTA IV preview. The surprise destination was Rick Astley.",
       "source": "https://knowyourmeme.com/memes/rickroll"
+    },
+    {
+      "id": "q00101",
+      "topic": "history",
+      "family": "recognition",
+      "difficulty": "easy",
+      "prompt": "One decree, three scripts. What did the Rosetta Stone help scholars decipher?",
+      "options": [
+        "Egyptian hieroglyphs",
+        "Maya glyphs"
+      ],
+      "answer": 0,
+      "explanation": "Its Greek text gave scholars a way into the Egyptian writing on the same stone.",
+      "source": "https://www.britishmuseum.org/collection/object/Y_EA24",
+      "subtopic": "archaeology",
+      "subjects": [
+        "rosetta"
+      ],
+      "era": "ancient",
+      "region": "africa"
+    },
+    {
+      "id": "q00102",
+      "topic": "history",
+      "family": "origin",
+      "difficulty": "easy",
+      "prompt": "The Terracotta Army was buried to serve a ruler of which empire?",
+      "options": [
+        "Japan's Tokugawa shogunate",
+        "China's Qin empire"
+      ],
+      "answer": 1,
+      "explanation": "The soldiers belong to the tomb complex of Qin Shi Huang, China's first emperor.",
+      "source": "https://whc.unesco.org/en/list/441/",
+      "subtopic": "engineering",
+      "subjects": [
+        "qin"
+      ],
+      "era": "ancient",
+      "region": "asia"
+    },
+    {
+      "id": "q00103",
+      "topic": "history",
+      "family": "classification",
+      "difficulty": "easy",
+      "prompt": "Who built Machu Picchu in the Andes?",
+      "options": [
+        "The Inca",
+        "The ancient Egyptians"
+      ],
+      "answer": 0,
+      "explanation": "Machu Picchu was an Inca site built in the fifteenth century, in what is now Peru.",
+      "source": "https://whc.unesco.org/en/list/274/",
+      "subtopic": "architecture",
+      "subjects": [
+        "machu-picchu"
+      ],
+      "era": "medieval",
+      "region": "americas"
+    },
+    {
+      "id": "q00104",
+      "topic": "history",
+      "family": "mechanism",
+      "difficulty": "easy",
+      "prompt": "How do Great Zimbabwe's famous stone walls stay together?",
+      "options": [
+        "Steel reinforcement inside concrete",
+        "Carefully fitted stones without mortar"
+      ],
+      "answer": 1,
+      "explanation": "The walls use dry-stone masonry: fitted stones rather than mortar.",
+      "source": "https://whc.unesco.org/en/list/364/",
+      "subtopic": "architecture",
+      "subjects": [
+        "great-zimbabwe"
+      ],
+      "era": "medieval",
+      "region": "africa"
+    },
+    {
+      "id": "q00105",
+      "topic": "history",
+      "family": "recognition",
+      "difficulty": "easy",
+      "prompt": "Angkor's temples were at the heart of which empire?",
+      "options": [
+        "The Khmer Empire",
+        "The Roman Empire"
+      ],
+      "answer": 0,
+      "explanation": "Angkor preserves successive Khmer capitals in present-day Cambodia.",
+      "source": "https://whc.unesco.org/en/list/668/",
+      "subtopic": "beliefs",
+      "subjects": [
+        "angkor"
+      ],
+      "era": "medieval",
+      "region": "asia"
+    },
+    {
+      "id": "q00106",
+      "topic": "history",
+      "family": "scenario",
+      "difficulty": "easy",
+      "prompt": "You join the Underground Railroad in the United States. What are you helping people do?",
+      "options": [
+        "Build a subway",
+        "Escape slavery"
+      ],
+      "answer": 1,
+      "explanation": "It was a network of routes, people, and safe places that aided escape from slavery.",
+      "source": "https://www.nps.gov/subjects/ugrr/index.htm",
+      "subtopic": "rights",
+      "subjects": [
+        "underground-railroad"
+      ],
+      "era": "modern",
+      "region": "americas"
+    },
+    {
+      "id": "q00107",
+      "topic": "history",
+      "family": "completion",
+      "difficulty": "easy",
+      "prompt": "In 1893, New Zealand became the first self-governing country where all adult women could ___.",
+      "options": [
+        "Vote in parliamentary elections",
+        "Serve as prime minister automatically"
+      ],
+      "answer": 0,
+      "explanation": "The 1893 law extended parliamentary voting rights to women; it did not appoint them to office.",
+      "source": "https://nzhistory.govt.nz/politics/womens-suffrage",
+      "subtopic": "rights",
+      "subjects": [
+        "nz-suffrage"
+      ],
+      "era": "modern",
+      "region": "oceania"
+    },
+    {
+      "id": "q00108",
+      "topic": "history",
+      "family": "recognition",
+      "difficulty": "easy",
+      "prompt": "Who took the first human step onto the Moon during Apollo 11?",
+      "options": [
+        "Michael Collins",
+        "Neil Armstrong"
+      ],
+      "answer": 1,
+      "explanation": "Armstrong and Buzz Aldrin landed. Collins remained in lunar orbit.",
+      "source": "https://www.nasa.gov/missions/apollo/apollo-11/apollo-11-mission-overview/",
+      "subtopic": "exploration",
+      "subjects": [
+        "apollo-11"
+      ],
+      "era": "modern",
+      "region": "americas"
+    },
+    {
+      "id": "q00109",
+      "topic": "history",
+      "family": "classification",
+      "difficulty": "easy",
+      "prompt": "The Sutton Hoo ship burial belonged to which culture?",
+      "options": [
+        "Anglo-Saxon",
+        "Aztec"
+      ],
+      "answer": 0,
+      "explanation": "The early medieval burial in England is a major source of Anglo-Saxon objects.",
+      "source": "https://www.britishmuseum.org/collection/galleries/sutton-hoo-and-europe",
+      "subtopic": "archaeology",
+      "subjects": [
+        "sutton-hoo"
+      ],
+      "era": "medieval",
+      "region": "europe"
+    },
+    {
+      "id": "q00110",
+      "topic": "history",
+      "family": "origin",
+      "difficulty": "easy",
+      "prompt": "Mansa Musa, famous for his gold-rich pilgrimage, ruled which empire?",
+      "options": [
+        "Inca",
+        "Mali"
+      ],
+      "answer": 1,
+      "explanation": "Mansa Musa ruled Mali, which was connected to trans-Saharan gold trade.",
+      "source": "https://www.metmuseum.org/essays/the-trans-saharan-gold-trade-7th-14th-century",
+      "subtopic": "trade",
+      "subjects": [
+        "mansa-musa"
+      ],
+      "era": "medieval",
+      "region": "africa"
+    },
+    {
+      "id": "q00111",
+      "topic": "history",
+      "family": "scenario",
+      "difficulty": "easy",
+      "prompt": "A merchant says the Silk Roads carried only silk. Is that accurate?",
+      "options": [
+        "No, many goods and ideas also travelled",
+        "Yes, other goods were banned"
+      ],
+      "answer": 0,
+      "explanation": "The name covers trade networks that also moved beliefs, technologies, and other goods.",
+      "source": "https://www.unesco.org/en/silk-roads/about-silk-roads",
+      "subtopic": "trade",
+      "subjects": [
+        "silk-roads"
+      ],
+      "era": "ancient",
+      "region": "asia"
+    },
+    {
+      "id": "q00112",
+      "topic": "history",
+      "family": "mechanism",
+      "difficulty": "easy",
+      "prompt": "How were Lalibela's most famous churches made?",
+      "options": [
+        "Cast as single pieces of bronze",
+        "Carved out of rock"
+      ],
+      "answer": 1,
+      "explanation": "The Ethiopian churches were cut into living rock rather than assembled from bronze.",
+      "source": "https://whc.unesco.org/en/list/18/",
+      "subtopic": "architecture",
+      "subjects": [
+        "lalibela"
+      ],
+      "era": "medieval",
+      "region": "africa"
+    },
+    {
+      "id": "q00113",
+      "topic": "history",
+      "family": "recognition",
+      "difficulty": "easy",
+      "prompt": "Which ancient trading city is famous for buildings cut into rose-coloured rock?",
+      "options": [
+        "Petra",
+        "Machu Picchu"
+      ],
+      "answer": 0,
+      "explanation": "Petra, in present-day Jordan, combines rock-cut buildings with constructed ones.",
+      "source": "https://whc.unesco.org/en/list/326/",
+      "subtopic": "architecture",
+      "subjects": [
+        "petra"
+      ],
+      "era": "ancient",
+      "region": "asia"
+    },
+    {
+      "id": "q00114",
+      "topic": "history",
+      "family": "completion",
+      "difficulty": "easy",
+      "prompt": "The US Declaration of Independence was adopted in ___.",
+      "options": [
+        "1876",
+        "1776"
+      ],
+      "answer": 1,
+      "explanation": "Congress adopted the Declaration on July 4, 1776.",
+      "source": "https://www.archives.gov/milestone-documents/declaration-of-independence",
+      "subtopic": "rights",
+      "subjects": [
+        "declaration"
+      ],
+      "era": "early-modern",
+      "region": "americas"
+    },
+    {
+      "id": "q00115",
+      "topic": "history",
+      "family": "origin",
+      "difficulty": "easy",
+      "prompt": "Gunpowder's early development is associated with which place?",
+      "options": [
+        "China",
+        "The Inca Empire"
+      ],
+      "answer": 0,
+      "explanation": "Gunpowder developed in China before spreading elsewhere.",
+      "source": "https://airandspace.si.edu/stories/editorial/first-fireworks-origins-rocket",
+      "subtopic": "engineering",
+      "subjects": [
+        "gunpowder"
+      ],
+      "era": "medieval",
+      "region": "asia"
+    },
+    {
+      "id": "q00116",
+      "topic": "history",
+      "family": "recognition",
+      "difficulty": "easy",
+      "prompt": "Norse buildings at L'Anse aux Meadows are evidence of a settlement in which place?",
+      "options": [
+        "New Zealand",
+        "Newfoundland"
+      ],
+      "answer": 1,
+      "explanation": "The site preserves evidence of Norse settlement in North America around the eleventh century.",
+      "source": "https://whc.unesco.org/en/list/4/",
+      "subtopic": "exploration",
+      "subjects": [
+        "lanse-aux-meadows"
+      ],
+      "era": "medieval",
+      "region": "americas"
+    },
+    {
+      "id": "q00117",
+      "topic": "history",
+      "family": "classification",
+      "difficulty": "easy",
+      "prompt": "The Cyrus Cylinder is made of what?",
+      "options": [
+        "Clay",
+        "Glass"
+      ],
+      "answer": 0,
+      "explanation": "The clay cylinder carries a cuneiform inscription from ancient Babylon.",
+      "source": "https://www.britishmuseum.org/collection/object/W_1880-0617-1941",
+      "subtopic": "archaeology",
+      "subjects": [
+        "cyrus-cylinder"
+      ],
+      "era": "ancient",
+      "region": "asia"
+    },
+    {
+      "id": "q00118",
+      "topic": "history",
+      "family": "completion",
+      "difficulty": "easy",
+      "prompt": "The giant moai statues belong to the history of ___.",
+      "options": [
+        "Madagascar",
+        "Rapa Nui (Easter Island)"
+      ],
+      "answer": 1,
+      "explanation": "The Rapa Nui people created the island's monumental statues and ceremonial platforms.",
+      "source": "https://whc.unesco.org/en/list/715/",
+      "subtopic": "beliefs",
+      "subjects": [
+        "rapa-nui"
+      ],
+      "era": "medieval",
+      "region": "oceania"
+    },
+    {
+      "id": "q00119",
+      "topic": "history",
+      "family": "scenario",
+      "difficulty": "easy",
+      "prompt": "An 1840 document signed by Māori chiefs and representatives of the British Crown is the Treaty of ___.",
+      "options": [
+        "Waitangi",
+        "Versailles"
+      ],
+      "answer": 0,
+      "explanation": "The Treaty of Waitangi is central to New Zealand's history.",
+      "source": "https://nzhistory.govt.nz/page/history-new-zealand-1769-1914",
+      "subtopic": "rights",
+      "subjects": [
+        "waitangi"
+      ],
+      "era": "modern",
+      "region": "oceania"
+    },
+    {
+      "id": "q00120",
+      "topic": "history",
+      "family": "recognition",
+      "difficulty": "easy",
+      "prompt": "Who rebelled at Australia's Eureka Stockade in 1854?",
+      "options": [
+        "Sheep farmers",
+        "Gold miners"
+      ],
+      "answer": 1,
+      "explanation": "Miners at Ballarat protested the colonial administration of the goldfields.",
+      "source": "https://www.nma.gov.au/defining-moments/resources/eureka-stockade",
+      "subtopic": "rights",
+      "subjects": [
+        "eureka-stockade"
+      ],
+      "era": "modern",
+      "region": "oceania"
+    },
+    {
+      "id": "q00121",
+      "topic": "history",
+      "family": "mechanism",
+      "difficulty": "easy",
+      "prompt": "Magna Carta is famous for establishing that a king ___.",
+      "options": [
+        "Was subject to law",
+        "Could ignore every law"
+      ],
+      "answer": 0,
+      "explanation": "The 1215 charter limited royal power, though it was not a modern universal-rights document.",
+      "source": "https://www.archives.gov/exhibits/featured-documents/magna-carta/legacy.html",
+      "subtopic": "rights",
+      "subjects": [
+        "magna-carta"
+      ],
+      "era": "medieval",
+      "region": "europe"
+    },
+    {
+      "id": "q00122",
+      "topic": "history",
+      "family": "classification",
+      "difficulty": "easy",
+      "prompt": "Toussaint Louverture is associated with which revolution?",
+      "options": [
+        "The Russian Revolution",
+        "The Haitian Revolution"
+      ],
+      "answer": 1,
+      "explanation": "Louverture was a major leader in the revolution against slavery and colonial rule in Saint-Domingue.",
+      "source": "https://nmaahc.si.edu/latinx/toussaint-louverture",
+      "subtopic": "rights",
+      "subjects": [
+        "haitian-revolution"
+      ],
+      "era": "modern",
+      "region": "americas"
+    },
+    {
+      "id": "q00123",
+      "topic": "history",
+      "family": "origin",
+      "difficulty": "easy",
+      "prompt": "Spanish Mexico City was built over the ruins of which city?",
+      "options": [
+        "Tenochtitlan",
+        "Athens"
+      ],
+      "answer": 0,
+      "explanation": "The Spanish colonial city was constructed on the site of the Aztec capital.",
+      "source": "https://whc.unesco.org/en/list/412/",
+      "subtopic": "architecture",
+      "subjects": [
+        "tenochtitlan"
+      ],
+      "era": "early-modern",
+      "region": "americas"
+    },
+    {
+      "id": "q00124",
+      "topic": "history",
+      "family": "recognition",
+      "difficulty": "easy",
+      "prompt": "The historic Kingdom of Benin was mainly in what is now which country?",
+      "options": [
+        "The Republic of Benin",
+        "Nigeria"
+      ],
+      "answer": 1,
+      "explanation": "Despite the shared name, the kingdom was in present-day southern Nigeria.",
+      "source": "https://www.britishmuseum.org/about-us/british-museum-story/contested-objects-collection/benin-bronzes",
+      "subtopic": "art",
+      "subjects": [
+        "benin-bronzes"
+      ],
+      "era": "early-modern",
+      "region": "africa"
+    },
+    {
+      "id": "q00125",
+      "topic": "history",
+      "family": "mechanism",
+      "difficulty": "easy",
+      "prompt": "Which material was one of ancient China's famous four inventions?",
+      "options": [
+        "Paper",
+        "Reinforced concrete"
+      ],
+      "answer": 0,
+      "explanation": "Paper, printing, the compass, and gunpowder are traditionally grouped as the four great inventions.",
+      "source": "https://english.shanghai.gov.cn/en-LearnChinese/20240827/aa93b595d1e44a80bf9dbb373bc9dc6c.html",
+      "subtopic": "engineering",
+      "subjects": [
+        "paper"
+      ],
+      "era": "ancient",
+      "region": "asia"
+    },
+    {
+      "id": "q00126",
+      "topic": "history",
+      "family": "scenario",
+      "difficulty": "easy",
+      "prompt": "You visit Aztec Ruins National Monument in New Mexico. Who actually built its ancient structures?",
+      "options": [
+        "The Aztecs of central Mexico",
+        "Ancestral Pueblo people"
+      ],
+      "answer": 1,
+      "explanation": "The site's name is misleading: it preserves Ancestral Pueblo architecture.",
+      "source": "https://www.nps.gov/articles/aztec.htm",
+      "subtopic": "archaeology",
+      "subjects": [
+        "aztec-ruins"
+      ],
+      "era": "medieval",
+      "region": "americas"
+    },
+    {
+      "id": "q00127",
+      "topic": "history",
+      "family": "completion",
+      "difficulty": "easy",
+      "prompt": "Timbuktu's historical reputation includes being a centre of ___.",
+      "options": [
+        "Islamic scholarship",
+        "Viking shipbuilding"
+      ],
+      "answer": 0,
+      "explanation": "Its mosques and learning centres connected scholarship with Saharan trade.",
+      "source": "https://whc.unesco.org/en/list/119/",
+      "subtopic": "learning",
+      "subjects": [
+        "timbuktu"
+      ],
+      "era": "early-modern",
+      "region": "africa"
+    },
+    {
+      "id": "q00128",
+      "topic": "history",
+      "family": "origin",
+      "difficulty": "easy",
+      "prompt": "The emperor Akbar sponsored major illustrated manuscripts in which empire?",
+      "options": [
+        "The Byzantine Empire",
+        "The Mughal Empire"
+      ],
+      "answer": 1,
+      "explanation": "Akbar's court supported an imperial workshop where different artistic traditions met.",
+      "source": "https://www.metmuseum.org/essays/the-art-of-the-mughals-before-1600",
+      "subtopic": "art",
+      "subjects": [
+        "akbar"
+      ],
+      "era": "early-modern",
+      "region": "asia"
+    },
+    {
+      "id": "q00129",
+      "topic": "history",
+      "family": "recognition",
+      "difficulty": "easy",
+      "prompt": "The Rosetta Stone was rediscovered in 1799 by soldiers from which country?",
+      "options": [
+        "France",
+        "Japan"
+      ],
+      "answer": 0,
+      "explanation": "French soldiers found it near Rashid, also called Rosetta, in Egypt.",
+      "source": "https://www.britishmuseum.org/collection/egypt/explore-rosetta-stone",
+      "subtopic": "archaeology",
+      "subjects": [
+        "rosetta"
+      ],
+      "era": "modern",
+      "region": "africa"
+    },
+    {
+      "id": "q00130",
+      "topic": "history",
+      "family": "completion",
+      "difficulty": "easy",
+      "prompt": "The principal drafter of the US Declaration of Independence was ___.",
+      "options": [
+        "Abraham Lincoln",
+        "Thomas Jefferson"
+      ],
+      "answer": 1,
+      "explanation": "Jefferson prepared the draft for a committee; Congress then debated and edited it.",
+      "source": "https://www.archives.gov/founding-docs/timeline",
+      "subtopic": "rights",
+      "subjects": [
+        "declaration"
+      ],
+      "era": "early-modern",
+      "region": "americas"
+    },
+    {
+      "id": "q00131",
+      "topic": "history",
+      "family": "scenario",
+      "difficulty": "medium",
+      "prompt": "A label says the Rosetta Stone has three scripts, so it must have three languages. What is wrong?",
+      "options": [
+        "It has two languages: Egyptian and Greek",
+        "It has only one script"
+      ],
+      "answer": 0,
+      "explanation": "Hieroglyphic and demotic are both used for Egyptian; the third script writes Greek.",
+      "source": "https://www.britishmuseum.org/collection/object/Y_EA24",
+      "subtopic": "archaeology",
+      "subjects": [
+        "rosetta"
+      ],
+      "era": "ancient",
+      "region": "africa"
+    },
+    {
+      "id": "q00132",
+      "topic": "history",
+      "family": "mechanism",
+      "difficulty": "medium",
+      "prompt": "Besides temples, what helped Angkor support a large urban landscape?",
+      "options": [
+        "Electric water pumps",
+        "Reservoirs and canals"
+      ],
+      "answer": 1,
+      "explanation": "Angkor's archaeological remains include basins, dykes, reservoirs, and canals.",
+      "source": "https://whc.unesco.org/en/list/668/",
+      "subtopic": "engineering",
+      "subjects": [
+        "angkor"
+      ],
+      "era": "medieval",
+      "region": "asia"
+    },
+    {
+      "id": "q00133",
+      "topic": "history",
+      "family": "recognition",
+      "difficulty": "medium",
+      "prompt": "What valuable commodity travelled south across the Sahara in exchange for gold?",
+      "options": [
+        "Salt",
+        "Aluminium cans"
+      ],
+      "answer": 0,
+      "explanation": "Saharan salt and West African gold were central goods in these trading networks.",
+      "source": "https://www.metmuseum.org/exhibitions/sahel-art-empire-sahara/inside-the-exhibition",
+      "subtopic": "trade",
+      "subjects": [
+        "saharan-salt"
+      ],
+      "era": "medieval",
+      "region": "africa"
+    },
+    {
+      "id": "q00134",
+      "topic": "history",
+      "family": "classification",
+      "difficulty": "medium",
+      "prompt": "Lalibela's rock-hewn churches belong to which religious tradition?",
+      "options": [
+        "Shinto",
+        "Christianity"
+      ],
+      "answer": 1,
+      "explanation": "The site remains a centre of Ethiopian Christian pilgrimage and worship.",
+      "source": "https://whc.unesco.org/en/list/18/",
+      "subtopic": "architecture",
+      "subjects": [
+        "lalibela"
+      ],
+      "era": "medieval",
+      "region": "africa"
+    },
+    {
+      "id": "q00135",
+      "topic": "history",
+      "family": "completion",
+      "difficulty": "medium",
+      "prompt": "During the Apollo 11 landing, Michael Collins ___.",
+      "options": [
+        "Orbited the Moon in the command module",
+        "Walked on the surface first"
+      ],
+      "answer": 0,
+      "explanation": "Collins piloted Columbia while Armstrong and Aldrin descended in Eagle.",
+      "source": "https://www.nasa.gov/missions/apollo/apollo-11/apollo-11-mission-overview/",
+      "subtopic": "exploration",
+      "subjects": [
+        "apollo-11"
+      ],
+      "era": "modern",
+      "region": "americas"
+    },
+    {
+      "id": "q00136",
+      "topic": "history",
+      "family": "origin",
+      "difficulty": "medium",
+      "prompt": "Mughal painting under Akbar drew on which combination?",
+      "options": [
+        "Only Chinese traditions",
+        "Persian and Indian traditions"
+      ],
+      "answer": 1,
+      "explanation": "Artists brought Persian training and Indian approaches into the imperial workshop.",
+      "source": "https://www.metmuseum.org/essays/the-art-of-the-mughals-before-1600",
+      "subtopic": "art",
+      "subjects": [
+        "akbar"
+      ],
+      "era": "early-modern",
+      "region": "asia"
+    },
+    {
+      "id": "q00137",
+      "topic": "history",
+      "family": "scenario",
+      "difficulty": "medium",
+      "prompt": "Why can simply comparing signatures fail to settle debates about the Treaty of Waitangi?",
+      "options": [
+        "Its English and Māori texts differ in meaning",
+        "Its two texts are word-for-word identical"
+      ],
+      "answer": 0,
+      "explanation": "Differences between the texts are central to disagreements about what was agreed.",
+      "source": "https://nzhistory.govt.nz/page/differences-between-texts",
+      "subtopic": "rights",
+      "subjects": [
+        "waitangi-translation"
+      ],
+      "era": "modern",
+      "region": "oceania"
+    },
+    {
+      "id": "q00138",
+      "topic": "history",
+      "family": "mechanism",
+      "difficulty": "medium",
+      "prompt": "Why is it misleading to say everyone signed the Declaration on July 4, 1776?",
+      "options": [
+        "The Declaration had no signatures",
+        "Adoption and the main signing were on different dates"
+      ],
+      "answer": 1,
+      "explanation": "Congress adopted it on July 4; most delegates signed the engrossed copy on August 2.",
+      "source": "https://www.archives.gov/milestone-documents/declaration-of-independence",
+      "subtopic": "rights",
+      "subjects": [
+        "declaration"
+      ],
+      "era": "early-modern",
+      "region": "americas"
+    },
+    {
+      "id": "q00139",
+      "topic": "history",
+      "family": "recognition",
+      "difficulty": "medium",
+      "prompt": "At L'Anse aux Meadows, which building materials fit the archaeological evidence?",
+      "options": [
+        "Turf and timber",
+        "Sun-dried bricks"
+      ],
+      "answer": 0,
+      "explanation": "The Norse settlement includes turf-walled, timber-framed structures.",
+      "source": "https://whc.unesco.org/en/list/4/",
+      "subtopic": "archaeology",
+      "subjects": [
+        "lanse-aux-meadows"
+      ],
+      "era": "medieval",
+      "region": "americas"
+    },
+    {
+      "id": "q00140",
+      "topic": "history",
+      "family": "classification",
+      "difficulty": "medium",
+      "prompt": "Did Magna Carta introduce equal voting rights for every adult in 1215?",
+      "options": [
+        "Yes",
+        "No"
+      ],
+      "answer": 1,
+      "explanation": "Its immediate context was a dispute between King John and barons, not universal suffrage.",
+      "source": "https://www.archives.gov/exhibits/featured-documents/magna-carta/legacy.html",
+      "subtopic": "rights",
+      "subjects": [
+        "magna-carta"
+      ],
+      "era": "medieval",
+      "region": "europe"
+    },
+    {
+      "id": "q00141",
+      "topic": "history",
+      "family": "origin",
+      "difficulty": "hard",
+      "prompt": "Zhang Qian's Han-era journeys into Central Asia began as what kind of mission?",
+      "options": [
+        "Diplomatic missions",
+        "Package holidays"
+      ],
+      "answer": 0,
+      "explanation": "The Han envoy's travels helped expand knowledge and contacts along routes later called Silk Roads.",
+      "source": "https://www.unesco.org/en/silk-roads/about-silk-roads",
+      "subtopic": "trade",
+      "subjects": [
+        "zhang-qian"
+      ],
+      "era": "ancient",
+      "region": "asia"
+    },
+    {
+      "id": "q00142",
+      "topic": "history",
+      "family": "completion",
+      "difficulty": "medium",
+      "prompt": "Xochimilco preserves canals and chinampas: ___.",
+      "options": [
+        "Mountain-top fortresses",
+        "Raised agricultural plots in a wetland system"
+      ],
+      "answer": 1,
+      "explanation": "Chinampas were cultivated plots built in the shallow lake environment around Mexico City.",
+      "source": "https://whc.unesco.org/en/list/412/",
+      "subtopic": "architecture",
+      "subjects": [
+        "chinampas"
+      ],
+      "era": "early-modern",
+      "region": "americas"
+    },
+    {
+      "id": "q00143",
+      "topic": "history",
+      "family": "scenario",
+      "difficulty": "hard",
+      "prompt": "A museum label calls a Benin object a 'bronze'. Must its metal actually be bronze?",
+      "options": [
+        "No; many such objects are brass",
+        "Yes; the label guarantees the alloy"
+      ],
+      "answer": 0,
+      "explanation": "The collective name Benin Bronzes includes many works made from brass.",
+      "source": "https://www.britishmuseum.org/about-us/british-museum-story/contested-objects-collection/benin-bronzes",
+      "subtopic": "art",
+      "subjects": [
+        "benin-bronzes"
+      ],
+      "era": "early-modern",
+      "region": "africa"
+    },
+    {
+      "id": "q00144",
+      "topic": "history",
+      "family": "mechanism",
+      "difficulty": "medium",
+      "prompt": "Early gunpowder rockets moved mainly because ___.",
+      "options": [
+        "Stored compressed air escaped backwards",
+        "Burning gases were expelled backwards"
+      ],
+      "answer": 1,
+      "explanation": "Gas escaping from the rocket produced thrust.",
+      "source": "https://airandspace.si.edu/stories/editorial/first-fireworks-origins-rocket",
+      "subtopic": "engineering",
+      "subjects": [
+        "rocket-propulsion"
+      ],
+      "era": "medieval",
+      "region": "asia"
+    },
+    {
+      "id": "q00145",
+      "topic": "history",
+      "family": "recognition",
+      "difficulty": "medium",
+      "prompt": "The Eureka rebels' flag prominently featured which constellation?",
+      "options": [
+        "The Southern Cross",
+        "Orion"
+      ],
+      "answer": 0,
+      "explanation": "The Southern Cross flag became an enduring symbol associated with the rebellion.",
+      "source": "https://www.nma.gov.au/defining-moments/resources/eureka-stockade",
+      "subtopic": "rights",
+      "subjects": [
+        "eureka-stockade"
+      ],
+      "era": "modern",
+      "region": "oceania"
+    },
+    {
+      "id": "q00146",
+      "topic": "history",
+      "family": "classification",
+      "difficulty": "medium",
+      "prompt": "The Cyrus Cylinder's inscription is written in which writing system?",
+      "options": [
+        "Braille",
+        "Cuneiform"
+      ],
+      "answer": 1,
+      "explanation": "Its wedge-shaped signs record a Babylonian royal inscription.",
+      "source": "https://www.britishmuseum.org/collection/object/W_1880-0617-1941",
+      "subtopic": "archaeology",
+      "subjects": [
+        "cyrus-text"
+      ],
+      "era": "ancient",
+      "region": "asia"
+    },
+    {
+      "id": "q00147",
+      "topic": "history",
+      "family": "completion",
+      "difficulty": "hard",
+      "prompt": "On Rapa Nui, moai statues are associated with ceremonial platforms called ___.",
+      "options": [
+        "Ahu",
+        "Aqueducts"
+      ],
+      "answer": 0,
+      "explanation": "Ahu are monumental ceremonial structures in the island's cultural landscape.",
+      "source": "https://whc.unesco.org/en/list/715/",
+      "subtopic": "beliefs",
+      "subjects": [
+        "rapa-nui"
+      ],
+      "era": "medieval",
+      "region": "oceania"
+    },
+    {
+      "id": "q00148",
+      "topic": "history",
+      "family": "scenario",
+      "difficulty": "medium",
+      "prompt": "Could Toussaint Louverture have attended Haiti's declaration of independence in 1804?",
+      "options": [
+        "Yes; he led that ceremony",
+        "No; he died in 1803"
+      ],
+      "answer": 1,
+      "explanation": "Louverture died in French captivity before independence was proclaimed.",
+      "source": "https://nmaahc.si.edu/latinx/toussaint-louverture",
+      "subtopic": "rights",
+      "subjects": [
+        "louverture-death"
+      ],
+      "era": "modern",
+      "region": "americas"
+    },
+    {
+      "id": "q00149",
+      "topic": "history",
+      "family": "recognition",
+      "difficulty": "medium",
+      "prompt": "Which campaigner is closely associated with New Zealand's women's suffrage petitions?",
+      "options": [
+        "Kate Sheppard",
+        "Marie Antoinette"
+      ],
+      "answer": 0,
+      "explanation": "Sheppard was a leading organiser of the campaign that helped win voting rights in 1893.",
+      "source": "https://nzhistory.govt.nz/politics/womens-suffrage",
+      "subtopic": "rights",
+      "subjects": [
+        "kate-sheppard"
+      ],
+      "era": "modern",
+      "region": "oceania"
+    },
+    {
+      "id": "q00150",
+      "topic": "history",
+      "family": "mechanism",
+      "difficulty": "hard",
+      "prompt": "How did King John authenticate Magna Carta?",
+      "options": [
+        "With a modern ballpoint signature",
+        "With his royal seal"
+      ],
+      "answer": 1,
+      "explanation": "Royal documents were authenticated with a seal; 'signed Magna Carta' is misleading shorthand.",
+      "source": "https://www.parliament.uk/magnacarta/",
+      "subtopic": "rights",
+      "subjects": [
+        "magna-carta"
+      ],
+      "era": "medieval",
+      "region": "europe"
+    },
+    {
+      "id": "q00151",
+      "topic": "history",
+      "family": "recognition",
+      "difficulty": "hard",
+      "prompt": "On the Rosetta Stone, which script sits alongside hieroglyphic and Greek?",
+      "options": [
+        "Demotic",
+        "Cyrillic"
+      ],
+      "answer": 0,
+      "explanation": "Demotic was another script for the Egyptian language.",
+      "source": "https://www.britishmuseum.org/collection/object/Y_EA24",
+      "subtopic": "archaeology",
+      "subjects": [
+        "rosetta"
+      ],
+      "era": "ancient",
+      "region": "africa"
+    },
+    {
+      "id": "q00152",
+      "topic": "history",
+      "family": "scenario",
+      "difficulty": "hard",
+      "prompt": "Which is the safer description of the Cyrus Cylinder in its own historical setting?",
+      "options": [
+        "A modern bill granting universal equal rights",
+        "A royal inscription legitimising a conquest"
+      ],
+      "answer": 1,
+      "explanation": "It presents Cyrus's rule and restoration policies through a Babylonian royal tradition.",
+      "source": "https://www.britishmuseum.org/collection/object/W_1880-0617-1941",
+      "subtopic": "rights",
+      "subjects": [
+        "cyrus-cylinder"
+      ],
+      "era": "ancient",
+      "region": "asia"
+    },
+    {
+      "id": "q00153",
+      "topic": "history",
+      "family": "completion",
+      "difficulty": "easy",
+      "prompt": "Qin Shi Huang unified China in ___.",
+      "options": [
+        "221 BCE",
+        "221 CE"
+      ],
+      "answer": 0,
+      "explanation": "The Qin unification belongs to the third century BCE, centuries before 221 CE.",
+      "source": "https://whc.unesco.org/en/list/441/",
+      "subtopic": "archaeology",
+      "subjects": [
+        "qin"
+      ],
+      "era": "ancient",
+      "region": "asia"
+    },
+    {
+      "id": "q00154",
+      "topic": "history",
+      "family": "mechanism",
+      "difficulty": "easy",
+      "prompt": "How did Petra's inhabitants manage water in an arid setting?",
+      "options": [
+        "A permanent glacier in the city centre",
+        "Channels, dams, and cisterns"
+      ],
+      "answer": 1,
+      "explanation": "The Nabataeans engineered water collection, storage, and distribution systems.",
+      "source": "https://whc.unesco.org/en/list/326/",
+      "subtopic": "architecture",
+      "subjects": [
+        "petra"
+      ],
+      "era": "ancient",
+      "region": "asia"
+    },
+    {
+      "id": "q00155",
+      "topic": "history",
+      "family": "classification",
+      "difficulty": "hard",
+      "prompt": "Many Benin brass plaques were originally associated with what setting?",
+      "options": [
+        "The royal palace",
+        "Village marketplaces"
+      ],
+      "answer": 0,
+      "explanation": "The plaques formed part of the palace's art and recorded court life and history.",
+      "source": "https://www.britishmuseum.org/about-us/british-museum-story/contested-objects-collection/benin-bronzes",
+      "subtopic": "art",
+      "subjects": [
+        "benin-bronzes"
+      ],
+      "era": "early-modern",
+      "region": "africa"
+    },
+    {
+      "id": "q00156",
+      "topic": "history",
+      "family": "origin",
+      "difficulty": "easy",
+      "prompt": "Many Benin objects entered British collections after which event?",
+      "options": [
+        "A peaceful royal gift in 1897",
+        "The British military expedition of 1897"
+      ],
+      "answer": 1,
+      "explanation": "British forces looted Benin City in 1897; many objects were dispersed internationally.",
+      "source": "https://www.britishmuseum.org/about-us/british-museum-story/contested-objects-collection/benin-bronzes",
+      "subtopic": "archaeology",
+      "subjects": [
+        "benin-bronzes"
+      ],
+      "era": "modern",
+      "region": "africa"
+    },
+    {
+      "id": "q00157",
+      "topic": "history",
+      "family": "scenario",
+      "difficulty": "easy",
+      "prompt": "A history describes Timbuktu only as an isolated desert outpost. What major role does it miss?",
+      "options": [
+        "A centre of scholarship and trade",
+        "A base for Arctic whaling"
+      ],
+      "answer": 0,
+      "explanation": "Its mosques and scholarly institutions were linked to trans-Saharan networks.",
+      "source": "https://whc.unesco.org/en/list/119/",
+      "subtopic": "learning",
+      "subjects": [
+        "timbuktu"
+      ],
+      "era": "early-modern",
+      "region": "africa"
+    },
+    {
+      "id": "q00158",
+      "topic": "history",
+      "family": "recognition",
+      "difficulty": "hard",
+      "prompt": "Akbar's manuscript workshop brought together artists from which backgrounds?",
+      "options": [
+        "Only artists trained in Italy",
+        "Both Hindu and Muslim backgrounds"
+      ],
+      "answer": 1,
+      "explanation": "Mughal court production brought artists with different backgrounds into shared projects.",
+      "source": "https://www.metmuseum.org/essays/the-art-of-the-mughals-before-1600",
+      "subtopic": "art",
+      "subjects": [
+        "akbar"
+      ],
+      "era": "early-modern",
+      "region": "asia"
+    },
+    {
+      "id": "q00159",
+      "topic": "history",
+      "family": "completion",
+      "difficulty": "easy",
+      "prompt": "Jefferson drafted the Declaration as part of a committee of ___.",
+      "options": [
+        "Five",
+        "Fifty"
+      ],
+      "answer": 0,
+      "explanation": "The committee included Jefferson, Adams, Franklin, Sherman, and Livingston.",
+      "source": "https://www.archives.gov/founding-docs/timeline",
+      "subtopic": "rights",
+      "subjects": [
+        "declaration"
+      ],
+      "era": "early-modern",
+      "region": "americas"
+    },
+    {
+      "id": "q00160",
+      "topic": "history",
+      "family": "chronology",
+      "difficulty": "hard",
+      "prompt": "Which happened first in 1776?",
+      "options": [
+        "Most delegates signed its engrossed copy",
+        "Congress adopted the Declaration"
+      ],
+      "answer": 1,
+      "explanation": "Adoption was July 4; the main signing of the engrossed copy was August 2.",
+      "source": "https://www.archives.gov/milestone-documents/declaration-of-independence",
+      "subtopic": "rights",
+      "subjects": [
+        "declaration"
+      ],
+      "era": "early-modern",
+      "region": "americas"
+    },
+    {
+      "id": "q00161",
+      "topic": "history",
+      "family": "mechanism",
+      "difficulty": "hard",
+      "prompt": "What makes the date of New Zealand's Matariki public holiday shift each year?",
+      "options": [
+        "Its link to a particular lunar period",
+        "Its link to the March equinox"
+      ],
+      "answer": 0,
+      "explanation": "The holiday falls near the Tangaroa lunar period in Pipiri, so its Gregorian date changes.",
+      "source": "https://www.tepapa.govt.nz/digital-museum/explore-digital-museum/matariki-maori-new-year/dates-for-matariki-public-holiday",
+      "subtopic": "beliefs",
+      "subjects": [
+        "matariki-calendar"
+      ],
+      "era": "modern",
+      "region": "oceania"
+    },
+    {
+      "id": "q00162",
+      "topic": "history",
+      "family": "recognition",
+      "difficulty": "easy",
+      "prompt": "UNESCO associates the builders of Great Zimbabwe with which people?",
+      "options": [
+        "Vikings",
+        "Shona"
+      ],
+      "answer": 1,
+      "explanation": "The site is evidence of a major indigenous southern African civilisation.",
+      "source": "https://whc.unesco.org/en/list/364/",
+      "subtopic": "architecture",
+      "subjects": [
+        "great-zimbabwe"
+      ],
+      "era": "medieval",
+      "region": "africa"
+    },
+    {
+      "id": "q00163",
+      "topic": "history",
+      "family": "scenario",
+      "difficulty": "hard",
+      "prompt": "A guide uses 'Aztec Ruins' to prove that the Aztec capital was in New Mexico. What is the problem?",
+      "options": [
+        "The monument's name misidentifies its builders",
+        "The ruins are entirely modern replicas"
+      ],
+      "answer": 0,
+      "explanation": "The monument preserves Ancestral Pueblo structures, not the Aztec capital.",
+      "source": "https://www.nps.gov/articles/aztec.htm",
+      "subtopic": "archaeology",
+      "subjects": [
+        "aztec-ruins"
+      ],
+      "era": "medieval",
+      "region": "americas"
+    },
+    {
+      "id": "q00164",
+      "topic": "history",
+      "family": "classification",
+      "difficulty": "easy",
+      "prompt": "The Bayon temple is part of which historic complex?",
+      "options": [
+        "Great Zimbabwe",
+        "Angkor"
+      ],
+      "answer": 1,
+      "explanation": "Bayon stands at Angkor Thom within the Angkor landscape in Cambodia.",
+      "source": "https://whc.unesco.org/en/list/668/",
+      "subtopic": "beliefs",
+      "subjects": [
+        "angkor"
+      ],
+      "era": "medieval",
+      "region": "asia"
+    },
+    {
+      "id": "q00165",
+      "topic": "history",
+      "family": "origin",
+      "difficulty": "hard",
+      "prompt": "L'Anse aux Meadows connects medieval North America with which seafaring tradition?",
+      "options": [
+        "Norse",
+        "Mughal"
+      ],
+      "answer": 0,
+      "explanation": "Its buildings and artefacts provide evidence of a Norse settlement.",
+      "source": "https://whc.unesco.org/en/list/4/",
+      "subtopic": "exploration",
+      "subjects": [
+        "lanse-aux-meadows"
+      ],
+      "era": "medieval",
+      "region": "americas"
+    },
+    {
+      "id": "q00166",
+      "topic": "history",
+      "family": "completion",
+      "difficulty": "hard",
+      "prompt": "The first Māori King, selected in 1858, was ___.",
+      "options": [
+        "Hōne Heke",
+        "Te Wherowhero"
+      ],
+      "answer": 1,
+      "explanation": "Te Wherowhero became the first Māori King; he had not signed the Treaty of Waitangi.",
+      "source": "https://nzhistory.govt.nz/page/history-new-zealand-1769-1914",
+      "subtopic": "rights",
+      "subjects": [
+        "waitangi-king"
+      ],
+      "era": "modern",
+      "region": "oceania"
+    },
+    {
+      "id": "q00167",
+      "topic": "history",
+      "family": "recognition",
+      "difficulty": "hard",
+      "prompt": "Who became the leader of the Eureka miners?",
+      "options": [
+        "Peter Lalor",
+        "James Cook"
+      ],
+      "answer": 0,
+      "explanation": "Lalor, an Irish miner, led the protesters at Ballarat in 1854.",
+      "source": "https://www.nma.gov.au/defining-moments/resources/eureka-stockade",
+      "subtopic": "rights",
+      "subjects": [
+        "eureka-stockade"
+      ],
+      "era": "modern",
+      "region": "oceania"
+    },
+    {
+      "id": "q00168",
+      "topic": "history",
+      "family": "scenario",
+      "difficulty": "easy",
+      "prompt": "You need the spacecraft that actually landed Armstrong and Aldrin. Which name belongs on the label?",
+      "options": [
+        "Columbia",
+        "Eagle"
+      ],
+      "answer": 1,
+      "explanation": "Eagle was the lunar module. Columbia was the command module that stayed in orbit.",
+      "source": "https://www.nasa.gov/missions/apollo/apollo-11/apollo-11-mission-overview/",
+      "subtopic": "exploration",
+      "subjects": [
+        "apollo-11"
+      ],
+      "era": "modern",
+      "region": "americas"
+    },
+    {
+      "id": "q00169",
+      "topic": "history",
+      "family": "mechanism",
+      "difficulty": "hard",
+      "prompt": "Why could the Underground Railroad operate without railway tracks?",
+      "options": [
+        "It relied on people, routes, and safe places",
+        "It was a tunnel running under the Atlantic"
+      ],
+      "answer": 0,
+      "explanation": "The name was a metaphor for a network aiding escape from slavery.",
+      "source": "https://www.nps.gov/subjects/ugrr/index.htm",
+      "subtopic": "rights",
+      "subjects": [
+        "ugrr-network"
+      ],
+      "era": "modern",
+      "region": "americas"
+    },
+    {
+      "id": "q00170",
+      "topic": "history",
+      "family": "classification",
+      "difficulty": "hard",
+      "prompt": "The historical Sahelian empires connected which two broad zones through trade?",
+      "options": [
+        "Antarctica and the Arctic",
+        "The Sahara and lands to its south"
+      ],
+      "answer": 1,
+      "explanation": "Their position helped link Saharan routes with regions producing goods such as gold.",
+      "source": "https://www.metmuseum.org/exhibitions/sahel-art-empire-sahara/inside-the-exhibition",
+      "subtopic": "trade",
+      "subjects": [
+        "sahel-region"
+      ],
+      "era": "medieval",
+      "region": "africa"
+    },
+    {
+      "id": "q00171",
+      "topic": "history",
+      "family": "origin",
+      "difficulty": "hard",
+      "prompt": "Was 'Silk Road' the name used by all ancient traders for one official highway?",
+      "options": [
+        "No; the term was coined much later",
+        "Yes; it was a single ancient road name"
+      ],
+      "answer": 0,
+      "explanation": "The modern term dates to the nineteenth century and describes many routes.",
+      "source": "https://www.unesco.org/en/silk-roads/about-silk-roads",
+      "subtopic": "trade",
+      "subjects": [
+        "silk-name"
+      ],
+      "era": "modern",
+      "region": "asia"
+    },
+    {
+      "id": "q00172",
+      "topic": "history",
+      "family": "completion",
+      "difficulty": "hard",
+      "prompt": "Petra's great trading city is particularly associated with the ___.",
+      "options": [
+        "Inca",
+        "Nabataeans"
+      ],
+      "answer": 1,
+      "explanation": "The Nabataeans developed Petra as a trading centre linking several regions.",
+      "source": "https://whc.unesco.org/en/list/326/",
+      "subtopic": "architecture",
+      "subjects": [
+        "petra"
+      ],
+      "era": "ancient",
+      "region": "asia"
+    },
+    {
+      "id": "q00173",
+      "topic": "history",
+      "family": "recognition",
+      "difficulty": "hard",
+      "prompt": "How many rock-hewn churches make up UNESCO's Lalibela property?",
+      "options": [
+        "Eleven",
+        "Seven"
+      ],
+      "answer": 0,
+      "explanation": "The listed site comprises eleven medieval monolithic and rock-hewn churches.",
+      "source": "https://whc.unesco.org/en/list/18/",
+      "subtopic": "beliefs",
+      "subjects": [
+        "lalibela-number"
+      ],
+      "era": "medieval",
+      "region": "africa"
+    },
+    {
+      "id": "q00174",
+      "topic": "history",
+      "family": "scenario",
+      "difficulty": "hard",
+      "prompt": "Which landscape best fits the historic setting of Machu Picchu?",
+      "options": [
+        "A low coastal desert in Egypt",
+        "A steep Andean mountain landscape"
+      ],
+      "answer": 1,
+      "explanation": "The Inca site sits in a dramatic mountain landscape in Peru.",
+      "source": "https://whc.unesco.org/en/list/274/",
+      "subtopic": "architecture",
+      "subjects": [
+        "machu-picchu"
+      ],
+      "era": "medieval",
+      "region": "americas"
+    },
+    {
+      "id": "q00175",
+      "topic": "history",
+      "family": "mechanism",
+      "difficulty": "hard",
+      "prompt": "Which Chinese invention made direction-finding less dependent on seeing the Sun or stars?",
+      "options": [
+        "The magnetic compass",
+        "Movable type"
+      ],
+      "answer": 0,
+      "explanation": "A magnetic compass provides a direction reference even when celestial bodies are hidden.",
+      "source": "https://english.shanghai.gov.cn/en-LearnChinese/20240827/aa93b595d1e44a80bf9dbb373bc9dc6c.html",
+      "subtopic": "engineering",
+      "subjects": [
+        "compass"
+      ],
+      "era": "ancient",
+      "region": "asia"
+    },
+    {
+      "id": "q00176",
+      "topic": "history",
+      "family": "classification",
+      "difficulty": "easy",
+      "prompt": "The famous Sutton Hoo helmet is evidence of what?",
+      "options": [
+        "Everyday peasant clothing",
+        "Elite early medieval craftsmanship"
+      ],
+      "answer": 1,
+      "explanation": "The helmet comes from an Anglo-Saxon ship burial with richly worked objects.",
+      "source": "https://www.britishmuseum.org/collection/galleries/sutton-hoo-and-europe",
+      "subtopic": "art",
+      "subjects": [
+        "sutton-hoo"
+      ],
+      "era": "medieval",
+      "region": "europe"
+    },
+    {
+      "id": "q00177",
+      "topic": "history",
+      "family": "recognition",
+      "difficulty": "hard",
+      "prompt": "Which royal name on the Rosetta Stone helped early decipherment work?",
+      "options": [
+        "Ptolemy",
+        "Charlemagne"
+      ],
+      "answer": 0,
+      "explanation": "The repeated royal name Ptolemy was an important clue for Thomas Young and other scholars.",
+      "source": "https://www.britishmuseum.org/collection/object/Y_EA24",
+      "subtopic": "archaeology",
+      "subjects": [
+        "rosetta"
+      ],
+      "era": "ancient",
+      "region": "africa"
+    },
+    {
+      "id": "q00178",
+      "topic": "history",
+      "family": "scenario",
+      "difficulty": "easy",
+      "prompt": "A museum labels the 1215 Magna Carta as a bargain involving which English king?",
+      "options": [
+        "Henry VIII",
+        "John"
+      ],
+      "answer": 1,
+      "explanation": "The charter arose from the conflict between King John and his barons.",
+      "source": "https://www.archives.gov/exhibits/featured-documents/magna-carta/legacy.html",
+      "subtopic": "rights",
+      "subjects": [
+        "magna-carta"
+      ],
+      "era": "medieval",
+      "region": "europe"
+    },
+    {
+      "id": "q00179",
+      "topic": "history",
+      "family": "origin",
+      "difficulty": "hard",
+      "prompt": "Mexico City's colonial core began to take shape under Spanish rule in which century?",
+      "options": [
+        "The sixteenth",
+        "The seventeenth"
+      ],
+      "answer": 0,
+      "explanation": "The Spanish built the colonial city on Tenochtitlan's site during the sixteenth century.",
+      "source": "https://whc.unesco.org/en/list/412/",
+      "subtopic": "architecture",
+      "subjects": [
+        "mexico-colonial"
+      ],
+      "era": "early-modern",
+      "region": "americas"
+    },
+    {
+      "id": "q00180",
+      "topic": "history",
+      "family": "completion",
+      "difficulty": "hard",
+      "prompt": "The monumental culture that produced Rapa Nui's moai was ___.",
+      "options": [
+        "Scandinavian",
+        "Polynesian"
+      ],
+      "answer": 1,
+      "explanation": "Rapa Nui's people developed the island's distinctive monumental tradition within Polynesia.",
+      "source": "https://whc.unesco.org/en/list/715/",
+      "subtopic": "beliefs",
+      "subjects": [
+        "rapa-nui"
+      ],
+      "era": "medieval",
+      "region": "oceania"
+    },
+    {
+      "id": "q00181",
+      "topic": "languages",
+      "family": "recognition",
+      "difficulty": "easy",
+      "prompt": "Which writing system is used for Korean?",
+      "options": [
+        "Hangul",
+        "Devanagari"
+      ],
+      "answer": 0,
+      "explanation": "Hangul writes Korean using letters arranged in syllable blocks.",
+      "source": "https://www.unicode.org/versions/Unicode17.0.0/core-spec/chapter-18/",
+      "subtopic": "scripts",
+      "subjects": [
+        "hangul"
+      ]
+    },
+    {
+      "id": "q00182",
+      "topic": "languages",
+      "family": "classification",
+      "difficulty": "easy",
+      "prompt": "Which is a language isolate, with no established living relatives?",
+      "options": [
+        "English",
+        "Basque"
+      ],
+      "answer": 1,
+      "explanation": "Basque is classified as an isolate. English belongs to the Germanic family.",
+      "source": "https://glottolog.org/resource/languoid/id/basq1248",
+      "subtopic": "families",
+      "subjects": [
+        "basque"
+      ]
+    },
+    {
+      "id": "q00183",
+      "topic": "languages",
+      "family": "scenario",
+      "difficulty": "easy",
+      "prompt": "Two Deaf people meet from different countries. Can you assume they share the same sign language?",
+      "options": [
+        "No",
+        "Yes"
+      ],
+      "answer": 0,
+      "explanation": "There is no single universal sign language; different communities use different languages.",
+      "source": "https://www.istc.cnr.it/en/question/sign-language-universal",
+      "subtopic": "communication",
+      "subjects": [
+        "sign-universal"
+      ]
+    },
+    {
+      "id": "q00184",
+      "topic": "languages",
+      "family": "mechanism",
+      "difficulty": "easy",
+      "prompt": "Touch your throat while saying 'zzzz' then 'ssss'. What usually changes?",
+      "options": [
+        "The number of teeth used",
+        "Vocal-fold vibration"
+      ],
+      "answer": 1,
+      "explanation": "The vocal folds vibrate for voiced /z/ but not for voiceless /s/.",
+      "source": "https://ecampusontario.pressbooks.pub/essentialsoflinguistics/chapter/2-7-classifying-consonants/",
+      "subtopic": "sounds",
+      "subjects": [
+        "voicing"
+      ]
+    },
+    {
+      "id": "q00185",
+      "topic": "languages",
+      "family": "completion",
+      "difficulty": "easy",
+      "prompt": "In 'unhappy', the part 'un-' is a ___.",
+      "options": [
+        "Prefix",
+        "Suffix"
+      ],
+      "answer": 0,
+      "explanation": "A prefix comes before its base; a suffix follows it.",
+      "source": "https://ecampusontario.pressbooks.pub/essentialsoflinguistics/chapter/6-5-unsure-how-to-format-that-derivational-morphology/",
+      "subtopic": "word-building",
+      "subjects": [
+        "prefix"
+      ]
+    },
+    {
+      "id": "q00186",
+      "topic": "languages",
+      "family": "recognition",
+      "difficulty": "easy",
+      "prompt": "A line of ordinary Arabic text is read mainly in which direction?",
+      "options": [
+        "Left to right",
+        "Right to left"
+      ],
+      "answer": 1,
+      "explanation": "Arabic letters run right to left; numbers within the text can run the other way.",
+      "source": "https://www.unicode.org/versions/Unicode17.0.0/core-spec/chapter-2/",
+      "subtopic": "scripts",
+      "subjects": [
+        "arabic-direction"
+      ]
+    },
+    {
+      "id": "q00187",
+      "topic": "languages",
+      "family": "scenario",
+      "difficulty": "easy",
+      "prompt": "You find an undated note saying 'I'll come tomorrow.' What is missing if you want the exact day?",
+      "options": [
+        "When the note was written",
+        "The writer's favourite colour"
+      ],
+      "answer": 0,
+      "explanation": "Words such as tomorrow depend on the time of the utterance.",
+      "source": "https://socialsci.libretexts.org/Courses/Canada_College/Essentials_of_Linguistics_Remix_2.0/06%3A_Meaning-_Semantics_and_Pragmatics/6.12%3A_Deixis",
+      "subtopic": "meaning",
+      "subjects": [
+        "deixis-tomorrow"
+      ]
+    },
+    {
+      "id": "q00188",
+      "topic": "languages",
+      "family": "classification",
+      "difficulty": "easy",
+      "prompt": "Which is a compound made from two roots?",
+      "options": [
+        "Walked",
+        "Toothbrush"
+      ],
+      "answer": 1,
+      "explanation": "Toothbrush combines tooth and brush. Walked adds an inflection to walk.",
+      "source": "https://ecampusontario.pressbooks.pub/essentialsoflinguistics2/chapter/5-4-lexical-categories-and-the-split-between-derivation-and-inflection/",
+      "subtopic": "word-building",
+      "subjects": [
+        "compound"
+      ]
+    },
+    {
+      "id": "q00189",
+      "topic": "languages",
+      "family": "mechanism",
+      "difficulty": "easy",
+      "prompt": "Hum 'mmm' with your mouth closed. Where does most of the air escape?",
+      "options": [
+        "Your nose",
+        "Through your closed lips"
+      ],
+      "answer": 0,
+      "explanation": "For nasal consonants such as /m/, air can flow through the nose.",
+      "source": "https://ecampusontario.pressbooks.pub/essentialsoflinguistics/chapter/2-7-classifying-consonants/",
+      "subtopic": "sounds",
+      "subjects": [
+        "nasal"
+      ]
+    },
+    {
+      "id": "q00190",
+      "topic": "languages",
+      "family": "origin",
+      "difficulty": "easy",
+      "prompt": "Despite its many French loanwords, English belongs to which branch?",
+      "options": [
+        "Romance",
+        "Germanic"
+      ],
+      "answer": 1,
+      "explanation": "A language's family follows historical descent, not just which words it has borrowed.",
+      "source": "https://api.pageplace.de/preview/DT0400.9783110215489_A15612968/preview-9783110215489_A15612968.pdf",
+      "subtopic": "families",
+      "subjects": [
+        "english-family"
+      ]
+    },
+    {
+      "id": "q00191",
+      "topic": "languages",
+      "family": "completion",
+      "difficulty": "easy",
+      "prompt": "In 'The fox chased the hen', the basic order is ___.",
+      "options": [
+        "Subject–verb–object",
+        "Verb–object–subject"
+      ],
+      "answer": 0,
+      "explanation": "The fox is the subject, chased the verb, and the hen the object.",
+      "source": "https://wals.info/chapter/81",
+      "subtopic": "grammar",
+      "subjects": [
+        "english-order"
+      ]
+    },
+    {
+      "id": "q00192",
+      "topic": "languages",
+      "family": "recognition",
+      "difficulty": "easy",
+      "prompt": "Braille is best described as what?",
+      "options": [
+        "A separate spoken language",
+        "A tactile writing system"
+      ],
+      "answer": 1,
+      "explanation": "Raised-dot patterns can be used to write different languages.",
+      "source": "https://www.unicode.org/versions/Unicode17.0.0/core-spec/chapter-21/",
+      "subtopic": "scripts",
+      "subjects": [
+        "braille"
+      ]
+    },
+    {
+      "id": "q00193",
+      "topic": "languages",
+      "family": "scenario",
+      "difficulty": "easy",
+      "prompt": "At dinner, someone says 'Can you pass the salt?' What are they usually doing?",
+      "options": [
+        "Making a request",
+        "Only testing your physical strength"
+      ],
+      "answer": 0,
+      "explanation": "What an utterance does in context can go beyond its literal question form.",
+      "source": "https://ecampusontario.pressbooks.pub/essentialsoflinguistics2/chapter/chapter-8-summary/",
+      "subtopic": "meaning",
+      "subjects": [
+        "request"
+      ]
+    },
+    {
+      "id": "q00194",
+      "topic": "languages",
+      "family": "classification",
+      "difficulty": "easy",
+      "prompt": "Which pair differs by just one speech sound in standard English?",
+      "options": [
+        "Pat and shoes",
+        "Pat and bat"
+      ],
+      "answer": 1,
+      "explanation": "Pat and bat form a minimal pair: changing one sound changes the word.",
+      "source": "https://ecampusontario.pressbooks.pub/essentialsoflinguistics2/chapter/4-3-contrastive-distribution-and-minimal-pairs/",
+      "subtopic": "sounds",
+      "subjects": [
+        "minimal-pair"
+      ]
+    },
+    {
+      "id": "q00195",
+      "topic": "languages",
+      "family": "mechanism",
+      "difficulty": "easy",
+      "prompt": "A Korean Hangul block may look like one symbol. How is it normally built?",
+      "options": [
+        "From letters arranged into a syllable",
+        "From a separate picture for each word"
+      ],
+      "answer": 0,
+      "explanation": "Hangul combines consonant and vowel letters spatially into syllable blocks.",
+      "source": "https://www.unicode.org/versions/Unicode17.0.0/core-spec/chapter-6/",
+      "subtopic": "scripts",
+      "subjects": [
+        "hangul-blocks"
+      ]
+    },
+    {
+      "id": "q00196",
+      "topic": "languages",
+      "family": "completion",
+      "difficulty": "easy",
+      "prompt": "The '-s' in 'cats' mainly tells you ___.",
+      "options": [
+        "The cats are in the past",
+        "There is more than one cat"
+      ],
+      "answer": 1,
+      "explanation": "This is plural inflection on a noun, not past-tense marking.",
+      "source": "https://ecampusontario.pressbooks.pub/essentialsoflinguistics/chapter/6-4-inflectional-morphology/",
+      "subtopic": "word-building",
+      "subjects": [
+        "plural-inflection"
+      ]
+    },
+    {
+      "id": "q00197",
+      "topic": "languages",
+      "family": "recognition",
+      "difficulty": "easy",
+      "prompt": "Finnish belongs to which language family?",
+      "options": [
+        "Uralic",
+        "Semitic"
+      ],
+      "answer": 0,
+      "explanation": "Finnish is Uralic, as are Estonian and Hungarian.",
+      "source": "https://www.kielipankki.fi/corpora/uralic-ud/",
+      "subtopic": "families",
+      "subjects": [
+        "finnish"
+      ]
+    },
+    {
+      "id": "q00198",
+      "topic": "languages",
+      "family": "scenario",
+      "difficulty": "easy",
+      "prompt": "In a tone language, changing pitch on the same syllable can do what?",
+      "options": [
+        "Only change how loudly it is spoken",
+        "Change the word's meaning"
+      ],
+      "answer": 1,
+      "explanation": "Lexical tone uses pitch contrasts to distinguish words.",
+      "source": "https://wals.info/chapter/13",
+      "subtopic": "sounds",
+      "subjects": [
+        "tone"
+      ]
+    },
+    {
+      "id": "q00199",
+      "topic": "languages",
+      "family": "classification",
+      "difficulty": "easy",
+      "prompt": "Which word gives a position in a sequence rather than a quantity?",
+      "options": [
+        "Third",
+        "Three"
+      ],
+      "answer": 0,
+      "explanation": "Third is ordinal; three is cardinal.",
+      "source": "https://wals.info/chapter/53",
+      "subtopic": "grammar",
+      "subjects": [
+        "ordinal"
+      ]
+    },
+    {
+      "id": "q00200",
+      "topic": "languages",
+      "family": "origin",
+      "difficulty": "easy",
+      "prompt": "American Sign Language has important historical links to which sign language?",
+      "options": [
+        "Only written English",
+        "French Sign Language"
+      ],
+      "answer": 1,
+      "explanation": "French Sign Language contributed to ASL's development alongside local signing traditions.",
+      "source": "https://www.nidcd.nih.gov/health/american-sign-language",
+      "subtopic": "communication",
+      "subjects": [
+        "asl"
+      ]
+    },
+    {
+      "id": "q00201",
+      "topic": "languages",
+      "family": "recognition",
+      "difficulty": "easy",
+      "prompt": "Which script is commonly used to write Hindi?",
+      "options": [
+        "Devanagari",
+        "Hangul"
+      ],
+      "answer": 0,
+      "explanation": "Devanagari writes Hindi and several other languages.",
+      "source": "https://www.unicode.org/versions/Unicode17.0.0/core-spec/chapter-12/",
+      "subtopic": "scripts",
+      "subjects": [
+        "devanagari"
+      ]
+    },
+    {
+      "id": "q00202",
+      "topic": "languages",
+      "family": "mechanism",
+      "difficulty": "easy",
+      "prompt": "A language makes a new form by repeating a word or part of it. What is this called?",
+      "options": [
+        "Alphabetisation",
+        "Reduplication"
+      ],
+      "answer": 1,
+      "explanation": "Reduplication copies all or part of a form for a grammatical or word-building purpose.",
+      "source": "https://wals.info/chapter/27",
+      "subtopic": "word-building",
+      "subjects": [
+        "reduplication"
+      ]
+    },
+    {
+      "id": "q00203",
+      "topic": "languages",
+      "family": "completion",
+      "difficulty": "easy",
+      "prompt": "An inclusive 'we' means the speaker and ___.",
+      "options": [
+        "The person being addressed, possibly others too",
+        "Only people absent from the conversation"
+      ],
+      "answer": 0,
+      "explanation": "Inclusive we includes the addressee; exclusive we leaves the addressee out.",
+      "source": "https://wals.info/chapter/39",
+      "subtopic": "grammar",
+      "subjects": [
+        "inclusive-we"
+      ]
+    },
+    {
+      "id": "q00204",
+      "topic": "languages",
+      "family": "scenario",
+      "difficulty": "easy",
+      "prompt": "A book uses the Latin alphabet. Can you conclude that its language is Latin?",
+      "options": [
+        "Yes",
+        "No"
+      ],
+      "answer": 1,
+      "explanation": "Many languages share the same script. A script and a language are different things.",
+      "source": "https://unicode.org/faq/basic_q.html",
+      "subtopic": "scripts",
+      "subjects": [
+        "script-language"
+      ]
+    },
+    {
+      "id": "q00205",
+      "topic": "languages",
+      "family": "recognition",
+      "difficulty": "easy",
+      "prompt": "Which sound requires both lips to come together?",
+      "options": [
+        "The /p/ in 'pin'",
+        "The /s/ in 'sin'"
+      ],
+      "answer": 0,
+      "explanation": "The /p/ sound is bilabial: its closure is made with both lips.",
+      "source": "https://ecampusontario.pressbooks.pub/essentialsoflinguistics/chapter/2-7-classifying-consonants/",
+      "subtopic": "sounds",
+      "subjects": [
+        "bilabial"
+      ]
+    },
+    {
+      "id": "q00206",
+      "topic": "languages",
+      "family": "classification",
+      "difficulty": "easy",
+      "prompt": "Which word directly imitates a sound?",
+      "options": [
+        "Rectangle",
+        "Buzz"
+      ],
+      "answer": 1,
+      "explanation": "Onomatopoeic words imitate sounds, though their forms vary across languages.",
+      "source": "https://www.sciencedirect.com/science/article/pii/S0024384115002338",
+      "subtopic": "meaning",
+      "subjects": [
+        "onomatopoeia"
+      ]
+    },
+    {
+      "id": "q00207",
+      "topic": "languages",
+      "family": "origin",
+      "difficulty": "easy",
+      "prompt": "Who developed the Cherokee syllabary?",
+      "options": [
+        "Sequoyah",
+        "Johannes Gutenberg"
+      ],
+      "answer": 0,
+      "explanation": "Sequoyah created the Cherokee writing system in the early nineteenth century.",
+      "source": "https://www.unicode.org/versions/Unicode17.0.0/core-spec/chapter-20/",
+      "subtopic": "scripts",
+      "subjects": [
+        "cherokee"
+      ]
+    },
+    {
+      "id": "q00208",
+      "topic": "languages",
+      "family": "completion",
+      "difficulty": "easy",
+      "prompt": "ASL is a natural language with ___.",
+      "options": [
+        "English words merely spelled in the air",
+        "Its own grammar"
+      ],
+      "answer": 1,
+      "explanation": "ASL's grammar differs from English; fingerspelling is only one part of its use.",
+      "source": "https://www.nidcd.nih.gov/health/american-sign-language",
+      "subtopic": "communication",
+      "subjects": [
+        "asl-grammar"
+      ]
+    },
+    {
+      "id": "q00209",
+      "topic": "languages",
+      "family": "scenario",
+      "difficulty": "easy",
+      "prompt": "German speakers may choose 'du' or 'Sie' for one person. What can that choice signal?",
+      "options": [
+        "Familiarity or politeness",
+        "Whether the person is visible"
+      ],
+      "answer": 0,
+      "explanation": "The choice reflects social relationships and context, not just singular versus plural.",
+      "source": "https://wals.info/chapter/45",
+      "subtopic": "grammar",
+      "subjects": [
+        "polite-you"
+      ]
+    },
+    {
+      "id": "q00210",
+      "topic": "languages",
+      "family": "mechanism",
+      "difficulty": "easy",
+      "prompt": "How was a blend such as 'brunch' formed?",
+      "options": [
+        "By adding a past-tense ending to lunch",
+        "By combining parts of breakfast and lunch"
+      ],
+      "answer": 1,
+      "explanation": "Blends fuse parts of existing words to make a new word.",
+      "source": "https://www.sfu.ca/~ramccall/Ling110ChXIV.pdf",
+      "subtopic": "word-building",
+      "subjects": [
+        "blend"
+      ]
+    },
+    {
+      "id": "q00211",
+      "topic": "languages",
+      "family": "classification",
+      "difficulty": "hard",
+      "prompt": "In an abugida such as Devanagari, what does a basic consonant sign normally include?",
+      "options": [
+        "An inherent vowel unless modified",
+        "A full sentence"
+      ],
+      "answer": 0,
+      "explanation": "Vowel signs or a vowel-cancelling mark modify the consonant's default vowel.",
+      "source": "https://www.unicode.org/versions/Unicode17.0.0/core-spec/chapter-6/",
+      "subtopic": "scripts",
+      "subjects": [
+        "abugida"
+      ]
+    },
+    {
+      "id": "q00212",
+      "topic": "languages",
+      "family": "scenario",
+      "difficulty": "medium",
+      "prompt": "In an invented language, 'pa' means fish and 'ba' means tree. What does this pair establish?",
+      "options": [
+        "/p/ and /b/ must be the same phoneme",
+        "/p/ and /b/ can distinguish words"
+      ],
+      "answer": 1,
+      "explanation": "Same environment, one changed sound, different meaning: this is a minimal pair.",
+      "source": "https://ecampusontario.pressbooks.pub/essentialsoflinguistics2/chapter/4-3-contrastive-distribution-and-minimal-pairs/",
+      "subtopic": "sounds",
+      "subjects": [
+        "contrast-puzzle"
+      ]
+    },
+    {
+      "id": "q00213",
+      "topic": "languages",
+      "family": "recognition",
+      "difficulty": "medium",
+      "prompt": "Which language commonly places the verb after both subject and object?",
+      "options": [
+        "Japanese",
+        "English"
+      ],
+      "answer": 0,
+      "explanation": "Japanese has a dominant subject–object–verb order; English is normally subject–verb–object.",
+      "source": "https://wals.info/chapter/81",
+      "subtopic": "grammar",
+      "subjects": [
+        "japanese-order"
+      ]
+    },
+    {
+      "id": "q00214",
+      "topic": "languages",
+      "family": "mechanism",
+      "difficulty": "hard",
+      "prompt": "Why can an Arabic letter look different depending on where it sits in a word?",
+      "options": [
+        "Each position is a different language",
+        "Its joining form can change"
+      ],
+      "answer": 1,
+      "explanation": "Many Arabic letters have different contextual shapes according to how they join.",
+      "source": "https://www.unicode.org/versions/Unicode17.0.0/core-spec/chapter-9/",
+      "subtopic": "scripts",
+      "subjects": [
+        "arabic-shapes"
+      ]
+    },
+    {
+      "id": "q00215",
+      "topic": "languages",
+      "family": "completion",
+      "difficulty": "medium",
+      "prompt": "Adding '-ness' to 'kind' creates ___.",
+      "options": [
+        "A noun from an adjective",
+        "A plural form of the same adjective"
+      ],
+      "answer": 0,
+      "explanation": "Kindness is a derived word, not an inflected plural of kind.",
+      "source": "https://ecampusontario.pressbooks.pub/essentialsoflinguistics/chapter/6-5-unsure-how-to-format-that-derivational-morphology/",
+      "subtopic": "word-building",
+      "subjects": [
+        "derivation"
+      ]
+    },
+    {
+      "id": "q00216",
+      "topic": "languages",
+      "family": "scenario",
+      "difficulty": "medium",
+      "prompt": "Someone says 'Mina has stopped cycling.' What does that normally take for granted?",
+      "options": [
+        "Mina has never cycled",
+        "Mina used to cycle"
+      ],
+      "answer": 1,
+      "explanation": "Stopped triggers a presupposition that the earlier activity occurred.",
+      "source": "https://ecampusontario.pressbooks.pub/essentialsoflinguistics2/chapter/chapter-8-summary/",
+      "subtopic": "meaning",
+      "subjects": [
+        "presupposition"
+      ]
+    },
+    {
+      "id": "q00217",
+      "topic": "languages",
+      "family": "origin",
+      "difficulty": "medium",
+      "prompt": "Basque is traditionally spoken on both sides of the border between ___.",
+      "options": [
+        "Spain and France",
+        "Sweden and Finland"
+      ],
+      "answer": 0,
+      "explanation": "The Basque language area spans parts of northern Spain and southwestern France.",
+      "source": "https://glottolog.org/resource/languoid/id/basq1248",
+      "subtopic": "families",
+      "subjects": [
+        "basque-geography"
+      ]
+    },
+    {
+      "id": "q00218",
+      "topic": "languages",
+      "family": "recognition",
+      "difficulty": "medium",
+      "prompt": "Hiragana and katakana are both used to write which language?",
+      "options": [
+        "Arabic",
+        "Japanese"
+      ],
+      "answer": 1,
+      "explanation": "Japanese writing combines kana with kanji, among other elements.",
+      "source": "https://www.unicode.org/versions/Unicode17.0.0/core-spec/chapter-18/",
+      "subtopic": "scripts",
+      "subjects": [
+        "kana"
+      ]
+    },
+    {
+      "id": "q00219",
+      "topic": "languages",
+      "family": "classification",
+      "difficulty": "hard",
+      "prompt": "An ending tells the listener 'I heard this, rather than saw it.' What does it mark?",
+      "options": [
+        "Source of information",
+        "Number of listeners"
+      ],
+      "answer": 0,
+      "explanation": "Grammatical evidentiality marks the evidence or information source for a statement.",
+      "source": "https://wals.info/chapter/78",
+      "subtopic": "grammar",
+      "subjects": [
+        "evidentiality"
+      ]
+    },
+    {
+      "id": "q00220",
+      "topic": "languages",
+      "family": "mechanism",
+      "difficulty": "medium",
+      "prompt": "Two pronunciations of one phoneme occur in predictable contexts. What are these variants called?",
+      "options": [
+        "Antonyms",
+        "Allophones"
+      ],
+      "answer": 1,
+      "explanation": "Allophones are different sound realisations treated as one phoneme in a language.",
+      "source": "https://ecampusontario.pressbooks.pub/essentialsoflinguistics/chapter/4-3-allophones-and-predictable-variation/",
+      "subtopic": "sounds",
+      "subjects": [
+        "allophone"
+      ]
+    },
+    {
+      "id": "q00221",
+      "topic": "languages",
+      "family": "completion",
+      "difficulty": "medium",
+      "prompt": "A word meaning 'inside' comes after its noun phrase: 'the box inside'. It is a ___.",
+      "options": [
+        "Postposition",
+        "Preposition"
+      ],
+      "answer": 0,
+      "explanation": "The labels distinguish placement after versus before the noun phrase.",
+      "source": "https://wals.info/chapter/85",
+      "subtopic": "grammar",
+      "subjects": [
+        "postposition"
+      ]
+    },
+    {
+      "id": "q00222",
+      "topic": "languages",
+      "family": "scenario",
+      "difficulty": "medium",
+      "prompt": "Invented words: 'dak' = house, 'dakim' = houses, 'fal' = river. Following the same pattern, 'rivers' is ___.",
+      "options": [
+        "Imfal",
+        "Falim"
+      ],
+      "answer": 1,
+      "explanation": "The examples add the plural suffix -im after the root, so fal becomes falim.",
+      "source": "https://ecampusontario.pressbooks.pub/essentialsoflinguistics/chapter/6-4-inflectional-morphology/",
+      "subtopic": "word-building",
+      "subjects": [
+        "morphology-puzzle"
+      ]
+    },
+    {
+      "id": "q00223",
+      "topic": "languages",
+      "family": "recognition",
+      "difficulty": "medium",
+      "prompt": "A sign language's grammar must copy the majority spoken language's grammar. Accurate?",
+      "options": [
+        "No",
+        "Yes"
+      ],
+      "answer": 0,
+      "explanation": "Signed languages have independent grammatical systems.",
+      "source": "https://www.istc.cnr.it/en/question/sign-language-universal",
+      "subtopic": "communication",
+      "subjects": [
+        "sign-grammar"
+      ]
+    },
+    {
+      "id": "q00224",
+      "topic": "languages",
+      "family": "classification",
+      "difficulty": "medium",
+      "prompt": "Must every grammatical gender system be based on male versus female?",
+      "options": [
+        "Yes",
+        "No"
+      ],
+      "answer": 1,
+      "explanation": "Some systems classify nouns using distinctions other than sex.",
+      "source": "https://wals.info/chapter/31",
+      "subtopic": "grammar",
+      "subjects": [
+        "gender"
+      ]
+    },
+    {
+      "id": "q00225",
+      "topic": "languages",
+      "family": "origin",
+      "difficulty": "medium",
+      "prompt": "The Vai syllabary developed in which region?",
+      "options": [
+        "West Africa",
+        "Scandinavia"
+      ],
+      "answer": 0,
+      "explanation": "Vai writing developed in the nineteenth century and is used in Liberia and Sierra Leone.",
+      "source": "https://www.unicode.org/versions/Unicode17.0.0/core-spec/chapter-19/",
+      "subtopic": "scripts",
+      "subjects": [
+        "vai"
+      ]
+    },
+    {
+      "id": "q00226",
+      "topic": "languages",
+      "family": "mechanism",
+      "difficulty": "hard",
+      "prompt": "English uses 'went' as the past of 'go', with a different stem. What is this pattern called?",
+      "options": [
+        "Reduplication",
+        "Suppletion"
+      ],
+      "answer": 1,
+      "explanation": "Suppletion uses a different stem within a grammatical paradigm rather than a regular affix alone.",
+      "source": "https://wals.info/chapter/79",
+      "subtopic": "word-building",
+      "subjects": [
+        "suppletion"
+      ]
+    },
+    {
+      "id": "q00227",
+      "topic": "languages",
+      "family": "completion",
+      "difficulty": "medium",
+      "prompt": "A consonant described as a 'voiceless bilabial stop' is the sound ___.",
+      "options": [
+        "/p/",
+        "/m/"
+      ],
+      "answer": 0,
+      "explanation": "/p/ is made with a lip closure and no vocal-fold vibration; /m/ is a voiced nasal.",
+      "source": "https://ecampusontario.pressbooks.pub/essentialsoflinguistics/chapter/2-7-classifying-consonants/",
+      "subtopic": "sounds",
+      "subjects": [
+        "voiceless-stop"
+      ]
+    },
+    {
+      "id": "q00228",
+      "topic": "languages",
+      "family": "scenario",
+      "difficulty": "medium",
+      "prompt": "In 'The window was broken by Jo', what is the grammatical subject?",
+      "options": [
+        "Jo",
+        "The window"
+      ],
+      "answer": 1,
+      "explanation": "In the passive clause, the affected thing is the subject; Jo is the agent.",
+      "source": "https://udel.pressbooks.pub/language/chapter/active-and-passive-voice/",
+      "subtopic": "grammar",
+      "subjects": [
+        "passive"
+      ]
+    },
+    {
+      "id": "q00229",
+      "topic": "languages",
+      "family": "recognition",
+      "difficulty": "medium",
+      "prompt": "Which pair belongs to the Uralic family?",
+      "options": [
+        "Estonian and Hungarian",
+        "French and Spanish"
+      ],
+      "answer": 0,
+      "explanation": "Estonian and Hungarian are both Uralic, though they are not close varieties of one language.",
+      "source": "https://www.kielipankki.fi/corpora/uralic-ud/",
+      "subtopic": "families",
+      "subjects": [
+        "uralic-pair"
+      ]
+    },
+    {
+      "id": "q00230",
+      "topic": "languages",
+      "family": "classification",
+      "difficulty": "medium",
+      "prompt": "Most Cherokee syllabary characters represent what kind of unit?",
+      "options": [
+        "An entire paragraph",
+        "A syllable"
+      ],
+      "answer": 1,
+      "explanation": "A syllabary represents syllables rather than just individual consonants and vowels.",
+      "source": "https://www.unicode.org/versions/Unicode17.0.0/core-spec/chapter-20/",
+      "subtopic": "scripts",
+      "subjects": [
+        "cherokee-unit"
+      ]
+    },
+    {
+      "id": "q00231",
+      "topic": "languages",
+      "family": "scenario",
+      "difficulty": "easy",
+      "prompt": "A toy language says 'Nia bread eats' for 'Nia eats bread'. Keeping that order, 'Sol sees Nia' becomes ___.",
+      "options": [
+        "Sol Nia sees",
+        "Sees Sol Nia"
+      ],
+      "answer": 0,
+      "explanation": "The given pattern is subject–object–verb, so the object Nia comes before sees.",
+      "source": "https://wals.info/chapter/81",
+      "subtopic": "grammar",
+      "subjects": [
+        "sov-puzzle"
+      ]
+    },
+    {
+      "id": "q00232",
+      "topic": "languages",
+      "family": "recognition",
+      "difficulty": "hard",
+      "prompt": "In Devanagari, what is a virama used to do?",
+      "options": [
+        "Mark every noun as plural",
+        "Suppress an inherent vowel"
+      ],
+      "answer": 1,
+      "explanation": "A virama cancels the vowel normally associated with a consonant sign.",
+      "source": "https://www.unicode.org/versions/Unicode17.0.0/core-spec/chapter-12/",
+      "subtopic": "scripts",
+      "subjects": [
+        "virama"
+      ]
+    },
+    {
+      "id": "q00233",
+      "topic": "languages",
+      "family": "mechanism",
+      "difficulty": "hard",
+      "prompt": "A noun takes a special counting word alongside a numeral. What feature may you be seeing?",
+      "options": [
+        "A numeral classifier",
+        "A past-tense verb"
+      ],
+      "answer": 0,
+      "explanation": "Numeral classifiers occur in counting constructions and can reflect classes of nouns.",
+      "source": "https://wals.info/chapter/55",
+      "subtopic": "grammar",
+      "subjects": [
+        "classifier"
+      ]
+    },
+    {
+      "id": "q00234",
+      "topic": "languages",
+      "family": "classification",
+      "difficulty": "hard",
+      "prompt": "Can two sounds be separate phonemes in one language but variants of one phoneme in another?",
+      "options": [
+        "No",
+        "Yes"
+      ],
+      "answer": 1,
+      "explanation": "Phoneme categories depend on a language's contrasts, not just acoustic differences.",
+      "source": "https://ecampusontario.pressbooks.pub/essentialsoflinguistics2/chapter/4-1-phonemes-and-allophones/",
+      "subtopic": "sounds",
+      "subjects": [
+        "phoneme-language"
+      ]
+    },
+    {
+      "id": "q00235",
+      "topic": "languages",
+      "family": "completion",
+      "difficulty": "easy",
+      "prompt": "To interpret the location meant by 'here', you normally need ___.",
+      "options": [
+        "The utterance's context",
+        "Only a dictionary definition"
+      ],
+      "answer": 0,
+      "explanation": "Here is deictic: its reference depends on the context in which it is used.",
+      "source": "https://socialsci.libretexts.org/Courses/Canada_College/Essentials_of_Linguistics_Remix_2.0/06%3A_Meaning-_Semantics_and_Pragmatics/6.12%3A_Deixis",
+      "subtopic": "meaning",
+      "subjects": [
+        "deixis-here"
+      ]
+    },
+    {
+      "id": "q00236",
+      "topic": "languages",
+      "family": "origin",
+      "difficulty": "hard",
+      "prompt": "The Bamum syllabary developed in what is now which country?",
+      "options": [
+        "Cambodia",
+        "Cameroon"
+      ],
+      "answer": 1,
+      "explanation": "The Bamum writing tradition developed in western Cameroon around the turn of the twentieth century.",
+      "source": "https://www.unicode.org/versions/Unicode17.0.0/core-spec/chapter-19/",
+      "subtopic": "scripts",
+      "subjects": [
+        "bamum"
+      ]
+    },
+    {
+      "id": "q00237",
+      "topic": "languages",
+      "family": "scenario",
+      "difficulty": "easy",
+      "prompt": "A toy language forms 'hunter' from 'hunt' by adding 'ka-' at the start. How would it form 'singer' from 'sing'?",
+      "options": [
+        "Kasing",
+        "Singka"
+      ],
+      "answer": 0,
+      "explanation": "The stated derivational rule uses a prefix, so ka- goes before sing.",
+      "source": "https://ecampusontario.pressbooks.pub/essentialsoflinguistics/chapter/6-5-unsure-how-to-format-that-derivational-morphology/",
+      "subtopic": "word-building",
+      "subjects": [
+        "derivation-puzzle"
+      ]
+    },
+    {
+      "id": "q00238",
+      "topic": "languages",
+      "family": "recognition",
+      "difficulty": "hard",
+      "prompt": "In a neutral Irish clause, the verb commonly comes ___.",
+      "options": [
+        "After both subject and object",
+        "Before the subject and object"
+      ],
+      "answer": 1,
+      "explanation": "Irish is a well-known example of dominant verb–subject–object order.",
+      "source": "https://wals.info/chapter/81",
+      "subtopic": "grammar",
+      "subjects": [
+        "irish-order"
+      ]
+    },
+    {
+      "id": "q00239",
+      "topic": "languages",
+      "family": "mechanism",
+      "difficulty": "easy",
+      "prompt": "Some languages use a person's title instead of a 'you' pronoun in polite speech. What can this achieve?",
+      "options": [
+        "Show respect through pronoun avoidance",
+        "Make the sentence past tense"
+      ],
+      "answer": 0,
+      "explanation": "Avoiding a second-person pronoun can itself be a politeness strategy.",
+      "source": "https://wals.info/chapter/45",
+      "subtopic": "communication",
+      "subjects": [
+        "pronoun-avoidance"
+      ]
+    },
+    {
+      "id": "q00240",
+      "topic": "languages",
+      "family": "classification",
+      "difficulty": "hard",
+      "prompt": "Hangul's syllable blocks are built from letters. Which description fits that structure?",
+      "options": [
+        "A pure logographic system with no letters",
+        "An alphabet arranged in syllable blocks"
+      ],
+      "answer": 1,
+      "explanation": "Hangul letters represent sound units even though their layout groups them into syllables.",
+      "source": "https://www.unicode.org/versions/Unicode17.0.0/core-spec/chapter-6/",
+      "subtopic": "scripts",
+      "subjects": [
+        "hangul-type"
+      ]
+    },
+    {
+      "id": "q00241",
+      "topic": "languages",
+      "family": "completion",
+      "difficulty": "hard",
+      "prompt": "A toy language turns 'malo' into 'mamalo' by copying its first syllable. Applying that rule to 'pitu' gives ___.",
+      "options": [
+        "Pipitu",
+        "Pitupitu"
+      ],
+      "answer": 0,
+      "explanation": "The rule copies only the initial syllable pi, not the whole word.",
+      "source": "https://wals.info/chapter/27",
+      "subtopic": "word-building",
+      "subjects": [
+        "reduplication-puzzle"
+      ]
+    },
+    {
+      "id": "q00242",
+      "topic": "languages",
+      "family": "scenario",
+      "difficulty": "easy",
+      "prompt": "Ava says 'I won' and Bo says 'I won'. Do their two uses of 'I' refer to the same person?",
+      "options": [
+        "Yes",
+        "No"
+      ],
+      "answer": 1,
+      "explanation": "I refers to the speaker of each utterance, so changing speakers changes the reference.",
+      "source": "https://socialsci.libretexts.org/Courses/Canada_College/Essentials_of_Linguistics_Remix_2.0/06%3A_Meaning-_Semantics_and_Pragmatics/6.12%3A_Deixis",
+      "subtopic": "meaning",
+      "subjects": [
+        "deixis-i"
+      ]
+    },
+    {
+      "id": "q00243",
+      "topic": "languages",
+      "family": "recognition",
+      "difficulty": "hard",
+      "prompt": "The initial sound in English 'top' is made mainly with which contact?",
+      "options": [
+        "The tongue at the ridge behind the upper teeth",
+        "The lower lip against the upper teeth"
+      ],
+      "answer": 0,
+      "explanation": "/t/ is alveolar; the second description is the place used for sounds such as /f/.",
+      "source": "https://ecampusontario.pressbooks.pub/essentialsoflinguistics/chapter/2-7-classifying-consonants/",
+      "subtopic": "sounds",
+      "subjects": [
+        "alveolar"
+      ]
+    },
+    {
+      "id": "q00244",
+      "topic": "languages",
+      "family": "mechanism",
+      "difficulty": "hard",
+      "prompt": "Unicode encodes Braille dot patterns. Does each pattern have one universal letter meaning across all languages?",
+      "options": [
+        "Yes",
+        "No"
+      ],
+      "answer": 1,
+      "explanation": "Unicode represents the dot pattern; language-specific Braille standards determine its meaning.",
+      "source": "https://www.unicode.org/versions/Unicode17.0.0/core-spec/chapter-21/",
+      "subtopic": "scripts",
+      "subjects": [
+        "braille-mapping"
+      ]
+    },
+    {
+      "id": "q00245",
+      "topic": "languages",
+      "family": "classification",
+      "difficulty": "easy",
+      "prompt": "A speaker tells you 'We won', using an explicitly exclusive 'we'. Are you included in that 'we'?",
+      "options": [
+        "No",
+        "Yes"
+      ],
+      "answer": 0,
+      "explanation": "Exclusive we includes the speaker and others but excludes the addressee.",
+      "source": "https://wals.info/chapter/39",
+      "subtopic": "grammar",
+      "subjects": [
+        "exclusive-puzzle"
+      ]
+    },
+    {
+      "id": "q00246",
+      "topic": "languages",
+      "family": "completion",
+      "difficulty": "easy",
+      "prompt": "A toy language has 'lom' = book, 'lomta' = books, 'ner' = star. With the same plural rule, 'nerta' means ___.",
+      "options": [
+        "A person who studies stars",
+        "Stars"
+      ],
+      "answer": 1,
+      "explanation": "The observed -ta ending marks plural; nothing in the data makes it an occupation suffix.",
+      "source": "https://ecampusontario.pressbooks.pub/essentialsoflinguistics/chapter/6-4-inflectional-morphology/",
+      "subtopic": "word-building",
+      "subjects": [
+        "inflection-puzzle"
+      ]
+    },
+    {
+      "id": "q00247",
+      "topic": "languages",
+      "family": "scenario",
+      "difficulty": "easy",
+      "prompt": "A toy language adds 'na' after a statement to turn it into a yes/no question. What is 'na' doing?",
+      "options": [
+        "Acting as a question particle",
+        "Changing singular nouns to plural"
+      ],
+      "answer": 0,
+      "explanation": "A polar question particle marks a yes/no question; languages place such particles in different positions.",
+      "source": "https://wals.info/chapter/92",
+      "subtopic": "grammar",
+      "subjects": [
+        "question-particle"
+      ]
+    },
+    {
+      "id": "q00248",
+      "topic": "languages",
+      "family": "recognition",
+      "difficulty": "hard",
+      "prompt": "The Ethiopic script is often described as an abugida. What changes in its related character forms?",
+      "options": [
+        "The reader's native language",
+        "The accompanying vowel"
+      ],
+      "answer": 1,
+      "explanation": "Related Ethiopic signs encode consonants with different vowels.",
+      "source": "https://www.unicode.org/versions/Unicode17.0.0/core-spec/chapter-6/",
+      "subtopic": "scripts",
+      "subjects": [
+        "ethiopic"
+      ]
+    },
+    {
+      "id": "q00249",
+      "topic": "languages",
+      "family": "origin",
+      "difficulty": "hard",
+      "prompt": "Why don't English's French borrowings make it a Romance language?",
+      "options": [
+        "Family classification follows descent",
+        "A language's family is chosen by its alphabet"
+      ],
+      "answer": 0,
+      "explanation": "English developed from Germanic varieties; borrowed vocabulary does not replace that ancestry.",
+      "source": "https://api.pageplace.de/preview/DT0400.9783110215489_A15612968/preview-9783110215489_A15612968.pdf",
+      "subtopic": "families",
+      "subjects": [
+        "family-borrowing"
+      ]
+    },
+    {
+      "id": "q00250",
+      "topic": "languages",
+      "family": "mechanism",
+      "difficulty": "hard",
+      "prompt": "How does lexical tone differ from ordinary sentence intonation?",
+      "options": [
+        "It requires shouting instead of speaking",
+        "It can distinguish words on the same syllable"
+      ],
+      "answer": 1,
+      "explanation": "Tone can distinguish lexical meaning; intonation also conveys information across phrases.",
+      "source": "https://wals.info/chapter/13",
+      "subtopic": "sounds",
+      "subjects": [
+        "tone-intonation"
+      ]
+    },
+    {
+      "id": "q00251",
+      "topic": "languages",
+      "family": "classification",
+      "difficulty": "easy",
+      "prompt": "In 'snowballs', which analysis fits the parts?",
+      "options": [
+        "A compound plus plural inflection",
+        "Three unrelated complete sentences"
+      ],
+      "answer": 0,
+      "explanation": "Snow and ball form a compound; -s marks its plural.",
+      "source": "https://ecampusontario.pressbooks.pub/essentialsoflinguistics2/chapter/5-4-lexical-categories-and-the-split-between-derivation-and-inflection/",
+      "subtopic": "word-building",
+      "subjects": [
+        "compound-inflection"
+      ]
+    },
+    {
+      "id": "q00252",
+      "topic": "languages",
+      "family": "completion",
+      "difficulty": "hard",
+      "prompt": "A toy language uses 'zun' for three and 'zunri' for third. If 'pel' means four and the rule stays the same, fourth is ___.",
+      "options": [
+        "Ripel",
+        "Pelri"
+      ],
+      "answer": 1,
+      "explanation": "The ordinal is formed by the suffix -ri, following the given pattern.",
+      "source": "https://wals.info/chapter/53",
+      "subtopic": "grammar",
+      "subjects": [
+        "ordinal-puzzle"
+      ]
+    },
+    {
+      "id": "q00253",
+      "topic": "languages",
+      "family": "scenario",
+      "difficulty": "hard",
+      "prompt": "Compare 'Kai stopped painting' and 'Kai didn't stop painting'. Which background idea normally survives in both?",
+      "options": [
+        "Kai had been painting",
+        "Kai had never painted"
+      ],
+      "answer": 0,
+      "explanation": "The presupposition associated with stopped usually survives negation.",
+      "source": "https://ecampusontario.pressbooks.pub/essentialsoflinguistics2/chapter/chapter-8-summary/",
+      "subtopic": "meaning",
+      "subjects": [
+        "presupposition-negative"
+      ]
+    },
+    {
+      "id": "q00254",
+      "topic": "languages",
+      "family": "recognition",
+      "difficulty": "hard",
+      "prompt": "Canadian Aboriginal Syllabics are used for only one language. Is that correct?",
+      "options": [
+        "Yes",
+        "No"
+      ],
+      "answer": 1,
+      "explanation": "Related syllabic systems serve several languages, including Cree and Inuktitut.",
+      "source": "https://www.unicode.org/versions/Unicode17.0.0/core-spec/chapter-20/",
+      "subtopic": "scripts",
+      "subjects": [
+        "canadian-syllabics"
+      ]
+    },
+    {
+      "id": "q00255",
+      "topic": "languages",
+      "family": "mechanism",
+      "difficulty": "hard",
+      "prompt": "Why is 'go → went' not a straightforward example of adding a suffix?",
+      "options": [
+        "The stem changes to a different form",
+        "Went is simply go plus -ed"
+      ],
+      "answer": 0,
+      "explanation": "Suppletion replaces the stem within the paradigm rather than applying a regular ending alone.",
+      "source": "https://wals.info/chapter/79",
+      "subtopic": "word-building",
+      "subjects": [
+        "stem-change"
+      ]
+    },
+    {
+      "id": "q00256",
+      "topic": "languages",
+      "family": "classification",
+      "difficulty": "hard",
+      "prompt": "Two similar sounds never overlap in context and their occurrence is predictable. This is evidence for ___.",
+      "options": [
+        "A minimal pair in the same context",
+        "Complementary distribution"
+      ],
+      "answer": 1,
+      "explanation": "Predictable complementary distribution can support analysing sounds as allophones; it is not itself a minimal pair.",
+      "source": "https://ecampusontario.pressbooks.pub/essentialsoflinguistics/chapter/4-3-allophones-and-predictable-variation/",
+      "subtopic": "sounds",
+      "subjects": [
+        "allophone-evidence"
+      ]
+    },
+    {
+      "id": "q00257",
+      "topic": "languages",
+      "family": "completion",
+      "difficulty": "hard",
+      "prompt": "Calling Basque an isolate means ___.",
+      "options": [
+        "No family relationship has been established",
+        "Its speakers never borrow words"
+      ],
+      "answer": 0,
+      "explanation": "An isolate is a language without an established genealogical link to other languages, not one without contact.",
+      "source": "https://glottolog.org/resource/languoid/id/basq1248",
+      "subtopic": "families",
+      "subjects": [
+        "isolate-definition"
+      ]
+    },
+    {
+      "id": "q00258",
+      "topic": "languages",
+      "family": "scenario",
+      "difficulty": "easy",
+      "prompt": "In 'The trophy was lifted by Lea', who performs the lifting?",
+      "options": [
+        "The trophy",
+        "Lea"
+      ],
+      "answer": 1,
+      "explanation": "The passive changes grammatical organisation; Lea is still the agent of the action.",
+      "source": "https://udel.pressbooks.pub/language/chapter/active-and-passive-voice/",
+      "subtopic": "grammar",
+      "subjects": [
+        "passive-agent"
+      ]
+    },
+    {
+      "id": "q00259",
+      "topic": "languages",
+      "family": "recognition",
+      "difficulty": "hard",
+      "prompt": "To demonstrate a sound contrast with a minimal pair, what must differ between two words?",
+      "options": [
+        "One sound in the same position",
+        "Every sound in the word"
+      ],
+      "answer": 0,
+      "explanation": "The words must differ in meaning and just one sound at the same position.",
+      "source": "https://ecampusontario.pressbooks.pub/essentialsoflinguistics2/chapter/4-3-contrastive-distribution-and-minimal-pairs/",
+      "subtopic": "sounds",
+      "subjects": [
+        "minimal-pair-test"
+      ]
+    },
+    {
+      "id": "q00260",
+      "topic": "languages",
+      "family": "mechanism",
+      "difficulty": "hard",
+      "prompt": "An evidential ending says a claim was reported by someone else. Does that necessarily mean the speaker is certain it is true?",
+      "options": [
+        "Yes",
+        "No"
+      ],
+      "answer": 1,
+      "explanation": "Information source and confidence are different dimensions; evidentiality marks the former.",
+      "source": "https://wals.info/chapter/78",
+      "subtopic": "communication",
+      "subjects": [
+        "information-source"
+      ]
     }
   ]
 }

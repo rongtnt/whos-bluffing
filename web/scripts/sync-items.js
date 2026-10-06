@@ -70,9 +70,13 @@ export function validateCurated(bank) {
     if (!q || typeof q !== 'object') { e('question must be an object'); continue; }
     if (!/^q\d{5}$/.test(q.id ?? '') || ids.has(q.id)) e('bad or duplicate id');
     ids.add(q.id);
-    if (!['science', 'nature', 'world', 'culture', 'everyday', 'math', 'ai', 'memes'].includes(q.topic)) e('bad topic');
+    if (!['science', 'nature', 'world', 'culture', 'everyday', 'math', 'ai', 'memes', 'history', 'languages'].includes(q.topic)) e('bad topic');
     if (!['comparison', 'mechanism', 'origin', 'classification', 'probability', 'scenario', 'chronology', 'recognition', 'completion'].includes(q.family)) e('bad family');
     if (!LEVELS.includes(q.difficulty)) e('bad difficulty');
+    if (['history', 'languages'].includes(q.topic)) {
+      if (!text(q.subtopic) || !Array.isArray(q.subjects) || !q.subjects.length || !q.subjects.every(text)) e('need subtopic and subjects');
+      if (q.topic === 'history' && (!['ancient', 'medieval', 'early-modern', 'modern'].includes(q.era) || !text(q.region))) e('need era and region');
+    }
     if (!text(q.prompt) || q.prompt.length > 180 || prompts.has(q.prompt)) e('bad or duplicate prompt');
     prompts.add(q.prompt);
     if (!Array.isArray(q.options) || q.options.length !== 2 || !q.options.every((x) => text(x) && x.length <= 80)

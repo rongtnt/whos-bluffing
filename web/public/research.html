@@ -64,11 +64,12 @@
     <li><strong>H3 · Practice helps.</strong> Among players with at least 10 completed rounds, overconfidence falls and points rise over their first 20 rounds. The first rounds of players who keep playing are compared with those of players who stop early; if they differ, the effect is reported as applying to people who keep playing. A null result is reported as a null.</li>
   </ul>
 
-  <h2 id="numbers">Numbers we publish</h2>
-  <p>The public counts are computed once a day by a scheduled job and use these definitions, word for word from the pre-registration:</p>
+  <h2 id="numbers">Player counts and research definitions</h2>
+  <p>Only <a href="/status">Total Players</a> is public. It counts distinct anonymous IDs with a completed round or assessment, or a daily chat answer. DAU, MAU (rolling 30 days), and annual active users (rolling 365 days) are private. These count IDs, so one person can count more than once if they use different devices or platforms.</p>
+  <p>The following frozen research definitions are preserved for historical analyses. Product counts now deduplicate the same anonymous ID across surfaces and date chat activity by the answer time; see the dated amendment in the <a href="/changelog">changelog</a>.</p>
   <blockquote><p>MAU: anonymous ids with ≥ 1 play — a completed round of 10 (ranked or quick), a completed full assessment, or an in-channel Slack or Discord answer to the daily question — in the trailing 30 days, summed across web, Slack and Discord without cross-surface deduplication (a person who plays on two surfaces counts twice; stated wherever MAU is reported). DAU likewise for one UTC day.</p></blockquote>
   <blockquote><p>Communities: Slack workspaces, Discord servers and rooms with ≥ 1 play in the trailing 30 days, plus classrooms with ≥ 5 finished assessments; reported per platform and summed.</p></blockquote>
-  <p>The current numbers are on the <a href="/stats">live stats page</a>.</p>
+
 
   <h2 id="data">Open data</h2>
   <p>Anonymous row-level data, with every exclusion flag kept rather than deleted, will be released on OSF, Hugging Face and Kaggle with a <a href="https://github.com/rongtnt/whos-bluffing/blob/main/analysis/DATA_CARD.md">data card</a> describing how it was collected, its sample bias and what it should not be used for. Classroom sessions are pooled without class codes. The code for every analysis is in the <a href="https://github.com/rongtnt/whos-bluffing/tree/main/analysis">analysis folder</a>.</p>

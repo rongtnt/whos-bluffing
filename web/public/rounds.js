@@ -2,8 +2,7 @@
 // you are, see both values and sources at once, with a line from the game (reactions.js), a sound (sound.js) and a
 // little motion (motion.js); at the end your score, the result grid, type, calibration chart and challenge link.
 // Scoring is server-side (docs/api-rounds.md). Local state: whosbluffing_anon (ui.js), whosbluffing_seen_pairs (the newest 300 pair ids
-// played; the server keeps the last 300 it is sent), whosbluffing_round (the round in progress, so a reload resumes), whosbluffing_ranked
-// ({date: score} of finished ranked rounds), whosbluffing_nick (the nickname for challenge links: null = never asked, '' =
+// played; the server keeps the last 300 it is sent), whosbluffing_round (the round in progress, so a reload resumes), whosbluffing_nick (the nickname for challenge links: null = never asked, '' =
 // skipped), whosbluffing_mine (this browser's challenge tokens), whosbluffing_dares ({round_id: score} of finished dares);
 // pack and difficulty in picker.js, the side after AI and Politics rounds (whosbluffing_lab, whosbluffing_party) in
 // round-end.js, sound in site.js.
@@ -21,12 +20,10 @@ export { fmtValue, fmtPoints };
 
 const SEEN_KEY = 'whosbluffing_seen_pairs';
 const ROUND_KEY = 'whosbluffing_round';
-const RANKED_KEY = 'whosbluffing_ranked';
 const NICK_KEY = 'whosbluffing_nick';
 const MINE_KEY = 'whosbluffing_mine';
 const DARES_KEY = 'whosbluffing_dares';
 const MAX_SEEN = 300;
-const KEEP_RANKED = 60; // days of finished ranked rounds kept locally
 const KEEP_MINE = 50;
 const CONFS = [50, 60, 70, 80, 90, 100];
 const CONF_KEYS = { 5: 50, 6: 60, 7: 70, 8: 80, 9: 90, 0: 100 }; // keyboard: the tens digit, 0 = 100%
@@ -89,12 +86,6 @@ export function roundLabel(t, st) {
 const loadRound = () => store.get(ROUND_KEY, null);
 const saveRound = (st) => store.set(ROUND_KEY, st);
 const clearRound = () => store.set(ROUND_KEY, null);
-
-function rememberRanked(date, score) {
-  const cutoff = new Date(Date.now() - KEEP_RANKED * 86400000).toISOString().slice(0, 10);
-  const kept = Object.fromEntries(Object.entries(store.get(RANKED_KEY, {})).filter(([d]) => d >= cutoff));
-  store.set(RANKED_KEY, { ...kept, [date]: score });
-}
 
 function retryScreen(ctx, message, again) {
   keys = null;
@@ -311,7 +302,6 @@ async function finish(ctx, st) {
   // A dare is played once and stays out of the quick rounds' seen pairs; its link is its page, not a challenge token.
   if (r.data.dare) store.set(DARES_KEY, { ...store.get(DARES_KEY, {}), [st.round_id]: r.data.score });
   else store.set(SEEN_KEY, addSeen(store.get(SEEN_KEY, []), st.items.map((i) => i.id)));
-  if (st.mode === 'ranked') rememberRanked(st.date, r.data.score);
   const token = r.data.challenge_url.split('/').at(-1);
   if (!r.data.dare) store.set(MINE_KEY, [...store.get(MINE_KEY, []).filter((x) => x !== token), token].slice(-KEEP_MINE));
   clearRound();
@@ -325,9 +315,8 @@ function counters(t, res) {
   const tile = (to, prefix, suffix, label) => html`<div><b class="anim" data-to="${to}" data-prefix="${prefix}" data-suffix="${suffix}">${prefix}${to}${suffix}</b><span>${label}</span></div>`;
   return html`<div class="counters">
   ${tile(res.streak, '', '', t('rounds.streak'))}
-  ${res.rank_today ? tile(res.rank_today, '#', '', t('rounds.rank_of', { players: res.players_today }))
-    : res.dare ? tile(res.rank, '#', '', dareRankLabel(res.players, res.dare.address))
-      : html`<div><b>–</b><span>${t('rounds.rank_quick')}</span></div>`}
+  ${res.dare ? tile(res.rank, '#', '', dareRankLabel(res.players, res.dare.address))
+      : tile(Math.round(res.mean_conf), '', '%', t('rounds.confidence_label'))}
   ${tile(Math.round(res.accuracy), '', '%', t('rounds.right_label'))}
 </div>`;
 }
@@ -359,12 +348,10 @@ ${counters(t, res)}
   <button class="primary" type="button" data-act="again">${t('rounds.play_again')}</button>
   <button type="button" data-act="challenge">${t('rounds.challenge')}</button>
   <button type="button" data-act="share" aria-expanded="false" aria-controls="share-panel">${t('rounds.share')}</button>
-  <button type="button" data-act="board" aria-expanded="false" aria-controls="board-panel">${t('rounds.leaderboard')}</button>
 </div>
 <div id="challenge-panel" class="card" hidden></div>
 <div id="vs-panel" class="card" hidden></div>
-<section id="share-panel" class="card" hidden></section>
-<section id="board-panel" class="card" hidden></section>`;
+<section id="share-panel" class="card" hidden></section>`;
   app.scrollIntoView(); // the result sits below the hero, which is back now
   wireGrid(app, st, t);
   const side = boardOf(st) ? wireSide(st.pack, app, st.round_id, t) : null; // quick rounds of a pack with a board only
@@ -390,8 +377,6 @@ ${counters(t, res)}
       line: t('rounds.score_sub', { accuracy: Math.round(res.accuracy), mean_conf: Math.round(res.mean_conf) }), cta: t('rounds.card_cta') },
     copy: withSideLine(copy, side?.shareLine(), res.challenge_url), url: res.challenge_url, onShare: () => event('share', st.round_id),
   }));
-  acts.board.onclick = () => toggle(acts.board, panel('board-panel'), (el) => leaderboard(ctx, el, res.today));
-  if (st.mode === 'ranked') acts.board.click(); // the ranked round ends with its leaderboard
   if (st.challenge) showVs(ctx, panel('vs-panel'), st.round_id, st.challenge);
 }
 
@@ -432,22 +417,6 @@ function challengeFriend(ctx, el, res, st) {
   form.querySelector('[data-skip]').onclick = () => save('');
 }
 
-// fresh: the day's stats from a ranked complete (includes you); otherwise /api/round/stats (cached up to 60 s).
-// Its rows slide in one after another.
-async function leaderboard(ctx, el, fresh) {
-  const { t } = ctx;
-  el.innerHTML = html`<p class="muted">…</p>`;
-  const r = fresh ? { ok: true, data: fresh } : await api('/api/round/stats');
-  if (!r.ok) { el.innerHTML = html`<p class="msg">${t('rounds.board_failed')}</p>`; return; }
-  const s = r.data;
-  const mine = store.get(RANKED_KEY, {})[s.date] ?? null;
-  el.innerHTML = s.players
-    ? html`<h3 class="anim anim-slide">${t('rounds.board_title')}</h3>
-<p class="anim anim-slide">${t('rounds.board_line', { players: s.players.toLocaleString('en-US'), x: signed(Math.round(s.mean_overconfidence)) })}</p>
-<figure class="anim anim-slide">${scoreChart(s, mine, t('rounds.board_chart'))}<figcaption>${mine == null ? t('rounds.board_play') : t('rounds.board_you', { score: fmtTotal(mine) })}</figcaption></figure>`
-    : html`<h3 class="anim anim-slide">${t('rounds.board_title')}</h3><p class="anim anim-slide">${t('rounds.board_empty')}</p>`;
-}
-
 // You against the challenger: rows slide in, and the two scores race up to their values.
 async function showVs(ctx, el, roundId, token) {
   const { t } = ctx;
@@ -484,7 +453,7 @@ export function renderRoundHome(ctx) {
   ctx.setPlay(label, () => location.assign(`/play?${new URLSearchParams(homePicker.current())}`));
 }
 
-// /play always offers a choice. A saved round has a separate Continue button, and ranked has a separate fixed round.
+// /play always offers a choice. A saved round has a separate Continue button.
 export function renderRounds(ctx) {
   const { app, t } = ctx;
   app.replaceChildren();
@@ -502,24 +471,7 @@ export function renderRounds(ctx) {
     button.textContent = done === saved.items.length ? t('rounds.see_score') : t('rounds.continue', { done, n: saved.items.length });
     button.onclick = () => step(ctx, saved);
   } else if (saved) clearRound();
-  const ranked = document.getElementById('play-ranked');
-  ranked.disabled = store.get(RANKED_KEY, {})[today] != null;
-  if (ranked.disabled) ranked.textContent = t('rounds.ranked_done');
-  ranked.onclick = async () => {
-    sound.unlock();
-    ranked.disabled = true;
-    ctx.chrome(false);
-    app.innerHTML = html`<p class="muted" role="status">${t('rounds.loading')}</p>`;
-    const r = await api('/api/round?mode=ranked');
-    ranked.disabled = false;
-    if (!r.ok) {
-      ctx.chrome(true);
-      app.replaceChildren();
-      document.getElementById('ranked-status').textContent = t('rounds.failed');
-      return;
-    }
-    begin(ctx, r.data);
-  };
+
 }
 
 // The result belongs to this browser-history entry, so another tab cannot overwrite it. Direct visits have no result.

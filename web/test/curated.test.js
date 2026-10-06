@@ -21,12 +21,12 @@ const meta = (id) => {
     family: p.family ?? (['year', 'month'].includes(a.en.unit) ? 'chronology' : 'comparison') };
 };
 
-test('authored bank: 100 short, sourced questions; rejects malformed content before bundling', () => {
+test('authored bank: 260 short, sourced questions; rejects malformed content before bundling', () => {
   assert.deepEqual(validateCurated(bank), []);
-  assert.equal(bank.items.length, 100);
+  assert.equal(bank.items.length, 260);
   assert.equal(bank.items.filter((q) => q.topic === 'ai').length, 24);
   assert.equal(bank.items.filter((q) => q.topic === 'memes').length, 40);
-  assert.equal(bank.items.filter((q) => q.answer === 0).length, 50);
+  assert.equal(bank.items.filter((q) => q.answer === 0).length, 130);
   for (const patch of [{ id: 'p00001' }, { topic: 'unknown' }, { family: '' }, { difficulty: 'impossible' },
     { answer: 2 }, { options: ['same', 'same'] }, { explanation: '' }, { source: 'javascript:alert(1)' }, { source: ['https://example.com'] }]) {
     assert.ok(validateCurated({ version: 1, items: [{ ...bank.items[0], ...patch }] }).length, JSON.stringify(patch));
@@ -73,6 +73,39 @@ test('900 real-bank rounds: full difficulty mix, topic and format caps, no leake
     }
   }
   assert.ok(openers.size >= 5, 'All does not always start with the same topic');
+  db.sqlite.close();
+});
+
+test('History and Languages: three consecutive rounds at every difficulty stay varied and avoid repeated questions', async () => {
+  const db = openD1();
+  for (const pack of ['history', 'languages']) {
+    assert.equal(bank.items.filter((q) => q.topic === pack).length, 80);
+    for (const difficulty of Object.keys(DIFFICULTIES)) {
+      assert.ok(data.available[difficulty].has(pack));
+      for (let seed = 1; seed <= 30; seed++) {
+        const seen = [];
+        for (let game = 0; game < 3; game++) {
+          const r = await getRound(db, data, { mode: 'quick', pack, difficulty, seen: seen.join(',') }, now, seeded(seed + game));
+          assert.equal(r.status, 200, `${pack}/${difficulty}/${seed}/${game}: ${JSON.stringify(r.body)}`);
+          const qs = r.body.items.map((q) => data.pairs.get(q.id).authored);
+          assert.ok(qs.every((q) => q.topic === pack && !seen.includes(q.id)), `${pack}/${difficulty}: no question repeats`);
+          assert.ok(new Set(qs.map((q) => q.family)).size >= 4);
+          assert.ok(qs.filter((q) => ['chronology', 'comparison'].includes(q.family)).length <= 2);
+          for (const q of qs) assert.ok(qs.filter((p) => p.subtopic === q.subtopic).length <= 3);
+          const subjects = qs.flatMap((q) => q.subjects);
+          assert.equal(new Set(subjects).size, subjects.length, 'no shared subject within a round');
+          if (pack === 'history') for (const field of ['era', 'region']) {
+            assert.ok(new Set(qs.map((q) => q[field])).size >= 3);
+            for (const q of qs) assert.ok(qs.filter((p) => p[field] === q[field]).length <= 4);
+          }
+          seen.push(...qs.map((q) => q.id));
+        }
+      }
+      const exhausted = await getRound(db, data, { mode: 'quick', pack, difficulty, seen: data.curated.join(',') }, now, seeded(7));
+      assert.equal(exhausted.status, 200);
+      assert.ok(exhausted.body.items.every((q) => data.pairs.get(q.id).authored.topic === pack));
+    }
+  }
   db.sqlite.close();
 });
 

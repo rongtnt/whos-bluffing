@@ -889,3 +889,9 @@ img.dc-avatar { display: block; object-fit: cover; }
 .dare-credits ul { margin: 4px 0 0; padding: 0; list-style: none; }
 
 /* Get started band: the community line under the buttons */
+
+/* A single public product metric, centered on the status page. */
+.player-status { min-height: 65vh; max-width: 720px; display: flex; flex-direction: column; align-items: center; justify-content: center; text-align: center; padding-block: 56px; }
+.player-status h1 { font-size: var(--fs-3); margin: 0; }
+.player-count { font-size: clamp(80px, 16vw, 144px); line-height: 1.1; font-weight: 800; letter-spacing: -.06em; font-variant-numeric: tabular-nums; margin: 16px 0; }
+.player-status .status-line { justify-content: center; font-size: var(--fs-6); }

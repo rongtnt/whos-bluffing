@@ -12,7 +12,8 @@
     "smoke": "bash test/smoke.sh",
     "test:pool": "python3 -m unittest discover -s ../analysis/items_pipeline -p 'test_*.py'",
     "schedule": "node scripts/schedule.js",
-    "tomorrow": "node scripts/tomorrow.js"
+    "tomorrow": "node scripts/tomorrow.js",
+    "players": "node scripts/player-counts.js"
   },
   "devDependencies": {
     "wrangler": "^4.147.0"

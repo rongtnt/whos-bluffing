@@ -1,5 +1,5 @@
 // KPI job (prereg/PREREG.md, "Metric definitions" and "Engagement numbers"), run once a day through POST /api/kpi/run.
-// It is the only code that scans the play tables; GET /api/kpi and the stats page read just the latest kpi row.
+// Historical research snapshots stay private. Product counts are defined separately below.
 //   Plays: a completed round of 10 (ranked or quick; counted on the day it was completed), an answer to the Slack or
 //        Discord daily question (on the question's day), a completed full assessment (on the day it was finished,
 //        surface "classroom" when it carried a class code, else "web"; only sessions with an anonymous id count).
@@ -120,3 +120,25 @@ export const latestKpi = async (db) => publicKpi(await db.prepare('SELECT * FROM
 
 // The x-kpi-key header must match env.KPI_KEY. No key configured -> nobody is authorized (fail closed).
 export const authorized = (request, env) => headerMatches(request, 'x-kpi-key', env.KPI_KEY);
+
+// Product counts use one identity definition on every surface. Separate anonymous IDs cannot be linked to a person.
+// A play is a completed round/assessment or a bot daily answer; opening a page or starting a round does not count.
+const PLAYER_DAYS = `SELECT anon_id, day FROM round_plays
+  UNION SELECT anon_id, substr(answered_at, 1, 10) FROM round_answers WHERE round_id LIKE 'dq-%'
+  UNION SELECT anon_id, substr(created_at, 1, 10) FROM sessions WHERE anon_id IS NOT NULL`;
+export const PLAYER_COUNTS_SQL = `WITH activity AS (${PLAYER_DAYS})
+  SELECT COUNT(DISTINCT anon_id) AS total_players,
+    COUNT(DISTINCT CASE WHEN day = ?1 THEN anon_id END) AS dau,
+    COUNT(DISTINCT CASE WHEN day >= ?2 THEN anon_id END) AS mau,
+    COUNT(DISTINCT CASE WHEN day >= ?3 THEN anon_id END) AS yau
+  FROM activity WHERE day <= ?1`;
+
+// ponytail: scans play history for the small current audience; materialize counts when query cost becomes material.
+export async function playerCounts(db, asOf) {
+  return { as_of: asOf, ...(await db.prepare(PLAYER_COUNTS_SQL).bind(asOf, addDays(asOf, -29), addDays(asOf, -364)).first()) };
+}
+
+export async function totalPlayers(db, asOf) {
+  return (await db.prepare(`WITH activity AS (${PLAYER_DAYS})
+    SELECT COUNT(DISTINCT anon_id) AS total_players FROM activity WHERE day <= ?`).bind(asOf).first()).total_players;
+}

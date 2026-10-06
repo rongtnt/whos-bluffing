@@ -1,5 +1,5 @@
 import { json, fail, safe } from '../../_util.js';
-import { authorized, runKpi } from '../../_kpi.js';
+import { authorized, runKpi, playerCounts } from '../../_kpi.js';
 import { isDate, todayUTC } from '../../_daily.js';
 import { settleQuestions } from '../../_rounds.js';
 import { ROUNDS } from '../../_rounds_data.js';
@@ -13,6 +13,6 @@ export const onRequestPost = safe(async ({ request, env }) => {
   if (!isDate(asOf) || asOf > todayUTC()) return fail(400, 'as_of must be a UTC date no later than today');
   const now = new Date();
   await settleQuestions(env.DB, ROUNDS, now);
-  const row = await runKpi(env.DB, asOf, now);
-  return json({ ...row, anki_contributors_30d: 0 }, 200, { 'cache-control': 'no-store' });
+  await runKpi(env.DB, asOf, now); // retain the preregistered research snapshots privately
+  return json(await playerCounts(env.DB, asOf), 200, { 'cache-control': 'no-store' });
 });

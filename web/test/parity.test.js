@@ -8,10 +8,9 @@ import { openD1 } from './d1.js';
 import { loadRounds, getRound, packAvailability, servablePairs, PACKS, DIFFICULTIES, MIN_PACK_PAIRS } from '../functions/_rounds.js';
 import { questionCount, packChips, promptLines, promptList, commandCards, inject, pngSize } from '../scripts/sync-pages.js';
 import { onRequest as gate } from '../functions/_middleware.js';
-import { onRequestGet as kpiGet } from '../functions/api/kpi/index.js';
 import { nearestDifficulty, settle, choose, shareWith, quickLabel, initPicker } from '../public/picker.js';
 import { store } from '../public/ui.js';
-import { apiVerdict, kpiVerdict } from '../public/status.js';
+import { apiVerdict } from '../public/status.js';
 import { COMMANDS } from '../../discord/src/commands.js';
 import { questionPost, confidencePicker, revealMessage } from '../../discord/src/game.js';
 import { USAGE, questionMessage } from '../../slack/src/game.js';
@@ -56,7 +55,7 @@ test('packs: every offered pack and difficulty fills full rounds from its own ca
         assert.equal(r.body.difficulty, difficulty);
         const pairs = r.body.items.map((i) => DATA.pairs.get(i.id));
         assert.equal(pairs.length, 10, `${pack}/${difficulty} seed ${seed}`);
-        if (cats) assert.ok(pairs.every((p) => cats.includes(DATA.items.get(p.a_id).category)), `${pack}: a pair from outside the pack`);
+        if (cats) assert.ok(pairs.every((p) => (p.authored ? p.authored.topic === pack : cats.includes(DATA.items.get(p.a_id).category))), `${pack}: a pair from outside the pack`);
         assert.ok(pairs.every((p) => p.authored || DIFFICULTIES[difficulty].ok(p)), `${pack}/${difficulty}: a pair the difficulty does not allow`);
         if (difficulty === 'normal') assert.ok(pairs.filter((p) => p.band < 2).length <= 1, `${pack}: more than one lesser-known pair`);
       }
@@ -151,13 +150,6 @@ test('command cards are written into /commands, /discord and /slack', () => {
   assert.match(page, /data-filter="cmd-discord cmd-slack cmd-web"/);
 });
 
-test('CORS: GET /api/kpi is a public read', async () => {
-  const res = await kpiGet({ env: { DB: openD1() } });
-  assert.equal(res.status, 200);
-  assert.equal(res.headers.get('access-control-allow-origin'), '*');
-  assert.match(read('functions/api/round/stats.js'), /CACHE_HEADERS = \{ 'cache-control': 'public, max-age=60', \.\.\.CORS \}/);
-});
-
 test('host gate: bots.* serves /api/* only, and only with the bot key; other hosts pass untouched', async () => {
   const next = () => new Response('next');
   const call = async (url, key, env = { BOT_KEY: 'k3y' }) => {
@@ -166,7 +158,7 @@ test('host gate: bots.* serves /api/* only, and only with the bot key; other hos
   };
   assert.deepEqual(await call('https://whosbluffing.com/api/kpi'), [200, 'next']);
   assert.deepEqual(await call('https://whosbluffing.com/'), [200, 'next']);
-  assert.deepEqual(await call('https://www.whosbluffing.com/api/round/stats', 'wrong'), [200, 'next']);
+  assert.deepEqual(await call('https://www.whosbluffing.com/api/players', 'wrong'), [200, 'next']);
   assert.deepEqual(await call('https://bots.whosbluffing.com/api/kpi', 'k3y'), [200, 'next']);
   assert.deepEqual(await call('https://bots.whosbluffing.com/api/round/reveal?date=2026-10-20', 'k3y'), [200, 'next']);
   assert.deepEqual(await call('https://bots.whosbluffing.com/api/kpi'), [403, 'bot host requires key']);
@@ -222,13 +214,10 @@ test('licence wording: the new footer line everywhere; no "open source" in web c
 });
 
 test('status page: verdicts for the server check and the KPI run; press files exist and images are sized from their PNGs', () => {
-  assert.deepEqual(apiVerdict({ ok: true, status: 200 }, 123.4), { state: 'up', text: 'Up · answered in 123 ms' });
+  assert.deepEqual(apiVerdict({ ok: true, status: 200 }, 123.4), { state: 'up', text: 'Updated just now' });
   assert.equal(apiVerdict({ ok: true, status: 200 }, 2400).state, 'slow');
-  assert.deepEqual(apiVerdict({ ok: false, status: 503 }, 10), { state: 'down', text: 'Not answering properly (HTTP 503)' });
+  assert.deepEqual(apiVerdict({ ok: false, status: 503 }, 10), { state: 'down', text: 'Player count unavailable. Please try again later.' });
   assert.equal(apiVerdict({ ok: false, status: 0 }, 10).state, 'down');
-  assert.deepEqual(kpiVerdict({ as_of: null }), { state: 'wait', text: 'No daily run yet.' });
-  assert.deepEqual(kpiVerdict({ as_of: '2026-10-19' }), { state: 'up', text: 'Latest run counted 2026-10-19 (UTC).' });
-  assert.equal(kpiVerdict(null).state, 'down');
   assert.deepEqual(pngSize(readFileSync(new URL('public/og.png', WEB))), [1200, 630]);
   const press = read('public/press.html');
   const files = readdirSync(new URL('public/press/', WEB));
@@ -388,8 +377,7 @@ test('types: display names and one-liners everywhere players read them; the API 
     assert.equal(TYPE_NAMES[api], name);
     assert.equal(typeName(api), name);
     assert.equal(en.rounds[`type_${key}`], line, api);
-    const tile = stats.match(new RegExp(`data-type="${key.replace('_', '-')}"[^>]*>[\\s\\S]*?</button>`))[0];
-    assert.match(tile, new RegExp(`<span>${name}</span>[\\s\\S]*<span class="type-tip">${line.replace(/[.?]/g, '\\$&')}</span>`), api);
+
   }
   const faq = support.match(/<summary>What do the types mean\?<\/summary><p>([^<]+)<\/p>/)[1];
   for (const [name] of Object.values(WANT)) assert.ok(faq.includes(name), `FAQ: ${name}`);

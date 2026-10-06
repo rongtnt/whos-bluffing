@@ -166,7 +166,7 @@
       },
       {
         "name": "whosbluffing.com",
-        "does": "Plays today’s ranked round, the same ten questions for everyone, then as many quick rounds as you like.",
+        "does": "Choose a topic and difficulty, then play as many ten-question rounds as you like.",
         "options": [],
         "who": "Anyone"
       },
@@ -201,7 +201,7 @@
       },
       {
         "name": "whosbluffing.com/stats",
-        "does": "Live numbers: monthly players, communities and today’s ranked round.",
+        "does": "The total number of anonymous players who have played.",
         "options": [],
         "who": "Anyone"
       }

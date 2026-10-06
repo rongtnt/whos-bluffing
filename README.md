@@ -25,7 +25,7 @@ Ten comparison questions ("Which is longer: the Nile or the Danube?"). Pick one,
 
 ## Play
 
-- **Web**: [whosbluffing.com](https://whosbluffing.com). One ranked round a day, the same ten for everyone, then unlimited quick rounds by pack and difficulty.
+- **Web**: [whosbluffing.com](https://whosbluffing.com). Unlimited ten-question rounds by topic and difficulty.
 - **Discord**: one question a day in a channel, a private round with `/bluff play`. [Add it](https://whosbluffing.com/discord).
 - **Slack**: the same, with `/bluff`. [Add it](https://whosbluffing.com/slack).
 - **Classroom**: a live calibration curve for a class at [/class](https://whosbluffing.com/class). **Full assessment** (5 minutes) at [/test](https://whosbluffing.com/test).
@@ -34,7 +34,7 @@ Ten comparison questions ("Which is longer: the Nile or the Danube?"). Pick one,
 
 Most people are surer than they are right. The game shows you by how much, every day, in a minute. It is also a pre-registered study ([prereg/PREREG.md](prereg/PREREG.md)): does daily feedback make people better calibrated? Anonymous answers are released under CC BY-NC 4.0 with a data card. No accounts, no tracking, no ads.
 
-Every question comes from a Wikidata fact with the source shown under both answers; ranked rounds use only referenced or independently checked facts, and anyone can flag a question.
+Questions combine sourced authored trivia with Wikidata comparisons. Every answer shows a source, and anyone can flag a question.
 
 ## Repository
 
@@ -42,7 +42,7 @@ Every question comes from a Wikidata fact with the source shown under both answe
 |---|---|
 | `web/` | The site and API: Cloudflare Pages Functions, D1, vanilla JS |
 | `discord/`, `slack/` | The Discord and Slack apps: Cloudflare Workers, no dependencies |
-| `items/`, `daily/` | The question bank built from Wikidata and the ranked rounds |
+| `items/`, `daily/` | Authored questions, Wikidata comparisons, and historical round schedules |
 | `analysis/` | Pipeline, metric definitions shared by JS and Python, fact checks |
 | `prereg/` | The frozen pre-registration |
 | `brand/` | Logo kit |
