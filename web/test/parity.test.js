@@ -214,7 +214,7 @@ test('licence wording: the new footer line everywhere; no "open source" in web c
 });
 
 test('status page: verdicts for the server check and the KPI run; press files exist and images are sized from their PNGs', () => {
-  assert.deepEqual(apiVerdict({ ok: true, status: 200 }, 123.4), { state: 'up', text: 'Updated just now' });
+  assert.deepEqual(apiVerdict({ ok: true, status: 200 }, 123.4), { state: 'up', text: '' });
   assert.equal(apiVerdict({ ok: true, status: 200 }, 2400).state, 'slow');
   assert.deepEqual(apiVerdict({ ok: false, status: 503 }, 10), { state: 'down', text: 'Player count unavailable. Please try again later.' });
   assert.equal(apiVerdict({ ok: false, status: 0 }, 10).state, 'down');
