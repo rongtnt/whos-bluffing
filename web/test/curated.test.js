@@ -21,11 +21,12 @@ const meta = (id) => {
     family: p.family ?? (['year', 'month'].includes(a.en.unit) ? 'chronology' : 'comparison') };
 };
 
-test('authored bank: 60 short, sourced questions; rejects malformed content before bundling', () => {
+test('authored bank: 100 short, sourced questions; rejects malformed content before bundling', () => {
   assert.deepEqual(validateCurated(bank), []);
-  assert.equal(bank.items.length, 60);
+  assert.equal(bank.items.length, 100);
   assert.equal(bank.items.filter((q) => q.topic === 'ai').length, 24);
-  assert.equal(bank.items.filter((q) => q.answer === 0).length, 30);
+  assert.equal(bank.items.filter((q) => q.topic === 'memes').length, 40);
+  assert.equal(bank.items.filter((q) => q.answer === 0).length, 50);
   for (const patch of [{ id: 'p00001' }, { topic: 'unknown' }, { family: '' }, { difficulty: 'impossible' },
     { answer: 2 }, { options: ['same', 'same'] }, { explanation: '' }, { source: 'javascript:alert(1)' }, { source: ['https://example.com'] }]) {
     assert.ok(validateCurated({ version: 1, items: [{ ...bank.items[0], ...patch }] }).length, JSON.stringify(patch));
@@ -38,7 +39,7 @@ test('authored bank: 60 short, sourced questions; rejects malformed content befo
   assert.ok(Math.abs(1 - Array.from({ length: 23 }, (_, k) => (365 - k) / 365).reduce((a, b) => a * b) - 0.507297) < 0.000001);
 });
 
-test('600 real-bank rounds: full difficulty mix, topic and format caps, no leaked reveals, D1 binding limits', async () => {
+test('900 real-bank rounds: full difficulty mix, topic and format caps, no leaked reveals, D1 binding limits', async () => {
   const db = openD1(), prepare = db.prepare;
   db.prepare = (sql) => {
     assert.ok((sql.match(/\?/g) ?? []).length <= 100, 'D1 limit: 100 bindings per statement');
@@ -46,7 +47,7 @@ test('600 real-bank rounds: full difficulty mix, topic and format caps, no leake
   };
   const avoided = new Set([...days['2026-10-05'].ranked, days['2026-10-05'].question]);
   const openers = new Set();
-  for (const pack of ['all', 'ai']) for (const difficulty of Object.keys(DIFFICULTIES)) {
+  for (const pack of ['all', 'ai', 'memes']) for (const difficulty of Object.keys(DIFFICULTIES)) {
     for (let seed = 1; seed <= 100; seed++) {
       const r = await getRound(db, data, { mode: 'quick', pack, difficulty }, now, seeded(seed));
       assert.equal(r.status, 200, `${pack}/${difficulty}/${seed}: ${JSON.stringify(r.body)}`);
@@ -58,14 +59,16 @@ test('600 real-bank rounds: full difficulty mix, topic and format caps, no leake
       for (const p of selected) {
         assert.ok(selected.filter((x) => x.family === p.family).length <= (p.family === 'chronology' ? 2 : 3));
         if (pack === 'all') assert.ok(selected.filter((x) => x.topic === p.topic).length <= (p.topic === 'ai' ? 1 : 2));
-        else assert.equal(p.topic, 'ai');
+        else assert.equal(p.topic, pack);
       }
       assert.ok(selected.every((p, i) => !i || p.family !== selected[i - 1].family));
       if (pack === 'all') {
+        assert.ok(selected.every((p) => p.topic !== 'memes'), 'Memes stays behind its own chip');
         openers.add(selected[0].topic);
         assert.equal(selected.filter((p) => p.topic === 'ai').length, 1);
         assert.ok(new Set(selected.map((p) => p.topic)).size >= 5);
       }
+      if (pack === 'memes') assert.equal(new Set(selected.map((p) => p.authored.source)).size, 10, 'no meme twice in one round');
       for (const q of r.body.items) assert.deepEqual(Object.keys(q).sort(), ['a', 'b', 'id', 'prompt']);
     }
   }
@@ -108,11 +111,36 @@ test('repeat play prefers unseen questions and still fills a round when the auth
   const second = await getRound(db, data, { mode: 'quick', seen: seen.join(',') }, now, seeded(42));
   assert.equal(second.status, 200);
   assert.ok(second.body.items.every((q) => !seen.includes(q.id)));
-  for (const pack of ['all', 'ai']) for (const difficulty of Object.keys(DIFFICULTIES)) {
+  for (const pack of ['all', 'ai', 'memes']) for (const difficulty of Object.keys(DIFFICULTIES)) {
     const r = await getRound(db, data, { mode: 'quick', pack, difficulty, seen: data.curated.join(',') }, now, seeded(4));
     assert.equal(r.status, 200, `${pack}/${difficulty}: ${JSON.stringify(r.body)}`);
     assert.equal(r.body.items.length, 10);
   }
+  db.sqlite.close();
+});
+
+test('Memes availability requires a varied full round; retired questions refill without other topics', async () => {
+  const empty = loadRounds(pool, pairs, days);
+  const narrow = loadRounds(pool, pairs, days, { curated: bank.items.filter((q) => q.topic === 'memes').map((q) => ({ ...q, family: 'origin' })) });
+  for (const d of Object.keys(DIFFICULTIES)) {
+    assert.ok(!empty.available[d].has('memes'));
+    assert.ok(!narrow.available[d].has('memes'));
+    assert.ok(data.available[d].has('memes'));
+  }
+  const db = openD1();
+  const r = await getRound(db, data, { mode: 'quick', pack: 'memes', difficulty: 'easy' }, now, seeded(7));
+  const retired = r.body.items[0].id;
+  await db.prepare('INSERT INTO pair_runtime (pair_id, retired_at) VALUES (?, ?)').bind(retired, now.toISOString()).run();
+  const fresh = await getRound(db, data, { mode: 'quick', pack: 'memes', difficulty: 'easy' }, now, seeded(7));
+  assert.equal(fresh.status, 200);
+  assert.equal(fresh.body.items.length, 10);
+  assert.ok(fresh.body.items.every((q) => q.id !== retired && meta(q.id).topic === 'memes'));
+  const q = fresh.body.items[0], expected = data.pairs.get(q.id);
+  const a = await answer(db, data, { round_id: fresh.body.round_id, item_id: q.id, anon_id: who, choice: expected.truth, conf: 100, surface: 'web' }, now);
+  assert.equal(a.body.points, 100);
+  assert.equal(a.body.truth.fun, expected.authored.explanation);
+  assert.equal(a.body.truth.a_source, expected.authored.source);
+  assert.deepEqual((await getRound(db, data, { round_id: fresh.body.round_id }, now)).body.items, fresh.body.items);
   db.sqlite.close();
 });
 

@@ -59,6 +59,9 @@ export function initPicker(doc = document, { onPick } = {}) {
     pack: q.get('pack') ?? store.get(PACK_KEY, DEFAULT_PACK),
     difficulty: q.get('difficulty') ?? store.get(DIFFICULTY_KEY, DEFAULT_DIFFICULTY),
   }, offer);
+  // A linked pack is also the player's choice for Play again.
+  store.set(PACK_KEY, state.pack);
+  store.set(DIFFICULTY_KEY, state.difficulty);
   const paint = () => {
     for (const c of chips) {
       const plays = offer[c.dataset.pack].includes(state.difficulty);

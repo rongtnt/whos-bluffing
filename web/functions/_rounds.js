@@ -105,7 +105,8 @@ export function loadRounds(pool, compact, rounds, { minPackPairs = MIN_PACK_PAIR
       const id = `${q.id}-${k}`;
       items.set(id, { id, name, category: q.topic === 'ai' ? 'ai_curated' : q.topic, en: { unit: '' },
         answer: k === q.answer ? 'Correct' : 'Incorrect', source: q.source });
-      entity.set(id, id);
+      // A meme may have several questions, but appears only once in a round.
+      entity.set(id, q.topic === 'memes' ? q.source : id);
       return id;
     });
     pairs.set(q.id, { id: q.id, a_id: ids[0], b_id: ids[1], truth: q.answer, level: q.difficulty,
@@ -118,8 +119,14 @@ export function loadRounds(pool, compact, rounds, { minPackPairs = MIN_PACK_PAIR
       for (const i of [p.a_id, p.b_id]) rankedDatesByItem.set(i, [...(rankedDatesByItem.get(i) ?? []), date]);
     }
   }
-  return { items, pairs, templates, lists, packLists, available, rounds, entity, rankedDatesByItem,
+  const data = { items, pairs, templates, lists, packLists, available, rounds, entity, rankedDatesByItem,
     curated: curated.map((q) => q.id), dares: new Map(dares.map((d) => [d.slug, d])) };
+  // This authored-only pack needs a complete, varied round, not 200 generated comparisons.
+  const memes = curated.filter((q) => q.topic === 'memes').map((q) => q.id);
+  for (const d of Object.keys(DIFFICULTIES)) {
+    if (sampleVaried(data, memes, new Set(), () => 0.5, d, 'memes')) available[d].add('memes');
+  }
+  return data;
 }
 
 // Can a pack's lists for one difficulty fill its mix? Counts the pairs that may take a main slot at each level the mix
@@ -496,7 +503,10 @@ export async function getRound(db, data, params, now, rand = Math.random) {
   const avoid = new Set(day ? [...day.ranked, day.question] : []); // never today's ranked pairs or chat question
   const seen = parseSeen(params.seen);
   const candidates = sampleQuick(data, avoid, seen, rand, difficulty, pack);
-  const authored = ['all', 'ai'].includes(pack) ? data.curated.filter((id) => pack === 'all' || data.pairs.get(id).topic === 'ai') : [];
+  const authored = data.curated.filter((id) => {
+    const topic = data.pairs.get(id).topic;
+    return pack === 'all' ? topic !== 'memes' : topic === pack;
+  });
   const live = new Set(await liveIds(db, data, [...authored, ...candidates.map((c) => c.id)]));
   const mix = DIFFICULTIES[difficulty].mix;
   const ids = authored.length ? sampleVaried(data, [...live], seen, rand, difficulty, pack)

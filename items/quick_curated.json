@@ -842,6 +842,566 @@
       "answer": 1,
       "explanation": "LoRA freezes the pretrained weights and trains low-rank updates. Adapting a model does not always mean updating every original weight.",
       "source": "https://arxiv.org/abs/2106.09685"
+    },
+    {
+      "id": "q00061",
+      "topic": "memes",
+      "family": "completion",
+      "difficulty": "easy",
+      "prompt": "Someone yells \"SIX...\" and starts moving their palms up and down. Finish the brainrot.",
+      "options": [
+        "SEVEN",
+        "NINE"
+      ],
+      "answer": 0,
+      "explanation": "Six-seven is the callout. The seesaw hand motion is part of the meme; no arithmetic required.",
+      "source": "https://knowyourmeme.com/memes/67-meme-six-seven"
+    },
+    {
+      "id": "q00062",
+      "topic": "memes",
+      "family": "completion",
+      "difficulty": "easy",
+      "prompt": "In the original \"9 + 10\" Vine, what does the kid answer? Not what your calculator says.",
+      "options": [
+        "19",
+        "21"
+      ],
+      "answer": 1,
+      "explanation": "He answers 21. The actual sum is 19, which is exactly why the clip became a meme.",
+      "source": "https://knowyourmeme.com/memes/9-10-21"
+    },
+    {
+      "id": "q00063",
+      "topic": "memes",
+      "family": "completion",
+      "difficulty": "easy",
+      "prompt": "Damn, Daniel. Back at it again with the...",
+      "options": [
+        "White Vans",
+        "Red Crocs"
+      ],
+      "answer": 0,
+      "explanation": "The viral clip keeps coming back to Daniel's white Vans. The shoes got their own internet career.",
+      "source": "https://knowyourmeme.com/memes/damn-daniel"
+    },
+    {
+      "id": "q00064",
+      "topic": "memes",
+      "family": "completion",
+      "difficulty": "easy",
+      "prompt": "\"Road work ahead?\" Finish Drew Gooden's Vine.",
+      "options": [
+        "No, it's on its lunch break",
+        "Uh, yeah, I sure hope it does"
+      ],
+      "answer": 1,
+      "explanation": "Gooden treats \"work\" as a verb: he hopes the road works. One sign, one joke, permanent brain storage.",
+      "source": "https://knowyourmeme.com/memes/road-work-ahead"
+    },
+    {
+      "id": "q00065",
+      "topic": "memes",
+      "family": "recognition",
+      "difficulty": "easy",
+      "prompt": "A shark pulls up in Nike sneakers. Which brainrot creature just entered the chat?",
+      "options": [
+        "Tralalero Tralala",
+        "Bombardiro Crocodilo"
+      ],
+      "answer": 0,
+      "explanation": "Tralalero Tralala is associated with the sneaker-wearing shark. The crocodile has a very different transport situation.",
+      "source": "https://knowyourmeme.com/memes/tralalero-tralala"
+    },
+    {
+      "id": "q00066",
+      "topic": "memes",
+      "family": "recognition",
+      "difficulty": "easy",
+      "prompt": "Tung Tung Tung Sahur is outside. What is the wooden creature holding?",
+      "options": [
+        "A frying pan",
+        "A baseball bat"
+      ],
+      "answer": 1,
+      "explanation": "The familiar image shows a wooden creature carrying a bat or club. Somehow the wood has armed itself with more wood.",
+      "source": "https://knowyourmeme.com/memes/tung-tung-tung-sahur"
+    },
+    {
+      "id": "q00067",
+      "topic": "memes",
+      "family": "recognition",
+      "difficulty": "easy",
+      "prompt": "Ballerina Cappuccina has a ballet body. What is her head?",
+      "options": [
+        "A cup of cappuccino",
+        "A croissant"
+      ],
+      "answer": 0,
+      "explanation": "The character combines a ballet dancer with a cappuccino cup. Your coffee has choreography now.",
+      "source": "https://knowyourmeme.com/memes/ballerina-cappuccina-italian-brainrot"
+    },
+    {
+      "id": "q00068",
+      "topic": "memes",
+      "family": "recognition",
+      "difficulty": "easy",
+      "prompt": "Hands in pockets. Sweater. Zero stress. \"Chill Guy\" is drawn as what animal?",
+      "options": [
+        "A bear",
+        "A dog"
+      ],
+      "answer": 1,
+      "explanation": "Phillip Banks' character is a brown dog with a human body, sweater, jeans and shoes. Extremely committed to the bit.",
+      "source": "https://knowyourmeme.com/memes/just-a-chill-guy-my-new-character"
+    },
+    {
+      "id": "q00069",
+      "topic": "memes",
+      "family": "scenario",
+      "difficulty": "easy",
+      "prompt": "Your friend sends \"the exam answers.\" The link opens Rick Astley singing. What just happened?",
+      "options": [
+        "You got rickrolled",
+        "You got ratioed"
+      ],
+      "answer": 0,
+      "explanation": "A rickroll disguises the video for Never Gonna Give You Up as the thing you actually wanted to open.",
+      "source": "https://knowyourmeme.com/memes/rickroll"
+    },
+    {
+      "id": "q00070",
+      "topic": "memes",
+      "family": "scenario",
+      "difficulty": "easy",
+      "prompt": "Three deadlines. Laptop crashing. You say \"This is fine.\" What is happening around the original meme dog?",
+      "options": [
+        "The room is underwater",
+        "The room is on fire"
+      ],
+      "answer": 1,
+      "explanation": "K.C. Green's dog sits in a burning room and insists things are fine. Very strong denial, very weak fire response.",
+      "source": "https://knowyourmeme.com/memes/this-is-fine"
+    },
+    {
+      "id": "q00071",
+      "topic": "memes",
+      "family": "scenario",
+      "difficulty": "easy",
+      "prompt": "You skip every lecture, fail the exam, and act shocked. Which reaction image fits that predictable result?",
+      "options": [
+        "Surprised Pikachu",
+        "Distracted Boyfriend"
+      ],
+      "answer": 0,
+      "explanation": "Surprised Pikachu is commonly paired with someone reacting in shock to a consequence they could have predicted.",
+      "source": "https://knowyourmeme.com/memes/surprised-pikachu"
+    },
+    {
+      "id": "q00072",
+      "topic": "memes",
+      "family": "scenario",
+      "difficulty": "easy",
+      "prompt": "A streamer loops canned reactions like a video-game background character. The joke is that they are acting like an...",
+      "options": [
+        "Endgame raid boss",
+        "NPC"
+      ],
+      "answer": 1,
+      "explanation": "NPC means non-player character. The meme borrows the idea of scripted, repetitive game-character behavior.",
+      "source": "https://knowyourmeme.com/memes/npc-non-playable-character"
+    },
+    {
+      "id": "q00073",
+      "topic": "memes",
+      "family": "origin",
+      "difficulty": "easy",
+      "prompt": "Who made \"Doot Doot,\" the song behind the 6–7 meme?",
+      "options": [
+        "Skrilla",
+        "Drake"
+      ],
+      "answer": 0,
+      "explanation": "The six-seven audio comes from Skrilla's Doot Doot. Basketball edits helped turn the lyric into an everywhere phrase.",
+      "source": "https://knowyourmeme.com/memes/67-meme-six-seven"
+    },
+    {
+      "id": "q00074",
+      "topic": "memes",
+      "family": "origin",
+      "difficulty": "easy",
+      "prompt": "Which creator launched the original Skibidi Toilet series?",
+      "options": [
+        "MrBeast",
+        "DaFuq!?Boom!"
+      ],
+      "answer": 1,
+      "explanation": "DaFuq!?Boom! created the animated series about singing toilet heads and their increasingly elaborate battles.",
+      "source": "https://knowyourmeme.com/memes/subcultures/skibidi-toilet"
+    },
+    {
+      "id": "q00075",
+      "topic": "memes",
+      "family": "origin",
+      "difficulty": "easy",
+      "prompt": "Who is the comedian behind the viral \"EMOTIONAL DAMAGE\" shout?",
+      "options": [
+        "Steven He",
+        "Uncle Roger"
+      ],
+      "answer": 0,
+      "explanation": "Steven He delivered the line in a comedy sketch. The reaction clip then escaped into everybody else's videos.",
+      "source": "https://knowyourmeme.com/memes/emotional-damage"
+    },
+    {
+      "id": "q00076",
+      "topic": "memes",
+      "family": "origin",
+      "difficulty": "easy",
+      "prompt": "Which game gave us the actual \"Press F to pay respects\" prompt?",
+      "options": [
+        "Battlefield 4",
+        "Call of Duty: Advanced Warfare"
+      ],
+      "answer": 1,
+      "explanation": "The PC version of Advanced Warfare uses the prompt during a funeral scene. The internet kept the F.",
+      "source": "https://en.wikipedia.org/wiki/Press_F_to_pay_respects"
+    },
+    {
+      "id": "q00077",
+      "topic": "memes",
+      "family": "origin",
+      "difficulty": "medium",
+      "prompt": "The original side-eye Doge photo stars which actual dog?",
+      "options": [
+        "Kabosu",
+        "Balltze (Cheems)"
+      ],
+      "answer": 0,
+      "explanation": "Kabosu is the Shiba Inu in the iconic Doge photo. Balltze is the different dog associated with Cheems.",
+      "source": "https://knowyourmeme.com/memes/doge"
+    },
+    {
+      "id": "q00078",
+      "topic": "memes",
+      "family": "origin",
+      "difficulty": "medium",
+      "prompt": "Which chain sold the purple Grimace Shake that TikTok turned into a horror-movie prop?",
+      "options": [
+        "Burger King",
+        "McDonald's"
+      ],
+      "answer": 1,
+      "explanation": "McDonald's released the purple shake for Grimace's birthday in 2023. The horror scenes were a user-made trend.",
+      "source": "https://en.wikipedia.org/wiki/Grimace_Shake"
+    },
+    {
+      "id": "q00079",
+      "topic": "memes",
+      "family": "origin",
+      "difficulty": "medium",
+      "prompt": "Tung Tung Tung Sahur gets grouped with Italian brainrot. Where did the character actually originate?",
+      "options": [
+        "Indonesia",
+        "Italy"
+      ],
+      "answer": 0,
+      "explanation": "The meme originated with Indonesian creator @noxaasht and an Indonesian voice-over. \"Italian brainrot\" is not everyone's birthplace.",
+      "source": "https://knowyourmeme.com/memes/tung-tung-tung-sahur"
+    },
+    {
+      "id": "q00080",
+      "topic": "memes",
+      "family": "recognition",
+      "difficulty": "medium",
+      "prompt": "Bombardiro Crocodilo is a crocodile fused with what?",
+      "options": [
+        "A submarine",
+        "A military bomber plane"
+      ],
+      "answer": 1,
+      "explanation": "The original character is a crocodile-aircraft hybrid. The animal kingdom apparently has an air force.",
+      "source": "https://knowyourmeme.com/memes/bombardiro-crocodilo-italian-brainrot"
+    },
+    {
+      "id": "q00081",
+      "topic": "memes",
+      "family": "recognition",
+      "difficulty": "medium",
+      "prompt": "Nyan Cat flies through space with a rainbow trail. Its torso is what snack?",
+      "options": [
+        "A Pop-Tart",
+        "A slice of toast"
+      ],
+      "answer": 0,
+      "explanation": "Chris Torres' pixel cat has a Pop-Tart body. Toast is a different breakfast-based flight system.",
+      "source": "https://knowyourmeme.com/memes/nyan-cat"
+    },
+    {
+      "id": "q00082",
+      "topic": "memes",
+      "family": "recognition",
+      "difficulty": "medium",
+      "prompt": "In \"Is this a pigeon?\", what is the character actually pointing at?",
+      "options": [
+        "A moth",
+        "A butterfly"
+      ],
+      "answer": 1,
+      "explanation": "The Fighbird character points at a butterfly and calls it a pigeon. Confidence: high. Bird identification: catastrophic.",
+      "source": "https://en.wikipedia.org/wiki/Is_this_a_pigeon"
+    },
+    {
+      "id": "q00083",
+      "topic": "memes",
+      "family": "completion",
+      "difficulty": "medium",
+      "prompt": "One does not simply walk into...",
+      "options": [
+        "Mordor",
+        "Hogwarts"
+      ],
+      "answer": 0,
+      "explanation": "Boromir says the line in The Fellowship of the Ring. The internet then applied it to every mildly difficult task.",
+      "source": "https://knowyourmeme.com/memes/one-does-not-simply-walk-into-mordor"
+    },
+    {
+      "id": "q00084",
+      "topic": "memes",
+      "family": "completion",
+      "difficulty": "medium",
+      "prompt": "Keep the original broken grammar: \"All your base...\"",
+      "options": [
+        "Are belonging to us",
+        "Are belong to us"
+      ],
+      "answer": 1,
+      "explanation": "The famous Zero Wing translation is \"All your base are belong to us.\" Fixing the grammar breaks the reference.",
+      "source": "https://knowyourmeme.com/memes/all-your-base-are-belong-to-us"
+    },
+    {
+      "id": "q00085",
+      "topic": "memes",
+      "family": "completion",
+      "difficulty": "medium",
+      "prompt": "The original Happy Cat request: \"I can has...\"",
+      "options": [
+        "Cheezburger?",
+        "Chimken nuggies?"
+      ],
+      "answer": 0,
+      "explanation": "The Happy Cat image helped popularize \"I Can Has Cheezburger?\" and the deliberately mangled grammar of LOLcats.",
+      "source": "https://knowyourmeme.com/memes/happy-cat"
+    },
+    {
+      "id": "q00086",
+      "topic": "memes",
+      "family": "scenario",
+      "difficulty": "medium",
+      "prompt": "Label a Distracted Boyfriend meme: the guy is you, the passing woman is one more quiz. Who gets labelled \"my unfinished essay\"?",
+      "options": [
+        "The passing woman",
+        "The annoyed girlfriend"
+      ],
+      "answer": 1,
+      "explanation": "The girlfriend represents the existing commitment; the passerby is the tempting distraction. Your essay knows what you did.",
+      "source": "https://knowyourmeme.com/memes/distracted-boyfriend"
+    },
+    {
+      "id": "q00087",
+      "topic": "memes",
+      "family": "scenario",
+      "difficulty": "medium",
+      "prompt": "Someone puts a ridiculous take beside the biggest glowing Galaxy Brain. Does the format guarantee they think the take is smart?",
+      "options": [
+        "No; the ranking is often ironic",
+        "Yes; the biggest brain is always sincere"
+      ],
+      "answer": 0,
+      "explanation": "Galaxy Brain often escalates toward absurdity. The increasingly cosmic brain can be the joke, not an endorsement.",
+      "source": "https://knowyourmeme.com/memes/galaxy-brain"
+    },
+    {
+      "id": "q00088",
+      "topic": "memes",
+      "family": "scenario",
+      "difficulty": "medium",
+      "prompt": "Buy high, sell low, post the suited 3D head in front of a stock chart. Which caption completes the financial disaster?",
+      "options": [
+        "Bonk",
+        "Stonks"
+      ],
+      "answer": 1,
+      "explanation": "Stonks uses Meme Man and a stock-market backdrop to joke about financial decisions, especially bad ones.",
+      "source": "https://knowyourmeme.com/memes/stonks"
+    },
+    {
+      "id": "q00089",
+      "topic": "memes",
+      "family": "origin",
+      "difficulty": "hard",
+      "prompt": "A handful of lines makes the chat say \"Is this Loss?\" Which webcomic published the original strip?",
+      "options": [
+        "Ctrl+Alt+Del",
+        "xkcd"
+      ],
+      "answer": 0,
+      "explanation": "Tim Buckley published Loss in Ctrl+Alt+Del in 2008. Its four-panel composition became recognizable even as a few lines.",
+      "source": "https://knowyourmeme.com/memes/loss"
+    },
+    {
+      "id": "q00090",
+      "topic": "memes",
+      "family": "origin",
+      "difficulty": "hard",
+      "prompt": "Before Hide the Pain Harold became internet-famous, what was András Arató's career?",
+      "options": [
+        "Dentistry",
+        "Electrical engineering"
+      ],
+      "answer": 1,
+      "explanation": "Arató was an electrical engineer before his stock-photo smile became a reaction image.",
+      "source": "https://knowyourmeme.com/memes/hide-the-pain-harold"
+    },
+    {
+      "id": "q00091",
+      "topic": "memes",
+      "family": "origin",
+      "difficulty": "hard",
+      "prompt": "Big Chungus looks like internet nonsense. Which actual cartoon supplied the Bugs Bunny frame?",
+      "options": [
+        "Wabbit Twouble (1941)",
+        "Space Jam (1996)"
+      ],
+      "answer": 0,
+      "explanation": "Bugs briefly imitates a portly Elmer Fudd in Wabbit Twouble. The frame is decades older than the meme.",
+      "source": "https://knowyourmeme.com/memes/big-chungus"
+    },
+    {
+      "id": "q00092",
+      "topic": "memes",
+      "family": "recognition",
+      "difficulty": "hard",
+      "prompt": "Keyboard Cat has had successors. Name the cat in the original footage.",
+      "options": [
+        "Bento",
+        "Fatso"
+      ],
+      "answer": 1,
+      "explanation": "Fatso appears in Charlie Schmidt's original footage. Bento was a later Keyboard Cat, not the original.",
+      "source": "https://knowyourmeme.com/memes/keyboard-cat"
+    },
+    {
+      "id": "q00093",
+      "topic": "memes",
+      "family": "recognition",
+      "difficulty": "hard",
+      "prompt": "The house behind Disaster Girl really was burning. What was going on?",
+      "options": [
+        "A firefighter training exercise",
+        "A movie explosion"
+      ],
+      "answer": 0,
+      "explanation": "The photo was taken during a controlled fire for firefighter training in North Carolina. The meme's sinister story is invented.",
+      "source": "https://en.wikipedia.org/wiki/Disaster_Girl"
+    },
+    {
+      "id": "q00094",
+      "topic": "memes",
+      "family": "recognition",
+      "difficulty": "hard",
+      "prompt": "The white cat opposite the yelling Real Housewife has a name. Who is it?",
+      "options": [
+        "Lil Bub",
+        "Smudge"
+      ],
+      "answer": 1,
+      "explanation": "Smudge is the cat sitting behind a plate of vegetables. The cat photo and reality-show frame were separate images.",
+      "source": "https://knowyourmeme.com/memes/woman-yelling-at-a-cat"
+    },
+    {
+      "id": "q00095",
+      "topic": "memes",
+      "family": "mechanism",
+      "difficulty": "hard",
+      "prompt": "Why can \"|  ||  ||  |_\" work as a Loss meme without a single face?",
+      "options": [
+        "The lines echo the figures in its four panels",
+        "It spells LOSS in Morse code"
+      ],
+      "answer": 0,
+      "explanation": "The line groups preserve the original comic's character arrangement, including the lying figure in the last panel.",
+      "source": "https://knowyourmeme.com/memes/loss"
+    },
+    {
+      "id": "q00096",
+      "topic": "memes",
+      "family": "mechanism",
+      "difficulty": "hard",
+      "prompt": "The famous 2011 Nyan Cat video uses a cover. Which voice sings that version?",
+      "options": [
+        "Hatsune Miku",
+        "Momone Momo"
+      ],
+      "answer": 1,
+      "explanation": "Daniwell-P's song was originally written for Hatsune Miku, but the famous Nyan Cat video uses a Momone Momo cover.",
+      "source": "https://knowyourmeme.com/memes/nyan-cat"
+    },
+    {
+      "id": "q00097",
+      "topic": "memes",
+      "family": "mechanism",
+      "difficulty": "hard",
+      "prompt": "Why did LaMelo Ball slot so neatly into the original 6–7 edits?",
+      "options": [
+        "The joke referenced his 6-foot-7 height",
+        "He wore jersey number 67"
+      ],
+      "answer": 0,
+      "explanation": "The edits hook the six-seven lyric to a description of Ball's height. The 67 is not his jersey number.",
+      "source": "https://knowyourmeme.com/memes/67-meme-six-seven"
+    },
+    {
+      "id": "q00098",
+      "topic": "memes",
+      "family": "classification",
+      "difficulty": "hard",
+      "prompt": "\"Is this a pigeon?\" looks like a subtitle fail. In the original scene, which explanation is right?",
+      "options": [
+        "The subtitles mistranslate a correct answer",
+        "The character really misidentifies the butterfly"
+      ],
+      "answer": 1,
+      "explanation": "The mistake belongs to the character learning about Earth's wildlife. It is not a translator turning a correct identification into nonsense.",
+      "source": "https://en.wikipedia.org/wiki/Is_this_a_pigeon"
+    },
+    {
+      "id": "q00099",
+      "topic": "memes",
+      "family": "classification",
+      "difficulty": "hard",
+      "prompt": "A friend says the original Skibidi Toilet videos were generated from AI text prompts. What actually made them?",
+      "options": [
+        "Source Filmmaker animation",
+        "An AI text-to-video generator"
+      ],
+      "answer": 0,
+      "explanation": "The original series uses Source Filmmaker. Surreal toilet lore and AI-generated footage are not the same thing.",
+      "source": "https://knowyourmeme.com/memes/subcultures/skibidi-toilet"
+    },
+    {
+      "id": "q00100",
+      "topic": "memes",
+      "family": "scenario",
+      "difficulty": "hard",
+      "prompt": "An early rickroll promised footage of a hotly anticipated GTA game. Which one was the bait in the documented 2007 story?",
+      "options": [
+        "Grand Theft Auto V",
+        "Grand Theft Auto IV"
+      ],
+      "answer": 1,
+      "explanation": "The early account describes a link disguised as a GTA IV preview. The surprise destination was Rick Astley.",
+      "source": "https://knowyourmeme.com/memes/rickroll"
     }
   ]
 }

@@ -14,6 +14,8 @@ export const MOTION = {
   'anim-flash': 'a red flash fades out (a confident miss)',
   'anim-stamp': 'a stamp slams in at an angle (BLUFF, Called it)',
   'anim-tick': 'a quick bump (the running total after it counts)',
+  'anim-hit': 'a green pulse around the correct-answer result',
+  'anim-miss': 'a red pulse around the wrong-answer result',
 };
 
 export const reducedMotion = () => typeof matchMedia === 'function' && matchMedia('(prefers-reduced-motion: reduce)').matches;

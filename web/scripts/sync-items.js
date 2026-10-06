@@ -70,8 +70,8 @@ export function validateCurated(bank) {
     if (!q || typeof q !== 'object') { e('question must be an object'); continue; }
     if (!/^q\d{5}$/.test(q.id ?? '') || ids.has(q.id)) e('bad or duplicate id');
     ids.add(q.id);
-    if (!['science', 'nature', 'world', 'culture', 'everyday', 'math', 'ai'].includes(q.topic)) e('bad topic');
-    if (!['comparison', 'mechanism', 'origin', 'classification', 'probability', 'scenario', 'chronology'].includes(q.family)) e('bad family');
+    if (!['science', 'nature', 'world', 'culture', 'everyday', 'math', 'ai', 'memes'].includes(q.topic)) e('bad topic');
+    if (!['comparison', 'mechanism', 'origin', 'classification', 'probability', 'scenario', 'chronology', 'recognition', 'completion'].includes(q.family)) e('bad family');
     if (!LEVELS.includes(q.difficulty)) e('bad difficulty');
     if (!text(q.prompt) || q.prompt.length > 180 || prompts.has(q.prompt)) e('bad or duplicate prompt');
     prompts.add(q.prompt);

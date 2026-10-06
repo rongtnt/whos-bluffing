@@ -9,7 +9,8 @@ import { loadRounds, getRound, packAvailability, servablePairs, PACKS, DIFFICULT
 import { questionCount, packChips, promptLines, promptList, commandCards, inject, pngSize } from '../scripts/sync-pages.js';
 import { onRequest as gate } from '../functions/_middleware.js';
 import { onRequestGet as kpiGet } from '../functions/api/kpi/index.js';
-import { nearestDifficulty, settle, choose, shareWith, quickLabel } from '../public/picker.js';
+import { nearestDifficulty, settle, choose, shareWith, quickLabel, initPicker } from '../public/picker.js';
+import { store } from '../public/ui.js';
 import { apiVerdict, kpiVerdict } from '../public/status.js';
 import { COMMANDS } from '../../discord/src/commands.js';
 import { questionPost, confidencePicker, revealMessage } from '../../discord/src/game.js';
@@ -22,6 +23,23 @@ const DATA = loadRounds(json('functions/_pool.json'), json('functions/_pairs.jso
   { curated: json('../items/quick_curated.json').items });
 const NOW = new Date(`${Object.keys(DATA.rounds).sort()[3]}T12:00:00Z`); // a day with a ranked round
 const seeded = (seed) => { let s = seed; return () => ((s = (s * 1103515245 + 12345) % 2147483648) / 2147483648); };
+
+test('a linked pack and difficulty survive Play again without another chip click', (t) => {
+  const saved = new Map();
+  t.mock.method(store, 'get', (key, fallback) => saved.get(key) ?? fallback);
+  t.mock.method(store, 'set', (key, value) => saved.set(key, value));
+  const previous = globalThis.location;
+  const doc = { querySelectorAll: () => [], querySelector: () => null };
+  try {
+    globalThis.location = { search: '?pack=memes&difficulty=brutal' };
+    assert.deepEqual(initPicker(doc).current(), { pack: 'memes', difficulty: 'brutal' });
+    globalThis.location.search = '';
+    assert.deepEqual(initPicker(doc).current(), { pack: 'memes', difficulty: 'brutal' });
+  } finally {
+    if (previous === undefined) delete globalThis.location;
+    else globalThis.location = previous;
+  }
+});
 
 test('packs: every offered pack and difficulty fills full rounds from its own categories under the difficulty rules', async () => {
   const db = openD1();

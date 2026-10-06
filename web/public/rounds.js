@@ -210,9 +210,9 @@ function showReveal(ctx, st, k, before) {
   <span class="name">${name}<span class="value">${fmtValue(values[c], a.truth.unit)}</span><a class="src" href="${sources[c]}" target="_blank" rel="noopener noreferrer">${t('rounds.source')}</a></span>${stamp(c)}
 </div>`)}</div>
 ${a.truth.fun ? html`<p class="fun"><span class="fun-label">${t('rounds.fun_label')}</span> ${a.truth.fun}</p>` : ''}
-<section class="reveal ${a.correct ? 'is-hit' : 'is-miss'}" aria-live="polite">
+<section class="reveal anim ${a.correct ? 'is-hit anim-hit' : 'is-miss anim-miss'}" aria-live="polite">
   <p class="verdict">${a.correct ? `✓ ${t('rounds.right')}` : `✗ ${t('rounds.wrong')}`} <span class="muted">${t('rounds.at_conf', { conf: a.conf })}</span></p>
-  <p class="pts anim ${a.points > 0 ? 'up' : a.points < 0 ? 'down' : ''}" data-points>${fmtPoints(a.points)}</p>
+  <p class="pts anim ${a.correct ? 'anim-pop' : 'anim-shake'} ${a.points > 0 ? 'up' : a.points < 0 ? 'down' : ''}" data-points>${fmtPoints(a.points)}</p>
   ${a.line ? html`<p class="reaction">${a.line}</p>` : ''}
 </section>
 <button id="next" class="primary block" type="button">${last ? t('rounds.see_score') : t('rounds.next')}</button>
