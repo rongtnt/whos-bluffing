@@ -34,6 +34,7 @@ const CONFIDENT_MISS = 70; // a wrong answer at this confidence or more flashes 
 const MIN_BINS = 9; // leaderboard bars shown at least
 const TYPES = { Bluffer: 'bluffer', 'Hot-headed': 'hot_headed', Calibrated: 'calibrated', Modest: 'modest', Hedger: 'hedger' };
 const SPEAKER = html`<svg class="i i-snd-on" viewBox="0 0 24 24" aria-hidden="true" focusable="false"><path d="M4 9.5h3.5L12 5.5v13l-4.5-4H4z"/><path d="M15.5 9a4 4 0 0 1 0 6M18 6.5a7.5 7.5 0 0 1 0 11"/></svg><svg class="i i-snd-off" viewBox="0 0 24 24" aria-hidden="true" focusable="false"><path d="M4 9.5h3.5L12 5.5v13l-4.5-4H4z"/><path d="m16 9.5 5 5M21 9.5l-5 5"/></svg>`;
+const homeLink = (t) => html`<a class="icon-btn" href="/" aria-label="${t('rounds.home')}" title="${t('rounds.home')}"><svg class="i" viewBox="0 0 24 24" aria-hidden="true" focusable="false"><path d="m3 10 9-7 9 7M5 9v12h5v-7h4v7h5V9"/></svg></a>`;
 
 const todayUTC = () => new Date().toISOString().slice(0, 10);
 const fmtTotal = (n) => (n < 0 ? `−${-n}` : String(n));
@@ -117,8 +118,7 @@ function bindKeys() {
 // --- one item ---------------------------------------------------------------------------------------------------
 
 function head(t, st, k) {
-  return html`<p><a href="/">${t('rounds.home')}</a></p>
-<div class="round-head">
+  return html`<div class="round-head">
   <span class="badge">${roundLabel(t, st)}</span>
   <span class="round-tools"><span class="round-total" aria-label="${t('rounds.total_label')}"><b class="anim" data-total>${fmtTotal(st.total)}</b> ${t('rounds.pts')}</span>
   <button class="icon-btn" type="button" data-sound-toggle aria-pressed="${String(site()?.soundOn() ?? true)}" aria-label="${t('rounds.sound')}">${SPEAKER}</button></span>
@@ -264,8 +264,7 @@ async function begin(ctx, round, extra = {}) {
   ctx.chrome(false);
   window.scrollTo(0, 0);
   if (!reducedMotion()) {
-    ctx.app.innerHTML = html`<p><a href="/">${ctx.t('rounds.home')}</a></p>
-<section class="round-deal">
+    ctx.app.innerHTML = html`<section class="round-deal">
   <h2 tabindex="-1">${ctx.t('rounds.deal_title', { n: st.items.length })}</h2>
   <p class="muted" role="status">${ctx.t('rounds.deal_status')}</p>
   <div class="deal-deck" aria-hidden="true">${st.items.map((_, i) => html`<span class="deal-card anim"><b>${String(i + 1).padStart(2, '0')}</b><span>◆</span></span>`)}</div>
@@ -341,7 +340,7 @@ function showEnd(ctx, st, res) {
   const answers = st.items.map((i) => st.answers[i.id]).filter(Boolean);
   const calib = bins(answers.map((a) => a.conf / 100), answers.map((a) => (a.correct ? 1 : 0)));
   app.innerHTML = html`<nav class="row" aria-label="${t('rounds.results_title')}">
-  <a class="button" href="/">${t('rounds.home')}</a>
+  ${homeLink(t)}
   <button class="primary" type="button" data-again>${t('rounds.play_again')}</button>
 </nav>
 <h2 class="result-title">${t('rounds.score_title', { score: fmtTotal(res.score) })}</h2>
@@ -527,7 +526,7 @@ export function renderRounds(ctx) {
 export function renderRoundResults(ctx) {
   const { round, result } = history.state ?? {};
   if (round?.items?.length && result?.score != null) return showEnd(ctx, round, result);
-  ctx.app.innerHTML = html`<p><a href="/">${ctx.t('rounds.home')}</a></p>
+  ctx.app.innerHTML = html`${homeLink(ctx.t)}
 <h1>${ctx.t('rounds.results_title')}</h1><p>${ctx.t('rounds.no_result')}</p>
 <a class="button primary" href="/play">${ctx.t('rounds.start')}</a>`;
 }

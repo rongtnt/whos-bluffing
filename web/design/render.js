@@ -182,7 +182,8 @@ async function flowCheck(cdp, base) {
   const answer = `(async () => { document.querySelector('button.pick').click(); document.querySelector('[data-conf="70"]').click(); ${waitFor('#next')}; return true; })()`;
   await js(answer);
   const roundId = await js("JSON.parse(localStorage.getItem('whosbluffing_round')).round_id");
-  await navigate("document.querySelector('#app a[href=\"/\"]').click()");
+  await check("!document.querySelector('#app a[href=\"/\"]')", 'active rounds have no Home shortcut');
+  await navigate("document.querySelector('header .brand').click()");
   await navigate("document.getElementById('play').click()");
   await check("!document.getElementById('resume-round').hidden", 'unfinished round has an explicit Continue action');
   await js(`(async () => { document.querySelector('#resume-round button').click(); ${waitFor('button.pick')}; return true; })()`);

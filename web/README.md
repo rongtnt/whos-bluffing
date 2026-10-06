@@ -9,8 +9,8 @@ Every page is a static HTML file in `public/` with the same head (title, descrip
 | Path | File | What |
 |---|---|---|
 | `/` | `index.html` | Existing homepage, demonstrations and pack preview. Every Play button opens `/play`, carrying the selected topic and difficulty. No questions or results render on the homepage. |
-| `/play` | `play.html` | Topic and difficulty picker, Start Playing, a separate Continue action for an unfinished round, and an optional fixed daily ranked round. Questions run here with a Home Page link. |
-| `/results` | `results.html` | Score, answer review, sharing and challenge comparison, with Home Page and Play Again. The browser history entry retains the result across refresh and Back/Forward; a direct visit has a start-round prompt. Play Again returns to the picker. |
+| `/play` | `play.html` | Topic and difficulty picker, Start Playing, a separate Continue action for an unfinished round, and an optional fixed daily ranked round. The picker has a Home icon; the shuffle and quiz have no Home shortcut. |
+| `/results` | `results.html` | Score, answer review, sharing and challenge comparison, with a Home icon and Play Again. The browser history entry retains the result across refresh and Back/Forward; a direct visit has a start-round prompt. Play Again returns to the picker. |
 | `/c/<round>/<token>` | Pages Function `functions/c/[round_id]/[player].js` | Challenge page: the page template with per-link Open Graph tags ("Sam scored 640. Can you beat them?"), `noindex`, its own security headers; plays the same round, then shows the side-by-side. Counts one `challenge_view` per load; an unknown link gets the branded 404 |
 | `/test` | `test.html` | Full assessment (`/test?c=CODE` joins a class) |
 | `/stats` | `stats.html` | The live panel first (today's room, the day's biggest bluffs, the five types; `home.js`), then MAU / DAU / communities per surface and platform (from the daily KPI job, with the PREREG definitions), the engagement numbers with one-line definitions, Anki contributors as a separate line, today's ranked-round histogram, full-assessment curve |
