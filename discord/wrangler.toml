@@ -21,3 +21,12 @@ DISCORD_APP_ID = "1556371051439587461"
 
 # Secrets (set with `npx wrangler secret put NAME`, never in this file):
 # DISCORD_PUBLIC_KEY, DISCORD_BOT_TOKEN, SALT, BOT_KEY
+
+# One gateway session so the bot shows as online (src/presence.js).
+[[durable_objects.bindings]]
+name = "PRESENCE"
+class_name = "Presence"
+
+[[migrations]]
+tag = "v1"
+new_sqlite_classes = ["Presence"]

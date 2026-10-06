@@ -8,6 +8,11 @@ import * as store from './store.js';
 import { isoDate } from './game.js';
 import { handleInteraction, installUrl, logError, postQuestion, postRecap, revealPost, welcomeGuild } from './commands.js';
 
+export { Presence } from './presence.js';
+
+// The one gateway session that shows the bot as online (presence.js); poking it starts or repairs the connection.
+const presence = (env) => env.PRESENCE?.get(env.PRESENCE.idFromName('main')).fetch('https://presence/');
+
 const MAX_BODY = 1 << 20;
 const MONDAY = 1;
 const CHANNEL_GONE = new Set([403, 404]);
@@ -104,6 +109,7 @@ export default {
       if (route === 'POST /interactions') return await interactions(request, env, ctx);
       if (route === 'POST /events') return await events(request, env, ctx);
       if (route === 'GET /install') return Response.redirect(installUrl(env), 302);
+      if (route === 'GET /presence') return (await presence(env)) ?? textResponse('No presence binding', 503);
       return textResponse('Not found', 404);
     } catch (err) {
       logError('request', err);
@@ -113,5 +119,6 @@ export default {
 
   async scheduled(controller, env, ctx) {
     ctx.waitUntil(tick(env, new Date(controller.scheduledTime)));
+    ctx.waitUntil(Promise.resolve(presence(env)).catch((err) => logError('presence', err)));
   },
 };
