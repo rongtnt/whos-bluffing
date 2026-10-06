@@ -2,7 +2,8 @@
 
 Deviations from `prereg/PREREG.md` after it is finalized are logged here with a date and a reason.
 
-## 2026-10-06 (question variety and private activity counts; pending deployment)
+## 2026-10-06 (question variety and private activity counts)
+- Release code revision: `294dbc5`. Result type cards now show only the type name.
 - Added 80 authored History and 80 Languages questions with sources and short explanations. New rounds in these packs use only the authored bank, at all three difficulties. Rounds cap formats and subtopics, avoid repeating a subject within a round, and prefer unseen subjects across rounds. History also caps each era and region at four of ten questions. Reason: user feedback found company/aircraft dates and speaker counts repetitive.
 - Difficulty labels remain editorial estimates, not empirically calibrated. New question IDs are q00101–q00260; earlier IDs, scheduled chat questions, fixed dares, and full-assessment items are preserved. Analysis must distinguish the content and exposure periods.
 - Removed daily ranked from the picker and results. Requests to start it return HTTP 410; stored records and old challenge links remain readable for continuity.
