@@ -2,7 +2,7 @@
 // or resumed inside a user gesture. Without WebAudio (old browsers, node tests) every method is a no-op.
 // isOn() is read before each sound: the speaker toggles in the nav and on the game screen (site.js keeps the setting).
 
-const NOOP = Object.freeze({ ding() {}, womp() {}, tick() {}, fanfare() {} });
+const NOOP = Object.freeze({ unlock() {}, ding() {}, womp() {}, tick() {}, fanfare() {} });
 const C5 = 523.25;
 
 export function createSound({ isOn = () => true, Ctx = globalThis.AudioContext ?? globalThis.webkitAudioContext } = {}) {
@@ -38,6 +38,7 @@ export function createSound({ isOn = () => true, Ctx = globalThis.AudioContext ?
     if (a) fn(a);
   };
   return {
+    unlock: () => { if (isOn()) audio(); }, // Called inside Start's tap before the round request.
     // Right: two rising notes, higher and brighter the bigger the stake.
     ding: (conf = 80) => play((a) => {
       const lift = 1 + (conf - 50) / 100; // 1 at 50%, 1.5 at 100%

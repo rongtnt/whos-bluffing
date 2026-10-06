@@ -2,7 +2,7 @@ import { test } from 'node:test';
 import assert from 'node:assert/strict';
 import { readFileSync } from 'node:fs';
 import { openD1 } from './d1.js';
-import { loadRounds, getRound, answer, complete, flagPair, DIFFICULTIES } from '../functions/_rounds.js';
+import { loadRounds, getRound, answer, complete, flagPair, pairView, DIFFICULTIES } from '../functions/_rounds.js';
 import { claimSide } from '../functions/_labs.js';
 import { validateCurated } from '../scripts/sync-items.js';
 import { detailCard } from '../public/round-end.js';
@@ -45,6 +45,7 @@ test('600 real-bank rounds: full difficulty mix, topic and format caps, no leake
     return prepare(sql);
   };
   const avoided = new Set([...days['2026-10-05'].ranked, days['2026-10-05'].question]);
+  const openers = new Set();
   for (const pack of ['all', 'ai']) for (const difficulty of Object.keys(DIFFICULTIES)) {
     for (let seed = 1; seed <= 100; seed++) {
       const r = await getRound(db, data, { mode: 'quick', pack, difficulty }, now, seeded(seed));
@@ -60,8 +61,41 @@ test('600 real-bank rounds: full difficulty mix, topic and format caps, no leake
         else assert.equal(p.topic, 'ai');
       }
       assert.ok(selected.every((p, i) => !i || p.family !== selected[i - 1].family));
-      if (pack === 'all') { assert.equal(selected[0].topic, 'ai'); assert.ok(new Set(selected.map((p) => p.topic)).size >= 5); }
+      if (pack === 'all') {
+        openers.add(selected[0].topic);
+        assert.equal(selected.filter((p) => p.topic === 'ai').length, 1);
+        assert.ok(new Set(selected.map((p) => p.topic)).size >= 5);
+      }
       for (const q of r.body.items) assert.deepEqual(Object.keys(q).sort(), ['a', 'b', 'id', 'prompt']);
+    }
+  }
+  assert.ok(openers.size >= 5, 'All does not always start with the same topic');
+  db.sqlite.close();
+});
+
+test('all offered packs: varied comparison wording, ten distinct questions, difficulty preserved and challenge stable', async () => {
+  const db = openD1();
+  for (const [difficulty, packs] of Object.entries(data.available)) for (const pack of packs) {
+    for (let seed = 1; seed <= 10; seed++) {
+      const r = await getRound(db, data, { mode: 'quick', pack, difficulty }, now, seeded(seed));
+      assert.equal(r.status, 200, `${pack}/${difficulty}/${seed}: ${JSON.stringify(r.body)}`);
+      const selected = r.body.items.map((q) => data.pairs.get(q.id));
+      assert.equal(new Set(r.body.items.map((q) => q.id)).size, 10);
+      for (const [level, n] of Object.entries(DIFFICULTIES[difficulty].mix)) assert.equal(selected.filter((p) => p.level === level).length, n);
+      assert.ok(new Set(r.body.items.map((q) => q.prompt)).size >= 2, `${pack}: varied wording`);
+      assert.deepEqual((await getRound(db, data, { round_id: r.body.round_id }, now)).body.items, r.body.items);
+    }
+  }
+  // Every generated template has alternatives; wording never changes the two choices or leaks values.
+  for (const t of pairs.templates) {
+    const views = [...data.pairs.values()].filter((p) => !p.authored && data.items.get(p.a_id).category === t.category && data.items.get(p.a_id).en.unit === t.unit)
+      .map((p) => pairView(data, p.id));
+    assert.ok(new Set(views.map((q) => q.prompt)).size >= 2, `${t.category}/${t.unit}`);
+    for (const q of views) {
+      const p = data.pairs.get(q.id);
+      assert.equal(q.a, data.items.get(p.a_id).name);
+      assert.equal(q.b, data.items.get(p.b_id).name);
+      assert.deepEqual(Object.keys(q).sort(), ['a', 'b', 'id', 'prompt']);
     }
   }
   db.sqlite.close();

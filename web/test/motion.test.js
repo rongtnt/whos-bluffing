@@ -171,7 +171,7 @@ test('reactions: the share text takes the line said after the best-scoring answe
 
 test('sound: a silent no-op without WebAudio; with it, notes only while the speaker is on', () => {
   for (const s of [createSound({ Ctx: undefined }), createSound({ Ctx: null })]) {
-    for (const f of ['ding', 'womp', 'tick', 'fanfare']) assert.doesNotThrow(() => s[f](100));
+    for (const f of ['unlock', 'ding', 'womp', 'tick', 'fanfare']) assert.doesNotThrow(() => s[f](100));
   }
   assert.equal(typeof globalThis.AudioContext, 'undefined');
   assert.doesNotThrow(() => createSound().fanfare()); // node has no AudioContext
@@ -183,6 +183,8 @@ test('sound: a silent no-op without WebAudio; with it, notes only while the spea
     createGain() { const param = { setValueAtTime() {}, exponentialRampToValueAtTime() {} }; return { gain: param, connect: (x) => x }; }
   }
   const s = createSound({ isOn: () => on, Ctx: FakeCtx });
+  s.unlock();
+  assert.equal(started.length, 0, 'unlocking on Start does not add an extra tick');
   s.ding(100);
   s.womp(100);
   s.tick();

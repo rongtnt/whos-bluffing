@@ -236,9 +236,42 @@ const template = (data, p) => {
   return data.templates.get(`${a.category}|${a.en.unit}`);
 };
 
+// Equivalent prompts keep the answer direction unchanged. Stable per pair, including saved/shared rounds.
+const PROMPT_VARIANTS = {
+  'Which came first?': ['Put these on a timeline. Which goes first?', 'Pick the earlier event.'],
+  'Which is larger by area?': ['Compare their areas. Which takes up more space?', 'Pick the one with the greater area.'],
+  'Which is higher?': ['Compare their elevations. Which reaches higher?', 'Pick the one with the greater elevation.'],
+  'Which is longer?': ['Pick the longer of these two.', 'Length check: which measures more from end to end?'],
+  'Which is deeper?': ['Compare their depths. Which reaches farther down?', 'Pick the deeper of these two.'],
+  'Which is taller?': ['Imagine these side by side. Which stands taller?', 'Pick the one with the greater height.'],
+  'Which has the bigger diameter?': ['Compare them edge to edge. Which has the greater diameter?', 'Pick the wider of these two worlds.'],
+  'Which is farther from the Sun?': ['Compare their distances from the Sun. Which is farther out?', 'Pick the one farther from the Sun.'],
+  'Which orbits farther from its planet?': ['Compare their orbits. Which is farther from its own planet?', 'Pick the one orbiting farther from its planet.'],
+  'Which melts at a higher temperature?': ['Heat them separately. Which needs a higher temperature to melt?', 'Pick the element with the higher melting point.'],
+  'Which was founded first?': ['Compare their founding dates. Which goes back further?', 'Pick the university founded earlier.'],
+  'Which was first climbed earlier?': ['Compare the first successful ascents. Which happened earlier?', 'Pick the mountain whose first ascent came earlier.'],
+  'Which country has more people?': ['Compare their populations. Which country has more residents?', 'Pick the more populous country.'],
+  'Which company was founded first?': ['Compare their founding dates. Which company started earlier?', 'Pick the company founded earlier.'],
+  'Which came out first?': ['Put these releases on a timeline. Which goes first?', 'Pick the earlier release.'],
+  'Which language has more native speakers?': ['Count native speakers only. Which language has more?', 'Pick the language with the larger native-speaking population.'],
+  'Which is older?': ['Compare when these were built. Which dates back further?', 'Pick the older landmark.'],
+  'Which model has more parameters?': ['Compare parameter counts. Which model has more?', 'Pick the model with the larger parameter count.'],
+  'Which is bigger?': ['Compare the two figures. Which is greater?', 'Pick the larger of these two figures.'],
+  'Which has the longer context window?': ['Compare context limits. Which can fit more tokens?', 'Pick the one with the larger context window.'],
+  'Which was trained on more tokens?': ['Compare their training data in tokens. Which used more?', 'Pick the one trained on the greater token count.'],
+  'Which took more compute to train?': ['Compare training compute. Which used more?', 'Pick the one with the larger training-compute total.'],
+  'Which chip has more transistors?': ['Compare transistor counts. Which chip has more?', 'Pick the chip with the larger transistor count.'],
+  'Which dataset has more images?': ['Compare image counts. Which dataset has more?', 'Pick the larger image collection.'],
+  'Which has more memory?': ['Compare memory capacity. Which holds more?', 'Pick the one with the greater memory capacity.'],
+  'Which paper has more authors?': ['Compare the author lists. Which paper has more names?', 'Pick the paper with the larger author team.'],
+  'Which model has more experts?': ['Compare expert counts. Which model has more?', 'Pick the model with the greater number of experts.'],
+};
+
 export function pairView(data, id) {
   const p = data.pairs.get(id);
-  return { id, prompt: p.authored?.prompt ?? template(data, p).prompt, a: data.items.get(p.a_id).name, b: data.items.get(p.b_id).name };
+  const base = p.authored?.prompt ?? template(data, p).prompt;
+  const prompts = p.authored ? [base] : [base, ...(PROMPT_VARIANTS[base] ?? [])];
+  return { id, prompt: prompts[hash(id) % prompts.length], a: data.items.get(p.a_id).name, b: data.items.get(p.b_id).name };
 }
 
 // Both values and sources; `fun`, a curated reveal fact (the AI pack), when either item has one (the first non-empty).
@@ -331,9 +364,12 @@ export function sampleQuick(data, avoid, seen, rand, difficulty = 'normal', pack
   const spec = DIFFICULTIES[difficulty];
   const picked = [];
   const entities = new Set();
+  const formats = {};
   let known = 0;
   for (const [level, count] of [...LEVELS.map((l) => [l, spec.mix[l]]), ...LEVELS.map((l) => [l, spec.mix[l] ? SPARE : 0])]) {
+    if (!count) continue;
     const ids = data.packLists[pack][difficulty][level];
+    const forms = [...new Set(ids.map((id) => template(data, data.pairs.get(id)).prompt))];
     let need = count;
     for (let tries = 0; need > 0 && tries < 600 && ids.length; tries += 1) {
       const id = ids[Math.floor(rand() * ids.length)];
@@ -342,7 +378,11 @@ export function sampleQuick(data, avoid, seen, rand, difficulty = 'normal', pack
       const unseenOnly = tries < 400; // a player who has seen nearly everything still gets a round
       if (avoid.has(id) || picked.some((x) => x.id === id) || ents.some((e) => entities.has(e)) || (unseenOnly && seen.has(id))) continue;
       if (spec.maxKnown != null && p.band < 2 && known >= spec.maxKnown) continue;
+      const form = template(data, p).prompt;
+      // Prefer underrepresented comparisons; relax for narrow packs or exhausted/retired content.
+      if (ids.length >= MIN_PACK_PAIRS && tries < 300 && (formats[form] ?? 0) > Math.min(...forms.map((f) => formats[f] ?? 0))) continue;
       picked.push({ id, level });
+      formats[form] = (formats[form] ?? 0) + 1;
       ents.forEach((e) => entities.add(e));
       if (p.band < 2) known += 1;
       need -= 1;
@@ -359,6 +399,20 @@ const shuffle = (xs, rand) => {
   }
   return a;
 };
+
+// Spread comparison types and equivalent wordings apart, including packs with only one kind of fact.
+function orderQuick(data, ids, rand) {
+  const left = shuffle(ids, rand).map((id) => ({ id, form: template(data, data.pairs.get(id)).prompt, prompt: pairView(data, id).prompt }));
+  const picked = [];
+  while (left.length) {
+    const last = picked.at(-1);
+    left.sort((a, b) => Number(a.form === last?.form) - Number(b.form === last?.form)
+      || Number(a.prompt === last?.prompt) - Number(b.prompt === last?.prompt)
+      || left.filter((x) => x.form === b.form && x.prompt === b.prompt).length - left.filter((x) => x.form === a.form && x.prompt === a.prompt).length);
+    picked.push(left.shift());
+  }
+  return picked.map((p) => p.id);
+}
 
 // New quick rounds only: authored questions first, topic-balanced, with a real explanation on every authored reveal.
 // Keep the 3/4/3 difficulty contract; generated candidates cover sparse/retired levels. A bounded search
@@ -379,7 +433,7 @@ export function sampleVaried(data, ids, seen, rand, difficulty, pack) {
     const familyCounts = {};
     for (const c of pool) familyCounts[c.family] = (familyCounts[c.family] ?? 0) + 1;
     if (Object.entries(familyCounts).reduce((sum, [f, n]) => sum + Math.min(n, f === 'chronology' ? 2 : 3), 0) < 10) continue;
-    const aiFirst = pack === 'all' && pool.some((c) => c.topic === 'ai' && DIFFICULTIES[difficulty].mix[c.p.level]);
+    const includeAI = pack === 'all' && pool.some((c) => c.topic === 'ai' && DIFFICULTIES[difficulty].mix[c.p.level]);
     const left = { ...DIFFICULTIES[difficulty].mix }, topics = {}, families = {}, entities = new Set(), picked = [];
     let visits = 0;
     const search = () => {
@@ -390,7 +444,7 @@ export function sampleVaried(data, ids, seen, rand, difficulty, pack) {
         && (pack !== 'all' || (topics[c.topic] ?? 0) < (c.topic === 'ai' ? 1 : 2))
         && (families[c.family] ?? 0) < (c.family === 'chronology' ? 2 : 3)
         && c.family !== picked.at(-1)?.family
-        && (!aiFirst || picked.length !== 0 || c.topic === 'ai'));
+        && (!includeAI || picked.length !== 9 || topics.ai || c.topic === 'ai'));
       // Stable sort preserves the initial random order within equally underrepresented topics and formats.
       options.sort((a, b) => Number(seen.has(a.id)) - Number(seen.has(b.id))
         || Number(Boolean(b.p.authored)) - Number(Boolean(a.p.authored))
@@ -446,7 +500,7 @@ export async function getRound(db, data, params, now, rand = Math.random) {
   const live = new Set(await liveIds(db, data, [...authored, ...candidates.map((c) => c.id)]));
   const mix = DIFFICULTIES[difficulty].mix;
   const ids = authored.length ? sampleVaried(data, [...live], seen, rand, difficulty, pack)
-    : shuffle(LEVELS.flatMap((level) => candidates.filter((c) => c.level === level && live.has(c.id)).slice(0, mix[level]).map((c) => c.id)), rand);
+    : orderQuick(data, LEVELS.flatMap((level) => candidates.filter((c) => c.level === level && live.has(c.id)).slice(0, mix[level]).map((c) => c.id)), rand);
   if (!ids || ids.length !== 10) return err(503, 'Not enough live questions for this round. Try another pack or difficulty.');
   const roundId = randomString(12, CODE_ALPHABET);
   await db.prepare('INSERT INTO rounds (round_id, mode, date, items, created_at, difficulty) VALUES (?, ?, ?, ?, ?, ?)')
@@ -763,7 +817,7 @@ export async function roundStats(db, data, dateParam, now) {
     .sort((x, y) => x.points - y.points || (x.answered_at < y.answered_at) - (x.answered_at > y.answered_at)); // then the most recent
   body.bluffs = body.players < MIN_BLUFF_PLAYERS ? [] : worst.slice(0, MAX_BLUFFS).map((m) => {
     const p = data.pairs.get(m.item_id);
-    return { prompt: template(data, p).prompt, pick: data.items.get(m.choice ? p.b_id : p.a_id).name, conf: m.conf, points: m.points };
+    return { prompt: pairView(data, p.id).prompt, pick: data.items.get(m.choice ? p.b_id : p.a_id).name, conf: m.conf, points: m.points };
   });
   return ok(body);
 }

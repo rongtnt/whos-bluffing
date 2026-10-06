@@ -174,7 +174,10 @@ async function flowCheck(cdp, base) {
   await navigate("document.getElementById('play').click()");
   await check("location.pathname === '/play' && !document.querySelector('button.pick')", 'home opens the picker, not a question');
   await check(`document.querySelector('[data-pack="ai"]').getAttribute('aria-pressed') === 'true' && document.querySelector('[data-difficulty="easy"]').getAttribute('aria-pressed') === 'true'`, 'home choices carry into the picker');
+  await js(`window.dealsStarted = 0; const animate = Element.prototype.animate;
+    Element.prototype.animate = function (...args) { if (this.matches('.deal-card')) window.dealsStarted++; return animate.apply(this, args); }; true`);
   await js(`(async () => { document.getElementById('play').click(); ${waitFor('button.pick')}; return true; })()`);
+  await check('window.dealsStarted === 0', 'reduced motion goes straight to the first question');
   await check(`(() => { const r = JSON.parse(localStorage.getItem('whosbluffing_round')); return r.pack === 'ai' && r.difficulty === 'easy' && r.mode === 'quick'; })()`, 'the chosen topic and difficulty reach the API');
   const answer = `(async () => { document.querySelector('button.pick').click(); document.querySelector('[data-conf="70"]').click(); ${waitFor('#next')}; return true; })()`;
   await js(answer);
@@ -211,7 +214,27 @@ async function flowCheck(cdp, base) {
   await open(cdp, `${base}/play`, { width: 375 });
   await js(`(async () => { document.getElementById('play-ranked').click(); ${waitFor('button.pick')}; return true; })()`);
   await check("JSON.parse(localStorage.getItem('whosbluffing_round')).mode === 'ranked'", 'ranked is still available as a separate action');
-  console.log('PASS home, choices, resume, result, refresh, Back/Forward, replay, empty state, ranked, mobile overflow');
+  for (const width of [375, 1280]) {
+    await open(cdp, `${base}/play`, { width, motion: 'no-preference', dark: width === 375 });
+    await js(`(async () => { document.getElementById('play').click(); ${waitFor('.deal-card')};
+      for (const a of document.getAnimations()) { a.pause(); a.currentTime = 180; } return true; })()`);
+    await check("(() => { const n = [...document.querySelectorAll('.deal-card')].filter(c => Number(getComputedStyle(c).opacity) > .1).length; return n > 0 && n < 10; })()", 'cards enter one at a time');
+    await js('for (const a of document.getAnimations()) a.currentTime = 950; true');
+    await check("document.querySelectorAll('.deal-card').length === 10 && !document.querySelector('button.pick')", 'ten card backs before the first question');
+    await check("[...document.querySelectorAll('.deal-card')].every(c => Number(getComputedStyle(c).opacity) > .99)", 'all ten cards are dealt before shuffling');
+    await check('document.documentElement.scrollWidth <= innerWidth', `deck has no overflow at ${width}px`);
+    mkdirSync(join(WEB, '.cache'), { recursive: true });
+    await capture(cdp, join(WEB, `.cache/shuffle-${width}.png`), width, 900);
+    await js(`(async () => { ${width === 375 ? "document.querySelector('[data-skip-deal]').click()" : 'for (const a of document.getAnimations()) a.play()'};
+      ${waitFor('button.pick')}; return true; })()`);
+    await check("document.activeElement.matches('.q') && !document.querySelector('.round-deal')", 'skip and natural completion focus question one');
+    await check("Object.keys(JSON.parse(localStorage.getItem('whosbluffing_round')).answers).length === 0", 'animation never answers or reorders the saved round');
+  }
+  await open(cdp, `${base}/play`, { width: 375, motion: 'no-preference' });
+  await js(`window.fetch = () => Promise.resolve(new Response('{}', { status: 503 })); true`);
+  await js(`(async () => { document.getElementById('play').click(); ${waitFor('#app .msg')}; return true; })()`);
+  await check("!document.querySelector('.round-deal') && !!document.querySelector('#app button')", 'failed loading offers retry without leaving an animation running');
+  console.log('PASS home, choices, resume, result, refresh, Back/Forward, replay, ranked, ten-card deal, skip, reduced motion, failed loading, mobile overflow');
 }
 
 // The truth (0 = A, 1 = B) of every pair, from the synced compact pairs.

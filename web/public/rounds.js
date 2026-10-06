@@ -13,7 +13,7 @@ import { renderRoundShare } from './share.js';
 import { initPicker, quickLabel, shareWith } from './picker.js';
 import { pickReaction, bestLine } from './reactions.js';
 import { createSound } from './sound.js';
-import { countTo, raceTo, confetti } from './motion.js';
+import { countTo, raceTo, confetti, dealCards, reducedMotion } from './motion.js';
 import { resultGrid, wireGrid, fmtValue, fmtPoints, boardOf, sideBlock, wireSide, savedSide, withSideLine, dareRankLabel, dareDone } from './round-end.js';
 import { typeName } from './types.js';
 
@@ -254,17 +254,35 @@ function step(ctx, st) {
 
 // --- starting rounds ----------------------------------------------------------------------------------------------
 
-function begin(ctx, round, extra = {}) {
+async function begin(ctx, round, extra = {}) {
   if (!round.items.length) return retryScreen(ctx, ctx.t('rounds.failed'), () => location.reload());
   const st = { round_id: round.round_id, mode: round.mode, date: round.date, items: round.items, answers: {}, total: 0,
     ...(round.mode === 'quick' && { pack: round.pack ?? 'all', difficulty: round.difficulty ?? 'normal' }), ...extra };
   saveRound(st);
+  sound.unlock();
+  keys = null;
+  ctx.chrome(false);
+  window.scrollTo(0, 0);
+  if (!reducedMotion()) {
+    ctx.app.innerHTML = html`<p><a href="/">${ctx.t('rounds.home')}</a></p>
+<section class="round-deal">
+  <h2 tabindex="-1">${ctx.t('rounds.deal_title', { n: st.items.length })}</h2>
+  <p class="muted" role="status">${ctx.t('rounds.deal_status')}</p>
+  <div class="deal-deck" aria-hidden="true">${st.items.map((_, i) => html`<span class="deal-card anim"><b>${String(i + 1).padStart(2, '0')}</b><span>◆</span></span>`)}</div>
+  <button type="button" data-skip-deal>${ctx.t('rounds.deal_skip')}</button>
+</section>`;
+    const intro = ctx.app.querySelector('.round-deal');
+    intro.querySelector('h2').focus();
+    await dealCards(intro.querySelector('.deal-deck'), intro.querySelector('[data-skip-deal]'), () => sound.tick());
+    if (!intro.isConnected) return;
+  }
   return step(ctx, st);
 }
 
 // A new quick round in the chosen pack and difficulty, fetched on the tap (creating one writes a row, so it is never
 // prefetched). A choice the server refuses (a pack that no longer fills that difficulty) falls back to All, Normal.
 async function playQuick(ctx) {
+  sound.unlock();
   ctx.chrome(false);
   window.scrollTo(0, 0);
   ctx.app.innerHTML = html`<p class="muted" role="status">${ctx.t('rounds.loading')}</p>`;
@@ -489,6 +507,7 @@ export function renderRounds(ctx) {
   ranked.disabled = store.get(RANKED_KEY, {})[today] != null;
   if (ranked.disabled) ranked.textContent = t('rounds.ranked_done');
   ranked.onclick = async () => {
+    sound.unlock();
     ranked.disabled = true;
     ctx.chrome(false);
     app.innerHTML = html`<p class="muted" role="status">${t('rounds.loading')}</p>`;
