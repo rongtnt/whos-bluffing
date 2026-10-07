@@ -627,6 +627,12 @@ STATUS=$(curl -s -o "$STATE/bots.json" -w '%{http_code}' -H 'Host: bots.whosbluf
 expect "bots host with a wrong key -> 403" 403 'r.error === "bot host requires key"'
 STATUS=$(curl -s -o "$STATE/bots.json" -w '%{http_code}' -H 'Host: bots.whosbluffing.com' -H "x-bluff-bot: $BOT_KEY" "$BASE/api/players"); BODY=$(cat "$STATE/bots.json")
 expect "bots host with the key -> the API" 200 'typeof r.total_players === "number"'
+STATUS=$(curl -s -o "$STATE/bots.json" -w '%{http_code}' -H 'Host: bots.whosbluffing.com' -H "x-bluff-bot: $BOT_KEY" -H 'content-type: application/json' --data-binary "$(cbody "$QROUND" "$HOST" web)" "$BASE/api/round/complete"); BODY=$(cat "$STATE/bots.json")
+expect "bot completion shares a public game URL" 200 'new URL(r.challenge_url).hostname === "whosbluffing.com" && r.share_text.endsWith(r.challenge_url)'
+BOT_CHALLENGE=$(printf '%s' "$BODY" | node -e 'process.stdout.write(new URL(JSON.parse(require("fs").readFileSync(0, "utf8")).challenge_url).pathname)')
+req GET "$BOT_CHALLENGE" '' 'Host: whosbluffing.com'
+expect "friend can open the bot challenge without a bot key" 200
+[[ "$BODY" == *'<html'* ]] || fail "bot challenge serves the game page" "$BODY"
 STATUS=$(curl -s -o "$STATE/bots.json" -w '%{http_code}' -H 'Host: bots.whosbluffing.com' -H "x-bluff-bot: $BOT_KEY" "$BASE/discord"); BODY=$(cat "$STATE/bots.json")
 [ "$STATUS" = 200 ] && grep -qi "<html" "$STATE/bots.json" || fail "bots host, a page -> the static page (public/_routes.json runs Functions only on /api/* and /c/*)" "$STATUS"; pass "bots host, a page -> the static page (Functions only on /api/* and /c/*)"
 STATUS=$(curl -s -o /dev/null -w '%{http_code}' -H 'Host: whosbluffing.com' "$BASE/api/players")

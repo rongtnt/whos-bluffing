@@ -671,6 +671,10 @@ export function newToken(anonId, rand = () => randomString(10, SECRET_ALPHABET))
 export async function complete(db, data, b, now, origin) {
   const bad = completeBodyError(b);
   if (bad) return bad;
+  // The bot-only API host cannot serve the game pages that friends open.
+  const publicUrl = new URL(origin);
+  publicUrl.hostname = publicUrl.hostname.replace(/^bots\./, '');
+  origin = publicUrl.origin;
   const round = await resolveRound(db, data, b.round_id, now);
   if (round.error) return round.error;
   if (round.kind === 'question') return err(400, 'the daily question has no complete; its answer is the play');

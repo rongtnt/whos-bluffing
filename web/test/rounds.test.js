@@ -70,13 +70,13 @@ const anon = (k) => `anon-${k}`.padEnd(22, 'x');
 const seeded = (seed) => { let s = seed; return () => ((s = (s * 1103515245 + 12345) % 2147483648) / 2147483648); };
 
 // Plays a round for `who`: right[k] says whether item k is answered correctly; conf[k] (default 80).
-async function playRound(db, who, roundId, ids, right, { conf = () => 80, surface = 'web', community, now = NOW, nickname, challenge } = {}) {
+async function playRound(db, who, roundId, ids, right, { conf = () => 80, surface = 'web', community, now = NOW, nickname, challenge, origin = ORIGIN } = {}) {
   for (const [k, id] of ids.entries()) {
     const truth = DATA.pairs.get(id).truth;
     const r = await answer(db, DATA, { round_id: roundId, item_id: id, choice: right[k] ? truth : 1 - truth, conf: conf(k), rt_ms: 3000, anon_id: anon(who), surface, community }, now);
     assert.equal(r.status, 200, JSON.stringify(r.body));
   }
-  return complete(db, DATA, { round_id: roundId, anon_id: anon(who), surface, community, nickname, challenge }, now, ORIGIN);
+  return complete(db, DATA, { round_id: roundId, anon_id: anon(who), surface, community, nickname, challenge }, now, origin);
 }
 const all = (v) => Array(10).fill(v);
 
@@ -231,6 +231,29 @@ test('complete: every pair first; scores, type, share text, challenge link; coun
   assert.deepEqual((await complete(db, DATA, { round_id: `rk-${DAY}`, anon_id: anon('c'), surface: 'web', nickname: '<b>' }, NOW, ORIGIN)).body,
     { error: "nickname: 1-24 letters, digits, spaces or . ' _ -" });
   assert.equal((await complete(db, DATA, { round_id: `dq-${DAY}`, anon_id: anon('c'), surface: 'slack' }, NOW, ORIGIN)).status, 400);
+});
+
+test('bot completions share the public game host, including replaying an existing completion', async () => {
+  const db = openD1();
+  const round = (await getRound(db, DATA, { mode: 'quick' }, NOW, seeded(42))).body;
+  for (const surface of ['discord', 'slack']) {
+    const community = `${surface}:test`;
+    const played = await playRound(db, surface, round.round_id, round.items.map((i) => i.id), all(1), { surface, community, origin: 'https://bots.whosbluffing.com' });
+    assert.equal(new URL(played.body.challenge_url).origin, 'https://whosbluffing.com');
+    const token = played.body.challenge_url.split('/').at(-1);
+    const b = { round_id: round.round_id, anon_id: anon(surface), surface, community };
+    for (const [origin, expected] of [
+      ['https://bots.whosbluffing.com', 'https://whosbluffing.com'],
+      ['https://preview.whosbluffing.pages.dev', 'https://preview.whosbluffing.pages.dev'],
+      ['http://localhost:8788', 'http://localhost:8788'],
+    ]) {
+      const result = await complete(db, DATA, b, NOW, origin);
+      assert.equal(result.status, 200);
+      assert.equal(result.body.challenge_url, `${expected}/c/${round.round_id}/${token}`);
+      assert.ok(result.body.share_text.endsWith(result.body.challenge_url));
+    }
+  }
+  assert.equal((await db.prepare('SELECT COUNT(*) AS n FROM round_plays').first()).n, 2);
 });
 
 test('streak: consecutive days with a completed round, one missed day forgiven, two missed days start again', async () => {
