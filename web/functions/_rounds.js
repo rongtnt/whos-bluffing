@@ -514,16 +514,24 @@ export async function getRound(db, data, params, now, rand = Math.random) {
     return ok({ round_id: `rk-${today}`, mode: 'ranked', date: today, items: ids.map((id) => pairView(data, id)) });
   }
   if (params.mode !== 'quick') return err(400, 'mode must be ranked or quick');
-  const difficulty = params.difficulty || 'normal';
+  let previous;
+  if (params.rematch != null) {
+    if (parseRoundId(params.rematch)?.kind !== 'quick') return err(400, 'bad rematch');
+    previous = await resolveRound(db, data, params.rematch, now);
+    if (previous.error) return previous.error;
+  }
+  const difficulty = previous?.difficulty ?? (params.difficulty || 'normal');
   if (!Object.hasOwn(DIFFICULTIES, difficulty)) return err(400, 'difficulty must be easy, normal or brutal');
-  const pack = params.pack || 'all';
+  const pack = previous?.pack ?? (params.pack || 'all');
   if (!Object.hasOwn(PACKS, pack)) return err(400, 'unknown pack');
   if (!data.available[difficulty].has(pack)) return err(400, 'not enough questions in this pack at this difficulty');
   const day = data.rounds[today];
   const avoid = new Set(day ? [...day.ranked, day.question] : []); // never today's ranked pairs or chat question
+  previous?.ids.forEach((id) => avoid.add(id)); // a rematch never repeats the round it follows, even after pool exhaustion
   const seen = parseSeen(params.seen);
   const candidates = AUTHORED_PACKS.includes(pack) ? [] : sampleQuick(data, avoid, seen, rand, difficulty, pack);
   const authored = data.curated.filter((id) => {
+    if (avoid.has(id)) return false;
     const topic = data.pairs.get(id).topic;
     return pack === 'all' ? topic !== 'memes' : topic === pack;
   });
@@ -678,6 +686,10 @@ export async function complete(db, data, b, now, origin) {
   const round = await resolveRound(db, data, b.round_id, now);
   if (round.error) return round.error;
   if (round.kind === 'question') return err(400, 'the daily question has no complete; its answer is the play');
+  if (b.challenge != null) {
+    const challenger = await db.prepare('SELECT anon_id, round_id FROM round_plays WHERE public_token = ?').bind(b.challenge).first();
+    if (!challenger || challenger.round_id !== b.round_id || challenger.anon_id === b.anon_id) return err(400, 'challenge must belong to another player of this round');
+  }
   const today = todayUTC(now);
   const [answers, prior, ...deadRows] = await db.batch([
     db.prepare('SELECT item_id, choice, conf, correct, points FROM round_answers WHERE anon_id = ? AND round_id = ?').bind(b.anon_id, b.round_id),
@@ -774,9 +786,9 @@ export async function compare(db, data, roundId, me, them, now) {
   if (round.error) return round.error;
   const ANS = 'SELECT a.item_id, a.choice, a.conf, a.correct, a.points FROM round_answers a';
   const [themPlay, themAnswers, mePlay, meAnswers, ...deadRows] = await db.batch([
-    db.prepare('SELECT round_id, nickname FROM round_plays WHERE public_token = ?').bind(them),
+    db.prepare('SELECT anon_id, round_id, nickname FROM round_plays WHERE public_token = ?').bind(them),
     db.prepare(`${ANS} JOIN round_plays p ON p.anon_id = a.anon_id AND p.round_id = a.round_id WHERE p.public_token = ? AND a.round_id = ?`).bind(them, roundId),
-    db.prepare('SELECT nickname FROM round_plays WHERE anon_id = ? AND round_id = ?').bind(me ?? '', roundId),
+    db.prepare('SELECT nickname, public_token FROM round_plays WHERE anon_id = ? AND round_id = ?').bind(me ?? '', roundId),
     db.prepare(`${ANS} WHERE a.anon_id = ? AND a.round_id = ?`).bind(me ?? '', roundId),
     ...deadStatements(db, data, round.ids),
   ]);
@@ -790,7 +802,27 @@ export async function compare(db, data, roundId, me, them, now) {
     return answered.length ? scoreRound(answered) : null;
   };
   const meScores = mePlay.results[0] ? rescore(meAnswers.results) : null;
-  return ok({ me: meScores ? publicScores(meScores, mePlay.results[0].nickname) : null, them: publicScores(rescore(themAnswers.results), t.nickname) });
+  const themScores = rescore(themAnswers.results);
+  if (!themScores) return err(404, 'no live questions in this challenge');
+  const body = { me: meScores ? publicScores(meScores, mePlay.results[0].nickname) : null, them: publicScores(themScores, t.nickname), own: me === t.anon_id };
+  if (meScores) body.my_token = mePlay.results[0].public_token;
+  if (body.own) {
+    // Only the owner sees replies to their link. Each link exposes a score, never an anonymous player ID.
+    const replies = await db.prepare(`SELECT public_token, nickname FROM round_plays
+      WHERE round_id = ? AND challenge_of = ? AND anon_id != ? ORDER BY completed_at DESC LIMIT 20`)
+      .bind(roundId, them, me).all();
+    body.replies = replies.results;
+  } else if (meScores) {
+    // The record uses scores at completion, like a match result. Current-round comparison is rescored above.
+    // Indexed by each player's anonymous ID; no visitor-wide scan and no extra stored profile.
+    body.record = await db.prepare(`SELECT COUNT(*) AS played,
+      COALESCE(SUM(a.score > b.score), 0) AS wins, COALESCE(SUM(a.score < b.score), 0) AS losses,
+      COALESCE(SUM(a.score = b.score), 0) AS ties
+      FROM round_plays a JOIN round_plays b ON b.anon_id = ? AND b.round_id = a.round_id
+      WHERE a.anon_id = ? AND (a.challenge_of = b.public_token OR b.challenge_of = a.public_token)`)
+      .bind(t.anon_id, me).first();
+  }
+  return ok(body);
 }
 
 // --- GET /api/round/stats -----------------------------------------------------------------------------------------

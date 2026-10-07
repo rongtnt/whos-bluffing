@@ -7,7 +7,7 @@ import { ROUNDS } from '../../_rounds_data.js';
 export const onRequestGet = safe(async ({ request, env }) => {
   const q = new URL(request.url).searchParams;
   if (q.get('mode') === 'ranked') return json({ error: 'Daily ranked rounds have been retired. Choose a topic to play.' }, 410, { 'cache-control': 'no-store' });
-  const params = { mode: q.get('mode'), seen: q.get('seen'), round_id: q.get('round_id'), difficulty: q.get('difficulty'), pack: q.get('pack') };
+  const params = { mode: q.get('mode'), seen: q.get('seen'), round_id: q.get('round_id'), difficulty: q.get('difficulty'), pack: q.get('pack'), rematch: q.get('rematch') };
   const r = await getRound(env.DB, ROUNDS, params, new Date());
   return json(r.body, r.status, { 'cache-control': 'no-store' });
 });

@@ -25,7 +25,7 @@ test('friend challenges record a share only after copying succeeds', async (t) =
   const clipboard = {};
   Object.defineProperty(globalThis, 'navigator', { configurable: true, value: { clipboard } });
   t.after(() => previous ? Object.defineProperty(globalThis, 'navigator', previous) : delete globalThis.navigator);
-  t.mock.method(store, 'get', () => ''); // nickname already skipped
+  t.mock.method(store, 'get', () => null); // first share must copy before asking for a nickname
   const requests = [];
   t.mock.method(globalThis, 'fetch', async (url, init) => {
     requests.push({ url, ...init, body: JSON.parse(init.body) });
@@ -39,7 +39,7 @@ test('friend challenges record a share only after copying succeeds', async (t) =
       if (outcome === 'unavailable') throw new Error('Clipboard unavailable');
       return outcome === 'success' ? Promise.resolve() : Promise.reject(new Error('Copy denied'));
     };
-    const panel = { hidden: true };
+    const panel = { hidden: true, querySelector: () => ({}) };
     challengeFriend({ t: (key) => key }, panel, { challenge_url: url }, { round_id: 'round' });
     await new Promise((resolve) => setImmediate(resolve));
     assert.equal(panel.hidden, false);

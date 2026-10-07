@@ -21,12 +21,12 @@ const meta = (id) => {
     family: p.family ?? (['year', 'month'].includes(a.en.unit) ? 'chronology' : 'comparison') };
 };
 
-test('authored bank: 260 short, sourced questions; rejects malformed content before bundling', () => {
+test('authored bank: 284 short, sourced questions; rejects malformed content before bundling', () => {
   assert.deepEqual(validateCurated(bank), []);
-  assert.equal(bank.items.length, 260);
+  assert.equal(bank.items.length, 284);
   assert.equal(bank.items.filter((q) => q.topic === 'ai').length, 24);
-  assert.equal(bank.items.filter((q) => q.topic === 'memes').length, 40);
-  assert.equal(bank.items.filter((q) => q.answer === 0).length, 130);
+  assert.equal(bank.items.filter((q) => q.topic === 'memes').length, 64);
+  assert.equal(bank.items.filter((q) => q.answer === 0).length, 142);
   for (const patch of [{ id: 'p00001' }, { topic: 'unknown' }, { family: '' }, { difficulty: 'impossible' },
     { answer: 2 }, { options: ['same', 'same'] }, { explanation: '' }, { source: 'javascript:alert(1)' }, { source: ['https://example.com'] }]) {
     assert.ok(validateCurated({ version: 1, items: [{ ...bank.items[0], ...patch }] }).length, JSON.stringify(patch));
@@ -153,6 +153,30 @@ test('repeat play prefers unseen questions and still fills a round when the auth
     assert.equal(r.status, 200, `${pack}/${difficulty}: ${JSON.stringify(r.body)}`);
     assert.equal(r.body.items.length, 10);
   }
+  db.sqlite.close();
+});
+
+test('Memes replay and rematches: fresh questions at every difficulty, stable links, no repeats even after exhausting the pool', async () => {
+  const db = openD1();
+  for (const difficulty of Object.keys(DIFFICULTIES)) for (let seed = 1; seed <= 20; seed++) {
+    const first = (await getRound(db, data, { mode: 'quick', pack: 'memes', difficulty }, now, seeded(seed))).body;
+    const seen = first.items.map((q) => q.id);
+    const next = await getRound(db, data, { mode: 'quick', rematch: first.round_id, seen: seen.join(','), pack: 'ai', difficulty: 'invalid' }, now, seeded(seed));
+    assert.equal(next.status, 200);
+    assert.equal(next.body.pack, 'memes');
+    assert.equal(next.body.difficulty, difficulty);
+    assert.equal(next.body.items.length, 10);
+    assert.ok(next.body.items.every((q) => !seen.includes(q.id)));
+    assert.deepEqual((await getRound(db, data, { round_id: next.body.round_id }, now)).body, next.body);
+    const exhausted = await getRound(db, data, { mode: 'quick', rematch: first.round_id, seen: data.curated.join(',') }, now, seeded(seed));
+    assert.equal(exhausted.status, 200);
+    assert.ok(exhausted.body.items.every((q) => !seen.includes(q.id)));
+    const qs = next.body.items.map((q) => data.pairs.get(q.id).authored);
+    assert.ok(new Set(qs.map((q) => q.family)).size >= 4);
+    assert.equal(new Set(qs.flatMap((q) => q.subjects)).size, 10);
+  }
+  for (const rematch of ['bad', `rk-2026-10-05`, `dr-test`]) assert.equal((await getRound(db, data, { mode: 'quick', rematch }, now)).status, 400);
+  assert.equal((await getRound(db, data, { mode: 'quick', rematch: 'ZZZZZZZZZZZZ' }, now)).status, 404);
   db.sqlite.close();
 });
 

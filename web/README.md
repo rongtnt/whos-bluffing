@@ -10,7 +10,7 @@ Every page is a static HTML file in `public/` with the same head (title, descrip
 |---|---|---|
 | `/` | `index.html` | Existing homepage, demonstrations and pack preview. Every Play button opens `/play`, carrying the selected topic and difficulty. No questions or results render on the homepage. |
 | `/play` | `play.html` | Topic and difficulty picker, Start Playing, a separate Continue action for an unfinished round, with no daily ranked round. The picker has a Home icon; the shuffle and quiz have no Home shortcut. |
-| `/results` | `results.html` | Score, answer review, sharing and challenge comparison, with a Home icon and Play Again. The browser history entry retains the result across refresh and Back/Forward; a direct visit has a start-round prompt. Play Again returns to the picker. |
+| `/results` | `results.html` | Score, answer review, sharing and challenge comparison, with a Home icon and Play Again. The browser history entry retains the result across refresh and Back/Forward; a direct visit has a start-round prompt. Play Again immediately starts ten fresh questions at the same topic and difficulty; Change topic opens the picker. |
 | `/c/<round>/<token>` | Pages Function `functions/c/[round_id]/[player].js` | Challenge page: the page template with per-link Open Graph tags ("Sam scored 640. Can you beat them?"), `noindex`, its own security headers; plays the same round, then shows the side-by-side. Counts one `challenge_view` per load; an unknown link gets the branded 404 |
 | `/test` | `test.html` | Full assessment (`/test?c=CODE` joins a class) |
 | `/stats` | `stats.html` + `status.js` | Public Total Players, also shown on `/status` |

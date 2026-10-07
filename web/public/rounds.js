@@ -2,8 +2,8 @@
 // you are, see both values and sources at once, with a line from the game (reactions.js), a sound (sound.js) and a
 // little motion (motion.js); at the end your score, the result grid, type, calibration chart and challenge link.
 // Scoring is server-side (docs/api-rounds.md). Local state: whosbluffing_anon (ui.js), whosbluffing_seen_pairs (the newest 300 pair ids
-// played; the server keeps the last 300 it is sent), whosbluffing_round (the round in progress, so a reload resumes), whosbluffing_nick (the nickname for challenge links: null = never asked, '' =
-// skipped), whosbluffing_mine (this browser's challenge tokens), whosbluffing_dares ({round_id: score} of finished dares);
+// played; the server keeps the last 300 it is sent), whosbluffing_round (the round in progress, so a reload resumes),
+// whosbluffing_nick (optional name for challenge links), whosbluffing_dares ({round_id: score} of finished dares);
 // pack and difficulty in picker.js, the side after AI and Politics rounds (whosbluffing_lab, whosbluffing_party) in
 // round-end.js, sound in site.js.
 import { html, api, store, anonId, calibrationChart, chartLabels, signed } from './ui.js';
@@ -21,10 +21,8 @@ export { fmtValue, fmtPoints };
 const SEEN_KEY = 'whosbluffing_seen_pairs';
 const ROUND_KEY = 'whosbluffing_round';
 const NICK_KEY = 'whosbluffing_nick';
-const MINE_KEY = 'whosbluffing_mine';
 const DARES_KEY = 'whosbluffing_dares';
 const MAX_SEEN = 300;
-const KEEP_MINE = 50;
 const CONFS = [50, 60, 70, 80, 90, 100];
 const CONF_KEYS = { 5: 50, 6: 60, 7: 70, 8: 80, 9: 90, 0: 100 }; // keyboard: the tens digit, 0 = 100%
 const CONFIDENT_MISS = 70; // a wrong answer at this confidence or more flashes red
@@ -272,19 +270,21 @@ async function begin(ctx, round, extra = {}) {
 
 // A new quick round in the chosen pack and difficulty, fetched on the tap (creating one writes a row, so it is never
 // prefetched). A choice the server refuses (a pack that no longer fills that difficulty) falls back to All, Normal.
-async function playQuick(ctx) {
+async function playQuick(ctx, rematch = null) {
+  bindKeys();
   sound.unlock();
   ctx.chrome(false);
   window.scrollTo(0, 0);
   ctx.app.innerHTML = html`<p class="muted" role="status">${ctx.t('rounds.loading')}</p>`;
   const seen = encodeURIComponent(store.get(SEEN_KEY, []).join(','));
   const { pack, difficulty } = (picker ??= initPicker()).current();
-  let r = await api(`/api/round?mode=quick&pack=${encodeURIComponent(pack)}&difficulty=${encodeURIComponent(difficulty)}&seen=${seen}`);
-  if (r.status === 400) r = await api(`/api/round?mode=quick&seen=${seen}`);
+  let r = await api(`/api/round?mode=quick&pack=${encodeURIComponent(pack)}&difficulty=${encodeURIComponent(difficulty)}&seen=${seen}${rematch ? `&rematch=${encodeURIComponent(rematch)}` : ''}`);
+  if (r.status === 400 && !rematch) r = await api(`/api/round?mode=quick&seen=${seen}`);
   if (!r.ok) {
     ctx.chrome(true);
-    return retryScreen(ctx, ctx.t('rounds.failed'), () => playQuick(ctx));
+    return retryScreen(ctx, ctx.t('rounds.failed'), () => playQuick(ctx, rematch));
   }
+  if (location.pathname !== '/play') history.pushState({}, '', '/play');
   return begin(ctx, r.data);
 }
 
@@ -303,8 +303,6 @@ async function finish(ctx, st) {
   // A dare is played once and stays out of the quick rounds' seen pairs; its link is its page, not a challenge token.
   if (r.data.dare) store.set(DARES_KEY, { ...store.get(DARES_KEY, {}), [st.round_id]: r.data.score });
   else store.set(SEEN_KEY, addSeen(store.get(SEEN_KEY, []), st.items.map((i) => i.id)));
-  const token = r.data.challenge_url.split('/').at(-1);
-  if (!r.data.dare) store.set(MINE_KEY, [...store.get(MINE_KEY, []).filter((x) => x !== token), token].slice(-KEEP_MINE));
   clearRound();
   // Browser history keeps this tab's result across reloads without a new database write or another storage key.
   history.pushState({ round: st, result: r.data }, '', '/results');
@@ -326,12 +324,13 @@ function showEnd(ctx, st, res) {
   const { app, t } = ctx;
   ctx.chrome(false);
   document.title = `${t('rounds.results_title')} | Who's Bluffing?`;
-  ctx.setPlay(t('rounds.play_again'), () => playAgain(ctx));
+  ctx.setPlay(t('rounds.play_again'), () => playAgain(ctx, st));
   const answers = st.items.map((i) => st.answers[i.id]).filter(Boolean);
   const calib = bins(answers.map((a) => a.conf / 100), answers.map((a) => (a.correct ? 1 : 0)));
   app.innerHTML = html`<nav class="row" aria-label="${t('rounds.results_title')}">
   ${homeLink(t)}
   <button class="primary" type="button" data-again>${t('rounds.play_again')}</button>
+  <a href="/play">${t('rounds.change_topic')}</a>
 </nav>
 <h2 class="result-title">${t('rounds.score_title', { score: fmtTotal(res.score) })}</h2>
 <p class="round-kind">${roundLabel(t, st)}</p>
@@ -366,8 +365,8 @@ ${counters(t, res)}
     if (open && !el.dataset.filled) { el.dataset.filled = '1'; fill(el); }
   };
   const acts = Object.fromEntries([...app.querySelectorAll('[data-act]')].map((b) => [b.dataset.act, b]));
-  acts.again.onclick = () => playAgain(ctx);
-  app.querySelector('[data-again]').onclick = () => playAgain(ctx);
+  acts.again.onclick = () => playAgain(ctx, st);
+  app.querySelector('[data-again]').onclick = () => playAgain(ctx, st);
   acts.challenge.onclick = () => challengeFriend(ctx, panel('challenge-panel'), res, st);
   const copy = res.dare ? res.share_text // the dare's sentence as the server wrote it
     : shareWith(res.share_text, { pack: st.mode === 'quick' ? st.pack : null, line: bestLine(st.items, st.answers), url: res.challenge_url, type: res.type });
@@ -376,53 +375,73 @@ ${counters(t, res)}
       line: t('rounds.score_sub', { accuracy: Math.round(res.accuracy), mean_conf: Math.round(res.mean_conf) }), cta: t('rounds.card_cta') },
     copy: withSideLine(copy, side?.shareLine(), res.challenge_url), url: res.challenge_url, onShare: () => event('share', st.round_id),
   }));
-  if (st.challenge) showVs(ctx, panel('vs-panel'), st.round_id, st.challenge);
+  if (!res.dare) showVs(ctx, panel('vs-panel'), st.round_id, st.challenge ?? res.challenge_url.split('/').at(-1));
 }
 
 const event = (type, roundId) => api('/api/event', { method: 'POST', keepalive: true, body: { type, round_id: roundId } });
 
-function playAgain(ctx) {
+function playAgain(ctx, st) {
   event('play_again');
+  if (st?.mode === 'quick') return playQuick(ctx, st.round_id);
   location.assign('/play');
 }
 
-// Copies the challenge link; the first time, asks once for an optional nickname (kept in this browser).
+// Copy inside the original tap. Adding a name is optional and never blocks sharing.
 export function challengeFriend(ctx, el, res, st) {
   const { t } = ctx;
-  const copy = () => navigator.clipboard.writeText(res.challenge_url);
   const done = (ok) => {
     if (ok) event('share', st.round_id);
     el.hidden = false;
-    el.innerHTML = html`<p class="msg ${ok ? 'ok' : ''}" role="status">${ok ? t('rounds.copied') : t('rounds.copy_failed')}</p><p class="url small">${res.challenge_url}</p>`;
-  };
-  const tryCopy = () => { try { copy().then(() => done(true), () => done(false)); } catch { done(false); } };
-  if (store.get(NICK_KEY, null) !== null) { tryCopy(); return; }
-  el.hidden = false;
-  el.innerHTML = html`<form class="nick" novalidate>
-  <label>${t('rounds.nick_label')}<input name="nick" maxlength="24" autocomplete="nickname" placeholder="${t('rounds.nick_placeholder')}"></label>
+    el.innerHTML = html`<p class="msg ${ok ? 'ok' : ''}" role="status">${ok ? t('rounds.copied') : t('rounds.copy_failed')}</p>
+<p class="url small"><a href="${res.challenge_url}">${res.challenge_url}</a></p>
+<details><summary>${t('rounds.nick_label')}</summary><form class="nick">
+  <label>${t('rounds.nick_label')}<input name="nick" maxlength="24" autocomplete="nickname" value="${store.get(NICK_KEY, '') ?? ''}" placeholder="${t('rounds.nick_placeholder')}"></label>
   <p class="muted small">${t('rounds.nick_note')}</p>
-  <div class="row"><button class="primary" type="submit">${t('rounds.copy_link')}</button><button type="button" data-skip>${t('rounds.skip')}</button></div>
-</form>`;
-  const form = el.querySelector('form');
-  const save = (nick) => {
-    store.set(NICK_KEY, nick);
-    tryCopy(); // synchronously inside the click
-    if (nick) api('/api/round/complete', { method: 'POST', body: { round_id: st.round_id, anon_id: anonId(), surface: 'web', nickname: nick } });
+  <button type="submit">${t('rounds.save_name')}</button><p role="status" data-name-status></p>
+</form></details>`;
+    const form = el.querySelector('form');
+    form.onsubmit = async (e) => {
+      e.preventDefault();
+      const nick = form.nick.value.trim().replace(/\s+/g, ' ');
+      const status = form.querySelector('[data-name-status]');
+      if (!/^[\p{L}\p{N} .'_-]{1,24}$/u.test(nick)) { status.textContent = t('rounds.name_invalid'); return; }
+      const button = form.querySelector('button');
+      button.disabled = true;
+      const r = await api('/api/round/complete', { method: 'POST', body: { round_id: st.round_id, anon_id: anonId(), surface: 'web', nickname: nick } });
+      button.disabled = false;
+      if (r.ok) store.set(NICK_KEY, nick);
+      status.textContent = t(r.ok ? 'rounds.name_saved' : 'rounds.offline');
+    };
   };
-  form.onsubmit = (e) => {
-    e.preventDefault();
-    const nick = form.nick.value.trim().replace(/\s+/g, ' ');
-    save(/^[\p{L}\p{N} .'_-]{1,24}$/u.test(nick) ? nick : '');
-  };
-  form.querySelector('[data-skip]').onclick = () => save('');
+  try { navigator.clipboard.writeText(res.challenge_url).then(() => done(true), () => done(false)); } catch { done(false); }
 }
 
 // You against the challenger: rows slide in, and the two scores race up to their values.
-async function showVs(ctx, el, roundId, token) {
+async function showVs(ctx, el, roundId, token, data = null) {
   const { t } = ctx;
-  const r = await api(`/api/round/${encodeURIComponent(roundId)}/compare?me=${encodeURIComponent(anonId())}&them=${encodeURIComponent(token)}`);
-  if (!r.ok || !r.data.me) return;
-  const { me, them } = r.data;
+  if (!data) {
+    const r = await api(`/api/round/${encodeURIComponent(roundId)}/compare?me=${encodeURIComponent(anonId())}&them=${encodeURIComponent(token)}`);
+    if (!r.ok) {
+      el.hidden = false;
+      el.innerHTML = html`<p role="status">${t('rounds.friends_failed')}</p><button type="button">${t('rounds.retry')}</button>`;
+      el.querySelector('button').onclick = () => showVs(ctx, el, roundId, token);
+      return;
+    }
+    data = r.data;
+  }
+  if (!data.me || !el.isConnected) return;
+  const { me, them, own, replies, record } = data;
+  if (own) {
+    const hero = location.pathname.startsWith('/c/') && document.getElementById('hero-title');
+    if (hero) hero.textContent = t('rounds.own_hero', { score: me.score });
+    el.hidden = false;
+    el.innerHTML = html`<h3>${t('rounds.friend_results')}</h3>
+<p>${replies.length ? t('rounds.friends_ready') : t('rounds.friends_waiting')}</p>
+${replies.map((p, k) => html`<p><a href="/c/${roundId}/${p.public_token}">${t('rounds.compare_friend', { name: p.nickname || t('rounds.friend_number', { n: k + 1 }) })}</a></p>`)}
+<p class="row"><a href="/c/${roundId}/${token}">${t('rounds.check_friends')}</a><button type="button" data-refresh>${t('rounds.refresh')}</button></p>`;
+    el.querySelector('[data-refresh]').onclick = () => showVs(ctx, el, roundId, token);
+    return;
+  }
   const name = them.nickname || t('rounds.vs_someone');
   const d = me.score - them.score;
   const row = (label, f) => html`<tr class="anim anim-slide"><th scope="row">${label}</th><td>${f(me)}</td><td>${f(them)}</td></tr>`;
@@ -436,8 +455,15 @@ async function showVs(ctx, el, roundId, token) {
 ${row(t('rounds.vs_type'), (p) => typeName(p.type))}
 ${row(t('rounds.vs_right'), (p) => `${Math.round(p.accuracy)}%`)}
 ${row(t('rounds.vs_sure'), (p) => `${Math.round(p.mean_conf)}%`)}
-</tbody></table>`;
+</tbody></table>
+${record?.played ? html`<p class="small">${t('rounds.friend_record', { wins: record.wins, losses: record.losses, ties: record.ties })}</p>` : ''}
+<div class="row"><button class="primary" type="button" data-rematch>${t('rounds.rematch')}</button>
+<button type="button" data-send-result>${t('rounds.send_result')}</button><a href="/play">${t('rounds.change_topic')}</a></div>
+<p class="muted small">${t('rounds.rematch_note')}</p><div data-result-link hidden></div>`;
   raceTo([...el.querySelectorAll('[data-race]')].map((b) => ({ el: b, to: Number(b.dataset.race), format: String })));
+  el.querySelector('[data-rematch]').onclick = () => playAgain(ctx, { mode: /^[A-Z2-9]{12}$/.test(roundId) ? 'quick' : 'ranked', round_id: roundId });
+  el.querySelector('[data-send-result]').onclick = () => challengeFriend(ctx, el.querySelector('[data-result-link]'),
+    { challenge_url: `${location.origin}/c/${roundId}/${data.my_token}` }, { round_id: roundId });
 }
 
 // --- entry points -----------------------------------------------------------------------------------------------
@@ -488,11 +514,6 @@ export async function renderChallenge(ctx, roundId, token) {
   const { app, t } = ctx;
   app.replaceChildren();
   bindKeys();
-  if (store.get(MINE_KEY, []).includes(token)) {
-    app.innerHTML = html`<p class="note">${t('rounds.own_link')}</p><p class="url small">${location.href}</p>`;
-    ctx.setPlay(t('rounds.play'), () => location.assign('/play'));
-    return;
-  }
   const saved = loadRound();
   if (saved?.round_id === roundId && saved.challenge === token && saved.items.some((i) => !saved.answers[i.id])) {
     const done = saved.items.filter((i) => saved.answers[i.id]).length;
@@ -502,8 +523,8 @@ export async function renderChallenge(ctx, roundId, token) {
   const vs = await api(`/api/round/${encodeURIComponent(roundId)}/compare?me=${encodeURIComponent(anonId())}&them=${encodeURIComponent(token)}`);
   if (vs.ok && vs.data.me) {
     app.innerHTML = html`<div id="vs-panel" class="card"></div>`;
-    showVs(ctx, app.querySelector('#vs-panel'), roundId, token);
-    ctx.setPlay(t('rounds.play_again'), () => location.assign('/play'));
+    showVs(ctx, app.querySelector('#vs-panel'), roundId, token, vs.data);
+    ctx.setPlay(t('rounds.rematch'), () => playAgain(ctx, { mode: /^[A-Z2-9]{12}$/.test(roundId) ? 'quick' : 'ranked', round_id: roundId }));
     return;
   }
   const r = await api(`/api/round?round_id=${encodeURIComponent(roundId)}`);

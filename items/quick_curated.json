@@ -1,6 +1,6 @@
 {
   "version": 1,
-  "checked_at": "2026-10-05",
+  "checked_at": "2026-10-07",
   "about": "Authored quick-round questions only. Difficulty is an editorial estimate, not measured accuracy. IDs and answer meanings are immutable once deployed: retire a flawed ID and add a new one. Ranked schedules and the full assessment use their existing banks.",
   "items": [
     {
@@ -855,7 +855,10 @@
       ],
       "answer": 0,
       "explanation": "Six-seven is the callout. The seesaw hand motion is part of the meme; no arithmetic required.",
-      "source": "https://knowyourmeme.com/memes/67-meme-six-seven"
+      "source": "https://knowyourmeme.com/memes/67-meme-six-seven",
+      "subjects": [
+        "https://knowyourmeme.com/memes/67-meme-six-seven"
+      ]
     },
     {
       "id": "q00062",
@@ -869,7 +872,10 @@
       ],
       "answer": 1,
       "explanation": "He answers 21. The actual sum is 19, which is exactly why the clip became a meme.",
-      "source": "https://knowyourmeme.com/memes/9-10-21"
+      "source": "https://knowyourmeme.com/memes/9-10-21",
+      "subjects": [
+        "https://knowyourmeme.com/memes/9-10-21"
+      ]
     },
     {
       "id": "q00063",
@@ -883,7 +889,10 @@
       ],
       "answer": 0,
       "explanation": "The viral clip keeps coming back to Daniel's white Vans. The shoes got their own internet career.",
-      "source": "https://knowyourmeme.com/memes/damn-daniel"
+      "source": "https://knowyourmeme.com/memes/damn-daniel",
+      "subjects": [
+        "https://knowyourmeme.com/memes/damn-daniel"
+      ]
     },
     {
       "id": "q00064",
@@ -897,7 +906,10 @@
       ],
       "answer": 1,
       "explanation": "Gooden treats \"work\" as a verb: he hopes the road works. One sign, one joke, permanent brain storage.",
-      "source": "https://knowyourmeme.com/memes/road-work-ahead"
+      "source": "https://knowyourmeme.com/memes/road-work-ahead",
+      "subjects": [
+        "https://knowyourmeme.com/memes/road-work-ahead"
+      ]
     },
     {
       "id": "q00065",
@@ -911,7 +923,10 @@
       ],
       "answer": 0,
       "explanation": "Tralalero Tralala is associated with the sneaker-wearing shark. The crocodile has a very different transport situation.",
-      "source": "https://knowyourmeme.com/memes/tralalero-tralala"
+      "source": "https://knowyourmeme.com/memes/tralalero-tralala",
+      "subjects": [
+        "https://knowyourmeme.com/memes/tralalero-tralala"
+      ]
     },
     {
       "id": "q00066",
@@ -925,7 +940,10 @@
       ],
       "answer": 1,
       "explanation": "The familiar image shows a wooden creature carrying a bat or club. Somehow the wood has armed itself with more wood.",
-      "source": "https://knowyourmeme.com/memes/tung-tung-tung-sahur"
+      "source": "https://knowyourmeme.com/memes/tung-tung-tung-sahur",
+      "subjects": [
+        "https://knowyourmeme.com/memes/tung-tung-tung-sahur"
+      ]
     },
     {
       "id": "q00067",
@@ -939,7 +957,10 @@
       ],
       "answer": 0,
       "explanation": "The character combines a ballet dancer with a cappuccino cup. Your coffee has choreography now.",
-      "source": "https://knowyourmeme.com/memes/ballerina-cappuccina-italian-brainrot"
+      "source": "https://knowyourmeme.com/memes/ballerina-cappuccina-italian-brainrot",
+      "subjects": [
+        "https://knowyourmeme.com/memes/ballerina-cappuccina-italian-brainrot"
+      ]
     },
     {
       "id": "q00068",
@@ -953,7 +974,10 @@
       ],
       "answer": 1,
       "explanation": "Phillip Banks' character is a brown dog with a human body, sweater, jeans and shoes. Extremely committed to the bit.",
-      "source": "https://knowyourmeme.com/memes/just-a-chill-guy-my-new-character"
+      "source": "https://knowyourmeme.com/memes/just-a-chill-guy-my-new-character",
+      "subjects": [
+        "https://knowyourmeme.com/memes/just-a-chill-guy-my-new-character"
+      ]
     },
     {
       "id": "q00069",
@@ -967,7 +991,10 @@
       ],
       "answer": 0,
       "explanation": "A rickroll disguises the video for Never Gonna Give You Up as the thing you actually wanted to open.",
-      "source": "https://knowyourmeme.com/memes/rickroll"
+      "source": "https://knowyourmeme.com/memes/rickroll",
+      "subjects": [
+        "https://knowyourmeme.com/memes/rickroll"
+      ]
     },
     {
       "id": "q00070",
@@ -981,7 +1008,10 @@
       ],
       "answer": 1,
       "explanation": "K.C. Green's dog sits in a burning room and insists things are fine. Very strong denial, very weak fire response.",
-      "source": "https://knowyourmeme.com/memes/this-is-fine"
+      "source": "https://knowyourmeme.com/memes/this-is-fine",
+      "subjects": [
+        "https://knowyourmeme.com/memes/this-is-fine"
+      ]
     },
     {
       "id": "q00071",
@@ -995,7 +1025,10 @@
       ],
       "answer": 0,
       "explanation": "Surprised Pikachu is commonly paired with someone reacting in shock to a consequence they could have predicted.",
-      "source": "https://knowyourmeme.com/memes/surprised-pikachu"
+      "source": "https://knowyourmeme.com/memes/surprised-pikachu",
+      "subjects": [
+        "https://knowyourmeme.com/memes/surprised-pikachu"
+      ]
     },
     {
       "id": "q00072",
@@ -1009,7 +1042,10 @@
       ],
       "answer": 1,
       "explanation": "NPC means non-player character. The meme borrows the idea of scripted, repetitive game-character behavior.",
-      "source": "https://knowyourmeme.com/memes/npc-non-playable-character"
+      "source": "https://knowyourmeme.com/memes/npc-non-playable-character",
+      "subjects": [
+        "https://knowyourmeme.com/memes/npc-non-playable-character"
+      ]
     },
     {
       "id": "q00073",
@@ -1023,7 +1059,10 @@
       ],
       "answer": 0,
       "explanation": "The six-seven audio comes from Skrilla's Doot Doot. Basketball edits helped turn the lyric into an everywhere phrase.",
-      "source": "https://knowyourmeme.com/memes/67-meme-six-seven"
+      "source": "https://knowyourmeme.com/memes/67-meme-six-seven",
+      "subjects": [
+        "https://knowyourmeme.com/memes/67-meme-six-seven"
+      ]
     },
     {
       "id": "q00074",
@@ -1037,7 +1076,10 @@
       ],
       "answer": 1,
       "explanation": "DaFuq!?Boom! created the animated series about singing toilet heads and their increasingly elaborate battles.",
-      "source": "https://knowyourmeme.com/memes/subcultures/skibidi-toilet"
+      "source": "https://knowyourmeme.com/memes/subcultures/skibidi-toilet",
+      "subjects": [
+        "https://knowyourmeme.com/memes/subcultures/skibidi-toilet"
+      ]
     },
     {
       "id": "q00075",
@@ -1051,7 +1093,10 @@
       ],
       "answer": 0,
       "explanation": "Steven He delivered the line in a comedy sketch. The reaction clip then escaped into everybody else's videos.",
-      "source": "https://knowyourmeme.com/memes/emotional-damage"
+      "source": "https://knowyourmeme.com/memes/emotional-damage",
+      "subjects": [
+        "https://knowyourmeme.com/memes/emotional-damage"
+      ]
     },
     {
       "id": "q00076",
@@ -1065,7 +1110,10 @@
       ],
       "answer": 1,
       "explanation": "The PC version of Advanced Warfare uses the prompt during a funeral scene. The internet kept the F.",
-      "source": "https://en.wikipedia.org/wiki/Press_F_to_pay_respects"
+      "source": "https://en.wikipedia.org/wiki/Press_F_to_pay_respects",
+      "subjects": [
+        "https://en.wikipedia.org/wiki/Press_F_to_pay_respects"
+      ]
     },
     {
       "id": "q00077",
@@ -1079,7 +1127,10 @@
       ],
       "answer": 0,
       "explanation": "Kabosu is the Shiba Inu in the iconic Doge photo. Balltze is the different dog associated with Cheems.",
-      "source": "https://knowyourmeme.com/memes/doge"
+      "source": "https://knowyourmeme.com/memes/doge",
+      "subjects": [
+        "https://knowyourmeme.com/memes/doge"
+      ]
     },
     {
       "id": "q00078",
@@ -1093,7 +1144,10 @@
       ],
       "answer": 1,
       "explanation": "McDonald's released the purple shake for Grimace's birthday in 2023. The horror scenes were a user-made trend.",
-      "source": "https://en.wikipedia.org/wiki/Grimace_Shake"
+      "source": "https://en.wikipedia.org/wiki/Grimace_Shake",
+      "subjects": [
+        "https://en.wikipedia.org/wiki/Grimace_Shake"
+      ]
     },
     {
       "id": "q00079",
@@ -1107,7 +1161,10 @@
       ],
       "answer": 0,
       "explanation": "The meme originated with Indonesian creator @noxaasht and an Indonesian voice-over. \"Italian brainrot\" is not everyone's birthplace.",
-      "source": "https://knowyourmeme.com/memes/tung-tung-tung-sahur"
+      "source": "https://knowyourmeme.com/memes/tung-tung-tung-sahur",
+      "subjects": [
+        "https://knowyourmeme.com/memes/tung-tung-tung-sahur"
+      ]
     },
     {
       "id": "q00080",
@@ -1121,7 +1178,10 @@
       ],
       "answer": 1,
       "explanation": "The original character is a crocodile-aircraft hybrid. The animal kingdom apparently has an air force.",
-      "source": "https://knowyourmeme.com/memes/bombardiro-crocodilo-italian-brainrot"
+      "source": "https://knowyourmeme.com/memes/bombardiro-crocodilo-italian-brainrot",
+      "subjects": [
+        "https://knowyourmeme.com/memes/bombardiro-crocodilo-italian-brainrot"
+      ]
     },
     {
       "id": "q00081",
@@ -1135,7 +1195,10 @@
       ],
       "answer": 0,
       "explanation": "Chris Torres' pixel cat has a Pop-Tart body. Toast is a different breakfast-based flight system.",
-      "source": "https://knowyourmeme.com/memes/nyan-cat"
+      "source": "https://knowyourmeme.com/memes/nyan-cat",
+      "subjects": [
+        "https://knowyourmeme.com/memes/nyan-cat"
+      ]
     },
     {
       "id": "q00082",
@@ -1149,7 +1212,10 @@
       ],
       "answer": 1,
       "explanation": "The Fighbird character points at a butterfly and calls it a pigeon. Confidence: high. Bird identification: catastrophic.",
-      "source": "https://en.wikipedia.org/wiki/Is_this_a_pigeon"
+      "source": "https://en.wikipedia.org/wiki/Is_this_a_pigeon",
+      "subjects": [
+        "https://en.wikipedia.org/wiki/Is_this_a_pigeon"
+      ]
     },
     {
       "id": "q00083",
@@ -1163,7 +1229,10 @@
       ],
       "answer": 0,
       "explanation": "Boromir says the line in The Fellowship of the Ring. The internet then applied it to every mildly difficult task.",
-      "source": "https://knowyourmeme.com/memes/one-does-not-simply-walk-into-mordor"
+      "source": "https://knowyourmeme.com/memes/one-does-not-simply-walk-into-mordor",
+      "subjects": [
+        "https://knowyourmeme.com/memes/one-does-not-simply-walk-into-mordor"
+      ]
     },
     {
       "id": "q00084",
@@ -1177,7 +1246,10 @@
       ],
       "answer": 1,
       "explanation": "The famous Zero Wing translation is \"All your base are belong to us.\" Fixing the grammar breaks the reference.",
-      "source": "https://knowyourmeme.com/memes/all-your-base-are-belong-to-us"
+      "source": "https://knowyourmeme.com/memes/all-your-base-are-belong-to-us",
+      "subjects": [
+        "https://knowyourmeme.com/memes/all-your-base-are-belong-to-us"
+      ]
     },
     {
       "id": "q00085",
@@ -1191,7 +1263,10 @@
       ],
       "answer": 0,
       "explanation": "The Happy Cat image helped popularize \"I Can Has Cheezburger?\" and the deliberately mangled grammar of LOLcats.",
-      "source": "https://knowyourmeme.com/memes/happy-cat"
+      "source": "https://knowyourmeme.com/memes/happy-cat",
+      "subjects": [
+        "https://knowyourmeme.com/memes/happy-cat"
+      ]
     },
     {
       "id": "q00086",
@@ -1205,7 +1280,10 @@
       ],
       "answer": 1,
       "explanation": "The girlfriend represents the existing commitment; the passerby is the tempting distraction. Your essay knows what you did.",
-      "source": "https://knowyourmeme.com/memes/distracted-boyfriend"
+      "source": "https://knowyourmeme.com/memes/distracted-boyfriend",
+      "subjects": [
+        "https://knowyourmeme.com/memes/distracted-boyfriend"
+      ]
     },
     {
       "id": "q00087",
@@ -1219,7 +1297,10 @@
       ],
       "answer": 0,
       "explanation": "Galaxy Brain often escalates toward absurdity. The increasingly cosmic brain can be the joke, not an endorsement.",
-      "source": "https://knowyourmeme.com/memes/galaxy-brain"
+      "source": "https://knowyourmeme.com/memes/galaxy-brain",
+      "subjects": [
+        "https://knowyourmeme.com/memes/galaxy-brain"
+      ]
     },
     {
       "id": "q00088",
@@ -1233,7 +1314,10 @@
       ],
       "answer": 1,
       "explanation": "Stonks uses Meme Man and a stock-market backdrop to joke about financial decisions, especially bad ones.",
-      "source": "https://knowyourmeme.com/memes/stonks"
+      "source": "https://knowyourmeme.com/memes/stonks",
+      "subjects": [
+        "https://knowyourmeme.com/memes/stonks"
+      ]
     },
     {
       "id": "q00089",
@@ -1247,7 +1331,10 @@
       ],
       "answer": 0,
       "explanation": "Tim Buckley published Loss in Ctrl+Alt+Del in 2008. Its four-panel composition became recognizable even as a few lines.",
-      "source": "https://knowyourmeme.com/memes/loss"
+      "source": "https://knowyourmeme.com/memes/loss",
+      "subjects": [
+        "https://knowyourmeme.com/memes/loss"
+      ]
     },
     {
       "id": "q00090",
@@ -1261,7 +1348,10 @@
       ],
       "answer": 1,
       "explanation": "Arató was an electrical engineer before his stock-photo smile became a reaction image.",
-      "source": "https://knowyourmeme.com/memes/hide-the-pain-harold"
+      "source": "https://knowyourmeme.com/memes/hide-the-pain-harold",
+      "subjects": [
+        "https://knowyourmeme.com/memes/hide-the-pain-harold"
+      ]
     },
     {
       "id": "q00091",
@@ -1275,7 +1365,10 @@
       ],
       "answer": 0,
       "explanation": "Bugs briefly imitates a portly Elmer Fudd in Wabbit Twouble. The frame is decades older than the meme.",
-      "source": "https://knowyourmeme.com/memes/big-chungus"
+      "source": "https://knowyourmeme.com/memes/big-chungus",
+      "subjects": [
+        "https://knowyourmeme.com/memes/big-chungus"
+      ]
     },
     {
       "id": "q00092",
@@ -1289,7 +1382,10 @@
       ],
       "answer": 1,
       "explanation": "Fatso appears in Charlie Schmidt's original footage. Bento was a later Keyboard Cat, not the original.",
-      "source": "https://knowyourmeme.com/memes/keyboard-cat"
+      "source": "https://knowyourmeme.com/memes/keyboard-cat",
+      "subjects": [
+        "https://knowyourmeme.com/memes/keyboard-cat"
+      ]
     },
     {
       "id": "q00093",
@@ -1303,7 +1399,10 @@
       ],
       "answer": 0,
       "explanation": "The photo was taken during a controlled fire for firefighter training in North Carolina. The meme's sinister story is invented.",
-      "source": "https://en.wikipedia.org/wiki/Disaster_Girl"
+      "source": "https://en.wikipedia.org/wiki/Disaster_Girl",
+      "subjects": [
+        "https://en.wikipedia.org/wiki/Disaster_Girl"
+      ]
     },
     {
       "id": "q00094",
@@ -1317,7 +1416,10 @@
       ],
       "answer": 1,
       "explanation": "Smudge is the cat sitting behind a plate of vegetables. The cat photo and reality-show frame were separate images.",
-      "source": "https://knowyourmeme.com/memes/woman-yelling-at-a-cat"
+      "source": "https://knowyourmeme.com/memes/woman-yelling-at-a-cat",
+      "subjects": [
+        "https://knowyourmeme.com/memes/woman-yelling-at-a-cat"
+      ]
     },
     {
       "id": "q00095",
@@ -1331,7 +1433,10 @@
       ],
       "answer": 0,
       "explanation": "The line groups preserve the original comic's character arrangement, including the lying figure in the last panel.",
-      "source": "https://knowyourmeme.com/memes/loss"
+      "source": "https://knowyourmeme.com/memes/loss",
+      "subjects": [
+        "https://knowyourmeme.com/memes/loss"
+      ]
     },
     {
       "id": "q00096",
@@ -1345,7 +1450,10 @@
       ],
       "answer": 1,
       "explanation": "Daniwell-P's song was originally written for Hatsune Miku, but the famous Nyan Cat video uses a Momone Momo cover.",
-      "source": "https://knowyourmeme.com/memes/nyan-cat"
+      "source": "https://knowyourmeme.com/memes/nyan-cat",
+      "subjects": [
+        "https://knowyourmeme.com/memes/nyan-cat"
+      ]
     },
     {
       "id": "q00097",
@@ -1359,7 +1467,10 @@
       ],
       "answer": 0,
       "explanation": "The edits hook the six-seven lyric to a description of Ball's height. The 67 is not his jersey number.",
-      "source": "https://knowyourmeme.com/memes/67-meme-six-seven"
+      "source": "https://knowyourmeme.com/memes/67-meme-six-seven",
+      "subjects": [
+        "https://knowyourmeme.com/memes/67-meme-six-seven"
+      ]
     },
     {
       "id": "q00098",
@@ -1373,7 +1484,10 @@
       ],
       "answer": 1,
       "explanation": "The mistake belongs to the character learning about Earth's wildlife. It is not a translator turning a correct identification into nonsense.",
-      "source": "https://en.wikipedia.org/wiki/Is_this_a_pigeon"
+      "source": "https://en.wikipedia.org/wiki/Is_this_a_pigeon",
+      "subjects": [
+        "https://en.wikipedia.org/wiki/Is_this_a_pigeon"
+      ]
     },
     {
       "id": "q00099",
@@ -1387,7 +1501,10 @@
       ],
       "answer": 0,
       "explanation": "The original series uses Source Filmmaker. Surreal toilet lore and AI-generated footage are not the same thing.",
-      "source": "https://knowyourmeme.com/memes/subcultures/skibidi-toilet"
+      "source": "https://knowyourmeme.com/memes/subcultures/skibidi-toilet",
+      "subjects": [
+        "https://knowyourmeme.com/memes/subcultures/skibidi-toilet"
+      ]
     },
     {
       "id": "q00100",
@@ -1401,7 +1518,10 @@
       ],
       "answer": 1,
       "explanation": "The early account describes a link disguised as a GTA IV preview. The surprise destination was Rick Astley.",
-      "source": "https://knowyourmeme.com/memes/rickroll"
+      "source": "https://knowyourmeme.com/memes/rickroll",
+      "subjects": [
+        "https://knowyourmeme.com/memes/rickroll"
+      ]
     },
     {
       "id": "q00101",
@@ -4441,6 +4561,414 @@
       "subtopic": "communication",
       "subjects": [
         "information-source"
+      ]
+    },
+    {
+      "id": "q00261",
+      "topic": "memes",
+      "family": "recognition",
+      "difficulty": "easy",
+      "prompt": "Black-and-white photo. Both hands up. ABSOLUTE CINEMA. Which director is in the original image?",
+      "options": [
+        "Martin Scorsese",
+        "Christopher Nolan"
+      ],
+      "answer": 0,
+      "explanation": "That is Martin Scorsese. The reaction photo now reviews everything from films to last-minute goals.",
+      "source": "https://knowyourmeme.com/memes/absolute-cinema",
+      "subjects": [
+        "https://knowyourmeme.com/memes/absolute-cinema"
+      ]
+    },
+    {
+      "id": "q00262",
+      "topic": "memes",
+      "family": "recognition",
+      "difficulty": "easy",
+      "prompt": "Pop Cat opens its mouth. Which shape turns this ordinary cat into a sound effect?",
+      "options": [
+        "A square",
+        "A giant O"
+      ],
+      "answer": 1,
+      "explanation": "The open-mouth image gives the cat an enormous O-shaped mouth. Two pictures do most of the work.",
+      "source": "https://knowyourmeme.com/memes/pop-cat",
+      "subjects": [
+        "https://knowyourmeme.com/memes/pop-cat"
+      ]
+    },
+    {
+      "id": "q00263",
+      "topic": "memes",
+      "family": "recognition",
+      "difficulty": "easy",
+      "prompt": "Maxwell the Cat has entered the timeline. In the familiar music edits, what does the 3D cat do?",
+      "options": [
+        "Spin around",
+        "Play a keyboard"
+      ],
+      "answer": 0,
+      "explanation": "The black-and-white cat spins to music. Keyboard Cat is a different internet employee.",
+      "source": "https://knowyourmeme.com/memes/maxwell-the-cat-spinning-cat",
+      "subjects": [
+        "https://knowyourmeme.com/memes/maxwell-the-cat-spinning-cat"
+      ]
+    },
+    {
+      "id": "q00264",
+      "topic": "memes",
+      "family": "completion",
+      "difficulty": "easy",
+      "prompt": "Corporate needs you to find the difference between these two pictures. Pam reports back:",
+      "options": [
+        "One is upside down",
+        "They're the same picture"
+      ],
+      "answer": 1,
+      "explanation": "Pam gives Creed identical pictures in The Office. The internet uses the scene to say two supposedly different things are effectively the same.",
+      "source": "https://knowyourmeme.com/memes/theyre-the-same-picture",
+      "subjects": [
+        "https://knowyourmeme.com/memes/theyre-the-same-picture"
+      ]
+    },
+    {
+      "id": "q00265",
+      "topic": "memes",
+      "family": "completion",
+      "difficulty": "easy",
+      "prompt": "An astronaut makes a shocking discovery. The astronaut behind him replies...",
+      "options": [
+        "Always has been",
+        "Sir, this is a Wendy’s"
+      ],
+      "answer": 0,
+      "explanation": "The second astronaut already knows. The format turns a discovery into a very suspicious secret.",
+      "source": "https://knowyourmeme.com/memes/wait-its-all-ohio-always-has-been",
+      "subjects": [
+        "https://knowyourmeme.com/memes/wait-its-all-ohio-always-has-been"
+      ]
+    },
+    {
+      "id": "q00266",
+      "topic": "memes",
+      "family": "recognition",
+      "difficulty": "easy",
+      "prompt": "Brr Brr Patapim stomps out of the forest. Which combination are you looking at?",
+      "options": [
+        "A crocodile and a plane",
+        "A monkey and a tree"
+      ],
+      "answer": 1,
+      "explanation": "Patapim mixes a monkey-like face with a forest body and huge feet. The crocodile-plane is Bombardiro Crocodilo.",
+      "source": "https://knowyourmeme.com/memes/brr-brr-patapim",
+      "subjects": [
+        "https://knowyourmeme.com/memes/brr-brr-patapim"
+      ]
+    },
+    {
+      "id": "q00267",
+      "topic": "memes",
+      "family": "scenario",
+      "difficulty": "easy",
+      "prompt": "The aura-farming boat kid looks impossibly relaxed. What is he doing while the team rows?",
+      "options": [
+        "Dancing at the front of the boat",
+        "Rowing from the back"
+      ],
+      "answer": 0,
+      "explanation": "The clips show a child posing and dancing on the bow while the crew rows. His stage is moving.",
+      "source": "https://knowyourmeme.com/memes/indonesian-boat-racing-kid",
+      "subjects": [
+        "https://knowyourmeme.com/memes/indonesian-boat-racing-kid"
+      ]
+    },
+    {
+      "id": "q00268",
+      "topic": "memes",
+      "family": "scenario",
+      "difficulty": "easy",
+      "prompt": "A guy taps his temple. The caption presents a terrible decision as a genius loophole. Which format is this?",
+      "options": [
+        "Success Kid",
+        "Roll Safe"
+      ],
+      "answer": 1,
+      "explanation": "Roll Safe pairs the knowing grin and temple tap with deliberately flawed reasoning. Looking clever is doing a lot of work.",
+      "source": "https://knowyourmeme.com/memes/roll-safe",
+      "subjects": [
+        "https://knowyourmeme.com/memes/roll-safe"
+      ]
+    },
+    {
+      "id": "q00269",
+      "topic": "memes",
+      "family": "scenario",
+      "difficulty": "easy",
+      "prompt": "You guessed one answer and it was right. Tiny victory, clenched baby fist. Which meme fits?",
+      "options": [
+        "Success Kid",
+        "Bad Luck Brian"
+      ],
+      "answer": 0,
+      "explanation": "Success Kid became a go-to image for things going better than expected. Even extremely small wins qualify.",
+      "source": "https://knowyourmeme.com/memes/success-kid-i-hate-sandcastles",
+      "subjects": [
+        "https://knowyourmeme.com/memes/success-kid-i-hate-sandcastles"
+      ]
+    },
+    {
+      "id": "q00270",
+      "topic": "memes",
+      "family": "scenario",
+      "difficulty": "easy",
+      "prompt": "You win a free meal, then drop it on the way out. Which old-school meme specializes in this kind of luck?",
+      "options": [
+        "Success Kid",
+        "Bad Luck Brian"
+      ],
+      "answer": 1,
+      "explanation": "Bad Luck Brian captions turn ordinary situations into humiliating or unfortunate outcomes. A win rarely stays a win.",
+      "source": "https://knowyourmeme.com/memes/bad-luck-brian",
+      "subjects": [
+        "https://knowyourmeme.com/memes/bad-luck-brian"
+      ]
+    },
+    {
+      "id": "q00271",
+      "topic": "memes",
+      "family": "classification",
+      "difficulty": "medium",
+      "prompt": "Was the original ABSOLUTE CINEMA image a frame from a Scorsese movie?",
+      "options": [
+        "No, it was a photograph accompanying an interview",
+        "Yes, he was acting in one of his films"
+      ],
+      "answer": 0,
+      "explanation": "The photo accompanied a New York Times interview with Scorsese. The caption was added by meme makers.",
+      "source": "https://knowyourmeme.com/memes/absolute-cinema",
+      "subjects": [
+        "https://knowyourmeme.com/memes/absolute-cinema"
+      ]
+    },
+    {
+      "id": "q00272",
+      "topic": "memes",
+      "family": "mechanism",
+      "difficulty": "medium",
+      "prompt": "Your friend insists Pop Cat really opens its mouth that wide. How was the familiar open-mouth image made?",
+      "options": [
+        "It is an unedited frame of the cat yawning",
+        "The mouth was digitally edited"
+      ],
+      "answer": 1,
+      "explanation": "The meme alternates a photo with an edited open-mouth version. The real cat is named Oatmeal.",
+      "source": "https://knowyourmeme.com/memes/pop-cat",
+      "subjects": [
+        "https://knowyourmeme.com/memes/pop-cat"
+      ]
+    },
+    {
+      "id": "q00273",
+      "topic": "memes",
+      "family": "origin",
+      "difficulty": "medium",
+      "prompt": "What surprise was announced in the original Side Eyeing Chloe video?",
+      "options": [
+        "A trip to Disneyland",
+        "A surprise visit to the dentist"
+      ],
+      "answer": 0,
+      "explanation": "The family announced Disneyland. Chloe’s older sister cried with joy; Chloe supplied the reaction face.",
+      "source": "https://knowyourmeme.com/memes/side-eyeing-chloe",
+      "subjects": [
+        "https://knowyourmeme.com/memes/side-eyeing-chloe"
+      ]
+    },
+    {
+      "id": "q00274",
+      "topic": "memes",
+      "family": "recognition",
+      "difficulty": "medium",
+      "prompt": "Before Success Kid became the face of winning, where was that photo taken?",
+      "options": [
+        "At a sports stadium",
+        "At a beach"
+      ],
+      "answer": 1,
+      "explanation": "Photographer Laney Griner took the picture of her young son Sammy at the beach. The victory captions came later.",
+      "source": "https://knowyourmeme.com/memes/success-kid-i-hate-sandcastles",
+      "subjects": [
+        "https://knowyourmeme.com/memes/success-kid-i-hate-sandcastles"
+      ]
+    },
+    {
+      "id": "q00275",
+      "topic": "memes",
+      "family": "classification",
+      "difficulty": "medium",
+      "prompt": "The Bad Luck Brian portrait looks like a painfully accurate costume. What was the original picture?",
+      "options": [
+        "A real school yearbook photo",
+        "A still from a teen comedy"
+      ],
+      "answer": 0,
+      "explanation": "It was a yearbook photograph of Kyle Craven. A friend turned the picture into the meme.",
+      "source": "https://knowyourmeme.com/memes/bad-luck-brian",
+      "subjects": [
+        "https://knowyourmeme.com/memes/bad-luck-brian"
+      ]
+    },
+    {
+      "id": "q00276",
+      "topic": "memes",
+      "family": "origin",
+      "difficulty": "medium",
+      "prompt": "The temple-tapping Roll Safe clip looks like street wisdom. What was it filmed for?",
+      "options": [
+        "A motivational TED talk",
+        "Hood Documentary, a comedy series"
+      ],
+      "answer": 1,
+      "explanation": "Actor Kayode Ewumi was playing Reece Simpson in Hood Documentary. The confident character became a template for bad logic.",
+      "source": "https://knowyourmeme.com/memes/roll-safe",
+      "subjects": [
+        "https://knowyourmeme.com/memes/roll-safe"
+      ]
+    },
+    {
+      "id": "q00277",
+      "topic": "memes",
+      "family": "recognition",
+      "difficulty": "hard",
+      "prompt": "Roll Safe is a character. Which name belongs to the character, rather than the actor?",
+      "options": [
+        "Reece Simpson",
+        "Kayode Ewumi"
+      ],
+      "answer": 0,
+      "explanation": "Kayode Ewumi plays Reece Simpson, also called Roll Safe. Actor and character are two different names.",
+      "source": "https://knowyourmeme.com/memes/roll-safe",
+      "subjects": [
+        "https://knowyourmeme.com/memes/roll-safe"
+      ]
+    },
+    {
+      "id": "q00278",
+      "topic": "memes",
+      "family": "origin",
+      "difficulty": "hard",
+      "prompt": "Before Maxwell spun across everyone’s feed, the 3D cat model was added to which game’s mod scene?",
+      "options": [
+        "Minecraft",
+        "Garry’s Mod"
+      ],
+      "answer": 1,
+      "explanation": "The model was added to Steam Workshop for Garry’s Mod and other Source games. The spinning edits followed.",
+      "source": "https://knowyourmeme.com/memes/maxwell-the-cat-spinning-cat",
+      "subjects": [
+        "https://knowyourmeme.com/memes/maxwell-the-cat-spinning-cat"
+      ]
+    },
+    {
+      "id": "q00279",
+      "topic": "memes",
+      "family": "recognition",
+      "difficulty": "hard",
+      "prompt": "Maxwell is the meme name. What is the real black-and-white cat’s name?",
+      "options": [
+        "Jess",
+        "Uni"
+      ],
+      "answer": 0,
+      "explanation": "The cat behind Maxwell is Jess. Uni is another black-and-white cat who has been confused with her.",
+      "source": "https://knowyourmeme.com/memes/maxwell-the-cat-spinning-cat",
+      "subjects": [
+        "https://knowyourmeme.com/memes/maxwell-the-cat-spinning-cat"
+      ]
+    },
+    {
+      "id": "q00280",
+      "topic": "memes",
+      "family": "mechanism",
+      "difficulty": "hard",
+      "prompt": "In Brr Brr Patapim’s original narrated story, who is Slim, the unwanted hat guest?",
+      "options": [
+        "A tiny crocodile",
+        "A blue frog"
+      ],
+      "answer": 1,
+      "explanation": "Slim is the blue frog in the hat. Yes, the monkey-tree creature comes with a hat problem and supporting cast.",
+      "source": "https://knowyourmeme.com/memes/brr-brr-patapim",
+      "subjects": [
+        "https://knowyourmeme.com/memes/brr-brr-patapim"
+      ]
+    },
+    {
+      "id": "q00281",
+      "topic": "memes",
+      "family": "completion",
+      "difficulty": "hard",
+      "prompt": "Patapim needs help getting Slim out of his hat. The wizard he visits is called...",
+      "options": [
+        "Tiramisu",
+        "Cappuccino"
+      ],
+      "answer": 0,
+      "explanation": "The narration sends Patapim to a wizard named Tiramisu, who recommends a balloon. Dessert names are doing plot work.",
+      "source": "https://knowyourmeme.com/memes/brr-brr-patapim",
+      "subjects": [
+        "https://knowyourmeme.com/memes/brr-brr-patapim"
+      ]
+    },
+    {
+      "id": "q00282",
+      "topic": "memes",
+      "family": "classification",
+      "difficulty": "hard",
+      "prompt": "The aura-farming boat clips come from a real Indonesian sporting tradition. Which one?",
+      "options": [
+        "Sepak takraw",
+        "Pacu Jalur"
+      ],
+      "answer": 1,
+      "explanation": "Pacu Jalur is the boat race. Sepak takraw is a different sport; the viral dancing did not happen at a kick-volleyball match.",
+      "source": "https://knowyourmeme.com/memes/indonesian-boat-racing-kid",
+      "subjects": [
+        "https://knowyourmeme.com/memes/indonesian-boat-racing-kid"
+      ]
+    },
+    {
+      "id": "q00283",
+      "topic": "memes",
+      "family": "mechanism",
+      "difficulty": "hard",
+      "prompt": "Chloe gives the camera that look while her older sister cries. Why is her sister crying in the original video?",
+      "options": [
+        "She is happy about the surprise trip",
+        "She is scared of the car ride"
+      ],
+      "answer": 0,
+      "explanation": "Lily cries with joy after hearing about Disneyland. The doubtful reaction belongs to Chloe, not her sister.",
+      "source": "https://knowyourmeme.com/memes/side-eyeing-chloe",
+      "subjects": [
+        "https://knowyourmeme.com/memes/side-eyeing-chloe"
+      ]
+    },
+    {
+      "id": "q00284",
+      "topic": "memes",
+      "family": "recognition",
+      "difficulty": "hard",
+      "prompt": "In the original Office scene, who is Pam fooling with the identical pictures?",
+      "options": [
+        "Dwight",
+        "Creed"
+      ],
+      "answer": 1,
+      "explanation": "Pam gives the task to acting manager Creed. The meme usually cuts out the person being pranked.",
+      "source": "https://knowyourmeme.com/memes/theyre-the-same-picture",
+      "subjects": [
+        "https://knowyourmeme.com/memes/theyre-the-same-picture"
       ]
     }
   ]

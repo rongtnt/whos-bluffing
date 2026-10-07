@@ -282,6 +282,28 @@ test('challenge: compare rescored side by side; 404 for a token of another round
   const friend = await playRound(db, 'f', q.round_id, ids, all(1), { challenge: token });
   const after = await compare(db, DATA, q.round_id, anon('f'), token, NOW);
   assert.deepEqual(after.body.me, { nickname: null, score: friend.body.score, accuracy: 100, mean_conf: 80, overconfidence: -20, type: 'Hedger' });
+  assert.deepEqual(after.body.record, { played: 1, wins: 1, losses: 0, ties: 0 });
+  const friendToken = friend.body.challenge_url.split('/').at(-1);
+  assert.equal(after.body.my_token, friendToken);
+  const owner = await compare(db, DATA, q.round_id, anon('h'), token, NOW);
+  assert.equal(owner.body.own, true);
+  assert.deepEqual(owner.body.replies, [{ public_token: friendToken, nickname: null }]);
+  assert.equal(before.body.replies, undefined, 'visitors cannot list another player’s friends');
+  assert.equal(after.body.replies, undefined);
+  assert.ok(!JSON.stringify(owner.body).includes(anon('f')), 'no anonymous IDs exposed');
+  const back = await compare(db, DATA, q.round_id, anon('h'), friendToken, NOW);
+  assert.deepEqual(back.body.record, { played: 1, wins: 0, losses: 1, ties: 0 });
+  const next = (await getRound(db, DATA, { mode: 'quick' }, NOW, seeded(9))).body;
+  const nextIds = next.items.map((i) => i.id);
+  const friendNext = await playRound(db, 'f', next.round_id, nextIds, all(1));
+  const nextToken = friendNext.body.challenge_url.split('/').at(-1);
+  await playRound(db, 'h', next.round_id, nextIds, all(1), { challenge: nextToken });
+  await complete(db, DATA, { round_id: next.round_id, anon_id: anon('h'), surface: 'web', challenge: nextToken }, NOW, ORIGIN);
+  assert.deepEqual((await compare(db, DATA, next.round_id, anon('h'), nextToken, NOW)).body.record, { played: 2, wins: 0, losses: 1, ties: 1 });
+  for (const challenge of [token, 'XXXXXXXXXX', nextToken]) {
+    const who = challenge === nextToken ? 'f' : 'h';
+    assert.equal((await complete(db, DATA, { round_id: next.round_id, anon_id: anon(who), surface: 'web', challenge }, NOW, ORIGIN)).status, 400, 'wrong-round, unknown and self challenges rejected');
+  }
   assert.equal((await db.prepare('SELECT challenge_of FROM round_plays WHERE anon_id = ?').bind(anon('f')).first()).challenge_of, token);
   assert.equal((await compare(db, DATA, `rk-${DAY}`, anon('f'), token, NOW)).status, 404);
   assert.equal((await compare(db, DATA, q.round_id, anon('f'), 'short', NOW)).status, 400);
