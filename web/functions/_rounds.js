@@ -323,8 +323,12 @@ async function resolveRound(db, data, roundId, now) {
     return dare && dare.status !== 'removed' ? { kind: 'dare', date: dare.issued, ids: dare.items, dare } : { error: err(404, 'unknown round') };
   }
   if (r.kind === 'quick') {
-    const row = await db.prepare('SELECT mode, date, items FROM rounds WHERE round_id = ?').bind(roundId).first();
-    return row ? { kind: 'quick', date: row.date, ids: JSON.parse(row.items) } : { error: err(404, 'unknown round') };
+    const row = await db.prepare('SELECT mode, date, items, pack, difficulty FROM rounds WHERE round_id = ?').bind(roundId).first();
+    if (!row) return { error: err(404, 'unknown round') };
+    const ids = JSON.parse(row.items);
+    // Old Memes links predate the pack column; Memes questions never appear in All.
+    const pack = row.pack ?? (ids.length && ids.every((id) => data.pairs.get(id)?.topic === 'memes') ? 'memes' : 'all');
+    return { kind: 'quick', date: row.date, ids, pack, difficulty: row.difficulty ?? 'normal' };
   }
   const day = r.date <= todayUTC(now) ? data.rounds[r.date] : null;
   if (!day) return { error: err(404, 'unknown round') };
@@ -500,6 +504,7 @@ export async function getRound(db, data, params, now, rand = Math.random) {
     const ids = await liveIds(db, data, round.ids);
     const d = round.dare; // a dare also names its pack, difficulty and person
     return ok({ round_id: params.round_id, mode: round.kind, date: round.date,
+      ...(round.kind === 'quick' && { pack: round.pack, difficulty: round.difficulty }),
       ...(d && { pack: d.pack, difficulty: d.difficulty, dare: { slug: d.slug, name: d.name, address: d.address } }), items: ids.map((id) => pairView(data, id)) });
   }
   if (params.mode === 'ranked') {
@@ -528,8 +533,8 @@ export async function getRound(db, data, params, now, rand = Math.random) {
     : orderQuick(data, LEVELS.flatMap((level) => candidates.filter((c) => c.level === level && live.has(c.id)).slice(0, mix[level]).map((c) => c.id)), rand);
   if (!ids || ids.length !== 10) return err(503, 'Not enough live questions for this round. Try another pack or difficulty.');
   const roundId = randomString(12, CODE_ALPHABET);
-  await db.prepare('INSERT INTO rounds (round_id, mode, date, items, created_at, difficulty) VALUES (?, ?, ?, ?, ?, ?)')
-    .bind(roundId, 'quick', today, JSON.stringify(ids), now.toISOString(), difficulty).run();
+  await db.prepare('INSERT INTO rounds (round_id, mode, date, items, created_at, difficulty, pack) VALUES (?, ?, ?, ?, ?, ?, ?)')
+    .bind(roundId, 'quick', today, JSON.stringify(ids), now.toISOString(), difficulty, pack).run();
   return ok({ round_id: roundId, mode: 'quick', difficulty, pack, date: today, items: ids.map((id) => pairView(data, id)) });
 }
 

@@ -10,6 +10,13 @@ const PACK_KEY = 'whosbluffing_pack';
 const DIFFICULTY_KEY = 'whosbluffing_difficulty';
 export const ORDER = ['easy', 'normal', 'brutal'];
 
+// A played challenge should become the next round's choice, just like a picker tap.
+export function rememberChoice({ pack, difficulty }) {
+  if (!Object.hasOwn(PACKS, pack) || !ORDER.includes(difficulty)) return;
+  store.set(PACK_KEY, pack);
+  store.set(DIFFICULTY_KEY, difficulty);
+}
+
 // The difficulty in `levels` closest to `from` (itself when it is there; the easier one on a tie).
 export function nearestDifficulty(from, levels) {
   if (!levels?.length || levels.includes(from)) return from;
@@ -60,8 +67,7 @@ export function initPicker(doc = document, { onPick } = {}) {
     difficulty: q.get('difficulty') ?? store.get(DIFFICULTY_KEY, DEFAULT_DIFFICULTY),
   }, offer);
   // A linked pack is also the player's choice for Play again.
-  store.set(PACK_KEY, state.pack);
-  store.set(DIFFICULTY_KEY, state.difficulty);
+  rememberChoice(state);
   const paint = () => {
     for (const c of chips) {
       const plays = offer[c.dataset.pack].includes(state.difficulty);
@@ -77,8 +83,7 @@ export function initPicker(doc = document, { onPick } = {}) {
   const apply = (change) => {
     const next = choose(state, change, offer);
     state = { pack: next.pack, difficulty: next.difficulty };
-    store.set(PACK_KEY, state.pack);
-    store.set(DIFFICULTY_KEY, state.difficulty);
+    rememberChoice(state);
     paint();
     if (status) status.textContent = next.note;
     const url = new URL(location.href); // other parameters (a class code) stay

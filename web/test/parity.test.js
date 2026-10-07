@@ -8,7 +8,7 @@ import { openD1 } from './d1.js';
 import { loadRounds, getRound, packAvailability, servablePairs, PACKS, DIFFICULTIES, MIN_PACK_PAIRS } from '../functions/_rounds.js';
 import { questionCount, packChips, promptLines, promptList, commandCards, inject, pngSize } from '../scripts/sync-pages.js';
 import { onRequest as gate } from '../functions/_middleware.js';
-import { nearestDifficulty, settle, choose, shareWith, quickLabel, initPicker } from '../public/picker.js';
+import { nearestDifficulty, settle, choose, shareWith, quickLabel, initPicker, rememberChoice } from '../public/picker.js';
 import { store } from '../public/ui.js';
 import { apiVerdict } from '../public/status.js';
 import { COMMANDS } from '../../discord/src/commands.js';
@@ -23,7 +23,7 @@ const DATA = loadRounds(json('functions/_pool.json'), json('functions/_pairs.jso
 const NOW = new Date(`${Object.keys(DATA.rounds).sort()[3]}T12:00:00Z`); // a day with a ranked round
 const seeded = (seed) => { let s = seed; return () => ((s = (s * 1103515245 + 12345) % 2147483648) / 2147483648); };
 
-test('a linked pack and difficulty survive Play again without another chip click', (t) => {
+test('linked and played challenge choices survive Play again without another chip click', (t) => {
   const saved = new Map();
   t.mock.method(store, 'get', (key, fallback) => saved.get(key) ?? fallback);
   t.mock.method(store, 'set', (key, value) => saved.set(key, value));
@@ -34,6 +34,12 @@ test('a linked pack and difficulty survive Play again without another chip click
     assert.deepEqual(initPicker(doc).current(), { pack: 'memes', difficulty: 'brutal' });
     globalThis.location.search = '';
     assert.deepEqual(initPicker(doc).current(), { pack: 'memes', difficulty: 'brutal' });
+    // A challenge starts directly, without a picker or pack query parameter.
+    rememberChoice({ pack: 'history', difficulty: 'easy' });
+    assert.deepEqual(initPicker(doc).current(), { pack: 'history', difficulty: 'easy' });
+    rememberChoice({ pack: 'not-a-pack', difficulty: 'normal' });
+    rememberChoice({ pack: 'memes', difficulty: 'not-a-difficulty' });
+    assert.deepEqual(initPicker(doc).current(), { pack: 'history', difficulty: 'easy' });
   } finally {
     if (previous === undefined) delete globalThis.location;
     else globalThis.location = previous;

@@ -2,6 +2,7 @@
 
 Current product contract (2026-10-06): use `mode=quick`; `mode=ranked` returns 410. Old `rk-<date>` challenge links remain readable. History and Languages each have 80 authored questions with mixed formats, subtopic caps, and subject reuse avoidance; History also balances eras and regions. These packs do not fall back to generated comparisons.
 
+- Saved quick rounds (`GET /api/round?round_id=...`) return their original `pack` and `difficulty`, so a friend's next round keeps those choices. Migration `0010_round_pack.sql` adds the pack without changing saved questions or answers. Older Memes rounds recover their pack from the question IDs; other older rounds with no recorded pack use All, and missing legacy difficulty uses Normal.
 - `GET /api/players` is the only public product count: `{total_players}` (cached 60 seconds, CORS `*`).
 - `GET /api/kpi` requires `x-kpi-key: <KPI_KEY>` and returns `{as_of, total_players, dau, mau, yau}`. DAU uses one UTC date; MAU and YAU use rolling 30/365 UTC dates including `as_of`. Counts deduplicate anonymous IDs across completed rounds, completed assessments, and daily chat answers. Page views and unfinished rounds do not count. One person with several IDs may count several times.
 - `POST /api/kpi/run` retains private historical research snapshots and returns the same four product counts for its `as_of` date.

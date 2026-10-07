@@ -119,7 +119,11 @@ test('all offered packs: varied comparison wording, ten distinct questions, diff
       assert.equal(new Set(r.body.items.map((q) => q.id)).size, 10);
       for (const [level, n] of Object.entries(DIFFICULTIES[difficulty].mix)) assert.equal(selected.filter((p) => p.level === level).length, n);
       assert.ok(new Set(r.body.items.map((q) => q.prompt)).size >= 2, `${pack}: varied wording`);
-      assert.deepEqual((await getRound(db, data, { round_id: r.body.round_id }, now)).body.items, r.body.items);
+      assert.deepEqual((await getRound(db, data, { round_id: r.body.round_id }, now)).body, r.body);
+      if (pack === 'memes') {
+        await db.prepare('UPDATE rounds SET pack = NULL WHERE round_id = ?').bind(r.body.round_id).run();
+        assert.deepEqual((await getRound(db, data, { round_id: r.body.round_id }, now)).body, r.body);
+      }
     }
   }
   // Every generated template has alternatives; wording never changes the two choices or leaks values.

@@ -9,7 +9,7 @@
 import { html, api, store, anonId, calibrationChart, chartLabels, signed } from './ui.js';
 import { bins } from './metrics.js';
 import { renderRoundShare } from './share.js';
-import { initPicker, quickLabel, shareWith } from './picker.js';
+import { initPicker, rememberChoice, quickLabel, shareWith } from './picker.js';
 import { pickReaction, bestLine } from './reactions.js';
 import { createSound } from './sound.js';
 import { countTo, raceTo, confetti, dealCards, reducedMotion } from './motion.js';
@@ -249,6 +249,7 @@ async function begin(ctx, round, extra = {}) {
   if (!round.items.length) return retryScreen(ctx, ctx.t('rounds.failed'), () => location.reload());
   const st = { round_id: round.round_id, mode: round.mode, date: round.date, items: round.items, answers: {}, total: 0,
     ...(round.mode === 'quick' && { pack: round.pack ?? 'all', difficulty: round.difficulty ?? 'normal' }), ...extra };
+  if (st.mode === 'quick') rememberChoice(st);
   saveRound(st);
   sound.unlock();
   keys = null;
