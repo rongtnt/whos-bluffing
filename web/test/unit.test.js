@@ -7,9 +7,9 @@ import { validateBank } from '../scripts/sync-items.js';
 import { buildSession, pickBalanced } from '../public/test.js';
 import { validateSubmit, DEMOGRAPHICS } from '../functions/_util.js';
 import { wrap } from '../public/share.js';
-import { html } from '../public/ui.js';
+import { html, store } from '../public/ui.js';
 import { fmtValue, fmtNumber, noteKey, personalStats, hitsChart } from '../public/daily.js';
-import { addSeen, scoreChart, fmtPoints, typeKey, fmtValue as roundValue } from '../public/rounds.js';
+import { addSeen, scoreChart, fmtPoints, typeKey, fmtValue as roundValue, challengeFriend } from '../public/rounds.js';
 import { TYPES } from '../functions/_rounds.js';
 import { classAggregate, toCsv } from '../functions/api/class/d/[secret].js';
 import { overconfBin, intHitBin, histPercentile, percentiles, aggregateWrites, MIN_PERCENTILE_N } from '../functions/_aggregates.js';
@@ -19,6 +19,38 @@ const bank = read('../../items/items.json');
 const items = bank.items;
 const ITEMS = new Map(items.map((i) => [i.id, i]));
 const en = read('../public/i18n/en.json');
+
+test('friend challenges record a share only after copying succeeds', async (t) => {
+  const previous = Object.getOwnPropertyDescriptor(globalThis, 'navigator');
+  const clipboard = {};
+  Object.defineProperty(globalThis, 'navigator', { configurable: true, value: { clipboard } });
+  t.after(() => previous ? Object.defineProperty(globalThis, 'navigator', previous) : delete globalThis.navigator);
+  t.mock.method(store, 'get', () => ''); // nickname already skipped
+  const requests = [];
+  t.mock.method(globalThis, 'fetch', async (url, init) => {
+    requests.push({ url, ...init, body: JSON.parse(init.body) });
+    return Response.json({ ok: true });
+  });
+  const url = 'https://whosbluffing.com/c/round/token';
+  for (const outcome of ['success', 'rejected', 'unavailable']) {
+    requests.length = 0;
+    clipboard.writeText = (value) => {
+      assert.equal(value, url);
+      if (outcome === 'unavailable') throw new Error('Clipboard unavailable');
+      return outcome === 'success' ? Promise.resolve() : Promise.reject(new Error('Copy denied'));
+    };
+    const panel = { hidden: true };
+    challengeFriend({ t: (key) => key }, panel, { challenge_url: url }, { round_id: 'round' });
+    await new Promise((resolve) => setImmediate(resolve));
+    assert.equal(panel.hidden, false);
+    assert.equal(requests.length, outcome === 'success' ? 1 : 0);
+    if (requests.length) {
+      assert.equal(requests[0].url, '/api/event');
+      assert.equal(requests[0].keepalive, true);
+      assert.deepEqual(requests[0].body, { type: 'share', round_id: 'round' });
+    }
+  }
+});
 
 // Deterministic PRNG so failures reproduce.
 function seeded(seed) {

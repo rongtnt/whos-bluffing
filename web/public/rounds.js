@@ -386,10 +386,11 @@ function playAgain(ctx) {
 }
 
 // Copies the challenge link; the first time, asks once for an optional nickname (kept in this browser).
-function challengeFriend(ctx, el, res, st) {
+export function challengeFriend(ctx, el, res, st) {
   const { t } = ctx;
   const copy = () => navigator.clipboard.writeText(res.challenge_url);
   const done = (ok) => {
+    if (ok) event('share', st.round_id);
     el.hidden = false;
     el.innerHTML = html`<p class="msg ${ok ? 'ok' : ''}" role="status">${ok ? t('rounds.copied') : t('rounds.copy_failed')}</p><p class="url small">${res.challenge_url}</p>`;
   };
