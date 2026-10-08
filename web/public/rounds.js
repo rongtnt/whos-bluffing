@@ -517,8 +517,8 @@ function renderRecentGames(ctx) {
     const date = new Date(completedAt).toLocaleDateString(undefined, { month: 'short', day: 'numeric', year: 'numeric' });
     return html`<li><p><strong>${label}</strong><br><time datetime="${completedAt}">${date}</time> · ${fmtTotal(result.score)} ${t('rounds.pts')} · ${typeName(result.type)}</p>
 <div class="row">
-  <a href="/results?round=${round.round_id}" aria-label="${t('rounds.recent_view')} — ${label} — ${date}">${t('rounds.recent_view')}</a>
-  ${!result.dare ? html`<a href="${result.challenge_url}" aria-label="${t('rounds.recent_friends')} — ${label} — ${date}">${t('rounds.recent_friends')}</a>` : ''}
+  <a class="button" href="/results?round=${round.round_id}" aria-label="${t('rounds.recent_view')} — ${label} — ${date}">${t('rounds.recent_view')}</a>
+  ${!result.dare ? html`<a class="button" href="${result.challenge_url}" aria-label="${t('rounds.recent_friends')} — ${label} — ${date}">${t('rounds.recent_friends')}</a>` : ''}
   <button type="button" data-recent-again="${round.round_id}" aria-label="${t('rounds.play_again')} — ${label} — ${date}">${t('rounds.play_again')}</button>
 </div></li>`;
   })}</ol></details>`);

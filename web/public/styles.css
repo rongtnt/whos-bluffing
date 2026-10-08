@@ -194,6 +194,7 @@ label input, label select { font-weight: 400; }
 .row { display: flex; flex-wrap: wrap; gap: 8px; margin: 12px 0; }
 .row > * { flex: 1 1 140px; min-width: 0; }
 .row > .icon-btn { flex: none; align-self: center; }
+#recent-games .button { color: var(--text); }
 
 /* Cards, tiles, badges */
 .card { margin: 20px 0; padding: 20px; background: var(--surface); border: 1px solid var(--border); border-radius: var(--radius); box-shadow: var(--shadow); }
