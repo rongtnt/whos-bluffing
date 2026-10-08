@@ -304,7 +304,7 @@ test('challenge: compare rescored side by side; 404 for a token of another round
     const who = challenge === nextToken ? 'f' : 'h';
     assert.equal((await complete(db, DATA, { round_id: next.round_id, anon_id: anon(who), surface: 'web', challenge }, NOW, ORIGIN)).status, 400, 'wrong-round, unknown and self challenges rejected');
   }
-  assert.equal((await db.prepare('SELECT challenge_of FROM round_plays WHERE anon_id = ?').bind(anon('f')).first()).challenge_of, token);
+  assert.equal((await db.prepare('SELECT challenge_of FROM round_plays WHERE anon_id = ? AND round_id = ?').bind(anon('f'), q.round_id).first()).challenge_of, token);
   assert.equal((await compare(db, DATA, `rk-${DAY}`, anon('f'), token, NOW)).status, 404);
   assert.equal((await compare(db, DATA, q.round_id, anon('f'), 'short', NOW)).status, 400);
 });
