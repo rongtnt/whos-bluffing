@@ -2,7 +2,7 @@ import { test } from 'node:test';
 import assert from 'node:assert/strict';
 import { readFileSync } from 'node:fs';
 import { openD1 } from './d1.js';
-import { loadRounds, getRound, answer, complete, flagPair, pairView, DIFFICULTIES } from '../functions/_rounds.js';
+import { loadRounds, getRound, answer, complete, flagPair, pairView, sampleVaried, DIFFICULTIES } from '../functions/_rounds.js';
 import { claimSide } from '../functions/_labs.js';
 import { validateCurated } from '../scripts/sync-items.js';
 import { detailCard } from '../public/round-end.js';
@@ -15,6 +15,10 @@ const data = loadRounds(pool, pairs, days, { curated: bank.items });
 const now = new Date('2026-10-05T12:00:00Z');
 const seeded = (seed) => () => ((seed = (Math.imul(seed, 1664525) + 1013904223) >>> 0) / 2 ** 32);
 const who = 'curated-player-123456789';
+const historyGeography = (qs) => {
+  assert.ok(new Set(qs.slice(0, 4).map((q) => q.region)).size >= 3, 'History opens with at least three regions');
+  assert.ok(qs.every((q, i) => !i || q.region !== qs[i - 1].region), 'History never repeats a region consecutively');
+};
 const meta = (id) => {
   const p = data.pairs.get(id), a = data.items.get(p.a_id);
   return { ...p, topic: p.topic ?? (a.category.startsWith('ai_') ? 'ai' : a.category.startsWith('country_') ? 'world' : a.category),
@@ -98,15 +102,29 @@ test('History and Languages: three consecutive rounds at every difficulty stay v
             assert.ok(new Set(qs.map((q) => q[field])).size >= 3);
             for (const q of qs) assert.ok(qs.filter((p) => p[field] === q[field]).length <= 4);
           }
+          if (pack === 'history') historyGeography(qs);
           seen.push(...qs.map((q) => q.id));
         }
       }
       const exhausted = await getRound(db, data, { mode: 'quick', pack, difficulty, seen: data.curated.join(',') }, now, seeded(7));
       assert.equal(exhausted.status, 200);
       assert.ok(exhausted.body.items.every((q) => data.pairs.get(q.id).authored.topic === pack));
+      if (pack === 'history') historyGeography(exhausted.body.items.map((q) => data.pairs.get(q.id).authored));
     }
   }
   db.sqlite.close();
+});
+
+test('History regression: seed 1724 cannot open with four New Zealand questions', () => {
+  const ids = data.curated.filter((id) => data.pairs.get(id).topic === 'history');
+  const selected = sampleVaried(data, ids, new Set(), seeded(1724), 'brutal', 'history');
+  assert.equal(selected?.length, 10);
+  historyGeography(selected.map((id) => data.pairs.get(id).authored));
+  for (const group of [['q00119', 'q00137', 'q00166'], ['q00107', 'q00149'], ['q00117', 'q00146', 'q00152'],
+    ['q00122', 'q00148'], ['q00106', 'q00169'], ['q00111', 'q00171'], ['q00112', 'q00134', 'q00173']]) {
+    const subjects = group.map((id) => data.pairs.get(id).authored.subjects);
+    assert.ok(subjects[0].some((s) => subjects.every((xs) => xs.includes(s))), `related History questions share a subject: ${group}`);
+  }
 });
 
 test('all offered packs: varied comparison wording, ten distinct questions, difficulty preserved and challenge stable', async () => {

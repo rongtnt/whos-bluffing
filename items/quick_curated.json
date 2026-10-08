@@ -1898,7 +1898,7 @@
       "source": "https://nzhistory.govt.nz/page/history-new-zealand-1769-1914",
       "subtopic": "rights",
       "subjects": [
-        "waitangi"
+        "maori-sovereignty"
       ],
       "era": "modern",
       "region": "oceania"
@@ -2258,7 +2258,7 @@
       "source": "https://nzhistory.govt.nz/page/differences-between-texts",
       "subtopic": "rights",
       "subjects": [
-        "waitangi-translation"
+        "maori-sovereignty"
       ],
       "era": "modern",
       "region": "oceania"
@@ -2438,7 +2438,7 @@
       "source": "https://www.britishmuseum.org/collection/object/W_1880-0617-1941",
       "subtopic": "archaeology",
       "subjects": [
-        "cyrus-text"
+        "cyrus-cylinder"
       ],
       "era": "ancient",
       "region": "asia"
@@ -2478,7 +2478,7 @@
       "source": "https://nmaahc.si.edu/latinx/toussaint-louverture",
       "subtopic": "rights",
       "subjects": [
-        "louverture-death"
+        "haitian-revolution"
       ],
       "era": "modern",
       "region": "americas"
@@ -2498,7 +2498,7 @@
       "source": "https://nzhistory.govt.nz/politics/womens-suffrage",
       "subtopic": "rights",
       "subjects": [
-        "kate-sheppard"
+        "nz-suffrage"
       ],
       "era": "modern",
       "region": "oceania"
@@ -2838,7 +2838,7 @@
       "source": "https://nzhistory.govt.nz/page/history-new-zealand-1769-1914",
       "subtopic": "rights",
       "subjects": [
-        "waitangi-king"
+        "maori-sovereignty"
       ],
       "era": "modern",
       "region": "oceania"
@@ -2898,7 +2898,7 @@
       "source": "https://www.nps.gov/subjects/ugrr/index.htm",
       "subtopic": "rights",
       "subjects": [
-        "ugrr-network"
+        "underground-railroad"
       ],
       "era": "modern",
       "region": "americas"
@@ -2938,7 +2938,7 @@
       "source": "https://www.unesco.org/en/silk-roads/about-silk-roads",
       "subtopic": "trade",
       "subjects": [
-        "silk-name"
+        "silk-roads"
       ],
       "era": "modern",
       "region": "asia"
@@ -2978,7 +2978,7 @@
       "source": "https://whc.unesco.org/en/list/18/",
       "subtopic": "beliefs",
       "subjects": [
-        "lalibela-number"
+        "lalibela"
       ],
       "era": "medieval",
       "region": "africa"

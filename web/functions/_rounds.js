@@ -465,9 +465,11 @@ export function sampleVaried(data, ids, seen, rand, difficulty, pack) {
         && (pack !== 'history' || ((eras[c.era] ?? 0) < 4 && (regions[c.region] ?? 0) < 4))
         && (!includeAI || picked.length !== 9 || topics.ai || c.topic === 'ai'));
       // Stop a dead branch before permuting its remaining questions. Adjacency is checked afterwards:
-      // a family blocked for the next slot can still fill a later slot.
+      // a family or region blocked for the next slot can still fill a later slot.
       if (LEVELS.some((lv) => eligible.filter((c) => c.p.level === lv).length < left[lv])) return false;
-      const options = eligible.filter((c) => c.family !== picked.at(-1)?.family);
+      const options = eligible.filter((c) => c.family !== picked.at(-1)?.family
+        && (pack !== 'history' || (c.region !== picked.at(-1)?.region
+          && (picked.length !== 3 || new Set([...picked.map((q) => q.region), c.region]).size >= 3))));
       // Stable sort preserves the initial random order within equally underrepresented topics and formats.
       options.sort((a, b) => Number(seen.has(a.id)) - Number(seen.has(b.id))
         || Number(Boolean(b.p.authored)) - Number(Boolean(a.p.authored))
