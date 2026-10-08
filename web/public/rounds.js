@@ -15,6 +15,7 @@ import { createSound } from './sound.js';
 import { countTo, raceTo, confetti, dealCards, reducedMotion } from './motion.js';
 import { resultGrid, wireGrid, fmtValue, fmtPoints, boardOf, sideBlock, wireSide, savedSide, withSideLine, dareRankLabel, dareDone } from './round-end.js';
 import { typeName } from './types.js';
+import { recentGames, recentGame, rememberGame } from './recent-games.js';
 
 export { fmtValue, fmtPoints };
 
@@ -303,10 +304,11 @@ async function finish(ctx, st) {
   // A dare is played once and stays out of the quick rounds' seen pairs; its link is its page, not a challenge token.
   if (r.data.dare) store.set(DARES_KEY, { ...store.get(DARES_KEY, {}), [st.round_id]: r.data.score });
   else store.set(SEEN_KEY, addSeen(store.get(SEEN_KEY, []), st.items.map((i) => i.id)));
+  const saveFailed = !rememberGame(st, r.data);
   clearRound();
-  // Browser history keeps this tab's result across reloads without a new database write or another storage key.
-  history.pushState({ round: st, result: r.data }, '', '/results');
-  return showEnd(ctx, st, r.data);
+  // Keep this tab's result even when browser storage is unavailable.
+  history.pushState({ round: st, result: r.data, saveFailed }, '', '/results');
+  return showEnd(ctx, st, r.data, { saveFailed });
 }
 
 // The end screen's three tiles; the numbers count up from 0 (data-to).
@@ -320,7 +322,7 @@ function counters(t, res) {
 </div>`;
 }
 
-function showEnd(ctx, st, res) {
+function showEnd(ctx, st, res, { archived = false, saveFailed = false } = {}) {
   const { app, t } = ctx;
   ctx.chrome(false);
   document.title = `${t('rounds.results_title')} | Who's Bluffing?`;
@@ -331,14 +333,16 @@ function showEnd(ctx, st, res) {
   ${homeLink(t)}
   <button class="primary" type="button" data-again>${t('rounds.play_again')}</button>
   <a href="/play">${t('rounds.change_topic')}</a>
+  ${recentGames().length ? html`<a href="/play#recent-games">${t('rounds.recent_title')}</a>` : ''}
 </nav>
+${saveFailed ? html`<p role="status">${t('rounds.recent_save_failed')}</p>` : ''}
 <h2 class="result-title">${t('rounds.score_title', { score: fmtTotal(res.score) })}</h2>
 <p class="round-kind">${roundLabel(t, st)}</p>
 ${resultGrid(st, t)}
 <section class="type-card type-${TYPES[res.type]} anim anim-flip" aria-label="${t('rounds.type_label')}">
   <p class="type-name">${typeName(res.type)}</p>
 </section>
-${boardOf(st) ? sideBlock(st.pack, t, savedSide(st.pack)) : ''}
+${!archived && boardOf(st) ? sideBlock(st.pack, t, savedSide(st.pack)) : ''}
 ${res.roast ? html`<p class="roast">${res.roast}</p>` : ''}
 ${counters(t, res)}
 <figure class="mini">${calibrationChart([{ name: t('rounds.you'), bins: calib, cls: 's0' }], chartLabels(t))}<figcaption>${t('rounds.chart_note')}</figcaption></figure>
@@ -352,7 +356,8 @@ ${counters(t, res)}
 <section id="share-panel" class="card" hidden></section>`;
   app.scrollIntoView(); // the result sits below the hero, which is back now
   wireGrid(app, st, t);
-  const side = boardOf(st) ? wireSide(st.pack, app, st.round_id, t) : null; // quick rounds of a pack with a board only
+  // Reviewing a saved result must not claim an old round for the player's current team.
+  const side = !archived && boardOf(st) ? wireSide(st.pack, app, st.round_id, t) : null;
   for (const b of app.querySelectorAll('.counters [data-to]')) {
     countTo(b, 0, Number(b.dataset.to), { ms: 700, format: (n) => `${b.dataset.prefix}${n}${b.dataset.suffix}` });
   }
@@ -497,16 +502,55 @@ export function renderRounds(ctx) {
     button.textContent = done === saved.items.length ? t('rounds.see_score') : t('rounds.continue', { done, n: saved.items.length });
     button.onclick = () => step(ctx, saved);
   } else if (saved) clearRound();
-
+  renderRecentGames(ctx);
 }
 
-// The result belongs to this browser-history entry, so another tab cannot overwrite it. Direct visits have no result.
+function renderRecentGames(ctx) {
+  const games = recentGames();
+  if (!games.length) return;
+  const { app, t } = ctx;
+  app.insertAdjacentHTML('beforeend', html`<details class="card" id="recent-games">
+<summary>${t('rounds.recent_title')} (${games.length})</summary>
+<p class="muted small">${t('rounds.recent_note')}</p>
+<ol>${games.map(({ round, result, completedAt }) => {
+    const label = result.dare ? result.dare.name : round.mode === 'quick' ? quickLabel(round.pack, round.difficulty) : roundLabel(t, round);
+    const date = new Date(completedAt).toLocaleDateString(undefined, { month: 'short', day: 'numeric', year: 'numeric' });
+    return html`<li><p><strong>${label}</strong><br><time datetime="${completedAt}">${date}</time> · ${fmtTotal(result.score)} ${t('rounds.pts')} · ${typeName(result.type)}</p>
+<div class="row">
+  <a href="/results?round=${round.round_id}" aria-label="${t('rounds.recent_view')} — ${label} — ${date}">${t('rounds.recent_view')}</a>
+  ${!result.dare ? html`<a href="${result.challenge_url}" aria-label="${t('rounds.recent_friends')} — ${label} — ${date}">${t('rounds.recent_friends')}</a>` : ''}
+  <button type="button" data-recent-again="${round.round_id}" aria-label="${t('rounds.play_again')} — ${label} — ${date}">${t('rounds.play_again')}</button>
+</div></li>`;
+  })}</ol></details>`);
+  for (const button of app.querySelectorAll('[data-recent-again]')) {
+    button.onclick = () => {
+      const saved = recentGame(button.dataset.recentAgain);
+      if (saved) playAgain(ctx, saved.round);
+      else location.assign('/play');
+    };
+  }
+  if (location.hash === '#recent-games') {
+    const list = app.querySelector('#recent-games');
+    list.open = true;
+    list.scrollIntoView();
+  }
+}
+
+// Saved links take precedence over this tab's history; restoring never completes a round or clears an unfinished one.
 export function renderRoundResults(ctx) {
-  const { round, result } = history.state ?? {};
-  if (round?.items?.length && result?.score != null) return showEnd(ctx, round, result);
+  const id = new URLSearchParams(location.search).get('round');
+  if (id !== null) {
+    const saved = recentGame(id);
+    if (saved) return showEnd(ctx, saved.round, { ...saved.result,
+      challenge_url: new URL(saved.result.challenge_url, location.origin).href }, { archived: true });
+  } else {
+    const { round, result, saveFailed } = history.state ?? {};
+    if (round?.items?.length && result?.score != null) return showEnd(ctx, round, result, { archived: true, saveFailed });
+  }
   ctx.app.innerHTML = html`${homeLink(ctx.t)}
-<h1>${ctx.t('rounds.results_title')}</h1><p>${ctx.t('rounds.no_result')}</p>
+<h1>${ctx.t('rounds.results_title')}</h1><p>${ctx.t(id === null ? 'rounds.no_result' : 'rounds.recent_missing')}</p>
 <a class="button primary" href="/play">${ctx.t('rounds.start')}</a>`;
+  renderRecentGames(ctx);
 }
 
 // `/c/<round>/<token>`: plays the challenger's round, then shows the side-by-side. A finished round shows it at once.

@@ -9,8 +9,8 @@ Every page is a static HTML file in `public/` with the same head (title, descrip
 | Path | File | What |
 |---|---|---|
 | `/` | `index.html` | Existing homepage, demonstrations and pack preview. Every Play button opens `/play`, carrying the selected topic and difficulty. No questions or results render on the homepage. |
-| `/play` | `play.html` | Topic and difficulty picker, Start Playing, a separate Continue action for an unfinished round, with no daily ranked round. The picker has a Home icon; the shuffle and quiz have no Home shortcut. |
-| `/results` | `results.html` | Score, answer review, sharing and challenge comparison, with a Home icon and Play Again. The browser history entry retains the result across refresh and Back/Forward; a direct visit has a start-round prompt. Play Again immediately starts ten fresh questions at the same topic and difficulty; Change topic opens the picker. |
+| `/play` | `play.html` | Topic and difficulty picker, Start Playing, a separate Continue action for an unfinished round, and a collapsed Recent games list after a completed round has been saved in this browser, with no daily ranked round. The picker has a Home icon; the shuffle and quiz have no Home shortcut. |
+| `/results` | `results.html` | Score, answer review, sharing and challenge comparison, with a Home icon and Play Again. The browser history entry retains the result across refresh and Back/Forward; `?round=<id>` reopens one of the last 10 completed results saved in this browser; an unavailable saved result offers the Recent games list and a start-round link. Play Again immediately starts ten fresh questions at the same topic and difficulty; Change topic opens the picker. |
 | `/c/<round>/<token>` | Pages Function `functions/c/[round_id]/[player].js` | Challenge page: the page template with per-link Open Graph tags ("Sam scored 640. Can you beat them?"), `noindex`, its own security headers; plays the same round, then shows the side-by-side. Counts one `challenge_view` per load; an unknown link gets the branded 404 |
 | `/test` | `test.html` | Full assessment (`/test?c=CODE` joins a class) |
 | `/stats` | `stats.html` + `status.js` | Public Total Players, also shown on `/status` |
@@ -155,3 +155,7 @@ Deviations from the brief and known limits: `NOTES.md`.
 Run `cd web && npm run players` using the existing authenticated Cloudflare CLI. It prints only `total_players`, `dau`, `mau`, `yau`, and the UTC `as_of` date. No password or admin key is stored in browser code. Alternatively, call `/api/kpi` with the existing `x-kpi-key` header.
 
 Total Players is all-time unique anonymous IDs with a completed round or assessment, or a daily chat answer. DAU uses today's UTC date; MAU uses the last 30 UTC dates including today; YAU uses the last 365. The same ID is deduplicated across sources; a person with multiple IDs can count more than once. Opening a page or answering only part of a round does not count. The public endpoint has a 60-second cache. Historical research definitions remain documented in PREREG and the dated changelog.
+
+## Recent games
+
+`public/recent-games.js` keeps the last 10 distinct completed-round snapshots in browser storage. Saving happens only after the server confirms completion. `/play` shows a collapsed list with topic, difficulty, date, result, friend-result link and Play again. `/results?round=<id>` restores a snapshot without completing it again, changing a lab/party claim, or touching the unfinished round. The existing rematch API supplies ten fresh questions at the original topic and difficulty. Browser storage failures do not block results; the current tab retains its result. No account, backend migration or historic backfill is added.
