@@ -400,7 +400,7 @@ export function challengeFriend(ctx, el, res, st) {
     el.innerHTML = html`<p class="msg ${ok ? 'ok' : ''}" role="status">${ok ? t('rounds.copied') : t('rounds.copy_failed')}</p>
 <p class="url small"><a href="${res.challenge_url}">${res.challenge_url}</a></p>
 <details><summary>${t('rounds.nick_label')}</summary><form class="nick">
-  <label>${t('rounds.nick_label')}<input name="nick" maxlength="24" autocomplete="nickname" value="${store.get(NICK_KEY, '') ?? ''}" placeholder="${t('rounds.nick_placeholder')}"></label>
+  <label><span class="sr-only">${t('rounds.nick_label')}</span><input name="nick" maxlength="24" autocomplete="nickname" value="${store.get(NICK_KEY, '') ?? ''}" placeholder="${t('rounds.nick_placeholder')}"></label>
   <p class="muted small">${t('rounds.nick_note')}</p>
   <button type="submit">${t('rounds.save_name')}</button><p role="status" data-name-status></p>
 </form></details>`;
@@ -437,8 +437,6 @@ async function showVs(ctx, el, roundId, token, data = null) {
   if (!data.me || !el.isConnected) return;
   const { me, them, own, replies, record } = data;
   if (own) {
-    const hero = location.pathname.startsWith('/c/') && document.getElementById('hero-title');
-    if (hero) hero.textContent = t('rounds.own_hero', { score: me.score });
     el.hidden = false;
     el.innerHTML = html`<h3>${t('rounds.friend_results')}</h3>
 <p>${replies.length ? t('rounds.friends_ready') : t('rounds.friends_waiting')}</p>
@@ -450,8 +448,6 @@ ${replies.map((p, k) => html`<p><a href="/c/${roundId}/${p.public_token}">${t('r
   const name = them.nickname || t('rounds.vs_someone');
   const d = me.score - them.score;
   const row = (label, f) => html`<tr class="anim anim-slide"><th scope="row">${label}</th><td>${f(me)}</td><td>${f(them)}</td></tr>`;
-  const hero = location.pathname.startsWith('/c/') && document.getElementById('hero-title');
-  if (hero) hero.textContent = t('rounds.vs_hero', { me: me.score, name, them: them.score }); // the challenge is played now
   el.hidden = false;
   el.innerHTML = html`<h3>${t('rounds.vs_title', { name })}</h3>
 <p class="headline">${d > 0 ? t('rounds.vs_win', { d }) : d < 0 ? t('rounds.vs_lose', { name, d: -d }) : t('rounds.vs_tie')}</p>

@@ -9,7 +9,7 @@ import { validateSubmit, DEMOGRAPHICS } from '../functions/_util.js';
 import { wrap } from '../public/share.js';
 import { html, store } from '../public/ui.js';
 import { fmtValue, fmtNumber, noteKey, personalStats, hitsChart } from '../public/daily.js';
-import { addSeen, scoreChart, fmtPoints, typeKey, fmtValue as roundValue, challengeFriend } from '../public/rounds.js';
+import { addSeen, scoreChart, fmtPoints, typeKey, fmtValue as roundValue, challengeFriend, renderChallenge } from '../public/rounds.js';
 import { TYPES } from '../functions/_rounds.js';
 import { classAggregate, toCsv } from '../functions/api/class/d/[secret].js';
 import { overconfBin, intHitBin, histPercentile, percentiles, aggregateWrites, MIN_PERCENTILE_N } from '../functions/_aggregates.js';
@@ -43,11 +43,54 @@ test('friend challenges record a share only after copying succeeds', async (t) =
     challengeFriend({ t: (key) => key }, panel, { challenge_url: url }, { round_id: 'round' });
     await new Promise((resolve) => setImmediate(resolve));
     assert.equal(panel.hidden, false);
+    const markup = String(panel.innerHTML);
+    assert.match(markup, /<label><span class="sr-only">rounds.nick_label<\/span><input name="nick"/);
+    assert.equal(markup.replace(/<span class="sr-only">.*?<\/span>/g, '').match(/rounds.nick_label/g).length, 1);
     assert.equal(requests.length, outcome === 'success' ? 1 : 0);
     if (requests.length) {
       assert.equal(requests[0].url, '/api/event');
       assert.equal(requests[0].keepalive, true);
       assert.deepEqual(requests[0].body, { type: 'share', round_id: 'round' });
+    }
+  }
+});
+
+test('shared challenge keeps its named hero for the owner, a new friend and a returning friend', async (t) => {
+  const roundId = 'ABCDEFGHJK23', token = 'abcdefghij';
+  const hero = { textContent: 'Tom scored -200. Can you beat them?' };
+  for (const [key, value] of Object.entries({
+    document: { addEventListener() {}, getElementById: () => hero },
+    location: { pathname: `/c/${roundId}/${token}` },
+  })) {
+    const previous = Object.getOwnPropertyDescriptor(globalThis, key);
+    Object.defineProperty(globalThis, key, { configurable: true, value });
+    t.after(() => previous ? Object.defineProperty(globalThis, key, previous) : delete globalThis[key]);
+  }
+  t.mock.method(store, 'get', () => null);
+  t.mock.method(store, 'set', () => {});
+  const translate = (key, values = {}) => key.split('.').reduce((v, part) => v[part], en)
+    .replace(/\{(\w+)\}/g, (_, name) => values[name]);
+  const challenger = { nickname: 'Tom', score: -200, type: 'Bluffer', accuracy: 20, mean_conf: 80 };
+  for (const viewer of ['owner', 'new', 'returning']) {
+    const data = { own: viewer === 'owner', them: challenger, replies: [],
+      me: viewer === 'new' ? null : viewer === 'owner' ? challenger : { ...challenger, nickname: 'Sam', score: 400 } };
+    t.mock.method(globalThis, 'fetch', async (url) => Response.json(url.includes('/compare?') ? data : { round_id: roundId }));
+    const refresh = {};
+    const panel = { isConnected: true, querySelector: (selector) => selector === '[data-refresh]' ? refresh : {}, querySelectorAll: () => [] };
+    const app = { replaceChildren() {}, querySelector: () => panel };
+    let playLabel;
+    await renderChallenge({ app, t: translate, setPlay: (label) => { playLabel = label; } }, roundId, token);
+    assert.equal(hero.textContent, 'Tom scored -200. Can you beat them?', viewer);
+    assert.equal(playLabel, translate(viewer === 'new' ? 'rounds.play' : 'rounds.rematch'));
+    if (viewer === 'owner') {
+      assert.ok(String(panel.innerHTML).includes(translate('rounds.friends_waiting')));
+      await refresh.onclick();
+      assert.equal(hero.textContent, 'Tom scored -200. Can you beat them?', 'owner refresh');
+    }
+    if (viewer === 'returning') {
+      assert.match(String(panel.innerHTML), /<th scope="col">You<\/th><th scope="col">Tom<\/th>/);
+      assert.match(String(panel.innerHTML), /data-race="400"/);
+      assert.match(String(panel.innerHTML), /data-race="-200"/);
     }
   }
 });
