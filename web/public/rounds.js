@@ -443,7 +443,7 @@ async function showVs(ctx, el, roundId, token, data = null) {
     el.innerHTML = html`<h3>${t('rounds.friend_results')}</h3>
 <p>${replies.length ? t('rounds.friends_ready') : t('rounds.friends_waiting')}</p>
 ${replies.map((p, k) => html`<p><a href="/c/${roundId}/${p.public_token}">${t('rounds.compare_friend', { name: p.nickname || t('rounds.friend_number', { n: k + 1 }) })}</a></p>`)}
-<p class="row"><a href="/c/${roundId}/${token}">${t('rounds.check_friends')}</a><button type="button" data-refresh>${t('rounds.refresh')}</button></p>`;
+<p class="row"><a class="button" href="/c/${roundId}/${token}">${t('rounds.check_friends')}</a><button type="button" data-refresh>${t('rounds.refresh')}</button></p>`;
     el.querySelector('[data-refresh]').onclick = () => showVs(ctx, el, roundId, token);
     return;
   }
