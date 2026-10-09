@@ -4,7 +4,8 @@
 
 // Addresses that exist only once the owner has set them up. An empty string hides whatever depends on it.
 const SLACK_INSTALL_URL = 'https://whosbluffing-slack.rongaijun41.workers.dev/slack/oauth/start'; // the Slack Worker's install URL (slack/README.md, step 8)
-const DISCORD_INSTALL_URL = 'https://discord.com/oauth2/authorize?client_id=1556371051439587461'; // set to 'https://whosbluffing-discord.rongaijun41.workers.dev/install' once the Discord app exists; hidden while empty // the Discord Worker's /install (discord/README.md, step 8)
+const DISCORD_INSTALL_URL = 'https://discord.com/oauth2/authorize?client_id=1556371051439587461&scope=bot%20applications.commands&permissions=83968&integration_type=0'; // server install; matches the Discord Worker's /install
+const DISCORD_USER_INSTALL_URL = 'https://discord.com/oauth2/authorize?client_id=1556371051439587461&scope=applications.commands&integration_type=1'; // personal commands only; no server permissions
 const CONTACT_EMAIL = 'hello@whosbluffing.com'; // e.g. hello@whosbluffing.com once email routing works (hidden until set)
 const GITHUB_URL = 'https://github.com/rongtnt/whos-bluffing';
 const X_URL = 'https://x.com/whos_bluffing'; // e.g. https://x.com/<handle>
@@ -56,6 +57,7 @@ const ACTIONS_URL = 'https://github.com/rongtnt/whos-bluffing/actions'; // the r
   function wireLinks() {
     for (const a of all('[data-slack-install]')) a.href = SLACK_INSTALL_URL;
     for (const a of all('[data-discord-install]')) { if (DISCORD_INSTALL_URL) a.href = DISCORD_INSTALL_URL; else a.hidden = true; }
+    for (const a of all('[data-discord-user-install]')) { if (DISCORD_USER_INSTALL_URL) a.href = DISCORD_USER_INSTALL_URL; else a.hidden = true; }
     const social = { github: GITHUB_URL, x: X_URL, bluesky: BLUESKY_URL };
     for (const a of all('[data-social]')) {
       const url = social[a.dataset.social];

@@ -1,8 +1,26 @@
 # Who's Bluffing? for Discord
 
-A Cloudflare Worker that brings Who's Bluffing to Discord. A server adds it once. Every day it posts one question in a chosen
-channel. Members tap A or B and say how sure they are. Hours later (20 by default) the post turns into the answer, with
-this server's top 5 and the bluff of the day.
+A Cloudflare Worker that brings Who's Bluffing to Discord. Add it to your own apps, then use `/bluff party` in a
+server channel, DM or group DM: friends join the same ten Memes questions, answer privately, compare scores and rematch.
+Server installation also supports the optional daily question and server leaderboard.
+
+## Party flow
+
+1. **`/bluff party`** posts a public lobby with **Join / Resume**, **Results** and **Rematch**. Personal installs use
+   interaction replies only: no bot channel access, member list or privileged intent is needed. A channel that blocks
+   public external-app replies gets a private explanation instead of an invisible lobby.
+2. **Join / Resume** explicitly agrees to share the clicker's Discord display name and final score in that chat.
+   It opens a private round, using the same saved ten questions for everyone. Rejoining resumes progress; it does not
+   reset answers or duplicate completed plays. The installer and the person pressing Join can be different people.
+3. **Results** refreshes the public lobby, showing only finished participants (top ten when more than ten finish).
+   Questions, choices, confidence and per-question feedback remain private. Every message disables pings.
+4. A finished participant can press **Rematch** to replace the lobby with one new shared Memes round, excluding the
+   previous ten questions. Simultaneous rematches converge on one child round. Unfinished friends can finish the old
+   round privately and use **View results** there.
+
+Parties expire one hour after creation. Buttons check the chat, message, participant, step and expiry. Short operation
+leases prevent overlapping answers/completions/rematches; expired leases can retry after an interrupted request.
+No interaction tokens are stored. Lobby creation and joining never submit an answer or complete a round.
 
 ## What members see
 
@@ -28,13 +46,14 @@ this server's top 5 and the bluff of the day.
 
 | Command | Who | What |
 |---|---|---|
-| `/bluff question` | anyone | Post today's question in this channel now. If today's is already up, it links to it. |
+| `/bluff party` | anyone | A public Memes lobby: friends Join the same ten, answer privately, compare Results and Rematch. |
 | `/bluff play` | anyone | A private 10-question round: A/B, then confidence, then the answer with points, then Next. Ends with score, type and roast line, plus a **Challenge** button that posts your challenge link in the channel. |
-| `/bluff stats` | anyone | This server's 30-day leaderboard (top 10 by points) and participation, posted in the channel. |
+| `/bluff question` | member, server install | Post today's question in this channel now. If today's is already up, it links to it. |
+| `/bluff stats` | member, server install | This server's 30-day leaderboard (top 10 by points) and participation, posted in the channel. |
 | `/bluff setup` | Manage Server | `channel`, `hour` (UTC, 0–23, default 14), `reveal` (hours from the post to the reveal, 2–23; new servers start at 20, servers added before this option keep 8), `roast` (on/off, default off). Every option is optional; a missing one keeps its value. The reply shows the hour in your time and in UTC. |
 | `/bluff reveal` | Manage Server | Reveal today's answer now instead of waiting. |
 | `/bluff help` | anyone | How it works and the command list. |
-| `/bluff invite` | anyone | The link to add Who's Bluffing to another server. |
+| `/bluff invite` | anyone | Personal and server install links. |
 
 Discord cannot run a command that has subcommands without one, so "post today's question now" is
 `/bluff question`, not a bare `/bluff`.
@@ -67,11 +86,16 @@ name it `Who's Bluffing?` → **Create**. On **General Information**:
 
 **3. Install settings (1 min).** Open the **Installation** page:
 
-- Under **Installation Contexts**, keep **Guild Install** only (untick User Install).
+- Under **Installation Contexts**, enable **Guild Install** and **User Install**.
 - Set **Install Link** to **Discord Provided Link**.
+- Under **Default Install Settings** → User Install, choose only `applications.commands` (no bot permissions).
 - Under **Default Install Settings** → Guild Install, set scopes `applications.commands` and `bot`, and permissions
   **Send Messages**, **Embed Links** and **Read Message History**. That is the same as the Worker's `/install` link
   (permissions integer `83968`).
+
+The Worker keeps `/install` as the existing server link; `/install?type=user` produces the personal link with
+`integration_type=1` and `scope=applications.commands`. Register commands again after enabling User Install:
+the global command uses `integration_types: [0, 1]` and `contexts: [0, 1, 2]`.
 
 **4. Database and Worker (5 min).**
 
@@ -203,7 +227,7 @@ Discord in its "Slack and Discord" paragraph.
 ## Deploy and update
 
 ```bash
-npm test                                       # all tests, mocked Discord and rounds API
+npm test                                       # local DBs; mocked Discord, plus real rounds API integration tests
 npx wrangler deploy --dry-run --outdir dist    # bundle check, uploads nothing
 npx wrangler d1 migrations apply whosbluffing-discord --remote   # new files in migrations/ only; repeats are harmless
 npx wrangler deploy
@@ -213,6 +237,8 @@ npx wrangler tail                              # live logs (short error codes on
 Apply migrations before deploying code that needs them. `0002_install_events.sql` adds the column the install events
 use; without it every install event fails, Discord retries it, and in the end Discord turns the Webhook Events URL off.
 The `reveal` option needs no migration: the column was there from the start, and the code writes 20 for new servers.
+`0003_parties.sql` adds transient party sessions and participants; apply it before this worker version. Register the
+updated global commands after deployment. Unit/integration tests use local data only and do not inflate live metrics.
 
 ## Data
 
@@ -224,19 +250,27 @@ Stored in D1:
 - For each daily post: its message id and the day's question as the API served it.
 - For each answer: choice and confidence under `sha256(guild_id:user_id:SALT)`, plus points and right/wrong once the
   reveal settles them. The API keeps daily points back until the reveal, so nobody can peek.
-- For a `/bluff play` round in progress: the round's questions and the running score.
+- For a `/bluff play` round in progress: the round's questions and running score. Inactive state expires after one hour.
+- For a party: salted chat scope, the app's lobby message id, saved round/questions, expiry and rematch link.
+- For a participant who presses Join: salted player id, their display name (up to 32 characters), private message id,
+  progress/latest answer feedback and final score. Names never go to the rounds API. Party state expires after one hour
+  and is deleted by the next successful hourly cleanup, which also removes inactive solo state.
 
-No member messages, usernames or raw Discord user ids are stored. Display names are fetched from Discord only while a
-leaderboard is drawn. The rounds API receives only the hashed member id and a hashed server id
-(`discord:` + `sha256(guild_id:SALT)`), never raw Discord ids.
+No member messages, raw Discord user ids or interaction tokens are stored. Daily leaderboard names are fetched only
+while drawing that leaderboard. Party names come from the person pressing Join, with consent shown on the lobby.
+The rounds API receives only the hashed member id and a hashed server id (`discord:` + `sha256(guild_id:SALT)`), never
+raw Discord ids. Private chats use `sha256(dm:channel_id:user_id:SALT)` and omit the community so they do not inflate
+server counts. Personal installations never insert a server installation row.
 
 The bot token can post as Who's Bluffing in every server that added it. To rotate it: **Bot** → **Reset Token**, then
 `npx wrangler secret put DISCORD_BOT_TOKEN`.
 
 ## Limits
 
-- **Names** come from the first 1000 members of a server and need the Server Members Intent. Anyone else shows as
+- **Daily leaderboard names** come from the first 1000 members of a server and need the Server Members Intent. Anyone else shows as
   "a member", and the roast line says "Someone".
+- **Party Results refresh on button press**, using that fresh interaction token. Old public messages in Discord remain
+  visible after transient worker data expires; the bot does not retain tokens to delete or update those messages later.
 - **The daily top 5 lists positive scores only,** so with roast mode off the bluffer cannot be spotted in it.
 - **If Who's Bluffing loses access** to the daily channel (deleted, or permissions removed), it stops posting there until
   someone runs `/bluff setup` again.

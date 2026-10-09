@@ -26,11 +26,11 @@ test('GET /install redirects to Discord with bot + applications.commands, minima
   });
 });
 
-test('one guild-only /bluff command with the brief\'s subcommands', () => {
+test('one global /bluff command supports server and personal installs in every chat context', () => {
   assert.equal(COMMANDS.length, 1);
   const [cmd] = COMMANDS;
-  assert.deepEqual([cmd.name, cmd.integration_types, cmd.contexts], ['bluff', [0], [0]]);
-  assert.deepEqual(cmd.options.map((o) => o.name), ['question', 'play', 'stats', 'setup', 'reveal', 'help', 'invite']);
+  assert.deepEqual([cmd.name, cmd.integration_types, cmd.contexts], ['bluff', [0, 1], [0, 1, 2]]);
+  assert.deepEqual(cmd.options.map((o) => o.name), ['party', 'play', 'question', 'stats', 'setup', 'reveal', 'help', 'invite']);
   const setup = cmd.options.find((o) => o.name === 'setup');
   assert.deepEqual(setup.options.map((o) => [o.name, o.type, o.required ?? false]),
     [['channel', 7, false], ['hour', 4, false], ['reveal', 4, false], ['roast', 3, false]]);
@@ -156,7 +156,7 @@ test('/bluff stats is public: the 30-day board by points (revealed answers) with
   ].join('\n'));
 });
 
-test("help and invite answer at once; a DM is told Who's Bluffing lives in servers", async () => {
+test('help and invite answer at once, including personal-install DM help', async () => {
   const env = makeEnv();
   const calls = mockFetch();
   const help = await (await run(env, 'help')).json();
@@ -166,13 +166,14 @@ test("help and invite answer at once; a DM is told Who's Bluffing lives in serve
   const invite = await (await run(env, 'invite')).json();
   assert.match(invite.data.content, /^Add Who's Bluffing to a server: https:\/\/discord\.com\/oauth2\/authorize\?client_id=424242&/);
   const dm = await (await send(env, signedRequest({ ...commandPayload('help'), guild_id: undefined, member: undefined, user: { id: '1' } }))).json();
-  assert.equal(dm.data.content, "Who's Bluffing works inside a server. Use /bluff invite to add it to one.");
+  assert.match(dm.data.content, /\/bluff party/);
+  assert.match(invite.data.content, /scope=applications.commands&integration_type=1/);
   assert.equal(calls.length, 0);
 });
 
 test("help gives this server's hour in each reader's own time and its own reveal delay", async (t) => {
   freeze(t, '2026-10-06T10:30:00Z');
-  const help = async (env) => (await (await run(env, 'help')).json()).data.content.split('\n');
+  const help = async (env) => (await (await run(env, 'help')).json()).data.content.split('\n').slice(1);
   const commands = [
     'Points reward honest confidence: 50% scores 0; 100% scores +100 if right and -300 if wrong.',
     '',

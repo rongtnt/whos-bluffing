@@ -7,6 +7,8 @@
 import * as api from './api.js';
 import * as store from './store.js';
 import * as game from './game.js';
+import * as party from './party.js';
+import { LIFETIME } from './party-store.js';
 
 const DISCORD_API = 'https://discord.com/api/v10';
 const COMMAND = 2;
@@ -26,16 +28,17 @@ const TEXT_CHANNEL = 0;
 const GUILD_TEXT_CHANNELS = [TEXT_CHANNEL, 5]; // text and announcement channels
 const WELCOME_TRIES = 3; // channels the install hello tries before giving up
 
-// One global /bluff command; guild installs and server channels only.
+// One global command for server and personal installs, including DMs and group DMs.
 export const COMMANDS = [{
   name: 'bluff',
-  description: 'One question a day: pick A or B and say how sure you are',
+  description: 'Play ten questions with friends: pick A or B and say how sure you are',
   type: 1,
-  integration_types: [0],
-  contexts: [0],
+  integration_types: [0, 1],
+  contexts: [0, 1, 2],
   options: [
-    { type: SUB, name: 'question', description: "Post today's question in this channel now" },
+    { type: SUB, name: 'party', description: 'Start a Memes party: same ten questions, private answers, shared results' },
     { type: SUB, name: 'play', description: 'Play a private 10-question round' },
+    { type: SUB, name: 'question', description: "Post today's question in this channel now" },
     { type: SUB, name: 'stats', description: "This server's leaderboard for the last 30 days" },
     {
       type: SUB,
@@ -55,7 +58,7 @@ export const COMMANDS = [{
     },
     { type: SUB, name: 'reveal', description: "Reveal today's answer now (Manage Server)" },
     { type: SUB, name: 'help', description: "How Who's Bluffing works" },
-    { type: SUB, name: 'invite', description: "Get a link to add Who's Bluffing to another server" },
+    { type: SUB, name: 'invite', description: "Add Who's Bluffing to your apps or a server" },
   ],
 }];
 
@@ -69,6 +72,10 @@ export const installUrl = (env) =>
     permissions: PERMISSIONS,
     integration_type: '0',
   })}`;
+
+export const personalInstallUrl = (env) => `https://discord.com/oauth2/authorize?${new URLSearchParams({
+  client_id: env.DISCORD_APP_ID, scope: 'applications.commands', integration_type: '1',
+})}`;
 
 // ---- Discord REST -------------------------------------------------------------------------------------------
 
@@ -90,12 +97,13 @@ async function webhook(env, token, method, path, msg) {
     body: JSON.stringify({ allowed_mentions: game.NO_PINGS, ...msg }),
   });
   if (!res.ok) throw new Error(`webhook ${method} returned ${res.status}`);
+  return res.status === 204 ? null : res.json();
 }
 const editOriginal = (env, token, msg) => webhook(env, token, 'PATCH', '/messages/@original', msg);
 const followUp = (env, token, msg) => webhook(env, token, 'POST', '', { flags: EPHEMERAL, ...msg });
 
 // A guild member's display name: server nickname, else global name, else username. Read at render time only.
-const displayName = (m) => m.nick || m.user.global_name || m.user.username;
+const displayName = (m) => m?.nick || m?.user?.global_name || m?.user?.username || 'A friend';
 
 // Names exist only at render time: list the server's members, hash each, keep display names of the matches.
 // Listing members needs the Server Members Intent; without it (403) everyone shows as "a member".
@@ -125,11 +133,14 @@ const say = (data, { ephemeral = true } = {}) =>
 function defer(ctx, env, i, work, { ephemeral = true, update = i.type === COMPONENT } = {}) {
   const run = async () => {
     const msg = await work();
-    if (msg) await editOriginal(env, i.token, msg); // null: nothing to change (a repeated tap)
+    if (msg) {
+      const sent = await editOriginal(env, i.token, msg.message ?? msg);
+      if (msg.afterEdit) await msg.afterEdit(sent);
+    } // null: nothing to change (a repeated tap)
   };
   const fail = (err) => {
     logError('task', err);
-    const notice = { content: game.FAIL_TEXT };
+    const notice = { content: err.publicMessage ?? game.FAIL_TEXT, ...(!update && { components: [] }) };
     const send = update ? followUp(env, i.token, notice) : editOriginal(env, i.token, notice);
     return send.catch((e) => logError('notice', e));
   };
@@ -137,17 +148,36 @@ function defer(ctx, env, i, work, { ephemeral = true, update = i.type === COMPON
   return update ? respond(6) : respond(5, ephemeral ? { flags: EPHEMERAL } : {});
 }
 
-const canManage = (i) => (BigInt(i.member.permissions ?? '0') & MANAGE) !== 0n;
+const canManage = (i) => (BigInt(i.member?.permissions ?? '0') & MANAGE) !== 0n;
 const channelOf = (i) => i.channel?.id ?? i.channel_id;
 const snowflakeMs = (id) => Number(BigInt(id) >> 22n) + DISCORD_EPOCH_MS;
+const userOf = (i) => i.member?.user ?? i.user;
+// Older signed Discord payloads omitted owners. An explicit user-only install never gets bot-token features.
+const serverInstalled = (i) => Boolean(i.guild_id && (!i.authorizing_integration_owners || i.authorizing_integration_owners['0'] === i.guild_id));
+const SERVER_FEATURE = 'Daily questions and server leaderboards need a server install. Use /bluff party or /bluff play here, or /bluff invite for the server link.';
+const PUBLIC_DENIED = 'Discord only allows private app replies here. Try /bluff play, or start /bluff party in a DM, group DM or channel that allows public app replies.';
+
+function canReplyPublic(i) {
+  if (!i.guild_id) return true;
+  const perms = BigInt(i.app_permissions ?? '0');
+  const member = BigInt(i.member?.permissions ?? '0');
+  const send = [10, 11, 12].includes(i.channel?.type) ? 1n << 38n : 1n << 11n;
+  if (serverInstalled(i)) return i.app_permissions == null || Boolean(perms & (send | 8n));
+  return Boolean(member & 8n) || Boolean((member & send) && (member & (1n << 50n)));
+}
 
 async function who(env, i) {
-  const [anonId, community] = await Promise.all([api.anonId(env, i.guild_id, i.member.user.id), api.communityId(env, i.guild_id)]);
+  const context = i.guild_id ?? `dm:${channelOf(i)}`;
+  const [anonId, community] = await Promise.all([api.anonId(env, context, userOf(i).id), i.guild_id ? api.communityId(env, i.guild_id) : null]);
   return { anon_id: anonId, community };
 }
 
+async function partyContext(env, i) {
+  return { me: await who(env, i), scope: await api.anonId(env, 'channel', channelOf(i)), name: displayName(i.member ?? { user: i.user }) };
+}
+
 export function handleInteraction(i, env, ctx) {
-  if (!i.guild_id || !i.member?.user?.id) return say({ content: game.GUILD_ONLY });
+  if (!userOf(i)?.id || !channelOf(i)) return say({ content: 'Open this command in a Discord chat.' });
   if (i.type === COMMAND) return command(i, env, ctx);
   if (i.type === COMPONENT) return component(i, env, ctx);
   return new Response('Unsupported interaction', { status: 400 });
@@ -157,21 +187,31 @@ async function command(i, env, ctx) {
   const sub = i.data?.options?.[0];
   const opts = Object.fromEntries((sub?.options ?? []).map((o) => [o.name, o.value]));
   const later = (work, options) => defer(ctx, env, i, work, options);
+  if (['question', 'stats', 'setup', 'reveal'].includes(sub?.name) && !serverInstalled(i)) return say({ content: SERVER_FEATURE });
   switch (sub?.name) {
     case 'question': return later(() => postToday(env, i));
     case 'play': return later(() => playStart(env, i));
+    case 'party': return canReplyPublic(i)
+      ? later(async () => party.start(env, i, (await partyContext(env, i)).scope), { ephemeral: false })
+      : say({ content: PUBLIC_DENIED });
     case 'stats': return later(() => stats(env, i), { ephemeral: false });
     case 'setup': return canManage(i) ? later(() => setup(env, i, opts)) : say({ content: game.NEED_MANAGE });
     case 'reveal': return canManage(i) ? later(() => revealNow(env, i)) : say({ content: game.NEED_MANAGE });
-    case 'invite': return say({ content: game.invite(installUrl(env)) });
+    case 'invite': return say({ content: `${game.invite(installUrl(env))}\nAdd to my apps (no server permission needed): ${personalInstallUrl(env)}` });
     // One D1 read, no Discord call: still answered at once.
-    default: return say({ content: game.help(await store.getInstall(env.DB, i.guild_id), Date.now()) });
+    default: return say({ content: game.help(serverInstalled(i) ? await store.getInstall(env.DB, i.guild_id) : null, Date.now(), serverInstalled(i)) });
   }
 }
 
 function component(i, env, ctx) {
-  const [kind, ...args] = i.data.custom_id.split(':');
+  const [kind, ...args] = (i.data?.custom_id ?? '').split(':');
   const later = (work) => defer(ctx, env, i, work);
+  if (['tj', 'tr', 'tm'].includes(kind)) {
+    if (kind !== 'tj' && !canReplyPublic(i)) return say({ content: PUBLIC_DENIED });
+    return defer(ctx, env, i, async () => party.publicAction(env, i, kind, args[0], await partyContext(env, i)), { update: kind !== 'tj' });
+  }
+  if (['ta', 'tc', 'tn', 'tv'].includes(kind)) return later(async () => party.privateAction(env, i, kind, args, await partyContext(env, i)));
+  if (['q', 'c'].includes(kind) && !serverInstalled(i)) return say({ content: SERVER_FEATURE });
   switch (kind) {
     // Public welcome buttons open a private round; never replace the server's welcome message.
     case 'start': return defer(ctx, env, i, () => playStart(env, i), { update: false });
@@ -182,8 +222,9 @@ function component(i, env, ctx) {
     case 'pn': return later(() => playNext(env, i, args));
     case 'pp': return later(() => playStart(env, i));
     case 'px': {
+      if (!canReplyPublic(i)) return say({ content: PUBLIC_DENIED });
       const url = new URL(args.slice(1).join(':'), env.API_BASE).href;
-      return say(game.challengePost(displayName(i.member), Number(args[0]), url), { ephemeral: false });
+      return say(game.challengePost(displayName(i.member ?? { user: i.user }), Number(args[0]), url), { ephemeral: false });
     }
     default: return say({ content: game.PLAY_ENDED });
   }
@@ -357,7 +398,7 @@ export async function postRecap(env, install, date) {
 async function playFor(env, i, roundId) {
   const me = await who(env, i);
   const state = await store.getPlay(env.DB, me.anon_id);
-  return { me, state: state?.round_id === roundId ? state : null };
+  return { me, state: state?.round_id === roundId && state.updated_at > Date.now() - LIFETIME ? state : null };
 }
 
 // A button from a round that has moved on: a repeated tap changes nothing; an older round says it has ended.

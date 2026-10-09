@@ -4,6 +4,7 @@
 import { test } from 'node:test';
 import assert from 'node:assert/strict';
 import { readFileSync, readdirSync } from 'node:fs';
+import { runInNewContext } from 'node:vm';
 import { markdown, inline, renderPage, DOCS } from '../scripts/sync-docs.js';
 import { playedLine, MIN_PLAYERS } from '../public/home.js';
 
@@ -84,6 +85,50 @@ test('search metadata describes the real apps; session pages stay out of search'
   const discord = read(new URL('discord.html', PUBLIC));
   assert.match(discord, /href="https:\/\/discord.com\/discovery\/applications\/1556371051439587461"/);
   assert.doesNotMatch(discord, /<p>Not yet\. Add it with/);
+});
+
+test('Discord install buttons keep personal commands separate from server permissions, with working no-script links', () => {
+  const page = read(new URL('discord.html', PUBLIC));
+  const script = read(new URL('site.js', PUBLIC));
+  const boot = (source) => {
+    const personal = { hidden: false }, server = { hidden: false };
+    let ready;
+    const storage = { getItem: () => null, setItem: () => {} };
+    runInNewContext(source, {
+      document: {
+        documentElement: { dataset: {}, classList: { add: () => {} } },
+        addEventListener: (event, fn) => { if (event === 'DOMContentLoaded') ready = fn; },
+        querySelectorAll: (selector) => selector === '[data-discord-user-install]' ? [personal] : selector === '[data-discord-install]' ? [server] : [],
+        querySelector: () => null, getElementById: () => null,
+      },
+      window: {}, localStorage: storage, sessionStorage: storage, URLSearchParams,
+      location: { search: '', pathname: '/discord', hash: '' }, matchMedia: () => ({ matches: false }),
+    });
+    ready();
+    return { personal, server };
+  };
+  const { personal, server } = boot(script);
+  for (const [link, attr, type, scope] of [
+    [personal, 'data-discord-user-install', '1', 'applications.commands'],
+    [server, 'data-discord-install', '0', 'bot applications.commands'],
+  ]) {
+    const url = new URL(link.href);
+    assert.equal(url.origin + url.pathname, 'https://discord.com/oauth2/authorize');
+    assert.equal(url.searchParams.get('client_id'), '1556371051439587461');
+    assert.equal(url.searchParams.get('integration_type'), type);
+    assert.equal(url.searchParams.get('scope'), scope);
+    const fallback = page.match(new RegExp(`<a[^>]*href="([^"]+)"[^>]*\\b${attr}(?:\\s|>)`))?.[1];
+    assert.equal(fallback?.replaceAll('&amp;', '&'), link.href, `${attr}: HTML and JavaScript agree`);
+    assert.equal(link.hidden, false);
+  }
+  assert.equal(new URL(personal.href).searchParams.has('permissions'), false, 'personal install grants no bot permissions');
+  assert.equal(new URL(server.href).searchParams.get('permissions'), '83968', 'server permissions are unchanged');
+  assert.match(page, /class="button primary"[^>]*data-discord-user-install/);
+  const schema = JSON.parse(page.match(/<script type="application\/ld\+json">([\s\S]*?)<\/script>/)[1]);
+  assert.equal(schema.installUrl, personal.href);
+  const disabled = boot(script.replace(/const DISCORD_(?:USER_)?INSTALL_URL = '[^']*'/g, (line) => line.replace(/'[^']*'/, "''")));
+  assert.equal(disabled.personal.hidden, true);
+  assert.equal(disabled.server.hidden, true);
 });
 
 test('/research quotes the MAU and community definitions from PREREG word for word', () => {

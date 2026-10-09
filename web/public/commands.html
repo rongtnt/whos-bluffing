@@ -58,11 +58,11 @@
   </div>
   <section class="tab-panel" id="discord" role="tabpanel" aria-labelledby="tab-discord" tabindex="0">
     <h2>Discord</h2>
-    <p class="muted"><!-- intro:discord -->Type <code>/bluff</code> in any server channel and pick a subcommand. Replies marked “only you” are private.<!-- /intro --></p>
+    <p class="muted"><!-- intro:discord -->Add Who's Bluffing to your apps, then type <code>/bluff party</code> in a chat to start a Memes round with friends. Replies marked “only you” are private. Server-only commands need the app added to that server.<!-- /intro --></p>
     <div class="cmds" id="cmd-discord"><!-- commands:discord -->
       <article class="cmd" data-item>
-        <h3><code>/bluff question</code></h3>
-        <p>Posts today’s question in this channel now. If today’s question is already up, it links to it instead.</p>
+        <h3><code>/bluff party</code></h3>
+        <p>Starts a shared Memes round. Friends tap Join to play the same ten questions privately. Joining shares your Discord display name and finished score in this chat. Tap Results to refresh completed scores; after you finish, Rematch starts a new shared round. Each round expires after one hour. Public posts follow the chat’s app permissions.</p>
         <dl>
           <div><dt>Options</dt><dd>None</dd></div>
           <div><dt>Who can run it</dt><dd>Anyone</dd></div>
@@ -77,11 +77,19 @@
         </dl>
       </article>
       <article class="cmd" data-item>
+        <h3><code>/bluff question</code></h3>
+        <p>Posts today’s question in this channel now. If today’s question is already up, it links to it instead.</p>
+        <dl>
+          <div><dt>Options</dt><dd>None</dd></div>
+          <div><dt>Who can run it</dt><dd>Anyone in a server with the app installed</dd></div>
+        </dl>
+      </article>
+      <article class="cmd" data-item>
         <h3><code>/bluff stats</code></h3>
         <p>Posts this server’s leaderboard for the last 30 days in the channel: the top 10 by points and how many members answered.</p>
         <dl>
           <div><dt>Options</dt><dd>None</dd></div>
-          <div><dt>Who can run it</dt><dd>Anyone</dd></div>
+          <div><dt>Who can run it</dt><dd>Anyone in a server with the app installed</dd></div>
         </dl>
       </article>
       <article class="cmd" data-item>
@@ -110,7 +118,7 @@
       </article>
       <article class="cmd" data-item>
         <h3><code>/bluff invite</code></h3>
-        <p>A link to add Who's Bluffing to another server (only you).</p>
+        <p>Links to add Who's Bluffing to your apps or to a server (only you).</p>
         <dl>
           <div><dt>Options</dt><dd>None</dd></div>
           <div><dt>Who can run it</dt><dd>Anyone</dd></div>
@@ -120,9 +128,10 @@
     <p class="muted" id="cmd-discord-none" hidden>No Discord command matches that search.</p>
     <h3 id="discord-trouble">Commands not working?</h3>
     <div class="faq"><!-- trouble:discord -->
-        <details><summary><span><code>/bluff</code> doesn’t appear when I type /</span></summary><p>Who's Bluffing was added without its commands. Add it again with the <a href="/discord">Add to Discord</a> link, which asks for both the bot and the <code>applications.commands</code> scope, then reload Discord (Ctrl+R or Cmd+R).</p></details>
+        <details><summary><span><code>/bluff</code> doesn’t appear when I type /</span></summary><p>Use <a href="/discord">Add to my apps</a> for your own commands, or have an admin use Add to server for everyone there. Then reload Discord (Ctrl+R or Cmd+R). The server or channel may also restrict app commands.</p></details>
+        <details><summary><span>My friends can’t see the round</span></summary><p>A server can prevent personal apps from posting publicly with the Use External Apps permission. Who's Bluffing respects that setting. Ask an admin whether games are welcome there, or start <code>/bluff party</code> in a group chat where everyone wants to play.</p></details>
         <details><summary><span>“Only members with the Manage Server permission can do that”</span></summary><p><code>/bluff setup</code> and <code>/bluff reveal</code> need the Manage Server or Administrator permission. Ask someone who has it, or have an admin give your role Manage Server.</p></details>
-        <details><summary><span>The leaderboard says “a member” instead of names</span></summary><p>Names need the app’s Server Members Intent. If everyone shows as “a member”, the intent is off on our side: please <a href="https://github.com/rongtnt/whos-bluffing/issues">tell us on GitHub</a>. Only the first 1,000 members of a server can be named; others always show as “a member”.</p></details>
+        <details><summary><span>The server leaderboard says “a member” instead of names</span></summary><p>The <code>/bluff stats</code> leaderboard looks up server members. If everyone shows as “a member”, please <a href="https://github.com/rongtnt/whos-bluffing/issues">tell us on GitHub</a>. Only the first 1,000 members of a server can be named. Friend rounds use the display name you share when joining instead.</p></details>
         <details><summary><span>“This interaction failed”</span></summary><p>Update your Discord app (or reload the browser tab) and try again: older versions can’t show the buttons. If it keeps happening, the game server may be down for a moment; the <a href="/status">status page</a> shows whether it answers.</p></details>
         <details><summary><span>“I can’t post in that channel”</span></summary><p>Give Who's Bluffing the View Channel and Send Messages permissions in that channel, or pick another one with <code>/bluff setup channel:</code>.</p></details>
         <details><summary><span>The app shows as offline</span></summary><p>That is normal. Who's Bluffing answers through Discord’s interactions endpoint and never connects to the live gateway, so it always looks offline while it works.</p></details>

@@ -6,7 +6,8 @@ import { verifyDiscord } from './verify.js';
 import * as api from './api.js';
 import * as store from './store.js';
 import { isoDate } from './game.js';
-import { handleInteraction, installUrl, logError, postQuestion, postRecap, revealPost, welcomeGuild } from './commands.js';
+import { handleInteraction, installUrl, personalInstallUrl, logError, postQuestion, postRecap, revealPost, welcomeGuild } from './commands.js';
+import { purge as purgeParties, LIFETIME } from './party-store.js';
 
 export { Presence } from './presence.js';
 
@@ -96,7 +97,11 @@ async function postDue(env, now) {
 }
 
 async function tick(env, now) {
-  for (const [name, step] of [['reveal', revealDue], ['recap', recapDue], ['post', postDue]]) {
+  const cleanup = async () => {
+    await purgeParties(env.DB, now.getTime());
+    await env.DB.prepare('DELETE FROM play_state WHERE updated_at <= ?').bind(now.getTime() - LIFETIME).run();
+  };
+  for (const [name, step] of [['cleanup', cleanup], ['reveal', revealDue], ['recap', recapDue], ['post', postDue]]) {
     await step(env, now).catch((err) => logError(name, err));
   }
 }
@@ -108,7 +113,7 @@ export default {
       const route = `${request.method} ${pathname}`;
       if (route === 'POST /interactions') return await interactions(request, env, ctx);
       if (route === 'POST /events') return await events(request, env, ctx);
-      if (route === 'GET /install') return Response.redirect(installUrl(env), 302);
+      if (route === 'GET /install') return Response.redirect(new URL(request.url).searchParams.get('type') === 'user' ? personalInstallUrl(env) : installUrl(env), 302);
       if (route === 'GET /presence') return (await presence(env)) ?? textResponse('No presence binding', 503);
       return textResponse('Not found', 404);
     } catch (err) {

@@ -4,13 +4,13 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <title>Free Discord Trivia Bot | Who's Bluffing?</title>
-<meta name="description" content="A free Discord trivia bot for the friend who knows everything. Play ten questions, challenge friends, or set up daily trivia and a leaderboard for your server.">
+<meta name="description" content="Free Discord trivia for the friend who knows everything. Add it to your apps, start a Memes round, and see who is bluffing. Same ten questions. Private answers.">
 <meta name="robots" content="max-image-preview:large">
 <link rel="canonical" href="https://whosbluffing.com/discord">
 <meta property="og:type" content="website">
 <meta property="og:site_name" content="Who's Bluffing?">
 <meta property="og:title" content="Free Discord Trivia Bot | Who's Bluffing?">
-<meta property="og:description" content="A free Discord trivia bot for the friend who knows everything. Play ten questions, challenge friends, or set up daily trivia and a leaderboard for your server.">
+<meta property="og:description" content="Free Discord trivia for the friend who knows everything. Add it to your apps, start a Memes round, and see who is bluffing. Same ten questions. Private answers.">
 <meta property="og:url" content="https://whosbluffing.com/discord">
 <meta property="og:image" content="https://whosbluffing.com/og.png">
 <meta property="og:image:width" content="1200">
@@ -31,12 +31,12 @@
   "@id": "https://whosbluffing.com/discord#app",
   "name": "Who's Bluffing? for Discord",
   "url": "https://whosbluffing.com/discord",
-  "description": "A free Discord trivia bot with ten-question rounds, friend challenges, daily server questions and a leaderboard.",
+  "description": "Free Discord trivia with shared ten-question Memes rounds, private answers, friend scores and rematches.",
   "applicationCategory": "GameApplication",
   "operatingSystem": "Discord",
   "isAccessibleForFree": true,
   "inLanguage": "en",
-  "installUrl": "https://discord.com/oauth2/authorize?client_id=1556371051439587461",
+  "installUrl": "https://discord.com/oauth2/authorize?client_id=1556371051439587461&scope=applications.commands&integration_type=1",
   "sameAs": "https://discord.com/discovery/applications/1556371051439587461"
 }
 </script>
@@ -66,24 +66,24 @@
     <div>
       <p class="eyebrow">Free Discord trivia bot</p>
       <h1 id="discord-title">Who's Bluffing? for Discord</h1>
-      <p class="hero-sub">Everyone has that friend who thinks they know everything. Put them to the test with trivia. Play ten questions with <code>/bluff play</code>, then challenge a friend to the same round. Want a daily question for your server? An admin can choose a channel with <code>/bluff setup</code>.</p>
+      <p class="hero-sub">Everyone has that friend who thinks they know everything. Put them to the test. Start a Memes round with <code>/bluff party</code>. Friends tap Join and play the same ten questions, with private answers. Finish, compare results, and start a rematch.</p>
       <div class="actions">
-        <a class="button primary" href="/discord" data-discord-install><svg class="i" viewBox="0 0 24 24" aria-hidden="true" focusable="false"><path d="M4 5.5h11a2 2 0 0 1 2 2V13a2 2 0 0 1-2 2H9l-4 3.5V15H4a2 2 0 0 1-2-2V7.5a2 2 0 0 1 2-2z"/><path d="M19.5 9.5H20a2 2 0 0 1 2 2V17a2 2 0 0 1-2 2h-1v3l-3.5-3H12"/></svg><span>Add to Discord</span></a>
-        <a class="button" href="#commands"><span>See the commands</span><svg class="i" viewBox="0 0 24 24" aria-hidden="true" focusable="false"><path d="M5 12h14M13 6l6 6-6 6"/></svg></a>
+        <a class="button primary" href="https://discord.com/oauth2/authorize?client_id=1556371051439587461&amp;scope=applications.commands&amp;integration_type=1" data-discord-user-install><svg class="i" viewBox="0 0 24 24" aria-hidden="true" focusable="false"><path d="M4 5.5h11a2 2 0 0 1 2 2V13a2 2 0 0 1-2 2H9l-4 3.5V15H4a2 2 0 0 1-2-2V7.5a2 2 0 0 1 2-2z"/><path d="M19.5 9.5H20a2 2 0 0 1 2 2V17a2 2 0 0 1-2 2h-1v3l-3.5-3H12"/></svg><span>Add to my apps</span></a>
+        <a class="button" href="https://discord.com/oauth2/authorize?client_id=1556371051439587461&amp;scope=bot%20applications.commands&amp;permissions=83968&amp;integration_type=0" data-discord-install><span>Add to server</span><svg class="i" viewBox="0 0 24 24" aria-hidden="true" focusable="false"><path d="M5 12h14M13 6l6 6-6 6"/></svg></a>
       </div>
-      <p class="fine">Free. Adding it needs the Manage Server permission. No messages, usernames or Discord ids are stored with answers.</p>
+      <p class="fine">Free. Add to my apps needs no server admin permission. Add to server needs Manage Server. Public rounds follow the chat's app permissions.</p>
     </div>
     <figure class="chat-demo">
       <figcaption><span class="badge">Illustration</span></figcaption>
-      <div class="cd" role="img" aria-label="Illustration: the daily question in a Discord channel, with an A and a B button">
+      <div class="cd" role="img" aria-label="Illustration: a shared Memes round in a Discord chat, with Join, Results and Rematch buttons">
         <div class="cd-head"># general</div>
         <div class="cd-body cd-msg">
           <span class="cd-avatar"><svg viewBox="0 0 64 64" aria-hidden="true" focusable="false"><rect width="64" height="64" rx="14" fill="#111827"/><g transform="translate(13.207 10.240) scale(0.9891)"><g transform="rotate(-14 16.5 20)"><rect x="4.00" y="2.50" width="25" height="35" rx="5.5" fill="#7A95FF"/></g><g transform="rotate(9 22.5 24)"><rect x="10.00" y="6.50" width="25" height="35" rx="5.5" fill="#F5F3EE"/><g transform="rotate(45 22.5 24)"><rect x="17.75" y="19.25" width="9.5" height="9.5" rx="1.6" fill="#111827"/></g></g></g></svg></span>
           <div>
             <p class="cd-name">Who's Bluffing?<span class="cd-tag">APP</span><small>Today at 14:00</small></p>
-            <p><b>Who's Bluffing?</b> · Which is longer: the Nile or the Danube?</p>
-            <p class="cd-sub">Tap A or B, then say how sure you are. Answer at 22:00 UTC.</p>
-            <p class="cd-buttons"><span class="cd-btn">A · the Nile</span><span class="cd-btn">B · the Danube</span></p>
+            <p><b>Who's Bluffing?</b> · Memes round</p>
+            <p class="cd-sub">Same ten questions. Private answers. Join shares your display name and finished score in this chat.</p>
+            <p class="cd-buttons"><span class="cd-btn">Join</span><span class="cd-btn">Results</span><span class="cd-btn">Rematch</span></p>
           </div>
         </div>
       </div>
@@ -94,13 +94,12 @@
           <p class="cd-buttons cd-conf"><span>50% · coin flip</span><span>60%</span><span>70%</span><span class="on">80%</span><span>90%</span><span>100% · stake it all</span></p>
         </div>
       </div>
-      <div class="cd cd-reveal" role="img" aria-label="Illustration: the reveal edits the post: the Nile, 6,650 kilometres, is longer than the Danube, 2,850 kilometres; 12 answered, 75% A, 25% B; the top 3; and the bluff of the day">
+      <div class="cd cd-reveal" role="img" aria-label="Illustration: completed scores for three friends, without showing their answers">
         <div class="cd-body">
-          <p><b>Who's Bluffing?</b> · Which is longer: the Nile or the Danube?</p>
-          <p><span class="cd-right">✓ <b>the Nile</b></span>: 6,650 km (<u>source</u>)<br>the Danube: 2,850 km (<u>source</u>)</p>
-          <p>12 answered · 75% A · 25% B</p>
-          <p><b>Top 3:</b> 1. Alex +84 · 2. Sam +64 · 3. Priya +36</p>
-          <p class="cd-bluff">Someone was 90% sure the Danube is longer. It isn't.</p>
+          <p><b>Memes round</b> · Results</p>
+          <p>Alex +180 · Sam +40 · Priya −120</p>
+          <p class="cd-sub">Tap Results to refresh the finished scores.</p>
+          <p class="cd-bluff">Still think you know everything? Rematch.</p>
         </div>
       </div>
     </figure>
@@ -112,8 +111,8 @@
     <div class="search"><svg class="i" viewBox="0 0 24 24" aria-hidden="true" focusable="false"><circle cx="11" cy="11" r="6.5"/><path d="m16 16 4.5 4.5"/></svg><label class="sr-only" for="command-search">Search commands</label><input id="command-search" type="search" placeholder="Search commands" autocomplete="off" data-filter="cmd-discord"></div>
     <div class="cmds" id="cmd-discord"><!-- commands:discord -->
       <article class="cmd" data-item>
-        <h3><code>/bluff question</code></h3>
-        <p>Posts today’s question in this channel now. If today’s question is already up, it links to it instead.</p>
+        <h3><code>/bluff party</code></h3>
+        <p>Starts a shared Memes round. Friends tap Join to play the same ten questions privately. Joining shares your Discord display name and finished score in this chat. Tap Results to refresh completed scores; after you finish, Rematch starts a new shared round. Each round expires after one hour. Public posts follow the chat’s app permissions.</p>
         <dl>
           <div><dt>Options</dt><dd>None</dd></div>
           <div><dt>Who can run it</dt><dd>Anyone</dd></div>
@@ -128,11 +127,19 @@
         </dl>
       </article>
       <article class="cmd" data-item>
+        <h3><code>/bluff question</code></h3>
+        <p>Posts today’s question in this channel now. If today’s question is already up, it links to it instead.</p>
+        <dl>
+          <div><dt>Options</dt><dd>None</dd></div>
+          <div><dt>Who can run it</dt><dd>Anyone in a server with the app installed</dd></div>
+        </dl>
+      </article>
+      <article class="cmd" data-item>
         <h3><code>/bluff stats</code></h3>
         <p>Posts this server’s leaderboard for the last 30 days in the channel: the top 10 by points and how many members answered.</p>
         <dl>
           <div><dt>Options</dt><dd>None</dd></div>
-          <div><dt>Who can run it</dt><dd>Anyone</dd></div>
+          <div><dt>Who can run it</dt><dd>Anyone in a server with the app installed</dd></div>
         </dl>
       </article>
       <article class="cmd" data-item>
@@ -161,7 +168,7 @@
       </article>
       <article class="cmd" data-item>
         <h3><code>/bluff invite</code></h3>
-        <p>A link to add Who's Bluffing to another server (only you).</p>
+        <p>Links to add Who's Bluffing to your apps or to a server (only you).</p>
         <dl>
           <div><dt>Options</dt><dd>None</dd></div>
           <div><dt>Who can run it</dt><dd>Anyone</dd></div>
@@ -178,18 +185,19 @@
     <ul class="links">
       <li><div class="pt"><span class="ico"><svg class="i" viewBox="0 0 24 24" aria-hidden="true" focusable="false"><ellipse cx="12" cy="6" rx="7" ry="3"/><path d="M5 6v12c0 1.7 3.1 3 7 3s7-1.3 7-3V6M5 12c0 1.7 3.1 3 7 3s7-1.3 7-3"/></svg></span><span><b>Per server</b><span>The server id, the chosen channel, the posting hour, roast mode, and each day’s post with its question.</span></span></div></li>
       <li><div class="pt"><span class="ico"><svg class="i" viewBox="0 0 24 24" aria-hidden="true" focusable="false"><path d="M12 3 5 6v5.5c0 4.4 3 7.9 7 9.5 4-1.6 7-5.1 7-9.5V6z"/><path d="m9 12 2.2 2.2L15.5 10"/></svg></span><span><b>Per member</b><span>A or B, the confidence and the points, keyed by a salted hash of the member id; a private round while it is being played. Never raw Discord ids.</span></span></div></li>
-      <li><div class="pt"><span class="ico"><svg class="i" viewBox="0 0 24 24" aria-hidden="true" focusable="false"><path d="M7 3h7l5 5v12a1 1 0 0 1-1 1H7a1 1 0 0 1-1-1V4a1 1 0 0 1 1-1z"/><path d="M14 3v5h5M9 13h6M9 17h6"/></svg></span><span><b>Never</b><span>Messages, usernames or emails. Display names are looked up only while a leaderboard is drawn.</span></span></div></li>
+      <li><div class="pt"><span class="ico"><svg class="i" viewBox="0 0 24 24" aria-hidden="true" focusable="false"><path d="M7 3h7l5 5v12a1 1 0 0 1-1 1H7a1 1 0 0 1-1-1V4a1 1 0 0 1 1-1z"/><path d="M14 3v5h5M9 13h6M9 17h6"/></svg></span><span><b>Never</b><span>Chat messages, emails or raw Discord user ids. Server leaderboard names are looked up only while it is drawn.</span></span></div></li>
     </ul>
-    <p class="fine">The game server receives only hashed member and server ids. Full details: <a href="/privacy">privacy policy</a>.</p>
+    <p class="fine">Joining a friend round shares your display name and finished score in that chat. Temporary party records expire after one hour and are deleted in the next successful cleanup. Anonymous answers and scores remain with the game server, which receives only hashed member and server ids. Full details: <a href="/privacy">privacy policy</a>.</p>
   </div>
 </section>
 <section class="section" id="troubleshooting" aria-labelledby="trouble-title">
   <div class="wrap split">
     <div class="section-head"><p class="eyebrow">Troubleshooting</p><h2 id="trouble-title">Commands not working?</h2></div>
     <div class="faq"><!-- trouble:discord -->
-        <details><summary><span><code>/bluff</code> doesn’t appear when I type /</span></summary><p>Who's Bluffing was added without its commands. Add it again with the <a href="/discord">Add to Discord</a> link, which asks for both the bot and the <code>applications.commands</code> scope, then reload Discord (Ctrl+R or Cmd+R).</p></details>
+        <details><summary><span><code>/bluff</code> doesn’t appear when I type /</span></summary><p>Use <a href="/discord">Add to my apps</a> for your own commands, or have an admin use Add to server for everyone there. Then reload Discord (Ctrl+R or Cmd+R). The server or channel may also restrict app commands.</p></details>
+        <details><summary><span>My friends can’t see the round</span></summary><p>A server can prevent personal apps from posting publicly with the Use External Apps permission. Who's Bluffing respects that setting. Ask an admin whether games are welcome there, or start <code>/bluff party</code> in a group chat where everyone wants to play.</p></details>
         <details><summary><span>“Only members with the Manage Server permission can do that”</span></summary><p><code>/bluff setup</code> and <code>/bluff reveal</code> need the Manage Server or Administrator permission. Ask someone who has it, or have an admin give your role Manage Server.</p></details>
-        <details><summary><span>The leaderboard says “a member” instead of names</span></summary><p>Names need the app’s Server Members Intent. If everyone shows as “a member”, the intent is off on our side: please <a href="https://github.com/rongtnt/whos-bluffing/issues">tell us on GitHub</a>. Only the first 1,000 members of a server can be named; others always show as “a member”.</p></details>
+        <details><summary><span>The server leaderboard says “a member” instead of names</span></summary><p>The <code>/bluff stats</code> leaderboard looks up server members. If everyone shows as “a member”, please <a href="https://github.com/rongtnt/whos-bluffing/issues">tell us on GitHub</a>. Only the first 1,000 members of a server can be named. Friend rounds use the display name you share when joining instead.</p></details>
         <details><summary><span>“This interaction failed”</span></summary><p>Update your Discord app (or reload the browser tab) and try again: older versions can’t show the buttons. If it keeps happening, the game server may be down for a moment; the <a href="/status">status page</a> shows whether it answers.</p></details>
         <details><summary><span>“I can’t post in that channel”</span></summary><p>Give Who's Bluffing the View Channel and Send Messages permissions in that channel, or pick another one with <code>/bluff setup channel:</code>.</p></details>
         <details><summary><span>The app shows as offline</span></summary><p>That is normal. Who's Bluffing answers through Discord’s interactions endpoint and never connects to the live gateway, so it always looks offline while it works.</p></details>
@@ -201,10 +209,11 @@
     <div class="section-head"><p class="eyebrow">FAQ</p><h2 id="faq-title">Questions</h2></div>
     <div class="faq">
         <details><summary>What does it cost?</summary><p>Nothing. Who's Bluffing is free and non-commercial, with no ads and no paid plan.</p></details>
+        <details><summary>Do I have to manage a server?</summary><p>No. Choose Add to my apps, then try <code>/bluff party</code> in a chat with friends. Server and channel permissions still apply. Add to server is for admins who want the app available to their whole server.</p></details>
         <details><summary>Who can change the channel or the hour?</summary><p>Members with the Manage Server or Administrator permission, with <code>/bluff setup</code>. Everyone else can post the question, play and see the leaderboard.</p></details>
         <details><summary>How are points worked out?</summary><p>Each answer scores 100 − 400 × (confidence − outcome)², where the outcome is 1 if right and 0 if not: 50% scores 0, and 100% scores +100 when right and −300 when wrong. Honest confidence earns the most over time.</p></details>
         <details><summary>What is roast mode?</summary><p>Off by default: the reveal says “Someone was 90% sure…”, and nobody is named next to a loss. <code>/bluff setup roast:on</code> names the biggest bluffer in the reveal.</p></details>
-        <details><summary>Where can I find the Discord app?</summary><p>Find <a href="https://discord.com/discovery/applications/1556371051439587461">Who's Bluffing? in Discord's App Directory</a>, or use the Add to Discord button on this page. After adding it, try <code>/bluff play</code> for a ten-question round.</p></details>
+        <details><summary>Where can I find the Discord app?</summary><p>Find <a href="https://discord.com/discovery/applications/1556371051439587461">Who's Bluffing? in Discord's App Directory</a>, or use Add to my apps above. Start a Memes round with <code>/bluff party</code>, or try <code>/bluff play</code> for a private ten-question round.</p></details>
       </div>
   </div>
 </section>

@@ -95,6 +95,7 @@ export function mockFetch({ discord = () => undefined, api = {}, apiDown = false
       if (custom) return json(custom.body ?? {}, custom.status ?? 200);
       if (call.method === 'POST' && /^\/api\/v10\/channels\/\d+\/messages$/.test(call.path)) return json({ id: '9001' });
       if (call.method === 'GET' && call.path.endsWith('/members')) return json([]);
+      if (call.method === 'PATCH' && call.path.endsWith('/messages/@original')) return json({ id: '990000000000000001' });
       return json({});
     }
     if (slow) await new Promise((resolve) => setTimeout(resolve, slow));
@@ -113,7 +114,7 @@ export function mockFetch({ discord = () => undefined, api = {}, apiDown = false
       const b = call.body;
       const key = `${b.anon_id}:${b.round_id}:${b.item_id}`;
       if (!answered.has(key) || b.revision) {
-        answered.set(key, { correct: b.choice === 0, truth: TRUTH, points: points(b.conf, b.choice === 0) });
+        answered.set(key, { correct: b.choice === 0, truth: TRUTH, points: points(b.conf, b.choice === 0), choice: b.choice, conf: b.conf });
       }
       const total = [...answered].filter(([k]) => k.startsWith(`${b.anon_id}:${b.round_id}:`)).reduce((s, [, r]) => s + r.points, 0);
       return json({ ...answered.get(key), total });

@@ -35,6 +35,6 @@ const query = (params) => `?${new URLSearchParams(params)}`;
 
 export const dailyQuestion = (env, date) => call(env, `/api/round/daily-question${query({ date })}`);
 export const reveal = (env, date, community) => call(env, `/api/round/reveal${query({ date, community })}`);
-export const quickRound = (env) => call(env, '/api/round?mode=quick');
+export const quickRound = (env, params = {}) => call(env, `/api/round${query({ mode: 'quick', ...params })}`);
 export const answer = (env, body) => call(env, '/api/round/answer', { ...body, surface: 'discord' });
 export const complete = (env, body) => call(env, '/api/round/complete', { ...body, surface: 'discord' });

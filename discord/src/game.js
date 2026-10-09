@@ -1,7 +1,6 @@
 // Message and component builders (Discord) and all user-facing copy. Pure: no I/O.
 
 export const FAIL_TEXT = "Who's Bluffing is taking a break, try again in a minute.";
-export const GUILD_ONLY = "Who's Bluffing works inside a server. Use /bluff invite to add it to one.";
 export const NEED_MANAGE = 'Only members with the Manage Server permission can do that.';
 export const CANT_POST =
   "I can't post in that channel. Give Who's Bluffing the View Channel and Send Messages permissions there, or pick another channel.";
@@ -156,10 +155,13 @@ export const setupDone = (s, now) =>
 
 // `install` = this server's row, or null before it used any command: its reveal delay and, once it has a channel,
 // where and when the question goes up.
-export function help(install, now) {
+export function help(install, now, server = true) {
+  const intro = '**Play with friends:** `/bluff party` starts a Memes round in this chat. Join privately, compare Results, then Rematch.';
+  if (!server) return `${intro}\n\`/bluff play\` plays a private ten-question round. \`/bluff invite\` gives personal and server install links.`;
   const where = install?.channel_id ? `, here in <#${install.channel_id}> at ${clock(todayAt(install.post_hour_utc, now))}` : '';
   const delay = install?.reveal_delay_h ?? NEW_REVEAL_DELAY_H;
   return [
+    intro,
     `**Who's Bluffing** posts one question a day${where}. Tap A or B, then say how sure you are. ` +
       `The answer and this server's top 5 come out ${plural(delay, 'hour')} later. Every Monday brings last week's recap.`,
     'Points reward honest confidence: 50% scores 0; 100% scores +100 if right and -300 if wrong.',
@@ -218,24 +220,24 @@ export function recapMessage(week, best, names) {
 
 const progress = (state, step) => `${ROUND} · Question ${step + 1} of ${state.items.length} · ${plural(state.total, 'point')}`;
 
-export function playQuestion(state, step) {
+export function playQuestion(state, step, prefix = 'p') {
   const it = state.items[step];
   return {
     content: `${progress(state, step)}\n${esc(it.prompt)}`,
-    components: abButtons(it, (choice) => `pa:${state.round_id}:${step}:${choice}`),
+    components: abButtons(it, (choice) => `${prefix}a:${state.round_id}:${step}:${choice}`),
   };
 }
 
-export function playConfidence(state, step, choice) {
+export function playConfidence(state, step, choice, prefix = 'p') {
   const it = state.items[step];
   return {
     content: `${progress(state, step)}\n${esc(it.prompt)}\nYou picked **${option(it, choice)}**. Say how sure you are.`,
-    components: confButtons((conf) => `pc:${state.round_id}:${step}:${choice}:${conf}`),
+    components: confButtons((conf) => `${prefix}c:${state.round_id}:${step}:${choice}:${conf}`),
   };
 }
 
 // After a confidence tap: right or wrong, points, both values with sources. `state.total` includes this answer.
-export function playResult(state, step, choice, conf, res) {
+export function playResult(state, step, choice, conf, res, prefix = 'p') {
   const it = state.items[step];
   const truth = { ...res.truth, correct: res.correct ? choice : 1 - choice };
   const last = step + 1 === state.items.length;
@@ -248,7 +250,7 @@ export function playResult(state, step, choice, conf, res) {
       side(it, truth, 1),
       ...(truth.fun ? [esc(truth.fun)] : []),
     ].join('\n'),
-    components: [row(button(`pn:${state.round_id}:${step + 1}`, last ? 'See your score' : 'Next', 1))],
+    components: [row(button(`${prefix}n:${state.round_id}:${step + 1}`, last ? 'See your score' : 'Next', 1))],
   };
 }
 
@@ -271,4 +273,34 @@ export function playEnd(done, challengeId, installUrl) {
 export const challengePost = (name, score, url) => ({
   content: `${esc(name)} scored ${plural(score, 'point')} in a Who's Bluffing round. Can you beat that? ${url}`,
   allowed_mentions: NO_PINGS,
+});
+
+// Party messages never put questions, choices or answer feedback in the public lobby.
+export function partyLobby(party, board) {
+  const scores = board.top.map((p, n) => `${n + 1}. ${esc(p.name)} · ${plural(p.score, 'point')}`);
+  return {
+    content: [
+      "**Who's Bluffing? · Memes party**",
+      'Same ten questions. Pick A or B, then say how sure you are. Your answers stay private.',
+      '**Join shares your Discord display name and final score here.** No pings.',
+      `${board.joined} joined · ${board.finished} finished · Ends ${stamp(party.expires_at, 'R')}.`,
+      ...(scores.length ? ['', '**Results** (tap Results to refresh)', ...scores,
+        ...(board.finished > 10 ? [`Top 10 of ${board.finished} finished players.`] : [])] : ['Nobody has finished yet.']),
+      'Finish a round to unlock Rematch. Friends still playing can finish their original round privately.',
+    ].join('\n'),
+    components: [row(button(`tj:${party.id}`, 'Join / Resume', 1), button(`tr:${party.id}`, 'Results'), button(`tm:${party.id}`, 'Rematch'))],
+    allowed_mentions: NO_PINGS,
+  };
+}
+
+export const partyDone = (party, player) => ({
+  content: `**${esc(player.name)} · ${plural(Math.round(player.done.score), 'point')}**\n` +
+    'Your score is ready for Results in the party lobby. You can start a Rematch there.\n' +
+    'You cannot replay this round; a rematch gives everyone ten new questions.',
+  components: [row(button(`tv:${party.id}`, 'View results'))],
+});
+
+export const partyResults = (party, board) => ({
+  content: partyLobby(party, board).content,
+  components: [row(button(`tv:${party.id}`, 'Refresh results'))],
 });
