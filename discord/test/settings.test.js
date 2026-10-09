@@ -150,3 +150,17 @@ test('solo Change answer returns to the same question, keeps saved answers locke
   assert.equal(originalEdits(f.calls).length, edits);
   assert.equal(apiCalls(f.calls, '/api/round/answer').length, 1);
 });
+
+test('welcome solo/friends buttons open independent private pickers and create no public game yet', async () => {
+  const f = fixture();
+  for (const [button, mode, user] of [['start', 'play', USER], ['startparty', 'party', '880000000000000002']]) {
+    const response = await f.press(button, { flags: 0, user });
+    assert.deepEqual(await response.json(), { type: 5, data: { flags: 64 } });
+    assert.equal(f.picker().mode, mode);
+    assert.equal(f.picker().anon_id, anon(GUILD, user));
+  }
+  assert.equal(apiCalls(f.calls, '/api/round').length, 0);
+  assert.equal(f.env.DB.rows('SELECT * FROM parties').length, 0);
+  assert.equal(f.env.DB.rows('SELECT * FROM play_state').length, 0);
+  assert.equal(f.env.DB.rows('SELECT * FROM round_setups').length, 2);
+});

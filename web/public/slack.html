@@ -111,6 +111,14 @@
     <div class="search"><svg class="i" viewBox="0 0 24 24" aria-hidden="true" focusable="false"><circle cx="11" cy="11" r="6.5"/><path d="m16 16 4.5 4.5"/></svg><label class="sr-only" for="command-search">Search commands</label><input id="command-search" type="search" placeholder="Search commands" autocomplete="off" data-filter="cmd-slack"></div>
     <div class="cmds" id="cmd-slack"><!-- commands:slack -->
       <article class="cmd" data-item>
+        <h3><code>/bluff</code></h3>
+        <p>Opens a private menu with Play solo and Play with friends. Nothing is posted to the channel until you start a party.</p>
+        <dl>
+          <div><dt>Options</dt><dd>None</dd></div>
+          <div><dt>Who can run it</dt><dd>Any member</dd></div>
+        </dl>
+      </article>
+      <article class="cmd" data-item>
         <h3><code>/bluff party</code></h3>
         <p>Choose a topic and difficulty, then start a shared round in this channel. Friends tap Join to answer the same ten questions privately. Joining shares your Slack display name and final score in the channel. Results refreshes the scores; a finished player can start a fresh shared rematch. Parties expire after one hour.</p>
         <dl>
@@ -127,7 +135,7 @@
         </dl>
       </article>
       <article class="cmd" data-item>
-        <h3><code>/bluff</code></h3>
+        <h3><code>/bluff question</code></h3>
         <p>Posts today’s question in this channel. In the chosen channel (or when none is chosen yet) it becomes the day’s post; elsewhere it posts a copy whose answers count the same. After today’s reveal it posts nothing and says so.</p>
         <dl>
           <div><dt>Options</dt><dd>None</dd></div>

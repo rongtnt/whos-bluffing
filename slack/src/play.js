@@ -16,7 +16,7 @@ const view = (p, me) => me.done ? ui.end(p, me) : me.feedback || (me.step < 10 ?
 const validRound = (r) => typeof r?.round_id === 'string' && r.items?.length === 10 && new Set(r.items.map((it) => it.id)).size === 10 && r.items.every((it) => ['id', 'prompt', 'a', 'b'].every((k) => typeof it[k] === 'string' && it[k].length > 0));
 const failSend = (res) => { if (!res.ok || !res.ts) throw new Error(CANT_POST); };
 
-export async function start(env, install, f, kind, transport) {
+export async function start(env, install, f, kind, transport, replaceOriginal = false) {
   if (!f.user_id || !f.channel_id || !f.trigger_id) throw new Error('missing command context');
   const who = await identity(env, install.team_id, f.user_id, f.channel_id);
   // Slack retries the same command with the same trigger; do not make another session.
@@ -25,8 +25,10 @@ export async function start(env, install, f, kind, transport) {
   const p = await state.get(env.DB, id);
   if (p.expires_at <= Date.now()) return transport.reply(f.response_url, ui.notice(EXPIRED));
   const me = p.round_id && await state.player(env.DB, id, who.anon);
-  return transport.reply(f.response_url, me ? view(p, me) : ui.chooser(p));
+  return transport.reply(f.response_url, { ...(me ? view(p, me) : ui.chooser(p)), replace_original: replaceOriginal });
 }
+
+export const launch = (url, transport) => transport.reply(url, ui.launcher());
 
 async function ready(env, install, p, channel, settings, transport) {
   const lease = nonce();
@@ -70,6 +72,10 @@ export async function action(env, install, payload, transport) {
   const respond = (msg) => transport.reply(payload.response_url, { ...msg, replace_original: privateMessage });
   // Add notices alongside the game: a slow or failed concurrent request must leave retry buttons intact.
   const notice = (s) => transport.reply(payload.response_url, { ...ui.notice(s), replace_original: false });
+  if (op === 'launch') {
+    if (!privateMessage || !['solo', 'party'].includes(id) || !payload.user?.id || !payload.channel?.id || !payload.trigger_id) return notice('Open the play menu with /bluff.');
+    return start(env, install, { user_id: payload.user.id, channel_id: payload.channel.id, trigger_id: payload.trigger_id, response_url: payload.response_url }, id, transport, true);
+  }
   if (!/^[a-f0-9]{32}$/.test(id ?? '') || !payload.user?.id || !payload.channel?.id) return notice(EXPIRED);
   const who = await identity(env, install.team_id, payload.user.id, payload.channel.id);
   let p = await state.get(env.DB, id);
@@ -90,6 +96,7 @@ export async function action(env, install, payload, transport) {
   if (['join', 'board', 'rematch'].includes(op) && p.kind === 'party') {
     if (op === 'join' && !publicMessage) return notice('Join from the public party lobby so your friends can see the shared round.');
     const original = p;
+    if (op === 'board' && privateMessage && !(await state.player(env.DB, p.id, who.anon))?.done) return notice('Finish your round to compare scores.');
     // Old retry callbacks converge on the existing shared rematch instead of creating more rounds.
     let hops = 0;
     while (p.next_id && hops++ < 20) {
@@ -117,6 +124,7 @@ export async function action(env, install, payload, transport) {
       return respond(view(p, me));
     }
     await updateLobby(env, install, p, payload.channel.id, transport);
+    if (op === 'board' && privateMessage) return respond(ui.standings(original, await state.board(env.DB, original.id)));
     return notice(op === 'rematch' ? 'The rematch is ready. Join the new round in the party lobby.' : 'Finished scores are updated in the party lobby.');
   }
   if (!privateMessage) return notice('Answer using your private game buttons.');

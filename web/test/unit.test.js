@@ -95,6 +95,45 @@ test('shared challenge keeps its named hero for the owner, a new friend and a re
   }
 });
 
+test('round confidence explains the stakes on the first question and stays short after it', async (t) => {
+  for (const [key, value] of Object.entries({
+    document: { addEventListener() {} },
+    window: { scrollTo() {} },
+  })) {
+    const previous = Object.getOwnPropertyDescriptor(globalThis, key);
+    Object.defineProperty(globalThis, key, { configurable: true, value });
+    t.after(() => previous ? Object.defineProperty(globalThis, key, previous) : delete globalThis[key]);
+  }
+  const hint = '50% = guessing. 100% = certain. Being confidently wrong costs more. Tap a percentage to lock in.';
+  const translate = (key, values = {}) => key.split('.').reduce((v, part) => v[part], en)
+    .replace(/\{(\w+)\}/g, (_, name) => values[name]);
+  const saved = { round_id: 'ABCDEFGHJK23', challenge: 'abcdefghij', mode: 'quick', total: 0,
+    items: Array.from({ length: 10 }, (_, k) => ({ id: `q${k}`, prompt: `Question ${k + 1}`, a: 'A', b: 'B' })), answers: {} };
+  t.mock.method(store, 'get', (key, fallback) => key === 'whosbluffing_round' ? saved : fallback);
+  const fetch = t.mock.method(globalThis, 'fetch', () => { throw new Error('Resuming must not submit an answer'); });
+  for (const k of [0, 1, 9]) {
+    saved.answers = Object.fromEntries(saved.items.slice(0, k).map((item) => [item.id, { correct: true }]));
+    const panel = { hidden: true };
+    const picks = [0, 1].map((c) => ({ dataset: { c }, setAttribute() {} }));
+    const confidence = [50, 60, 70, 80, 90, 100].map((conf) => ({ dataset: { conf }, setAttribute() {} }));
+    const app = { replaceChildren() {},
+      querySelector: (selector) => selector === '#conf' ? panel : { focus() {} },
+      querySelectorAll: (selector) => selector === '.pick' ? picks : confidence };
+    let resume;
+    await renderChallenge({ app, t: translate, chrome() {}, setPlay: (_, action) => { resume = action; } }, saved.round_id, saved.challenge);
+    resume();
+    const markup = String(app.innerHTML);
+    assert.ok(markup.includes(`<p class="sub">${k === 0 ? hint : en.rounds.how_sure}</p>`), `question ${k + 1}`);
+    assert.equal(markup.includes(hint), k === 0);
+    assert.match(markup, /<div id="conf" hidden>/);
+    assert.equal((markup.match(/data-conf="/g) ?? []).length, 6);
+    assert.equal(panel.hidden, true);
+    picks[0].onclick();
+    assert.equal(panel.hidden, false, 'choosing an answer reveals confidence without an extra step');
+  }
+  assert.equal(fetch.mock.callCount(), 0);
+});
+
 // Deterministic PRNG so failures reproduce.
 function seeded(seed) {
   let s = seed;

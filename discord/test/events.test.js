@@ -65,8 +65,8 @@ test('server install: registers the server without a channel and posts one hello
   assert.deepEqual(calls.map((c) => `${c.method} ${c.path}`), [`GET /api/v10/guilds/${GUILD}`, `POST /api/v10/channels/${SYSTEM}/messages`]);
   assert.ok(calls.every((c) => c.headers.authorization === 'Bot bot-token'));
   const [hello] = channelPosts(calls);
-  assert.match(hello.body.content, /Play ten trivia questions, then hit Challenge/);
-  assert.deepEqual(hello.body.components[0].components, [{ type: 2, style: 1, custom_id: 'start', label: 'Play now' }]);
+  assert.match(hello.body.content, /Play with friends/);
+  assert.deepEqual(hello.body.components[0].components, [{ type: 2, style: 1, custom_id: 'start', label: 'Play solo' }, { type: 2, style: 1, custom_id: 'startparty', label: 'Play with friends' }]);
   assert.deepEqual(hello.body, WELCOME);
   assert.deepEqual(hello.body.allowed_mentions, { parse: [] });
 

@@ -47,9 +47,9 @@ async function fixture(t) {
     return Response.json(result.body, { status: result.status });
   };
   const last = () => calls.filter((c) => c.url.hostname === 'hooks.slack.com').at(-1)?.body;
-  const tap = async (actionId, { user = 'U1', channel = 'C1', team = 'T1', privateMessage = true, ts = '1700000000.000100', selected, badSignature = false } = {}) => {
+  const tap = async (actionId, { user = 'U1', channel = 'C1', team = 'T1', privateMessage = true, ts = '1700000000.000100', selected, badSignature = false, trigger } = {}) => {
     const payload = { type: 'block_actions', team: { id: team }, user: { id: user, name: user }, channel: { id: channel }, container: { is_ephemeral: privateMessage, message_ts: ts }, message: { ts },
-      response_url: `https://hooks.slack.com/actions/${++serial}`, actions: [{ action_id: actionId }],
+      response_url: `https://hooks.slack.com/actions/${++serial}`, trigger_id: trigger ?? `action-${serial}`, actions: [{ action_id: actionId }],
       ...(selected && { state: { values: { 'play-settings': { 'play:settings': { selected_option: { value: selected } } } } } }) };
     const res = await send(env, signedRequest(payloadBody(payload), badSignature ? { secret: 'not-the-secret' } : {}));
     return { res, message: last() };
@@ -68,8 +68,12 @@ async function fixture(t) {
       const choice = wrong ? 1 - correct : correct;
       await tap(`play:pick:${p.id}:${step}:${choice}`, { user });
       assert.ok(buttonIds(last()).includes(`play:conf:${p.id}:${step}:${choice}:80`));
+      const hint = '50% = guessing. 100% = certain. Being confidently wrong costs more. Tap a percentage to lock in.';
+      assert.equal(JSON.stringify(last()).includes(hint), step === 0, 'confidence explanation appears on question one only');
       await tap(`play:conf:${p.id}:${step}:${choice}:80`, { user });
       assert.match(JSON.stringify(last()), /\|source>/);
+      const correctText = `Correct answer: ${correct ? 'B' : 'A'} · ${ui.esc(correct ? p.items[step].b : p.items[step].a)}`;
+      assert.ok(last().blocks[0].text.text.includes(correctText), 'feedback names the actual correct option, including on wrong picks');
       await tap(`play:conf:${p.id}:${step}:${1 - choice}:100`, { user }); // stale tap
       await tap(`play:next:${p.id}:${step + 1}`, { user });
     }
@@ -131,6 +135,22 @@ test('party: opt-in players share identical questions, private progress, public 
   assert.match(publicResult, /840 points/); assert.match(publicResult, /-1560 points/);
   assert.doesNotMatch(publicResult, /Friend &lt;@everyone&gt; U3/);
   assert.ok(p.items.every((it) => !publicResult.includes(it.prompt)), 'no question or answer spoilers');
+  await f.tap(`play:board:${p.id}`); // completed private result shows scores here, too
+  assert.match(f.last().text, /2 of 3 finished/);
+  assert.equal(f.last().replace_original, true);
+  assert.ok(buttonIds(f.last()).includes(`play:rematch:${p.id}`));
+  assert.ok(buttonIds(f.last()).includes(`play:board:${p.id}`));
+  const privateScores = JSON.stringify(f.last());
+  assert.match(privateScores, /840 points/); assert.match(privateScores, /-1560 points/);
+  assert.doesNotMatch(privateScores, /Friend &lt;@everyone&gt; U3/);
+  assert.ok(p.items.every((it) => !privateScores.includes(it.prompt)));
+  const beforeBlockedBoard = f.calls.filter((c) => c.url.pathname.endsWith('chat.update')).length;
+  for (const opts of [{ user: 'U3' }, { user: 'U4' }, { channel: 'C2' }]) {
+    await f.tap(`play:board:${p.id}`, opts);
+    assert.equal(f.last().replace_original, false);
+    assert.doesNotMatch(JSON.stringify(f.last()), /840 points/);
+  }
+  assert.equal(f.calls.filter((c) => c.url.pathname.endsWith('chat.update')).length, beforeBlockedBoard);
   const plays = f.db.sqlite.prepare('SELECT surface, score FROM round_plays ORDER BY score DESC').all();
   assert.deepEqual(plays.map((r) => [r.surface, r.score]), [['slack', 840], ['slack', -1560]]);
   await publicTap('rematch', 'U3');
@@ -140,8 +160,16 @@ test('party: opt-in players share identical questions, private progress, public 
   assert.ok(child.items.every((it) => !p.items.some((old) => old.id === it.id)));
   assert.equal(child.lobby_ts, p.lobby_ts);
   assert.equal(f.env.DB.rows('SELECT * FROM play_sessions').length, 2);
+  await f.tap(`play:board:${p.id}`);
+  assert.match(f.last().text, /2 of 3 finished/, 'a completed old game compares its own scores after a rematch starts');
+  assert.equal(f.env.DB.rows('SELECT * FROM play_players WHERE session_id = ?', child.id).length, 0, 'viewing standings never joins a rematch');
   await f.finish(p, 'U3'); // old private round remains usable after lobby changes
   assert.equal(f.db.sqlite.prepare('SELECT COUNT(*) AS n FROM round_plays').get().n, 3);
+  await f.tap(`play:board:${p.id}`); // Refresh scores stays with this original party
+  assert.match(f.last().text, /3 of 3 finished/);
+  assert.deepEqual(buttonIds(f.last()), [`play:board:${p.id}`, `play:rematch:${p.id}`]);
+  assert.equal(f.env.DB.rows('SELECT * FROM play_sessions').length, 2);
+  assert.equal(f.calls.filter((c) => c.url.pathname === '/api/round').length, 2);
   await publicTap('join', 'U2'); // delayed old Join converges on current rematch
   const childPlayers = f.env.DB.rows('SELECT * FROM play_players WHERE session_id = ?', child.id);
   assert.equal(childPlayers.length, 1); assert.equal(childPlayers[0].step, 0);
@@ -334,4 +362,32 @@ for (const kind of ['solo', 'party']) test(`${kind}: Change answer returns to th
   assert.deepEqual(f.last(), second);
   assert.equal(f.env.DB.rows('SELECT step FROM play_players')[0].step, 1);
   assert.equal(f.calls.filter((c) => c.url.pathname.endsWith('/answer')).length, 1);
+});
+
+test('bare /bluff privately offers both play modes; launcher uses existing pickers and retries without creating extra sessions', async (t) => {
+  const f = await fixture(t);
+  await send(f.env, signedRequest(slashBody()));
+  assert.deepEqual(buttonIds(f.last()), ['play:launch:solo', 'play:launch:party']);
+  assert.equal(f.last().response_type, 'ephemeral');
+  assert.equal(f.env.DB.rows('SELECT * FROM play_sessions').length, 0);
+  assert.equal(f.calls.filter((c) => c.url.hostname === 'api.test' || c.url.pathname.endsWith('chat.postMessage')).length, 0);
+  await f.tap('play:launch:solo', { privateMessage: false });
+  assert.equal(f.env.DB.rows('SELECT * FROM play_sessions').length, 0);
+  for (const kind of ['solo', 'party']) {
+    await f.tap(`play:launch:${kind}`, { trigger: `launch-${kind}` });
+    assert.equal(f.last().replace_original, true);
+    const id = buttonIds(f.last())[0].split(':')[2];
+    const session = await store.get(f.env.DB, id);
+    assert.equal(session.kind, kind);
+    assert.equal(session.pack, kind === 'solo' ? 'all' : 'memes');
+    assert.equal(session.difficulty, 'normal');
+    await f.tap(`play:launch:${kind}`, { trigger: `launch-${kind}` });
+    assert.equal(buttonIds(f.last())[0], `play:start:${id}`, 'retry opens the same picker');
+    await f.tap(`play:start:${id}`);
+    if (kind === 'solo') assert.match(f.last().text, /Question 1 of 10/);
+    else assert.match(f.last().text, /party is ready/);
+  }
+  assert.equal(f.env.DB.rows('SELECT * FROM play_sessions').length, 2);
+  assert.equal(f.env.DB.rows('SELECT * FROM play_players').length, 1, 'party launcher does not join without consent');
+  assert.equal(f.calls.filter((c) => c.url.pathname.endsWith('chat.postMessage')).length, 1);
 });

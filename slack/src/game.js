@@ -6,12 +6,13 @@ export const CANT_POST = "I can't post in that channel. If it is private, invite
 export const CLOSED = 'This question is closed. A new one comes tomorrow.';
 export const ALREADY_OUT = "Today's answer is already out. A new question comes tomorrow.";
 export const ALREADY_UP = "Today's question is already up in this channel.";
-export const NOTHING_TO_REVEAL = "There is no open question to reveal. Type /bluff to post today's question.";
+export const NOTHING_TO_REVEAL = "There is no open question to reveal. Type /bluff question to post today's question.";
 export const USAGE = [
   "*Who's Bluffing? commands*",
+  '`/bluff` open the private Play solo / Play with friends menu',
   '`/bluff party` choose a topic and difficulty, then invite friends to the same ten questions',
   '`/bluff play` choose a topic and difficulty for a private ten-question round',
-  "`/bluff` post today's question in this channel",
+  "`/bluff question` post today's question in this channel",
   '`/bluff setup #channel [hour] [roast on|off] [reveal N]` post the question in #channel every day at that hour in your time zone ' +
     '(14:00 UTC if left out; add utc after the hour for UTC) and reveal the answer N hours later (2 to 23, default 8)',
   '`/bluff setup roast on|off` roast on: the reveal names the biggest bluffer (off by default)',
@@ -164,7 +165,7 @@ export function revealMessage(q, r, top, names, bluff) {
 
 // The 30-day workspace leaderboard. `rows` = the rows to name.
 export function statsMessage(board, rows, names) {
-  if (!board.answers) return { text: "No revealed answers in the last 30 days yet. Type /bluff to post today's question." };
+  if (!board.answers) return { text: "No revealed answers in the last 30 days yet. Type /bluff question to post today's question." };
   const head = `*Who's Bluffing, last 30 days:* ${plural(board.players, 'member')} gave ${plural(board.answers, 'answer')}.`;
   const lines = rows.map((r, i) => `${i + 1}. ${nameOf(names, r.anon_id)} — ${plural(r.points, 'point')} in ${plural(r.answers, 'answer')}`);
   return { text: [head, ...lines].join('\n') };

@@ -277,6 +277,7 @@
     "pts": "pts",
     "total_label": "Running total",
     "how_sure": "Say how sure you are.",
+    "confidence_hint": "50% = guessing. 100% = certain. Being confidently wrong costs more. Tap a percentage to lock in.",
     "coin_flip": "50% = coin flip",
     "stake": "100% = stake it all",
     "loading": "Loading a round…",

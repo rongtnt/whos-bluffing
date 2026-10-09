@@ -162,7 +162,7 @@ test('help and invite answer at once, including personal-install DM help', async
   const help = await (await run(env, 'help')).json();
   assert.equal(help.type, 4);
   assert.equal(help.data.flags, 64);
-  assert.match(help.data.content, /`\/bluff play` play a private 10-question round/);
+  assert.match(help.data.content, /Play solo.*`\/bluff play` for ten private questions/);
   const invite = await (await run(env, 'invite')).json();
   assert.match(invite.data.content, /^Add Who's Bluffing to a server: https:\/\/discord\.com\/oauth2\/authorize\?client_id=424242&/);
   const dm = await (await send(env, signedRequest({ ...commandPayload('help'), guild_id: undefined, member: undefined, user: { id: '1' } }))).json();
@@ -171,32 +171,18 @@ test('help and invite answer at once, including personal-install DM help', async
   assert.equal(calls.length, 0);
 });
 
-test("help gives this server's hour in each reader's own time and its own reveal delay", async (t) => {
-  freeze(t, '2026-10-06T10:30:00Z');
-  const help = async (env) => (await (await run(env, 'help')).json()).data.content.split('\n').slice(1);
-  const commands = [
-    'Points reward honest confidence: 50% scores 0; 100% scores +100 if right and -300 if wrong.',
-    '',
-    "`/bluff question` post today's question in this channel now",
-    '`/bluff play` play a private 10-question round',
-    "`/bluff stats` this server's leaderboard for the last 30 days",
-    "`/bluff invite` get a link to add Who's Bluffing to another server",
-    '`/bluff setup` set the daily channel, hour (UTC), reveal (hours until the answer) and roast mode (Manage Server)',
-    "`/bluff reveal` reveal today's answer now (Manage Server)",
-  ];
-  mockFetch();
-  // Before any setup: no hour to show yet, and a new server's reveal delay.
-  assert.deepEqual(await help(makeEnv()), [
-    "**Who's Bluffing** posts one question a day. Tap A or B, then say how sure you are. The answer and this server's top 5 come out 20 hours later. Every Monday brings last week's recap.",
-    ...commands,
-  ]);
-  const env = makeEnv();
-  await install(env, GUILD, { channel: CHANNEL, hour: 14 });
-  assert.deepEqual(await help(env), [
-    `**Who's Bluffing** posts one question a day, here in <#${CHANNEL}> at <t:1791295200:t>. Tap A or B, then say how sure you are. The answer and this server's top 5 come out 8 hours later. Every Monday brings last week's recap.`,
-    ...commands,
-  ]);
-  assert.equal(stampAt('2026-10-06T14:00:00Z'), '<t:1791295200:t>');
+test("help puts immediate solo/friends play first and keeps optional daily times accurate", async (t) => {
+  freeze(t, '2026-10-06T10:30:00Z'); mockFetch();
+  const help = async (env) => (await (await run(env, 'help')).json()).data;
+  let result = await help(makeEnv());
+  assert.match(result.content, /^\*\*Play solo/);
+  assert.ok(result.content.indexOf('Play with friends') < result.content.indexOf('Optional daily question'));
+  assert.match(result.content, /come out 20 hours later/);
+  assert.deepEqual(result.components[0].components.map((b) => [b.custom_id, b.label]), [['start', 'Play solo'], ['startparty', 'Play with friends']]);
+  const env = makeEnv(); await install(env, GUILD, { channel: CHANNEL, hour: 14 });
+  result = await help(env);
+  assert.match(result.content, new RegExp(`here in <#${CHANNEL}> at <t:1791295200:t>`));
+  assert.match(result.content, /come out 8 hours later/);
 });
 
 test('register-commands.mjs PUTs COMMANDS to the global commands endpoint with the bot token', async () => {

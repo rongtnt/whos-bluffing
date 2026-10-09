@@ -4,12 +4,12 @@ A Cloudflare Worker for ten-question trivia rounds in Slack. Members pick A or B
 
 ## Full rounds
 
-`/bluff play` opens a private topic and difficulty picker. It offers exactly the combinations available on the website, generated in `web/public/pack-availability.json`. Start a round, pick an answer and confidence, then see the verdict, points and clickable sources. Report question opens a private reason picker without removing the game. The result shows the website's short type label, accuracy and confidence.
+`/bluff` opens a private menu with **Play solo** and **Play with friends**. `/bluff play` and `/bluff party` still go straight to their topic and difficulty pickers. They offer exactly the combinations available on the website, generated in `web/public/pack-availability.json`. Question one explains confidence; later questions keep it short. Each answer names the correct A/B option, points and clickable sources. Report question opens a private reason picker without removing the game. The result shows the website's short type label, accuracy and confidence.
 
 - **Play again** gets ten new questions with the same topic and difficulty. An interrupted replay retries the same child round.
 - **Challenge friends here** explicitly posts your display name, score and a link to those same ten questions. A friend can open the link on the website. The result also includes the link to copy yourself. Nothing is shared before you choose it.
 - **`/bluff party`** opens the same picker, then posts a public lobby. Join explicitly shares your Slack display name and finished score in that channel. Each friend gets a private game; the lobby never shows their answers or question spoilers.
-- **Results** refreshes the public list of finished scores. A finished player can start one shared **Rematch** with new questions and the same settings. Friends still playing can finish the original privately. Old Join buttons lead to the current rematch.
+- **Results** refreshes the public list of finished scores. **Check friends** on your private result shows finished standings right there, with a Rematch button. A finished player can start one shared **Rematch** with new questions and the same settings. Friends still playing can finish the original privately. Old Join buttons lead to the current rematch.
 - Native sessions expire one hour after creation. Each click supplies a fresh Slack response URL, so ten questions do not reuse one URL's five-response allowance. URLs are never stored. Pending errors are separate private notices, leaving the game buttons available for retry.
 
 ## Updating an existing install
@@ -57,9 +57,10 @@ A question can be answered until its reveal, and only on its day or the day afte
 
 | Command | What it does |
 |---|---|
+| `/bluff` | Opens a private Play solo / Play with friends menu. |
 | `/bluff party` | Choose a topic and difficulty, then invite friends to the same ten questions. |
 | `/bluff play` | Choose a topic and difficulty for a private ten-question round. |
-| `/bluff` | Posts today's question in this channel. In the chosen channel (or when none is chosen yet) it becomes the day's post, and the hourly post skips that day; if the day's post is already in this channel, it says so instead of posting twice. Elsewhere it posts a copy: answers count the same, and the reveal happens on the day's post. After today's reveal it posts nothing and says so. |
+| `/bluff question` | Posts today's question in this channel. In the chosen channel (or when none is chosen yet) it becomes the day's post, and the hourly post skips that day; if the day's post is already in this channel, it says so instead of posting twice. Elsewhere it posts a copy: answers count the same, and the reveal happens on the day's post. After today's reveal it posts nothing and says so. |
 | `/bluff setup #channel [hour] [roast on\|off] [reveal N]` | Posts the question in #channel every day at that hour in your Slack time zone (0–23; add `utc` after the hour for UTC), and reveals the answer N hours later (2–23, default 8). Without an hour the hour is set to 14:00 UTC. |
 | `/bluff setup roast on\|off` | Changes roast mode only; channel and hour stay. `/bluff setup reveal N` changes only the reveal window, and both can go together (`/bluff setup roast on reveal 20`). |
 | `/bluff reveal` | Reveals the open question now, for everyone. |
@@ -107,10 +108,9 @@ You need a Cloudflare account (free plan is fine), a Slack workspace where you m
 8. **Install.** Open `https://WORKER_HOST/slack/oauth/start` and press **Allow**. That URL is the **Add to Slack** link: share it, or link Slack's official Add to Slack button image to it.
 9. **In Slack:**
    ```
-   /bluff setup #general 9 reveal 20
    /bluff
    ```
-   `9` is 09:00 in your own Slack time zone; the reply shows it in UTC too ("every day at 09:00 your time (13:00 UTC)").
+   Choose Play solo or Play with friends. For an optional daily question, use `/bluff question`; schedule it with `/bluff setup #general 9 reveal 20`. `9` is 09:00 in your own Slack time zone; the reply shows UTC too.
 
 Already set up v0.1? Run step 2's `migrations apply` again (it adds `0002_daily_question.sql`), update the app from the new `manifest.yaml` (Slack app page → **App Manifest**), and deploy.
 
@@ -177,7 +177,7 @@ No member messages or emails are collected. Daily display names are fetched only
 - Any member can run `/bluff setup` and `/bluff reveal`.
 - Each button interaction receives its own response link. The Worker sends within that link's 30-minute lifetime; old links are not reused between questions.
 - Delivery cannot be transactionally committed with Slack's servers. A network interruption after Slack accepts a public post but before its success reaches this Worker can result in a duplicate on retry. Answer and completion retries use API idempotency and do not double-count scores.
-- Copies posted with `/bluff` outside the chosen channel are not edited at the reveal; tapping them afterwards says the question is closed.
+- Copies posted with `/bluff question` outside the chosen channel are not edited at the reveal; tapping them afterwards says the question is closed.
 - Changing the hour or the reveal window also moves the reveal of a question already posted that day, since the reveal time comes from the current settings. Its post and earlier "Locked in" replies keep the time they showed.
 - A member's time zone is read only from their Slack profile, once, at setup. It is not stored.
 - If a reveal fails (web API down, Slack error), it is retried every hour for up to a week, drawn from the question stored with the post; `/bluff reveal` also retries.

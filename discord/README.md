@@ -44,9 +44,10 @@ the owner, chat and message; saved answers, results and rematches can resume aft
 - **Mondays:** a recap of last week. It shows how often the server was right at each confidence level, the most
   calibrated member (named), the bluff count (80%+ sure and wrong), and the streak of days with an answer.
 - **When a server adds it:** one welcome message, in the server's system channel or else the text channel nearest the
-  top of the list that Who's Bluffing may post in. Its **Play now** button opens a private ten-question round for each
-  member who taps it; Challenge at the end shares their result only when pressed. Daily questions start once an admin
-  picks a channel with `/bluff setup`; that channel's hello also has Play now. The install welcome needs the Webhook
+  top of the list that Who's Bluffing may post in. **Play solo** and **Play with friends** open the corresponding
+  private picker; a party becomes public only after **Start party**. Challenge at the end of a solo round shares the
+  result only when pressed. Daily questions start once an admin picks a channel with `/bluff setup`; that channel's
+  hello has the same two play buttons. The install welcome needs the Webhook
   Events URL (step 7).
 
 ## Commands

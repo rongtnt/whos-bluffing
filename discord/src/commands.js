@@ -198,7 +198,7 @@ async function command(i, env, ctx) {
     case 'reveal': return canManage(i) ? later(() => revealNow(env, i)) : say({ content: game.NEED_MANAGE });
     case 'invite': return say({ content: `${game.invite(installUrl(env))}\nAdd to my apps (no server permission needed): ${personalInstallUrl(env)}` });
     // One D1 read, no Discord call: still answered at once.
-    default: return say({ content: game.help(serverInstalled(i) ? await store.getInstall(env.DB, i.guild_id) : null, Date.now(), serverInstalled(i)) });
+    default: return say({ content: game.help(serverInstalled(i) ? await store.getInstall(env.DB, i.guild_id) : null, Date.now(), serverInstalled(i)), components: game.playButtons() });
   }
 }
 
@@ -219,6 +219,9 @@ function component(i, env, ctx) {
   switch (kind) {
     // Public welcome buttons open a private round; never replace the server's welcome message.
     case 'start': return defer(ctx, env, i, () => openSetup(env, i, 'play'), { update: false });
+    case 'startparty': return canReplyPublic(i)
+      ? defer(ctx, env, i, () => openSetup(env, i, 'party'), { update: false })
+      : say({ content: PUBLIC_DENIED });
     case 'q': return say(game.confidencePicker(args[0], args[1], args[2], Number(args[3])));
     case 'c': return later(() => lockIn(env, i, args));
     case 'pa': return later(() => playChoose(env, i, args));

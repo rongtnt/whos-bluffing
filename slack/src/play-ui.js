@@ -12,6 +12,8 @@ const message = (fallback, ...blocks) => ({ text: fallback, blocks, unfurl_links
 const label = (p) => `${PACKS[p.pack].label} · ${DIFFICULTY_LABELS[p.difficulty]}`;
 const option = (pack, difficulty) => ({ text: text(`${PACKS[pack].label} · ${DIFFICULTY_LABELS[difficulty]}`), value: `${pack}:${difficulty}` });
 export const validSettings = (pack, difficulty) => Object.hasOwn(AVAILABILITY, difficulty) && AVAILABILITY[difficulty].includes(pack);
+export const launcher = () => message("Who's Bluffing? Play solo or with friends.", section("*Who's Bluffing?*\nTen questions. Pick an answer, then say how sure you are."),
+  actions(button('launch', 'Play solo', 'solo'), button('launch', 'Play with friends', 'party')));
 export function chooser(p) {
   return message("Who's Bluffing? Choose your round.", section(`*Who's Bluffing?* · ${p.kind === 'party' ? 'Play with friends' : 'Play solo'}\nTen questions. Pick an answer, then say how sure you are.`), {
     type: 'actions', block_id: 'play-settings', elements: [{
@@ -27,7 +29,7 @@ export function question(p, me, choice) {
   const prompt = `${header}\n${esc(it.prompt)}\n*A:* ${esc(it.a)}\n*B:* ${esc(it.b)}`;
   return choice == null
     ? message(`Question ${me.step + 1} of 10: ${it.prompt}`, section(prompt), actions(...[0, 1].map((c) => button('pick', `${c ? 'B' : 'A'} · ${c ? it.b : it.a}`, p.id, `${me.step}:${c}`))))
-    : message('How sure are you?', section(`${prompt}\nYou picked *${choice ? 'B' : 'A'}*. How sure are you?`),
+    : message('How sure are you?', section(`${prompt}\nYou picked *${choice ? 'B' : 'A'}*. How sure are you?${me.step === 0 ? '\n50% = guessing. 100% = certain. Being confidently wrong costs more. Tap a percentage to lock in.' : ''}`),
       actions(...CONFS.map((conf) => button('conf', `${conf}%`, p.id, `${me.step}:${choice}:${conf}`))),
       actions(button('back', 'Change answer', p.id, String(me.step))));
 }
@@ -40,9 +42,11 @@ function source(raw) {
 }
 export function feedback(p, me, step, choice, conf, result) {
   const it = p.items[step], t = result.truth ?? {};
+  const correct = result.correct ? choice : 1 - choice;
   const lines = [
     `*Question ${step + 1} of 10* · ${esc(it.prompt)}`,
     `${result.correct ? 'Right' : 'Wrong'} at ${conf}% sure · *${Math.round(result.points)} points* · total ${Math.round(me.total)}`,
+    `*Correct answer: ${correct ? 'B' : 'A'} · ${esc(correct ? it.b : it.a)}*`,
     ...['a', 'b'].map((side) => `${side.toUpperCase()}: ${esc(it[side])} — ${esc(t[side + '_value'])}${t.unit ? ' ' + esc(t.unit) : ''}${source(t[side + '_source'])}`),
     ...(t.fun ? [esc(t.fun)] : []),
   ];
@@ -66,6 +70,12 @@ export function end(p, me) {
     ...(link ? [section(`<${link}|Open challenge link> — your friends get the same ten questions.`)] : [section('Your finished score is available in the party lobby. Answers stay private.')]), actions(...buttons));
 }
 export const finishing = (p) => message('Your answers are saved. See your score.', section('Your ten answers are saved.'), actions(button('next', 'See your score', p.id, '10')));
+export function standings(p, board) {
+  const scores = board.top.map((me, i) => `${i + 1}. ${esc(me.name)} · ${Math.round(me.score)} points`);
+  return message(`Friends' scores · ${board.finished} of ${board.joined} finished`,
+    section(`*${esc(label(p))} · Friends' scores*\n${board.finished} of ${board.joined} finished\n${scores.join('\n') || 'Nobody has finished yet.'}${board.finished > 10 ? `\nTop 10 of ${board.finished}.` : ''}`),
+    actions(button('board', 'Refresh scores', p.id), button('rematch', 'Rematch', p.id)));
+}
 export function lobby(p, board) {
   const scores = board.top.map((me, i) => `${i + 1}. ${esc(me.name)} · ${Math.round(me.score)} points`);
   return message(`Who's Bluffing? ${label(p)} party — join for the same ten questions.`,

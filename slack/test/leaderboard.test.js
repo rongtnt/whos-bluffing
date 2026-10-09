@@ -70,5 +70,5 @@ test('/bluff stats with no revealed answers yet', async () => {
   await install(env);
   const calls = mockFetch();
   await send(env, signedRequest(slashBody({ text: 'stats' })));
-  assert.equal(replies(calls)[0].body.text, "No revealed answers in the last 30 days yet. Type /bluff to post today's question.");
+  assert.equal(replies(calls)[0].body.text, "No revealed answers in the last 30 days yet. Type /bluff question to post today's question.");
 });

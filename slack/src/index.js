@@ -108,7 +108,7 @@ async function oauthCallback(request, env) {
   });
   if (!res.ok || !res.team?.id || !res.access_token) return textResponse('The install did not work. Please use the Add to Slack link again.', 400);
   await store.saveInstall(env.DB, res.team.id, res.access_token, new Date().toISOString());
-  return textResponse("Who's Bluffing is installed. Type /bluff play for a private ten-question round or /bluff party to play with friends. For the daily question, use /bluff setup #channel.");
+  return textResponse("Who's Bluffing is installed. In Slack, type /bluff and choose Play solo or Play with friends. For an optional daily question, use /bluff question or /bluff setup #channel.");
 }
 
 // ---- Slash command ------------------------------------------------------------------------------------------
@@ -134,7 +134,8 @@ function command(f, env, ctx) {
   };
   const sub = args.toLowerCase();
   if (sub === 'play' || sub === 'party') return later((install) => play.start(env, install, f, sub === 'play' ? 'solo' : 'party', playTransport));
-  if (sub === '') return later((install) => postQuestion(env, install, f.channel_id, f.response_url));
+  if (sub === '') return later(() => play.launch(f.response_url, playTransport));
+  if (sub === 'question') return later((install) => postQuestion(env, install, f.channel_id, f.response_url));
   if (sub === 'stats') return later((install) => showStats(env, install, f.channel_id, f.response_url));
   if (sub === 'reveal') return later((install) => revealNow(env, install, f.response_url));
   const change = parseSetup(args);

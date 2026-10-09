@@ -66,7 +66,7 @@ test('/bluff play: a private 10-question round in one message, from the first qu
   const choose = await press(env, 'pa:r1:0:0');
   assert.deepEqual(await choose.json(), { type: 6 });
   msg = lastEdit(calls);
-  assert.equal(msg.content, "**Who's Bluffing? quick round** · Question 1 of 10 · 0 points\nQuestion 1?\nYou picked **A · Alpha 0**. Say how sure you are.");
+  assert.equal(msg.content, "**Who's Bluffing? quick round** · Question 1 of 10 · 0 points\nQuestion 1?\nYou picked **A · Alpha 0**. 50% = guessing. 100% = certain. Being confidently wrong costs more. Tap a percentage to lock in.");
   assert.deepEqual(ids(msg), [...[50, 60, 70, 80, 90, 100].map((c) => `pc:r1:0:0:${c}`), 'pb:r1:0']);
 
   // Confidence -> the answer goes to the API; the reveal shows points, both values with sources, and Next.

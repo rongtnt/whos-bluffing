@@ -107,7 +107,7 @@ test('/bluff reveal with no open question says so; a failed reveal stays open fo
   await install(empty, 'T1', { channel: 'C1' });
   let calls = mockFetch();
   await send(empty, signedRequest(slashBody({ text: 'reveal' })));
-  assert.equal(replies(calls)[0].body.text, "There is no open question to reveal. Type /bluff to post today's question.");
+  assert.equal(replies(calls)[0].body.text, "There is no open question to reveal. Type /bluff question to post today's question.");
 
   const env = await setup();
   calls = mockFetch({ apiDown: true });

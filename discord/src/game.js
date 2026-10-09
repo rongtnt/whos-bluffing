@@ -53,6 +53,7 @@ const linkButton = (url, text) => ({ type: 2, style: 5, url, label: label(text) 
 export const ADD_LABEL = 'Add to your server';
 const option = (q, choice) => `${LETTERS[choice]} · ${esc(choice ? q.b : q.a)}`;
 const abButtons = (q, id) => [row(button(id(0), `A · ${q.a}`, 1), button(id(1), `B · ${q.b}`, 1))];
+const needsFullOptions = (q) => [q.a, q.b].some((text) => text.length + 4 > MAX_LABEL);
 const confLabel = (c) => (CONF_WORDS[c] ? `${c}% · ${CONF_WORDS[c]}` : `${c}%`);
 const confButtons = (id) => CONF_ROWS.map((levels) => row(...levels.map((c) => button(id(c), confLabel(c)))));
 // <url> inside the link keeps Discord from adding a preview card per source.
@@ -128,17 +129,19 @@ export const alreadyPosted = (guildId, post) =>
 // ---- Setup, stats, recap -------------------------------------------------------------------------------------
 
 // Posted once when a server adds Who's Bluffing (the install webhook event), before anyone has run a command.
+export const playButtons = () => [row(button('start', 'Play solo', 1), button('startparty', 'Play with friends', 1))];
 export const WELCOME = {
-  content: "Who's Bluffing? is in. Think you know more than your friends? Play ten trivia questions, then hit Challenge to let them try the same round.\n\n" +
-    'Tap Play now or type `/bluff play`. Your round is private. Sharing your result is up to you.\n\n' +
-    'Want a daily question too? An admin can run `/bluff setup channel:#channel`.',
-  components: [row(button('start', 'Play now', 1))],
+  content: "Who's Bluffing? is in. Think you know more than your friends?\n\n" +
+    '**Play solo:** ten private questions. **Play with friends:** the same ten questions, private answers, shared scores.\n' +
+    'Pick a topic and difficulty, then Start. You can also type `/bluff play` or `/bluff party`.\n\n' +
+    'Optional daily question: an admin can run `/bluff setup channel:#channel`.',
+  components: playButtons(),
   allowed_mentions: NO_PINGS,
 };
 
 export const channelHello = (hour, now) => ({
   content: `Who's Bluffing will post a question here every day at ${clock(todayAt(hour, now))}. Tap A or B, then say how sure you are.\nTry a private ten-question round now, then challenge a friend.`,
-  components: [row(button('start', 'Play now', 1))],
+  components: playButtons(),
   allowed_mentions: NO_PINGS,
 });
 
@@ -151,18 +154,20 @@ export const setupDone = (s, now) =>
 // `install` = this server's row, or null before it used any command: its reveal delay and, once it has a channel,
 // where and when the question goes up.
 export function help(install, now, server = true) {
-  const intro = '**Play with friends:** `/bluff party` opens a private topic and difficulty picker (Memes by default). Start the lobby, Join privately, compare Results, then Rematch.';
-  if (!server) return `${intro}\n\`/bluff play\` plays a private ten-question round. \`/bluff invite\` gives personal and server install links.`;
+  const intro = '**Play solo:** `/bluff play` for ten private questions.\n' +
+    '**Play with friends:** `/bluff party` for the same ten questions. Start the lobby, Join privately, compare scores, then Rematch.\n' +
+    'Choose a topic and difficulty, then Start. Tap A or B and say how sure you are.\n' +
+    'Points reward honest confidence: 50% scores 0; 100% scores +100 if right and -300 if wrong.';
+  if (!server) return `${intro}\n\`/bluff invite\` gives personal and server install links.`;
   const where = install?.channel_id ? `, here in <#${install.channel_id}> at ${clock(todayAt(install.post_hour_utc, now))}` : '';
   const delay = install?.reveal_delay_h ?? NEW_REVEAL_DELAY_H;
   return [
     intro,
-    `**Who's Bluffing** posts one question a day${where}. Tap A or B, then say how sure you are. ` +
+    '',
+    `**Optional daily question:** one question a day${where}. ` +
       `The answer and this server's top 5 come out ${plural(delay, 'hour')} later. Every Monday brings last week's recap.`,
-    'Points reward honest confidence: 50% scores 0; 100% scores +100 if right and -300 if wrong.',
     '',
     "`/bluff question` post today's question in this channel now",
-    '`/bluff play` play a private 10-question round',
     "`/bluff stats` this server's leaderboard for the last 30 days",
     "`/bluff invite` get a link to add Who's Bluffing to another server",
     '`/bluff setup` set the daily channel, hour (UTC), reveal (hours until the answer) and roast mode (Manage Server)',
@@ -235,7 +240,7 @@ export function roundSetup(s) {
 export function playQuestion(state, step, prefix = 'p') {
   const it = state.items[step];
   return {
-    content: `${progress(state, step)}\n${esc(it.prompt)}`,
+    content: `${progress(state, step)}\n${esc(it.prompt)}` + (needsFullOptions(it) ? `\n${option(it, 0)}\n${option(it, 1)}` : ''),
     components: abButtons(it, (choice) => `${prefix}a:${state.round_id}:${step}:${choice}`),
   };
 }
@@ -243,7 +248,8 @@ export function playQuestion(state, step, prefix = 'p') {
 export function playConfidence(state, step, choice, prefix = 'p') {
   const it = state.items[step];
   return {
-    content: `${progress(state, step)}\n${esc(it.prompt)}\nYou picked **${option(it, choice)}**. Say how sure you are.`,
+    content: `${progress(state, step)}\n${esc(it.prompt)}\nYou picked **${option(it, choice)}**. ` +
+      (step === 0 ? '50% = guessing. 100% = certain. Being confidently wrong costs more. Tap a percentage to lock in.' : 'Say how sure you are.'),
     components: [...confButtons((conf) => `${prefix}c:${state.round_id}:${step}:${choice}:${conf}`),
       row(button(`${prefix}b:${state.round_id}:${step}`, 'Change answer'))],
   };

@@ -13,7 +13,7 @@ features:
     - command: /bluff
       url: https://whosbluffing-slack.rongaijun41.workers.dev/slack/events
       description: Play trivia solo or with friends, or set up a daily question
-      usage_hint: "[party | play | setup #channel hour roast on|off | reveal | stats]"
+      usage_hint: "[party | play | question | setup #channel hour roast on|off | reveal | stats]"
       should_escape: true
 oauth_config:
   redirect_urls:

@@ -124,7 +124,7 @@ function showItem(ctx, st, k) {
 <h2 class="q" tabindex="-1">${item.prompt}</h2>
 <div class="picks">${[item.a, item.b].map((name, c) => html`<button type="button" class="pick" data-c="${c}" aria-pressed="false"><span class="letter" aria-hidden="true">${'AB'[c]}</span><span class="name">${name}</span></button>`)}</div>
 <div id="conf" hidden>
-  <p class="sub">${t('rounds.how_sure')}</p>
+  <p class="sub">${t(k === 0 ? 'rounds.confidence_hint' : 'rounds.how_sure')}</p>
   <div class="conf" role="group" aria-label="${t('rounds.how_sure')}">${CONFS.map((c) => html`<button type="button" class="anim" data-conf="${c}" aria-pressed="false">${c}%</button>`)}</div>
   <p class="ends"><span>${t('rounds.coin_flip')}</span><span>${t('rounds.stake')}</span></p>
 </div>`;

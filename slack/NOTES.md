@@ -1,5 +1,13 @@
 # Builder notes: Who's Bluffing? for Slack
 
+## First-game usability (2026-10-09)
+
+Bare `/bluff` now opens a private Play solo / Play with friends launcher; signed button callbacks reuse the existing pickers and session guards. The manual daily post moves to `/bluff question`; scheduled daily posts, reveal and stats are unchanged. Install/help text and the manifest usage hint point to the new paths. No schema or scopes changed.
+
+Only question one's confidence picker explains guessing/certainty and that a tap locks in. Feedback explicitly names the correct A/B option for both right and wrong answers. Check friends from a completed private result displays that round's finished standings locally, while still refreshing the current public lobby. It keeps Rematch and never joins anyone automatically.
+
+Verified: 63 Slack tests pass, including signed launcher callbacks/retries, real round feedback, first-question-only guidance, private standings with unfinished/unjoined-player guards and all existing daily behavior under the explicit question command. Live Slack rendering remains a separate acceptance step.
+
 ## Native full rounds (2026-10-09)
 
 `/bluff play` and `/bluff party` now use `play.js`, `play-store.js` and `play-ui.js`. The web-generated pack availability and labels drive the topic/difficulty picker; solo defaults to All/Normal, party to Memes/Normal. Both call the same web round/answer/complete API with `surface: slack` and existing salted identities. Per-answer feedback includes validated source links and a private Report question picker. Results use the web's short display labels.

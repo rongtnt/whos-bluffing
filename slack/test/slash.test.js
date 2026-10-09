@@ -11,12 +11,12 @@ const NEW_YORK = -4 * 3600; // users.info tz_offset, seconds east of UTC (summer
 const zone = (tzOffset) => ({ 'users.info': (c) => ({ user: { id: c.body.user, tz_offset: tzOffset } }) });
 const REVEAL_8 = 'reveal the answer 8 hours later (change it with reveal N, 2 to 23)';
 
-test("/bluff posts today's question with A and B buttons; in the chosen channel it becomes the day's post", async (t) => {
+test("/bluff question posts today's question with A and B buttons; in the chosen channel it becomes the day's post", async (t) => {
   at(t, NOW);
   const env = makeEnv();
   await install(env, 'T1', { channel: 'C1' });
   const calls = mockFetch();
-  const res = await send(env, signedRequest(slashBody()));
+  const res = await send(env, signedRequest(slashBody({ text: 'question' })));
   assert.equal(res.status, 200);
   const [post] = slackCalls(calls, 'chat.postMessage');
   assert.equal(post.body.channel, 'C1');
@@ -33,48 +33,48 @@ test("/bluff posts today's question with A and B buttons; in the chosen channel 
   assert.deepEqual(env.DB.rows('SELECT item_id, prompt, a, b FROM posts'),
     [{ item_id: QUESTION.item_id, prompt: QUESTION.prompt, a: QUESTION.a, b: QUESTION.b }]);
 
-  // A second /bluff there does not post the question twice.
-  await send(env, signedRequest(slashBody()));
+  // A second /bluff question there does not post the question twice.
+  await send(env, signedRequest(slashBody({ text: 'question' })));
   assert.equal(slackCalls(calls, 'chat.postMessage').length, 1);
   assert.equal(replies(calls).at(-1).body.text, "Today's question is already up in this channel.");
 });
 
-test('/bluff in another channel posts a copy there that is not the tracked post', async (t) => {
+test('/bluff question in another channel posts a copy there that is not the tracked post', async (t) => {
   at(t, NOW);
   const env = makeEnv();
   await install(env, 'T1', { channel: 'C1' });
   const calls = mockFetch();
-  await send(env, signedRequest(slashBody({ channel_id: 'C5' })));
+  await send(env, signedRequest(slashBody({ text: 'question', channel_id: 'C5' })));
   assert.equal(slackCalls(calls, 'chat.postMessage')[0].body.channel, 'C5');
   assert.equal(env.DB.rows('SELECT * FROM posts').length, 0);
 });
 
-test('/bluff with no chosen channel tracks the post, so it still gets a reveal', async (t) => {
+test('/bluff question with no chosen channel tracks the post, so it still gets a reveal', async (t) => {
   at(t, NOW);
   const env = makeEnv();
   await install(env);
   mockFetch();
-  await send(env, signedRequest(slashBody({ channel_id: 'C5' })));
+  await send(env, signedRequest(slashBody({ text: 'question', channel_id: 'C5' })));
   assert.deepEqual(env.DB.rows('SELECT channel_id FROM posts'), [{ channel_id: 'C5' }]);
 });
 
-test('/bluff after the day was revealed posts nothing and says so privately', async (t) => {
+test('/bluff question after the day was revealed posts nothing and says so privately', async (t) => {
   at(t, NOW);
   const env = makeEnv();
   await install(env, 'T1', { channel: 'C1' });
   await env.DB.prepare("INSERT INTO posts (team_id, date, channel_id, ts, revealed) VALUES ('T1', ?, 'C1', '1.0', 1)").bind(DATE).run();
   const calls = mockFetch();
-  await send(env, signedRequest(slashBody()));
+  await send(env, signedRequest(slashBody({ text: 'question' })));
   assert.equal(slackCalls(calls, 'chat.postMessage').length, 0);
   assert.equal(replies(calls)[0].body.text, "Today's answer is already out. A new question comes tomorrow.");
 });
 
-test('/bluff with the API down: private "taking a break" reply, nothing posted', async (t) => {
+test('/bluff question with the API down: private "taking a break" reply, nothing posted', async (t) => {
   at(t, NOW);
   const env = makeEnv();
   await install(env);
   const calls = mockFetch({ apiDown: true });
-  await send(env, signedRequest(slashBody()));
+  await send(env, signedRequest(slashBody({ text: 'question' })));
   assert.equal(slackCalls(calls, 'chat.postMessage').length, 0);
   const [reply] = replies(calls);
   assert.equal(reply.body.text, "Who's Bluffing is taking a break, try again in a minute.");
@@ -213,7 +213,7 @@ test('without BOT_KEY the API is never called: private "taking a break", nothing
   const env = { ...makeEnv(), BOT_KEY: undefined };
   await install(env, 'T1', { channel: 'C1' });
   const calls = mockFetch();
-  await send(env, signedRequest(slashBody()));
+  await send(env, signedRequest(slashBody({ text: 'question' })));
   assert.equal(calls.filter((c) => c.host === 'api.test').length, 0);
   assert.equal(slackCalls(calls, 'chat.postMessage').length, 0);
   assert.equal(replies(calls)[0].body.text, "Who's Bluffing is taking a break, try again in a minute.");
@@ -222,7 +222,7 @@ test('without BOT_KEY the API is never called: private "taking a break", nothing
 test('a workspace with no install row is told to reinstall', async () => {
   const env = makeEnv();
   const calls = mockFetch();
-  await send(env, signedRequest(slashBody()));
+  await send(env, signedRequest(slashBody({ text: 'question' })));
   assert.match(replies(calls)[0].body.text, /isn't installed/);
   assert.equal(slackCalls(calls, 'chat.postMessage').length, 0);
 });
