@@ -27,7 +27,9 @@ export function question(p, me, choice) {
   const prompt = `${header}\n${esc(it.prompt)}\n*A:* ${esc(it.a)}\n*B:* ${esc(it.b)}`;
   return choice == null
     ? message(`Question ${me.step + 1} of 10: ${it.prompt}`, section(prompt), actions(...[0, 1].map((c) => button('pick', `${c ? 'B' : 'A'} · ${c ? it.b : it.a}`, p.id, `${me.step}:${c}`))))
-    : message('How sure are you?', section(`${prompt}\nYou picked *${choice ? 'B' : 'A'}*. How sure are you?`), actions(...CONFS.map((conf) => button('conf', `${conf}%`, p.id, `${me.step}:${choice}:${conf}`)), button('back', 'Change answer', p.id, String(me.step))));
+    : message('How sure are you?', section(`${prompt}\nYou picked *${choice ? 'B' : 'A'}*. How sure are you?`),
+      actions(...CONFS.map((conf) => button('conf', `${conf}%`, p.id, `${me.step}:${choice}:${conf}`))),
+      actions(button('back', 'Change answer', p.id, String(me.step))));
 }
 function source(raw) {
   try {

@@ -303,6 +303,10 @@ for (const kind of ['solo', 'party']) test(`${kind}: Change answer returns to th
   const initial = f.last();
   await f.tap(`play:pick:${p.id}:0:0`);
   assert.ok(buttonIds(f.last()).includes(`play:back:${p.id}:0`));
+  const rows = f.last().blocks.filter((b) => b.type === 'actions');
+  assert.deepEqual(rows.map((row) => row.elements.map((b) => b.text.text)), [
+    ['50%', '60%', '70%', '80%', '90%', '100%'], ['Change answer'],
+  ], 'Change answer has its own row so it does not collapse confidence choices');
   const changeButton = f.last().blocks.flatMap((b) => b.elements ?? []).find((b) => b.action_id === `play:back:${p.id}:0`);
   assert.equal(changeButton.text.text, 'Change answer');
   for (const opts of [{ user: 'U2' }, { channel: 'C2' }, { privateMessage: false }]) {
