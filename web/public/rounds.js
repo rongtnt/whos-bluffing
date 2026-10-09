@@ -351,6 +351,8 @@ ${counters(t, res)}
   <button type="button" data-act="challenge">${t('rounds.challenge')}</button>
   <button type="button" data-act="share" aria-expanded="false" aria-controls="share-panel">${t('rounds.share')}</button>
 </div>
+<a class="button block" href="/discord">${t('rounds.discord_friends')}</a>
+<p class="small muted">${t('rounds.discord_friends_note')}</p>
 <div id="challenge-panel" class="card" hidden></div>
 <div id="vs-panel" class="card" hidden></div>
 <section id="share-panel" class="card" hidden></section>`;
