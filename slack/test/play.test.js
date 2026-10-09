@@ -88,6 +88,7 @@ test('solo: available topics/difficulties, source feedback, real score, explicit
   const result = await f.finish(p);
   assert.match(result.text, /840 points/);
   assert.match(JSON.stringify(result), /https:\/\/whosbluffing.com\/c\//);
+  assert.match(JSON.stringify(result), /\|Open challenge link>/);
   await f.tap(`play:next:${p.id}:10`);
   assert.equal(f.db.sqlite.prepare('SELECT COUNT(*) AS n FROM round_plays').get().n, 1);
   const apiCalls = f.calls.filter((c) => c.url.hostname === 'api.test');
@@ -207,6 +208,9 @@ test('overlapping confidence taps serialize; ACK does not wait for a slow API', 
   await f.tap(`play:conf:${p.id}:0:1:100`);
   assert.match(f.last().text, /still saving/);
   assert.equal(f.last().replace_original, false, 'a busy notice must preserve the current picker for retry');
+  await f.tap(`play:back:${p.id}:0`);
+  assert.match(f.last().text, /still saving/);
+  assert.equal(f.last().replace_original, false, 'changing the answer must not interrupt an in-flight confidence save');
   release(); await first;
   assert.equal(f.calls.filter((c) => c.url.pathname.endsWith('/answer')).length, 1);
   assert.equal(f.env.DB.rows('SELECT step FROM play_players')[0].step, 1);
@@ -291,4 +295,39 @@ test('a private source report requires an answered question and keeps the game c
   assert.equal(f.env.DB.rows('SELECT step FROM play_players')[0].step, 1);
   await f.tap(`play:next:${p.id}:1`);
   assert.match(f.last().text, /Question 2 of 10/);
+});
+
+for (const kind of ['solo', 'party']) test(`${kind}: Change answer returns to the same unanswered question without sending or changing a score`, async (t) => {
+  const f = await fixture(t), p = await f.begin(kind);
+  if (kind === 'party') await f.tap(`play:join:${p.id}`, { privateMessage: false });
+  const initial = f.last();
+  await f.tap(`play:pick:${p.id}:0:0`);
+  assert.ok(buttonIds(f.last()).includes(`play:back:${p.id}:0`));
+  const changeButton = f.last().blocks.flatMap((b) => b.elements ?? []).find((b) => b.action_id === `play:back:${p.id}:0`);
+  assert.equal(changeButton.text.text, 'Change answer');
+  for (const opts of [{ user: 'U2' }, { channel: 'C2' }, { privateMessage: false }]) {
+    await f.tap(`play:back:${p.id}:0`, opts);
+    assert.equal(f.last().replace_original, false, 'an unauthorized or public callback leaves the game intact');
+  }
+  await f.tap(`play:back:${p.id}:0`);
+  assert.equal(f.last().replace_original, true);
+  assert.equal(f.last().text, initial.text);
+  assert.deepEqual(buttonIds(f.last()), [`play:pick:${p.id}:0:0`, `play:pick:${p.id}:0:1`]);
+  await f.tap(`play:back:${p.id}:0`); // repeated delivery does not progress or submit
+  assert.equal(f.calls.filter((c) => c.url.pathname.endsWith('/answer')).length, 0);
+  assert.deepEqual(f.env.DB.rows('SELECT step, total FROM play_players'), [{ step: 0, total: 0 }]);
+  await f.tap(`play:pick:${p.id}:0:1`);
+  await f.tap(`play:conf:${p.id}:0:1:80`);
+  const feedback = f.last();
+  const answers = f.calls.filter((c) => c.url.pathname.endsWith('/answer'));
+  assert.equal(answers.length, 1);
+  assert.equal(answers[0].body.choice, 1, 'only the replacement answer is submitted');
+  await f.tap(`play:back:${p.id}:0`); // no changing a saved answer
+  assert.deepEqual(f.last(), feedback);
+  await f.tap(`play:next:${p.id}:1`);
+  const second = f.last();
+  await f.tap(`play:back:${p.id}:0`); // old button cannot rewind the next question
+  assert.deepEqual(f.last(), second);
+  assert.equal(f.env.DB.rows('SELECT step FROM play_players')[0].step, 1);
+  assert.equal(f.calls.filter((c) => c.url.pathname.endsWith('/answer')).length, 1);
 });

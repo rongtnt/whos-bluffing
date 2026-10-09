@@ -153,6 +153,10 @@ export async function action(env, install, payload, transport) {
   if (me.done) return respond(view(p, me));
   const step = /^\d+$/.test(stepText ?? '') ? Number(stepText) : -1;
   if (step !== me.step) return respond(view(p, me));
+  if (op === 'back' && !me.feedback && step < 10) {
+    if (me.lease_until > Date.now()) return notice(BUSY);
+    return respond(ui.question(p, me));
+  }
   if (op === 'pick' && !me.feedback && step < 10 && ['0', '1'].includes(choiceText)) return respond(ui.question(p, me, Number(choiceText)));
   if (op === 'conf' && !me.feedback && step < 10 && ['0', '1'].includes(choiceText) && CONFS.includes(Number(confText))) {
     const lease = nonce();

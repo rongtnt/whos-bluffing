@@ -8,6 +8,15 @@ const deny = (text) => { throw Object.assign(new Error(text), { publicMessage: t
 const nonce = () => crypto.randomUUID().replaceAll('-', '');
 const safeName = (name) => String(name || 'A friend').replace(/[\p{Cc}\p{Cf}]/gu, '').slice(0, 32) || 'A friend';
 
+// Called only after the stored chat scope and interaction message have been checked.
+// Guild/channel ids come from this signed interaction, never from a button or new stored fields.
+function lobbyLink(p, i) {
+  const channel = i.channel?.id ?? i.channel_id;
+  if (i.context != null && i.context !== 0) return null;
+  return [i.guild_id, channel, p.message_id].every((id) => typeof id === 'string' && /^\d+$/.test(id))
+    ? `https://discord.com/channels/${i.guild_id}/${channel}/${p.message_id}` : null;
+}
+
 async function active(env, id, scope) {
   if (!/^[\w-]{1,64}$/.test(id ?? '')) deny(EXPIRED);
   const p = await store.get(env.DB, id);
@@ -61,6 +70,7 @@ function view(p, player) {
 export async function publicAction(env, i, kind, id, { scope, me, name }) {
   let p = await active(env, id, scope);
   if (!p.message_id || p.message_id !== i.message?.id || (i.message.flags & 64)) deny('Use the buttons on this chat’s party lobby.');
+  p.lobby_url = lobbyLink(p, i);
   if (p.next_id) {
     if (kind === 'tj') deny('A rematch has started. Join from the latest party lobby. Your original round can still finish privately.');
     // Concurrent presses of the previous Rematch converge on the same child, including after a failed API request.
@@ -96,6 +106,7 @@ export async function privateAction(env, i, kind, args, { scope, me }) {
   const p = await active(env, id, scope);
   let player = await store.player(env.DB, p.id, me.anon_id);
   if (!player || player.message_id !== i.message?.id || !(i.message.flags & 64)) deny('Press Join / Resume on the party lobby to open your own round.');
+  p.lobby_url = lobbyLink(p, i);
   if (kind === 'tv') {
     if (!player.done) deny('Finish your round to compare results.');
     return game.partyResults(p, await store.board(env.DB, p.id));
@@ -113,6 +124,10 @@ export async function privateAction(env, i, kind, args, { scope, me }) {
   const step = Number(stepText);
   if (!/^\d+$/.test(stepText ?? '') || step !== player.step) return view(p, player);
   const state = { ...p, round_id: p.id, total: player.total };
+  if (kind === 'tb') {
+    if (player.lease_until > Date.now()) deny(BUSY);
+    return view(p, player);
+  }
   if (kind === 'ta' || kind === 'tc') {
     if (player.last_result || step >= p.items.length) return view(p, player);
     if (!['0', '1'].includes(choiceText)) deny('Please use one of the answer buttons.');

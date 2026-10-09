@@ -214,7 +214,7 @@ function component(i, env, ctx) {
     if (kind !== 'tj' && !canReplyPublic(i)) return say({ content: PUBLIC_DENIED });
     return defer(ctx, env, i, async () => party.publicAction(env, i, kind, args[0], await partyContext(env, i)), { update: kind !== 'tj' });
   }
-  if (['ta', 'tc', 'tn', 'tv', 'tf', 'tg'].includes(kind)) return later(async () => party.privateAction(env, i, kind, args, await partyContext(env, i)));
+  if (['ta', 'tb', 'tc', 'tn', 'tv', 'tf', 'tg'].includes(kind)) return later(async () => party.privateAction(env, i, kind, args, await partyContext(env, i)));
   if (['q', 'c'].includes(kind) && !serverInstalled(i)) return say({ content: SERVER_FEATURE });
   switch (kind) {
     // Public welcome buttons open a private round; never replace the server's welcome message.
@@ -222,6 +222,7 @@ function component(i, env, ctx) {
     case 'q': return say(game.confidencePicker(args[0], args[1], args[2], Number(args[3])));
     case 'c': return later(() => lockIn(env, i, args));
     case 'pa': return later(() => playChoose(env, i, args));
+    case 'pb': return later(() => playBack(env, i, args));
     case 'pc': return later(() => playAnswer(env, i, args));
     case 'pn': return later(() => playNext(env, i, args));
     case 'pp': return later(() => playAgain(env, i, args));
@@ -486,6 +487,14 @@ async function playChoose(env, i, [roundId, stepText, choiceText]) {
   if (!['0', '1'].includes(choiceText)) deny('Use an answer button.');
   if (state.done || state.last_result || state.step !== Number(stepText) || state.step >= state.items.length) return playView(env, state);
   return game.playConfidence(state, state.step, Number(choiceText));
+}
+
+async function playBack(env, i, [roundId, stepText]) {
+  const { state } = await playFor(env, i, roundId);
+  if (!state) return null;
+  if (state.done || state.last_result || !/^\d+$/.test(stepText ?? '') || state.step !== Number(stepText)) return playView(env, state);
+  if (state.lease_until > Date.now()) deny(BUSY);
+  return playView(env, state);
 }
 
 async function playAnswer(env, i, [roundId, stepText, choiceText, confText]) {

@@ -244,7 +244,8 @@ export function playConfidence(state, step, choice, prefix = 'p') {
   const it = state.items[step];
   return {
     content: `${progress(state, step)}\n${esc(it.prompt)}\nYou picked **${option(it, choice)}**. Say how sure you are.`,
-    components: confButtons((conf) => `${prefix}c:${state.round_id}:${step}:${choice}:${conf}`),
+    components: [...confButtons((conf) => `${prefix}c:${state.round_id}:${step}:${choice}:${conf}`),
+      row(button(`${prefix}b:${state.round_id}:${step}`, 'Change answer'))],
   };
 }
 
@@ -307,9 +308,8 @@ export function partyLobby(party, board) {
 export const partyDone = (party, player) => ({
   content: `**${esc(player.name)} · ${plural(Math.round(player.done.score), 'point')}**\n` +
     `${esc(Object.hasOwn(TYPE_NAMES, player.done.type) ? TYPE_NAMES[player.done.type] : player.done.type)}\n${Math.round(player.done.accuracy)}% right at ${Math.round(player.done.mean_conf)}% sure.\n` +
-    'Your score is ready for Results in the party lobby. You can start a Rematch there.\n' +
-    'You cannot replay this round; a rematch gives everyone ten new questions.',
-  components: [row(button(`tv:${party.id}`, 'View results'))],
+    'Compare scores below, or return to the party for a rematch.',
+  components: [row(button(`tv:${party.id}`, 'View results'), ...(party.lobby_url ? [linkButton(party.lobby_url, 'Back to party')] : []))],
 });
 
 export function feedback(round, step, prefix = 'p') {
@@ -319,6 +319,13 @@ export function feedback(round, step, prefix = 'p') {
 }
 
 export const partyResults = (party, board) => ({
-  content: partyLobby(party, board).content,
-  components: [row(button(`tv:${party.id}`, 'Refresh results'))],
+  content: [
+    `**${settingsLabel(party)} · Results**`,
+    `${board.joined} joined · ${board.finished} finished`,
+    ...board.top.map((p, n) => `${n + 1}. ${esc(p.name)} · ${plural(p.score, 'point')}`),
+    ...(board.finished > 10 ? [`Top 10 of ${board.finished} finished players.`] : []),
+    'Rematch is in the party lobby.',
+  ].join('\n'),
+  components: [row(button(`tv:${party.id}`, 'Refresh results'), ...(party.lobby_url ? [linkButton(party.lobby_url, 'Back to party')] : []))],
+  allowed_mentions: NO_PINGS,
 });

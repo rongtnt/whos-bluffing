@@ -130,3 +130,23 @@ test('Challenge accepts the production public host and uses only its owners save
   await f.press('px:r1', { user: '880000000000000002' });
   assert.doesNotMatch(last(f.calls).content, /scored|https:/);
 });
+
+test('solo Change answer returns to the same question, keeps saved answers locked, and checks the owner/message', async () => {
+  const f = fixture(); await f.open(); await f.start();
+  await f.press('pa:r1:0:0');
+  assert.equal(last(f.calls).components.at(-1).components[0].label, 'Change answer');
+  assert.equal(last(f.calls).components.at(-1).components[0].custom_id, 'pb:r1:0');
+  await f.press('pb:r1:0');
+  assert.deepEqual(last(f.calls).components[0].components.map((b) => b.custom_id), ['pa:r1:0:0', 'pa:r1:0:1']);
+  assert.deepEqual(f.env.DB.rows('SELECT step, total FROM play_state'), [{ step: 0, total: 0 }]);
+  assert.equal(apiCalls(f.calls, '/api/round/answer').length, 0);
+  await f.press('pa:r1:0:1'); await f.press('pc:r1:0:1:60');
+  const result = last(f.calls); await f.press('pb:r1:0');
+  assert.deepEqual(last(f.calls), result, 'a delayed Back keeps the saved answer screen');
+  assert.equal(apiCalls(f.calls, '/api/round/answer')[0].body.choice, 1);
+  const edits = originalEdits(f.calls).length;
+  for (const who of [{ user: '880000000000000002' }, { channel: '660000000000000002' }, { messageId: 'bad' }, { flags: 0 }]) await f.press('pb:r1:0', who);
+  await f.press('pb:old-round:0');
+  assert.equal(originalEdits(f.calls).length, edits);
+  assert.equal(apiCalls(f.calls, '/api/round/answer').length, 1);
+});

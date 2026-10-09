@@ -255,3 +255,62 @@ test('personal solo play uses the clicker, isolates private chats and rejects ex
   assert.equal(apiCalls(f.calls, '/api/round/answer').length, 1);
   assert.match(followUps(f.calls).at(-1).body.content, /round has ended/);
 });
+
+test('party Change answer keeps the same private question and cannot reopen saved answers or another participant', async () => {
+  const f = fixture(); const { id } = await f.start(); await f.publicClick(id);
+  await f.privateClick(id, 'ta', ':0:0');
+  let msg = originalEdits(f.calls).at(-1).body;
+  assert.deepEqual(msg.components.at(-1).components.map((b) => [b.custom_id, b.label]), [[`tb:${id}:0`, 'Change answer']]);
+  await f.privateClick(id, 'tb', ':0');
+  msg = originalEdits(f.calls).at(-1).body;
+  assert.deepEqual(msg.components[0].components.map((b) => b.custom_id), [`ta:${id}:0:0`, `ta:${id}:0:1`]);
+  assert.equal((await f.player(id)).step, 0);
+  assert.equal(apiCalls(f.calls, '/api/round/answer').length, 0);
+  await f.privateClick(id, 'ta', ':0:1'); await f.privateClick(id, 'tc', ':0:1:60');
+  const result = originalEdits(f.calls).at(-1).body;
+  await f.privateClick(id, 'tb', ':0');
+  assert.deepEqual(originalEdits(f.calls).at(-1).body, result);
+  assert.equal(apiCalls(f.calls, '/api/round/answer')[0].body.choice, 1);
+  const edits = originalEdits(f.calls).length;
+  await f.click(`tb:${id}:0`, { flags: 64, user: SECOND, messageId: (await f.player(id)).message_id });
+  await f.click(`tb:${id}:0`, { flags: 64, messageId: 'wrong-message' });
+  await f.privateClick(id, 'tb', ':0', { channel: OTHER_CHANNEL });
+  assert.equal(originalEdits(f.calls).length, edits);
+  assert.equal((await f.player(id)).step, 1);
+  assert.equal(apiCalls(f.calls, '/api/round/answer').length, 1);
+});
+
+test('guild results jump to the verified lobby, stay compact, and reject another chat or stale party', async (t) => {
+  freeze(t, '2026-10-09T12:00:00Z');
+  const f = fixture(); const { id } = await f.start(); await f.publicClick(id); await f.finish(id);
+  const p = await partyStore.get(f.env.DB, id);
+  const expected = `https://discord.com/channels/${GUILD}/${CHANNEL}/${p.message_id}`;
+  let msg = originalEdits(f.calls).at(-1).body;
+  const links = (m) => m.components.flatMap((r) => r.components).filter((b) => b.style === 5);
+  assert.deepEqual(links(msg).map((b) => [b.label, b.url]), [['Back to party', expected]]);
+  await f.privateClick(id, 'tv'); msg = originalEdits(f.calls).at(-1).body;
+  assert.equal(links(msg)[0].url, expected);
+  assert.match(msg.content, /1 joined · 1 finished/);
+  assert.match(msg.content, /Sam · 260 points/);
+  assert.doesNotMatch(msg.content, /Pick A or B|Join shares|Same ten|Question 1/);
+  assert.deepEqual(msg.allowed_mentions, { parse: [] });
+  assert.ok(!JSON.stringify(f.env.DB.rows('SELECT * FROM parties')).includes('lobby_url'));
+  const nonguildContext = buttonPayload(`tv:${id}`, { messageId: (await f.player(id)).message_id });
+  nonguildContext.context = 2; nonguildContext.message.flags = 64;
+  await f.run(nonguildContext);
+  assert.equal(links(originalEdits(f.calls).at(-1).body).length, 0, 'a non-guild context never gets a guessed guild link');
+  const edits = originalEdits(f.calls).length;
+  await f.privateClick(id, 'tv', '', { channel: OTHER_CHANNEL });
+  await f.click(`tv:${id}`, { messageId: 'wrong-message', flags: 64 });
+  t.mock.timers.tick(partyStore.LIFETIME + 1); await f.privateClick(id, 'tv');
+  assert.equal(originalEdits(f.calls).length, edits, 'rejected contexts do not produce a jump link');
+});
+
+test('DM party completion and results omit guild jump links', async () => {
+  const f = fixture(); const { id } = await f.start({ dm: true });
+  await f.publicClick(id, 'tj', { dm: true }); await f.finish(id, { dm: true });
+  const hasLink = () => originalEdits(f.calls).at(-1).body.components.some((row) => row.components.some((b) => b.style === 5));
+  assert.equal(hasLink(), false);
+  await f.privateClick(id, 'tv', '', { dm: true }); assert.equal(hasLink(), false);
+  assert.doesNotMatch(originalEdits(f.calls).at(-1).body.content, /Join shares|Pick A or B/);
+});

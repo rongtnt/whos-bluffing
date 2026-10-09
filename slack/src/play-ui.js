@@ -27,7 +27,7 @@ export function question(p, me, choice) {
   const prompt = `${header}\n${esc(it.prompt)}\n*A:* ${esc(it.a)}\n*B:* ${esc(it.b)}`;
   return choice == null
     ? message(`Question ${me.step + 1} of 10: ${it.prompt}`, section(prompt), actions(...[0, 1].map((c) => button('pick', `${c ? 'B' : 'A'} · ${c ? it.b : it.a}`, p.id, `${me.step}:${c}`))))
-    : message('How sure are you?', section(`${prompt}\nYou picked *${choice ? 'B' : 'A'}*. How sure are you?`), actions(...CONFS.map((conf) => button('conf', `${conf}%`, p.id, `${me.step}:${choice}:${conf}`))));
+    : message('How sure are you?', section(`${prompt}\nYou picked *${choice ? 'B' : 'A'}*. How sure are you?`), actions(...CONFS.map((conf) => button('conf', `${conf}%`, p.id, `${me.step}:${choice}:${conf}`)), button('back', 'Change answer', p.id, String(me.step))));
 }
 function source(raw) {
   try {
@@ -61,7 +61,7 @@ export function end(p, me) {
     : [button('board', 'Check friends', p.id), button('rematch', 'Rematch', p.id)];
   const link = p.kind === 'solo' && challengeUrl(d.challenge_url, p.round_id);
   return message(`${Math.round(d.score)} points · ${typeName(d.type)}`, section(`*${Math.round(d.score)} points · ${esc(typeName(d.type))}*\n${Math.round(d.accuracy)}% right at ${Math.round(d.mean_conf)}% sure.\n${esc(label(p))}${d.roast ? '\n' + esc(d.roast) : ''}`),
-    ...(link ? [section(`<${link}|Copy this friend challenge link> — your friends get the same ten questions.`)] : [section('Your finished score is available in the party lobby. Answers stay private.')]), actions(...buttons));
+    ...(link ? [section(`<${link}|Open challenge link> — your friends get the same ten questions.`)] : [section('Your finished score is available in the party lobby. Answers stay private.')]), actions(...buttons));
 }
 export const finishing = (p) => message('Your answers are saved. See your score.', section('Your ten answers are saved.'), actions(button('next', 'See your score', p.id, '10')));
 export function lobby(p, board) {
