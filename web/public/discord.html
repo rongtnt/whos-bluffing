@@ -66,7 +66,7 @@
     <div>
       <p class="eyebrow">Free Discord trivia bot</p>
       <h1 id="discord-title">Who's Bluffing? for Discord</h1>
-      <p class="hero-sub">Everyone has that friend who thinks they know everything. Put them to the test. Start a Memes round with <code>/bluff party</code>. Friends tap Join and play the same ten questions, with private answers. Finish, compare results, and start a rematch.</p>
+      <p class="hero-sub">Everyone has that friend who thinks they know everything. Put them to the test. Start <code>/bluff party</code> and choose a topic and difficulty. Friends tap Join and play the same ten questions, with private answers. Finish, compare results, and start a rematch with fresh questions.</p>
       <div class="actions">
         <a class="button primary" href="https://discord.com/oauth2/authorize?client_id=1556371051439587461&amp;scope=applications.commands&amp;integration_type=1" data-discord-user-install><svg class="i" viewBox="0 0 24 24" aria-hidden="true" focusable="false"><path d="M4 5.5h11a2 2 0 0 1 2 2V13a2 2 0 0 1-2 2H9l-4 3.5V15H4a2 2 0 0 1-2-2V7.5a2 2 0 0 1 2-2z"/><path d="M19.5 9.5H20a2 2 0 0 1 2 2V17a2 2 0 0 1-2 2h-1v3l-3.5-3H12"/></svg><span>Add to my apps</span></a>
         <a class="button" href="https://discord.com/oauth2/authorize?client_id=1556371051439587461&amp;scope=bot%20applications.commands&amp;permissions=83968&amp;integration_type=0" data-discord-install><span>Add to server</span><svg class="i" viewBox="0 0 24 24" aria-hidden="true" focusable="false"><path d="M5 12h14M13 6l6 6-6 6"/></svg></a>
@@ -112,7 +112,7 @@
     <div class="cmds" id="cmd-discord"><!-- commands:discord -->
       <article class="cmd" data-item>
         <h3><code>/bluff party</code></h3>
-        <p>Starts a shared Memes round. Friends tap Join to play the same ten questions privately. Joining shares your Discord display name and finished score in this chat. Tap Results to refresh completed scores; after you finish, Rematch starts a new shared round. Each round expires after one hour. Public posts follow the chat’s app permissions.</p>
+        <p>Choose a topic and difficulty, then start a shared ten-question round. Friends tap Join and answer privately. Joining shares your Discord display name and finished score in this chat. Tap Results to refresh scores; after you finish, Rematch starts fresh questions at the same topic and difficulty. Each party expires after one hour. Public posts follow the chat’s app permissions.</p>
         <dl>
           <div><dt>Options</dt><dd>None</dd></div>
           <div><dt>Who can run it</dt><dd>Anyone</dd></div>
@@ -120,7 +120,7 @@
       </article>
       <article class="cmd" data-item>
         <h3><code>/bluff play</code></h3>
-        <p>A private 10-question round (only you): pick A or B, say how sure you are, see the answer and your points, then Next. It ends with your score, your type and a Challenge button that posts your challenge link in the channel.</p>
+        <p>Opens a private topic and difficulty picker. Play ten questions: pick an answer, say how sure you are, then see the answer, its sources and your points. Finish to see your score and type, challenge a friend, or play fresh questions at the same topic and difficulty.</p>
         <dl>
           <div><dt>Options</dt><dd>None</dd></div>
           <div><dt>Who can run it</dt><dd>Anyone</dd></div>
@@ -200,7 +200,7 @@
         <details><summary><span>The server leaderboard says “a member” instead of names</span></summary><p>The <code>/bluff stats</code> leaderboard looks up server members. If everyone shows as “a member”, please <a href="https://github.com/rongtnt/whos-bluffing/issues">tell us on GitHub</a>. Only the first 1,000 members of a server can be named. Friend rounds use the display name you share when joining instead.</p></details>
         <details><summary><span>“This interaction failed”</span></summary><p>Update your Discord app (or reload the browser tab) and try again: older versions can’t show the buttons. If it keeps happening, the game server may be down for a moment; the <a href="/status">status page</a> shows whether it answers.</p></details>
         <details><summary><span>“I can’t post in that channel”</span></summary><p>Give Who's Bluffing the View Channel and Send Messages permissions in that channel, or pick another one with <code>/bluff setup channel:</code>.</p></details>
-        <details><summary><span>The app shows as offline</span></summary><p>That is normal. Who's Bluffing answers through Discord’s interactions endpoint and never connects to the live gateway, so it always looks offline while it works.</p></details>
+        <details><summary><span>The app shows as offline</span></summary><p>The game commands can still work even when Discord shows the bot as offline. Try <code>/bluff play</code>. If the command fails too, wait a moment and try again.</p></details>
       <!-- /trouble --></div>
   </div>
 </section>
@@ -213,7 +213,7 @@
         <details><summary>Who can change the channel or the hour?</summary><p>Members with the Manage Server or Administrator permission, with <code>/bluff setup</code>. Everyone else can post the question, play and see the leaderboard.</p></details>
         <details><summary>How are points worked out?</summary><p>Each answer scores 100 − 400 × (confidence − outcome)², where the outcome is 1 if right and 0 if not: 50% scores 0, and 100% scores +100 when right and −300 when wrong. Honest confidence earns the most over time.</p></details>
         <details><summary>What is roast mode?</summary><p>Off by default: the reveal says “Someone was 90% sure…”, and nobody is named next to a loss. <code>/bluff setup roast:on</code> names the biggest bluffer in the reveal.</p></details>
-        <details><summary>Where can I find the Discord app?</summary><p>Find <a href="https://discord.com/discovery/applications/1556371051439587461">Who's Bluffing? in Discord's App Directory</a>, or use Add to my apps above. Start a Memes round with <code>/bluff party</code>, or try <code>/bluff play</code> for a private ten-question round.</p></details>
+        <details><summary>Where can I find the Discord app?</summary><p>Find <a href="https://discord.com/discovery/applications/1556371051439587461">Who's Bluffing? in Discord's App Directory</a>, or use Add to my apps above. Choose a topic and difficulty with <code>/bluff party</code>, or try <code>/bluff play</code> for a private ten-question round.</p></details>
       </div>
   </div>
 </section>

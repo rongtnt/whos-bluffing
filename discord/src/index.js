@@ -100,6 +100,7 @@ async function tick(env, now) {
   const cleanup = async () => {
     await purgeParties(env.DB, now.getTime());
     await env.DB.prepare('DELETE FROM play_state WHERE updated_at <= ?').bind(now.getTime() - LIFETIME).run();
+    await env.DB.prepare('DELETE FROM round_setups WHERE expires_at <= ?').bind(now.getTime()).run();
   };
   for (const [name, step] of [['cleanup', cleanup], ['reveal', revealDue], ['recap', recapDue], ['post', postDue]]) {
     await step(env, now).catch((err) => logError(name, err));

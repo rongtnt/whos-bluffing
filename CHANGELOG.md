@@ -2,6 +2,12 @@
 
 Deviations from `prereg/PREREG.md` after it is finalized are logged here with a date and a reason.
 
+## 2026-10-09 (native chat rounds)
+- Slack gains full ten-question solo and shared rounds. Both chat apps offer the web's supported topics and difficulties, source-linked feedback, friend challenges and fresh rematches. Question selection and confidence scoring use the existing game API; no scoring thresholds changed.
+- Completed native rounds are recorded with their Slack or Discord surface. Shared party sessions are not web friend-challenge conversions. Temporary party display names are stored only after a member explicitly joins and agrees to share their name and final score; names are not sent to the research API.
+- AI rematches can exhaust the small authored bank at Easy and Brutal. When the varied authored selection cannot fill a fresh rematch, AI uses the existing sourced comparison sampler with the same difficulty, tier and entity rules, excluding the previous ten questions. This fallback has less format variety; the authored-only History, Languages and Memes rules remain unchanged.
+- Reason: the chat apps lacked the web game's topic choices and repeat-play flow. No retention improvement is claimed before measurement.
+
 ## 2026-10-06 (question variety and private activity counts)
 - Release code revision: `294dbc5`. Result type cards now show only the type name.
 - Added 80 authored History and 80 Languages questions with sources and short explanations. New rounds in these packs use only the authored bank, at all three difficulties. Rounds cap formats and subtopics, avoid repeating a subject within a round, and prefer unseen subjects across rounds. History also caps each era and region at four of ten questions. Reason: user feedback found company/aircraft dates and speaker counts repetitive.

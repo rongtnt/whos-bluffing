@@ -9,6 +9,8 @@ export const ALREADY_UP = "Today's question is already up in this channel.";
 export const NOTHING_TO_REVEAL = "There is no open question to reveal. Type /bluff to post today's question.";
 export const USAGE = [
   "*Who's Bluffing? commands*",
+  '`/bluff party` choose a topic and difficulty, then invite friends to the same ten questions',
+  '`/bluff play` choose a topic and difficulty for a private ten-question round',
   "`/bluff` post today's question in this channel",
   '`/bluff setup #channel [hour] [roast on|off] [reveal N]` post the question in #channel every day at that hour in your time zone ' +
     '(14:00 UTC if left out; add utc after the hour for UTC) and reveal the answer N hours later (2 to 23, default 8)',

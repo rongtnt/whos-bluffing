@@ -22,11 +22,12 @@ function fixture({ slow = 0, readDelay = 0, api = {}, forcePrivate = false } = {
     if (c.method === 'PATCH' && c.path.endsWith('/messages/@original')) return { body: replies.get(c.path.split('/')[5]) };
   } });
   async function run(payload) {
-    const publicEdit = payload.type === 3 && ['tr', 'tm'].includes(payload.data.custom_id.split(':')[0]);
+    const publicStart = payload.type === 3 && payload.data.custom_id.startsWith('ss:') && payload.data.custom_id.endsWith(':party');
+    const publicEdit = publicStart || payload.type === 3 && ['tr', 'tm'].includes(payload.data.custom_id.split(':')[0]);
     const join = payload.type === 3 && payload.data.custom_id.startsWith('tj:');
     replies.set(payload.token, {
-      id: payload.type === 3 && !join ? payload.message.id : String(990000000000000000n + BigInt(++seq)),
-      flags: forcePrivate || (payload.type === 3 ? !publicEdit : payload.data.options[0].name !== 'party') ? 64 : 0,
+      id: payload.type === 3 && !join && !publicStart ? payload.message.id : String(990000000000000000n + BigInt(++seq)),
+      flags: forcePrivate || !publicEdit ? 64 : 0,
     });
     return send(env, signedRequest(payload));
   }
@@ -45,7 +46,10 @@ function fixture({ slow = 0, readDelay = 0, api = {}, forcePrivate = false } = {
     const p = payload(commandPayload('party', [], { ...who, permissions: who.permissions ?? PUBLIC }), who);
     p.id = String(1800000000000000000n + BigInt(++seq));
     const response = await run(p);
-    return { id: p.id, response, request: p };
+    const s = env.DB.rows('SELECT * FROM round_setups').at(-1);
+    if (!s) return { id: p.id, response, request: p };
+    const startResponse = await click(`ss:${s.id}:${s.revision}:party`, { ...who, messageId: s.message_id, flags: 64 });
+    return { id: s.id, response: startResponse, request: p };
   };
   const click = async (custom, who = {}) => {
     const p = payload(buttonPayload(custom, { ...who, permissions: who.permissions ?? PUBLIC }), who);
@@ -135,7 +139,7 @@ test('concurrent joins and answers count once; failed answer/complete can retry'
       choice: c.body.choice, conf: c.body.conf, correct: true, points: 96, total: (Number(c.body.item_id.slice(1)) + 1) * 96,
       truth: { a_value: 2, b_value: 1, unit: 'items' },
     },
-    '/api/round/complete': () => completeFailures-- > 0 ? new Response('{}', { status: 503 }) : { score: 960 },
+    '/api/round/complete': () => completeFailures-- > 0 ? new Response('{}', { status: 503 }) : { score: 960, accuracy: 100, mean_conf: 90, type: 'Modest' },
   } });
   const { id } = await f.start();
   await Promise.all([f.publicClick(id), f.publicClick(id), f.publicClick(id, 'tj', { user: SECOND })]);
@@ -187,7 +191,7 @@ test('expiry rejects every party action immediately; hourly cleanup removes name
   const f = fixture();
   const { id } = await f.start();
   await f.publicClick(id);
-  await f.env.DB.prepare('INSERT INTO play_state VALUES (?, ?, ?, ?, ?, ?)')
+  await f.env.DB.prepare('INSERT INTO play_state (anon_id, round_id, items, step, total, updated_at) VALUES (?, ?, ?, ?, ?, ?)')
     .bind('old-solo', 'r0', '[]', 0, 0, Date.now()).run();
   t.mock.timers.tick(partyStore.LIFETIME + 1);
   const before = apiCalls(f.calls, '/api/round/answer').length;
@@ -233,14 +237,21 @@ test('personal solo play uses the clicker, isolates private chats and rejects ex
     return p;
   };
   await f.run(dm(commandPayload('play')));
+  let s = f.env.DB.rows('SELECT * FROM round_setups').at(-1);
+  let start = dm(buttonPayload(`ss:${s.id}:0:play`, { messageId: s.message_id })); start.message.flags = 64;
+  await f.run(start);
   await f.run(dm(commandPayload('play', [], { channel: OTHER_CHANNEL })));
+  s = f.env.DB.rows('SELECT * FROM round_setups').at(-1);
+  start = dm(buttonPayload(`ss:${s.id}:0:play`, { messageId: s.message_id, channel: OTHER_CHANNEL })); start.message.flags = 64;
+  await f.run(start);
   assert.equal(f.env.DB.rows('SELECT * FROM play_state').length, 2);
-  await f.run(dm(buttonPayload('pc:r1:0:0:90')));
+  let p = dm(buttonPayload('pc:r1:0:0:90', { messageId: f.env.DB.rows('SELECT message_id FROM play_state WHERE round_id = ?', 'r1')[0].message_id })); p.message.flags = 64;
+  await f.run(p);
   const body = apiCalls(f.calls, '/api/round/answer')[0].body;
   assert.equal(body.anon_id, anon(`dm:${CHANNEL}`, USER));
   assert.equal(body.community, null);
   t.mock.timers.tick(partyStore.LIFETIME + 1);
   await f.run(dm(buttonPayload('pc:r2:0:0:90', { channel: OTHER_CHANNEL })));
   assert.equal(apiCalls(f.calls, '/api/round/answer').length, 1);
-  assert.match(originalEdits(f.calls).at(-1).body.content, /round has ended/);
+  assert.match(followUps(f.calls).at(-1).body.content, /round has ended/);
 });

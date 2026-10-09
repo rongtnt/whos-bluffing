@@ -46,7 +46,7 @@ test('a confidence tap defers, sends the hashed answer with the bot key, stores 
   const [answer] = apiCalls(calls, '/api/round/answer');
   assert.deepEqual(answer.body, {
     round_id: 'dq-2026-10-06', item_id: 'p00042', choice: 1, conf: 80, rt_ms: 4000,
-    anon_id: anon(GUILD, USER), community: community(GUILD), surface: 'discord',
+    anon_id: anon(GUILD, USER), community: community(GUILD), surface: 'discord', revision: true,
   });
   assert.equal(answer.headers['x-bluff-bot'], 'test-bot-key');
   assert.ok(!JSON.stringify(calls.filter((c) => c.host === 'api.test')).includes(USER), 'raw user id reached the API');
@@ -69,7 +69,7 @@ test('changing your mind before the reveal sends revision: true and replaces the
   await send(env, signedRequest(tapAfter(cId(0, 60), 2000)));
 
   const [first, second] = apiCalls(calls, '/api/round/answer');
-  assert.equal(first.body.revision, undefined);
+  assert.equal(first.body.revision, true);
   assert.equal(second.body.revision, true);
   assert.deepEqual([second.body.choice, second.body.conf], [0, 60]);
   assert.deepEqual(env.DB.rows('SELECT choice, conf, points, correct FROM answers'), [{ choice: 0, conf: 60, points: null, correct: null }]);
@@ -124,4 +124,20 @@ test('without BOT_KEY nothing reaches the web API and the member gets the "takin
   assert.equal(calls.filter((c) => c.host === 'api.test').length, 0);
   assert.equal(followUps(calls)[0].body.content, "Who's Bluffing is taking a break, try again in a minute.");
   assert.equal(env.DB.rows('SELECT * FROM answers').length, 0);
+});
+
+test('a lost daily answer response retries as a revision instead of displaying an unsaved new choice', async () => {
+  const env = makeEnv(); await addPost(env);
+  let saved; let fail = true;
+  const calls = mockFetch({ api: { '/api/round/answer': (c) => {
+    if (!saved || c.body.revision) saved = { choice: c.body.choice, conf: c.body.conf };
+    if (fail) { fail = false; return new Response('{broken'); }
+    return { locked: true, points_pending: true };
+  } } });
+  await send(env, signedRequest(tapAfter(cId(0, 90), 1000)));
+  assert.equal(env.DB.rows('SELECT * FROM answers').length, 0);
+  await send(env, signedRequest(tapAfter(cId(1, 60), 2000)));
+  assert.deepEqual(saved, { choice: 1, conf: 60 });
+  assert.deepEqual(env.DB.rows('SELECT choice, conf FROM answers'), [saved]);
+  assert.match(originalEdits(calls).at(-1).body.content, /B at 60%/);
 });

@@ -1,4 +1,7 @@
 // Message and component builders (Discord) and all user-facing copy. Pure: no I/O.
+import { PACKS, DIFFICULTY_LABELS } from '../../web/public/packs.js';
+import { TYPE_NAMES } from '../../web/public/types.js';
+import AVAILABILITY from '../../web/public/pack-availability.json' with { type: 'json' };
 
 export const FAIL_TEXT = "Who's Bluffing is taking a break, try again in a minute.";
 export const NEED_MANAGE = 'Only members with the Manage Server permission can do that.';
@@ -23,15 +26,7 @@ const LETTERS = ['A', 'B'];
 const CONF_ROWS = [[50, 60, 70], [80, 90, 100]];
 const CONF_WORDS = { 50: 'coin flip', 100: 'stake it all' };
 const NEGATIONS = { is: "It isn't.", was: "It wasn't.", came: "It didn't." };
-// The calibration types as players read them, with their one-line meanings: the same names as web/public/types.js.
-// The API and stored plays keep the original keys.
-const TYPES = {
-  Bluffer: ['Bluffer', 'Way more sure than right: 15 or more points over.'],
-  'Hot-headed': ['Too sure', '5 to 15 points more sure than right.'],
-  Calibrated: ['Spot on', "Your confidence matches how often you're right, within 5 points."],
-  Modest: ['Too modest', '5 to 15 points less sure than right.'],
-  Hedger: ['Playing it safe', '15 or more points less sure than right.'],
-};
+// The API and stored plays keep the original type keys; result messages use the web's short labels.
 const ROUND = "**Who's Bluffing? quick round**";
 const MIN_CALIBRATED_ANSWERS = 3;
 const MAX_LABEL = 80; // Discord's button label limit
@@ -156,7 +151,7 @@ export const setupDone = (s, now) =>
 // `install` = this server's row, or null before it used any command: its reveal delay and, once it has a channel,
 // where and when the question goes up.
 export function help(install, now, server = true) {
-  const intro = '**Play with friends:** `/bluff party` starts a Memes round in this chat. Join privately, compare Results, then Rematch.';
+  const intro = '**Play with friends:** `/bluff party` opens a private topic and difficulty picker (Memes by default). Start the lobby, Join privately, compare Results, then Rematch.';
   if (!server) return `${intro}\n\`/bluff play\` plays a private ten-question round. \`/bluff invite\` gives personal and server install links.`;
   const where = install?.channel_id ? `, here in <#${install.channel_id}> at ${clock(todayAt(install.post_hour_utc, now))}` : '';
   const delay = install?.reveal_delay_h ?? NEW_REVEAL_DELAY_H;
@@ -218,7 +213,24 @@ export function recapMessage(week, best, names) {
 
 // ---- /bluff play (private, one message edited in place) ----------------------------------------------------
 
-const progress = (state, step) => `${ROUND} · Question ${step + 1} of ${state.items.length} · ${plural(state.total, 'point')}`;
+export const settingsLabel = ({ pack = 'all', difficulty = 'normal' }) => `${PACKS[pack]?.label ?? pack} · ${DIFFICULTY_LABELS[difficulty] ?? difficulty}`;
+const heading = (state) => `${ROUND}${(state.pack && state.pack !== 'all') || (state.difficulty && state.difficulty !== 'normal') ? ` · ${settingsLabel(state)}` : ''}`;
+const progress = (state, step) => `${heading(state)} · Question ${step + 1} of ${state.items.length} · ${plural(state.total, 'point')}`;
+
+export const available = (pack, difficulty) => Object.hasOwn(AVAILABILITY, difficulty) && AVAILABILITY[difficulty].includes(pack);
+export const difficulties = (pack) => Object.keys(AVAILABILITY).filter((d) => available(pack, d));
+export function roundSetup(s) {
+  const select = (field, choices, selected) => row({ type: 3, custom_id: `s${field}:${s.id}:${s.revision}`, min_values: 1, max_values: 1,
+    options: choices.map(([value, label]) => ({ label, value, default: value === selected })) });
+  return {
+    content: `**${s.mode === 'party' ? 'Play with friends' : 'Play ten questions'}**\nChoose a topic and difficulty. ${s.mode === 'party' ? 'Start posts a lobby in this chat. Friends join and answer the same ten questions privately.' : 'Your answers and score stay private until you share.'}\n**${settingsLabel(s)}**`,
+    components: [
+      select('p', Object.entries(PACKS).filter(([p]) => difficulties(p).length).map(([p, v]) => [p, v.label]), s.pack),
+      select('d', difficulties(s.pack).map((d) => [d, DIFFICULTY_LABELS[d]]), s.difficulty),
+      row(button(`ss:${s.id}:${s.revision}:${s.mode}`, s.mode === 'party' ? 'Start party' : 'Start', 1)),
+    ],
+  };
+}
 
 export function playQuestion(state, step, prefix = 'p') {
   const it = state.items[step];
@@ -243,27 +255,26 @@ export function playResult(state, step, choice, conf, res, prefix = 'p') {
   const last = step + 1 === state.items.length;
   return {
     content: [
-      `${ROUND} · Question ${step + 1} of ${state.items.length}`,
+      `${heading(state)} · Question ${step + 1} of ${state.items.length}`,
       esc(it.prompt),
       `${res.correct ? 'Right' : 'Wrong'} at ${conf}%: **${signed(Math.round(res.points))}** · total ${plural(state.total, 'point')}`,
       side(it, truth, 0),
       side(it, truth, 1),
-      ...(truth.fun ? [esc(truth.fun)] : []),
+      ...(truth.fun ? [`**Why this answer**\n${esc(truth.fun)}`] : []),
     ].join('\n'),
-    components: [row(button(`${prefix}n:${state.round_id}:${step + 1}`, last ? 'See your score' : 'Next', 1))],
+    components: [row(button(`${prefix}n:${state.round_id}:${step + 1}`, last ? 'See your score' : 'Next', 1), button(`${prefix}f:${state.round_id}:${step}`, 'Report question'))],
   };
 }
 
-export function playEnd(done, challengeId, installUrl) {
-  const [name, meaning] = Object.hasOwn(TYPES, done.type) ? TYPES[done.type] : [];
-  const line = name ? `${name} · ${meaning}` : `${esc(done.type)}.`; // an unknown type shows as the API sent it
+export function playEnd(done, challengeId, installUrl, state = {}) {
+  const name = esc(Object.hasOwn(TYPE_NAMES, done.type) ? TYPE_NAMES[done.type] : done.type);
   const lines = [
-    `${ROUND} · **${plural(Math.round(done.score), 'point')}**`,
-    `${line} ${Math.round(done.accuracy)}% right at ${Math.round(done.mean_conf)}% sure.`,
+    `${heading(state)} · **${plural(Math.round(done.score), 'point')}**`,
+    `${name}\n${Math.round(done.accuracy)}% right at ${Math.round(done.mean_conf)}% sure.`,
   ];
   if (done.roast) lines.push(esc(done.roast));
   if (done.streak > 1) lines.push(`Streak: ${done.streak} days.`);
-  const buttons = [button('pp', 'Play again', 1)];
+  const buttons = [button(`pp:${state.round_id}`, 'Play again', 1)];
   if (challengeId) buttons.push(button(challengeId, 'Challenge'));
   if (installUrl) buttons.push(linkButton(installUrl, ADD_LABEL));
   return { content: lines.join('\n'), components: [row(...buttons)] };
@@ -280,7 +291,7 @@ export function partyLobby(party, board) {
   const scores = board.top.map((p, n) => `${n + 1}. ${esc(p.name)} · ${plural(p.score, 'point')}`);
   return {
     content: [
-      "**Who's Bluffing? · Memes party**",
+      `**Who's Bluffing? · ${settingsLabel({ pack: 'memes', ...party })} party**`,
       'Same ten questions. Pick A or B, then say how sure you are. Your answers stay private.',
       '**Join shares your Discord display name and final score here.** No pings.',
       `${board.joined} joined · ${board.finished} finished · Ends ${stamp(party.expires_at, 'R')}.`,
@@ -295,10 +306,17 @@ export function partyLobby(party, board) {
 
 export const partyDone = (party, player) => ({
   content: `**${esc(player.name)} · ${plural(Math.round(player.done.score), 'point')}**\n` +
+    `${esc(Object.hasOwn(TYPE_NAMES, player.done.type) ? TYPE_NAMES[player.done.type] : player.done.type)}\n${Math.round(player.done.accuracy)}% right at ${Math.round(player.done.mean_conf)}% sure.\n` +
     'Your score is ready for Results in the party lobby. You can start a Rematch there.\n' +
     'You cannot replay this round; a rematch gives everyone ten new questions.',
   components: [row(button(`tv:${party.id}`, 'View results'))],
 });
+
+export function feedback(round, step, prefix = 'p') {
+  return { content: 'What should we check?', components: [row(...[
+    ['wrong', 'Wrong answer'], ['ambiguous', 'Unclear question'], ['unit', 'Values / units'], ['cancel', 'Back'],
+  ].map(([reason, label]) => button(`${prefix}g:${round}:${step}:${reason}`, label)))] };
+}
 
 export const partyResults = (party, board) => ({
   content: partyLobby(party, board).content,

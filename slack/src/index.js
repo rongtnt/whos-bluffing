@@ -6,6 +6,8 @@ import { verifySlack } from './verify.js';
 import * as api from './api.js';
 import * as store from './store.js';
 import * as game from './game.js';
+import * as play from './play.js';
+import * as playStore from './play-store.js';
 
 const SCOPES = 'commands,chat:write,chat:write.public,channels:read,groups:read,users:read';
 const MAX_BODY = 1 << 20;
@@ -34,6 +36,7 @@ async function slack(token, method, params) {
     method: 'POST',
     headers: token ? { authorization: `Bearer ${token}` } : {},
     body,
+    signal: AbortSignal.timeout(5000),
   });
   const data = await res.json();
   if (!data.ok) logError(method, { message: data.error });
@@ -41,12 +44,17 @@ async function slack(token, method, params) {
 }
 
 // Reply through a response_url: shows to the user (ephemeral by default) without needing channel membership.
-const reply = (url, msg) =>
-  fetch(url, {
+const reply = async (url, msg) => {
+  const res = await fetch(url, {
     method: 'POST',
     headers: { 'content-type': 'application/json' },
     body: JSON.stringify({ response_type: 'ephemeral', replace_original: false, ...msg }),
+    signal: AbortSignal.timeout(5000),
   });
+  if (!res.ok) throw new Error(`Slack reply returned ${res.status}`);
+  return res;
+};
+const playTransport = { slack, reply };
 
 // Runs `work(install)` after the ack. Any failure becomes the friendly "taking a break" reply.
 function background(ctx, env, teamId, url, work) {
@@ -100,7 +108,7 @@ async function oauthCallback(request, env) {
   });
   if (!res.ok || !res.team?.id || !res.access_token) return textResponse('The install did not work. Please use the Add to Slack link again.', 400);
   await store.saveInstall(env.DB, res.team.id, res.access_token, new Date().toISOString());
-  return textResponse("Who's Bluffing is installed. In Slack, type /bluff setup #channel to choose where the daily question goes, or /bluff to post today's question now.");
+  return textResponse("Who's Bluffing is installed. Type /bluff play for a private ten-question round or /bluff party to play with friends. For the daily question, use /bluff setup #channel.");
 }
 
 // ---- Slash command ------------------------------------------------------------------------------------------
@@ -125,6 +133,7 @@ function command(f, env, ctx) {
     return ack();
   };
   const sub = args.toLowerCase();
+  if (sub === 'play' || sub === 'party') return later((install) => play.start(env, install, f, sub === 'play' ? 'solo' : 'party', playTransport));
   if (sub === '') return later((install) => postQuestion(env, install, f.channel_id, f.response_url));
   if (sub === 'stats') return later((install) => showStats(env, install, f.channel_id, f.response_url));
   if (sub === 'reveal') return later((install) => revealNow(env, install, f.response_url));
@@ -223,6 +232,10 @@ async function displayNames(env, install, channel, anonIds) {
 function interaction(p, env, ctx) {
   const action = p.type === 'block_actions' ? p.actions?.[0] : null;
   const [kind, arg] = String(action?.action_id ?? '').split(':');
+  if (kind === 'play') {
+    if (arg !== 'settings') background(ctx, env, p.team?.id, p.response_url, (install) => play.action(env, install, p, playTransport));
+    return ack();
+  }
   if (kind !== game.PICK && kind !== game.CONF) return ack();
   const now = Date.now();
   background(ctx, env, p.team?.id, p.response_url, (install) =>
@@ -262,7 +275,9 @@ async function lockIn(env, install, p, action, conf, now) {
   try {
     await api.answer(env, {
       round_id: v.r, item_id: v.i, choice: v.c, conf, rt_ms: Math.max(0, now - (Number(v.t) || now)), anon_id: anon, community,
-      ...(existing && { revision: true }),
+      // An earlier API write may have succeeded before local storage failed. Open daily answers are editable;
+      // always mark the current choice as a revision so our local lock and the API cannot disagree on retry.
+      revision: true,
     });
   } catch (err) {
     // 409 locked (the question's day is over) or 404 unknown round or item: the API refused the answer.
@@ -355,19 +370,26 @@ async function postDaily(env, now) {
   const q = await api.getQuestion(env, date);
   for (const install of due) {
     if (!(await store.claimPost(env.DB, install.team_id, date, install.channel_id, q))) continue;
-    const msg = game.questionMessage(q, date, revealTime(install, date, null, now));
-    const res = await slack(install.bot_token, 'chat.postMessage', { channel: install.channel_id, ...msg });
-    if (res.ok) {
-      await store.setPost(env.DB, install.team_id, date, res.ts);
-      continue;
+    try {
+      const msg = game.questionMessage(q, date, revealTime(install, date, null, now));
+      const res = await slack(install.bot_token, 'chat.postMessage', { channel: install.channel_id, ...msg });
+      if (res.ok && typeof res.ts === 'string' && res.ts) {
+        await store.setPost(env.DB, install.team_id, date, res.ts);
+        continue;
+      }
+      if (DEAD_TOKEN.has(res.error)) await store.deleteInstall(env.DB, install.team_id);
+      throw new Error(`daily post ${res.error}`);
+    } catch (err) {
+      // Fetch/JSON errors must release the claim too, and must not skip other workspaces.
+      await store.dropClaim(env.DB, install.team_id, date);
+      logError('daily post', err);
     }
-    await store.dropClaim(env.DB, install.team_id, date);
-    if (DEAD_TOKEN.has(res.error)) await store.deleteInstall(env.DB, install.team_id); // uninstalled workspace
   }
 }
 
 // Reveals first (so Sunday's answer is out before Monday's recap), then the recap, then the new question.
 async function hourly(env, now) {
+  await playStore.purge(env.DB, now).catch((err) => logError('round cleanup', err));
   await revealDue(env, now).catch((err) => logError('reveal', err));
   await postRecaps(env, now).catch((err) => logError('recap', err));
   await postDaily(env, now).catch((err) => logError('cron', err));

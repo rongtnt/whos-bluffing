@@ -198,6 +198,43 @@ test('Memes replay and rematches: fresh questions at every difficulty, stable li
   db.sqlite.close();
 });
 
+test('every advertised topic/difficulty supports a fresh same-settings rematch; AI exhaustion uses eligible comparisons', async () => {
+  const db = openD1();
+  const availability = json('../public/pack-availability.json');
+  assert.equal(Object.values(availability).flat().length, 32);
+  let aiFallbacks = 0;
+  for (const [difficulty, packs] of Object.entries(availability)) for (const pack of packs) for (let seed = 1; seed <= 10; seed++) {
+    const context = `${pack}/${difficulty}/${seed}`;
+    const first = await getRound(db, data, { mode: 'quick', pack, difficulty }, now, seeded(seed));
+    assert.equal(first.status, 200, context);
+    const previous = new Set(first.body.items.map((q) => q.id));
+    const next = await getRound(db, data, { mode: 'quick', rematch: first.body.round_id, pack: 'invalid', difficulty: 'invalid' }, now, seeded(seed + 100));
+    assert.equal(next.status, 200, `${context}: ${JSON.stringify(next.body)}`);
+    assert.equal(next.body.pack, pack); assert.equal(next.body.difficulty, difficulty);
+    const selected = next.body.items.map((q) => data.pairs.get(q.id));
+    assert.equal(new Set(selected.map((q) => q.id)).size, 10, context);
+    assert.ok(selected.every((q) => !previous.has(q.id)), context);
+    for (const [level, count] of Object.entries(DIFFICULTIES[difficulty].mix)) assert.equal(selected.filter((q) => q.level === level).length, count, context);
+    const entities = selected.flatMap((q) => q.authored?.subjects ?? [data.entity.get(q.a_id), data.entity.get(q.b_id)]);
+    assert.equal(new Set(entities).size, entities.length, context);
+    for (const q of selected) {
+      if (q.authored) assert.ok(pack === 'all' || q.topic === pack, context);
+      else assert.ok(data.packLists[pack][difficulty][q.level].includes(q.id), 'generated fallback keeps topic/tier/familiarity rules');
+    }
+    if (pack === 'ai' && ['easy', 'brutal'].includes(difficulty)) {
+      assert.ok(selected.every((q) => !q.authored), context);
+      aiFallbacks++;
+    }
+    if (['history', 'languages', 'memes'].includes(pack)) {
+      assert.ok(selected.every((q) => q.authored), context);
+      assert.ok(selected.every((q, i) => !i || q.family !== selected[i - 1].family), context);
+      for (const q of selected) assert.ok(selected.filter((other) => q.family === other.family).length <= (q.family === 'chronology' ? 2 : 3), context);
+    }
+  }
+  assert.equal(aiFallbacks, 20);
+  db.sqlite.close();
+});
+
 test('Memes availability requires a varied full round; retired questions refill without other topics', async () => {
   const empty = loadRounds(pool, pairs, days);
   const narrow = loadRounds(pool, pairs, days, { curated: bank.items.filter((q) => q.topic === 'memes').map((q) => ({ ...q, family: 'origin' })) });

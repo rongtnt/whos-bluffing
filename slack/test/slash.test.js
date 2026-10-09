@@ -111,7 +111,7 @@ test('/bluff setup #channel [HH] [roast on|off] [reveal N] and setup roast on|of
   assert.deepEqual(installs(env), [{ channel_id: 'C8', post_hour_utc: 14, roast: 0, reveal_delay_h: null }]);
   assert.equal(slackCalls(calls, 'users.info').length, 0);
 
-  for (const text of ['setup <#C7|x> 24', 'setup', 'setup roast maybe', 'setup 9', 'setup 9 utc', 'setup <#C7|x> utc', 'play']) {
+  for (const text of ['setup <#C7|x> 24', 'setup', 'setup roast maybe', 'setup 9', 'setup 9 utc', 'setup <#C7|x> utc', 'unknown']) {
     const usage = await send(env, signedRequest(slashBody({ text })));
     const body = await usage.json();
     assert.match(body.text, /\/bluff setup #channel \[hour\] \[roast on\|off\] \[reveal N\]/, text);

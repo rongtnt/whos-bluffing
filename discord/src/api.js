@@ -38,3 +38,15 @@ export const reveal = (env, date, community) => call(env, `/api/round/reveal${qu
 export const quickRound = (env, params = {}) => call(env, `/api/round${query({ mode: 'quick', ...params })}`);
 export const answer = (env, body) => call(env, '/api/round/answer', { ...body, surface: 'discord' });
 export const complete = (env, body) => call(env, '/api/round/complete', { ...body, surface: 'discord' });
+export const flag = async (env, body) => {
+  const result = await call(env, '/api/flag', body);
+  if (result?.ok !== true) throw new Error('feedback response incomplete');
+  return result;
+};
+
+export function roundItems(round) {
+  if (!round?.round_id || round.items?.length !== 10 || new Set(round.items.map((q) => q.id)).size !== 10) {
+    throw new Error('round needs ten distinct questions');
+  }
+  return round.items.map(({ id, prompt, a, b }) => ({ id, prompt, a, b }));
+}

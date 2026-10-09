@@ -21,7 +21,6 @@ const PERIOD_DAYS = 30;
 const STREAK_LOOKBACK_DAYS = 366;
 const HOUR_MS = 3_600_000;
 const DISCORD_EPOCH_MS = 1_420_070_400_000;
-const MAX_CUSTOM_ID = 100;
 
 const [SUB, STRING, INTEGER, CHANNEL] = [1, 3, 4, 7];
 const TEXT_CHANNEL = 0;
@@ -190,9 +189,9 @@ async function command(i, env, ctx) {
   if (['question', 'stats', 'setup', 'reveal'].includes(sub?.name) && !serverInstalled(i)) return say({ content: SERVER_FEATURE });
   switch (sub?.name) {
     case 'question': return later(() => postToday(env, i));
-    case 'play': return later(() => playStart(env, i));
+    case 'play': return later(() => openSetup(env, i, 'play'));
     case 'party': return canReplyPublic(i)
-      ? later(async () => party.start(env, i, (await partyContext(env, i)).scope), { ephemeral: false })
+      ? later(() => openSetup(env, i, 'party'))
       : say({ content: PUBLIC_DENIED });
     case 'stats': return later(() => stats(env, i), { ephemeral: false });
     case 'setup': return canManage(i) ? later(() => setup(env, i, opts)) : say({ content: game.NEED_MANAGE });
@@ -206,25 +205,30 @@ async function command(i, env, ctx) {
 function component(i, env, ctx) {
   const [kind, ...args] = (i.data?.custom_id ?? '').split(':');
   const later = (work) => defer(ctx, env, i, work);
+  if (['sp', 'sd', 'ss'].includes(kind)) {
+    const publicStart = kind === 'ss' && args[2] === 'party';
+    if (publicStart && !canReplyPublic(i)) return say({ content: PUBLIC_DENIED });
+    return defer(ctx, env, i, () => setupAction(env, i, kind, args), { update: !publicStart, ephemeral: !publicStart });
+  }
   if (['tj', 'tr', 'tm'].includes(kind)) {
     if (kind !== 'tj' && !canReplyPublic(i)) return say({ content: PUBLIC_DENIED });
     return defer(ctx, env, i, async () => party.publicAction(env, i, kind, args[0], await partyContext(env, i)), { update: kind !== 'tj' });
   }
-  if (['ta', 'tc', 'tn', 'tv'].includes(kind)) return later(async () => party.privateAction(env, i, kind, args, await partyContext(env, i)));
+  if (['ta', 'tc', 'tn', 'tv', 'tf', 'tg'].includes(kind)) return later(async () => party.privateAction(env, i, kind, args, await partyContext(env, i)));
   if (['q', 'c'].includes(kind) && !serverInstalled(i)) return say({ content: SERVER_FEATURE });
   switch (kind) {
     // Public welcome buttons open a private round; never replace the server's welcome message.
-    case 'start': return defer(ctx, env, i, () => playStart(env, i), { update: false });
+    case 'start': return defer(ctx, env, i, () => openSetup(env, i, 'play'), { update: false });
     case 'q': return say(game.confidencePicker(args[0], args[1], args[2], Number(args[3])));
     case 'c': return later(() => lockIn(env, i, args));
     case 'pa': return later(() => playChoose(env, i, args));
     case 'pc': return later(() => playAnswer(env, i, args));
     case 'pn': return later(() => playNext(env, i, args));
-    case 'pp': return later(() => playStart(env, i));
+    case 'pp': return later(() => playAgain(env, i, args));
+    case 'pf': case 'pg': return later(() => playFeedback(env, i, kind, args));
     case 'px': {
       if (!canReplyPublic(i)) return say({ content: PUBLIC_DENIED });
-      const url = new URL(args.slice(1).join(':'), env.API_BASE).href;
-      return say(game.challengePost(displayName(i.member ?? { user: i.user }), Number(args[0]), url), { ephemeral: false });
+      return defer(ctx, env, i, () => playChallenge(env, i, args), { update: false, ephemeral: false });
     }
     default: return say({ content: game.PLAY_ENDED });
   }
@@ -243,12 +247,16 @@ export async function postQuestion(env, install, channelId, date, q, now) {
   let res;
   try {
     res = await discord(env, 'POST', `/channels/${channelId}/messages`, game.questionPost(q, date, revealAt));
+    if (!res.ok) await store.dropClaim(env.DB, install.guild_id, date);
+    else {
+      const message = await res.json();
+      if (!message?.id) throw new Error('daily message missing');
+      await store.setPostMessage(env.DB, install.guild_id, date, message.id);
+    }
   } catch (err) {
     await store.dropClaim(env.DB, install.guild_id, date);
     throw err;
   }
-  if (!res.ok) await store.dropClaim(env.DB, install.guild_id, date);
-  else await store.setPostMessage(env.DB, install.guild_id, date, (await res.json()).id);
   return { status: res.status, revealAt };
 }
 
@@ -275,15 +283,16 @@ async function lockIn(env, i, [date, roundId, itemId, choiceText, confText]) {
   const before = await store.getAnswer(env.DB, i.guild_id, date, me.anon_id);
   try {
     // Daily questions come back {locked: true, points_pending: true}: no truth and no points until the reveal.
-    await api.answer(env, {
+    const answer = await api.answer(env, {
       round_id: roundId,
       item_id: itemId,
       choice,
       conf,
       rt_ms: Math.max(0, snowflakeMs(i.id) - snowflakeMs(i.message.id)),
       ...me,
-      ...(before && { revision: true }),
+      revision: true, // also repairs an earlier API save whose response never reached the local store
     });
+    if (!answer?.locked || !answer.points_pending) throw new Error('daily answer response incomplete');
   } catch (err) {
     if (err.status !== 409) throw err;
     // 409: the API locked that day (older than yesterday). Show the answer that stands, if there is one.
@@ -394,63 +403,172 @@ export async function postRecap(env, install, date) {
 
 // ---- /bluff play ------------------------------------------------------------------------------------------
 
-// The member's state for this button's round; null when the button belongs to an older or finished round.
+const deny = (text) => { throw Object.assign(new Error(text), { publicMessage: text }); };
+const BUSY = 'That action is still finishing. Try the button again in a moment.';
+const nonce = () => crypto.randomUUID().replaceAll('-', '');
+const scopeOf = (env, i) => api.anonId(env, 'channel', channelOf(i));
+
+async function openSetup(env, i, mode) {
+  const s = { id: nonce(), ...(await who(env, i)), scope: await scopeOf(env, i), mode,
+    pack: mode === 'party' ? 'memes' : 'all', difficulty: 'normal', revision: 0, expires_at: Date.now() + LIFETIME };
+  await store.createSetup(env.DB, s);
+  return { message: game.roundSetup(s), afterEdit: async (msg) => {
+    if (!msg?.id) throw new Error('picker message missing');
+    await store.bindSetup(env.DB, s.id, msg.id);
+  } };
+}
+
+async function setupAction(env, i, kind, [id, revision, mode]) {
+  const me = await who(env, i);
+  const s = await store.getSetup(env.DB, id);
+  if (!s || s.anon_id !== me.anon_id || s.scope !== await scopeOf(env, i) || s.message_id !== i.message?.id ||
+      !(i.message.flags & EPHEMERAL) || s.expires_at <= Date.now()) deny('This picker has expired. Open /bluff play or /bluff party again.');
+  if (kind !== 'ss') {
+    if (s.started) deny('This game has already started. Open a new command to choose another game.');
+    if (String(s.revision) !== revision) return game.roundSetup(s);
+    const value = i.data.values?.[0];
+    const pack = kind === 'sp' ? value : s.pack;
+    const supported = game.difficulties(pack);
+    const difficulty = kind === 'sd' ? value : (supported.includes(s.difficulty) ? s.difficulty : supported[0]);
+    if (!game.available(pack, difficulty)) deny('Choose one of the available topics and difficulties.');
+    await store.selectSetup(env.DB, s, pack, difficulty);
+    return game.roundSetup(await store.getSetup(env.DB, id));
+  }
+  if (mode !== s.mode || String(s.revision) !== revision) deny('Use Start on the latest version of this picker.');
+  if (!game.available(s.pack, s.difficulty)) deny('That topic is unavailable at this difficulty. Open a new picker.');
+  if (s.mode === 'party' && !canReplyPublic(i)) deny(PUBLIC_DENIED);
+  if (s.started === 2) {
+    if (s.mode === 'play') {
+      const state = await store.getPlay(env.DB, me.anon_id);
+      if (state?.round_id === s.round_id && state.message_id === s.message_id) return playView(env, state);
+      deny(game.PLAY_ENDED);
+    }
+    const p = await env.DB.prepare('SELECT message_id FROM parties WHERE id = ?').bind(s.id).first();
+    if (p?.message_id) deny('Your party lobby is already in this chat. Use Join / Resume there.');
+    return party.start(env, { ...i, id: s.id }, s.scope, s);
+  }
+  if (!(await store.claimSetup(env.DB, s, Date.now()))) deny(BUSY);
+  try {
+    if (s.mode === 'party') {
+      const result = await party.start(env, { ...i, id: s.id }, s.scope, s);
+      await store.finishSetup(env.DB, s.id, s.id);
+      return result;
+    }
+    const r = await api.quickRound(env, { pack: s.pack, difficulty: s.difficulty });
+    const items = api.roundItems(r);
+    if (!(await store.startPlay(env.DB, me.anon_id, r.round_id, items, Date.now(), { ...s, setup_id: s.id }))) deny(game.PLAY_ENDED);
+    await store.finishSetup(env.DB, s.id, r.round_id);
+    return game.playQuestion({ ...s, round_id: r.round_id, items, total: 0 }, 0);
+  } catch (err) {
+    await store.releaseSetup(env.DB, s.id);
+    throw err;
+  }
+}
+
 async function playFor(env, i, roundId) {
   const me = await who(env, i);
   const state = await store.getPlay(env.DB, me.anon_id);
-  return { me, state: state?.round_id === roundId && state.updated_at > Date.now() - LIFETIME ? state : null };
+  if (!state || state.updated_at <= Date.now() - LIFETIME || state.scope !== await scopeOf(env, i) ||
+      state.message_id !== i.message?.id || !(i.message.flags & EPHEMERAL)) deny(game.PLAY_ENDED);
+  // A delayed button from the same message cannot erase its newer round.
+  return { me, state: state.round_id === roundId ? state : null, current: state };
 }
 
-// A button from a round that has moved on: a repeated tap changes nothing; an older round says it has ended.
-const stale = (state) => (state ? null : { content: game.PLAY_ENDED, components: [] });
-
-async function playStart(env, i) {
-  const me = await who(env, i);
-  const round = await api.quickRound(env);
-  const items = round.items.map(({ id, prompt, a, b }) => ({ id, prompt, a, b }));
-  await store.startPlay(env.DB, me.anon_id, round.round_id, items, Date.now());
-  return game.playQuestion({ round_id: round.round_id, items, total: 0 }, 0);
+function playView(env, state) {
+  if (state.done) return game.playEnd(state.done, state.done.challenge_url ? `px:${state.round_id}` : null, installUrl(env), state);
+  if (state.last_result) return state.last_result;
+  return state.step < state.items.length ? game.playQuestion(state, state.step) : null;
 }
 
 async function playChoose(env, i, [roundId, stepText, choiceText]) {
   const { state } = await playFor(env, i, roundId);
-  if (state?.step !== Number(stepText)) return stale(state);
+  if (!state) return null;
+  if (!['0', '1'].includes(choiceText)) deny('Use an answer button.');
+  if (state.done || state.last_result || state.step !== Number(stepText) || state.step >= state.items.length) return playView(env, state);
   return game.playConfidence(state, state.step, Number(choiceText));
 }
 
-// rt_ms = question shown -> confidence tap.
 async function playAnswer(env, i, [roundId, stepText, choiceText, confText]) {
   const { me, state } = await playFor(env, i, roundId);
-  const step = Number(stepText);
-  if (state?.step !== step) return stale(state);
-  const choice = Number(choiceText);
-  const conf = Number(confText);
-  const res = await api.answer(env, {
-    round_id: roundId, item_id: state.items[step].id, choice, conf, rt_ms: Math.max(0, Date.now() - state.updated_at), ...me,
-  });
-  const total = Math.round(res.total ?? state.total + res.points);
-  if (!(await store.advancePlay(env.DB, me.anon_id, roundId, step, step + 1, total))) return null; // another tap won
-  return game.playResult({ ...state, total }, step, choice, conf, res);
+  if (!state) return null;
+  if (state.done || state.last_result || state.step !== Number(stepText) || state.step >= state.items.length) return playView(env, state);
+  if (!['0', '1'].includes(choiceText) || !['50', '60', '70', '80', '90', '100'].includes(confText)) deny('Use the answer and confidence buttons.');
+  const lease = nonce();
+  if (!(await store.claimPlay(env.DB, me.anon_id, roundId, state.step, lease, Date.now()))) deny(BUSY);
+  try {
+    const choice = Number(choiceText), conf = Number(confText);
+    const res = await api.answer(env, { round_id: roundId, item_id: state.items[state.step].id, choice, conf,
+      rt_ms: Math.max(0, Date.now() - state.updated_at), ...me });
+    if (!Number.isFinite(res.points) || typeof res.correct !== 'boolean' || !res.truth) throw new Error('answer response incomplete');
+    const total = Math.round(res.total ?? state.total + res.points);
+    const result = game.playResult({ ...state, total }, state.step, res.choice ?? choice, res.conf ?? conf, res);
+    if (!(await store.savePlayAnswer(env.DB, me.anon_id, roundId, lease, total, result))) return null;
+    return result;
+  } catch (err) {
+    await store.releasePlay(env.DB, me.anon_id, roundId, lease);
+    throw err;
+  }
 }
 
 async function playNext(env, i, [roundId, stepText]) {
   const { me, state } = await playFor(env, i, roundId);
-  const step = Number(stepText);
-  if (state?.step !== step) return stale(state);
-  if (step < state.items.length) {
-    await store.touchPlay(env.DB, me.anon_id, Date.now());
-    return game.playQuestion(state, step);
+  if (!state) return null;
+  if (state.done || state.step !== Number(stepText)) return playView(env, state);
+  if (state.step < state.items.length) {
+    await store.nextPlayQuestion(env.DB, me.anon_id, roundId, state.step, Date.now());
+    return playView(env, await store.getPlay(env.DB, me.anon_id));
   }
-  // All answered: finish the round once, even if "See your score" is pressed twice.
-  if (!(await store.advancePlay(env.DB, me.anon_id, roundId, step, step + 1, state.total))) return null;
-  let done;
+  const lease = nonce();
+  if (!(await store.claimPlay(env.DB, me.anon_id, roundId, state.step, lease, Date.now()))) deny(BUSY);
   try {
-    done = await api.complete(env, { round_id: roundId, ...me });
+    const done = await api.complete(env, { round_id: roundId, ...me });
+    if (!Number.isFinite(done.score) || !Number.isFinite(done.accuracy) || !Number.isFinite(done.mean_conf)) throw new Error('score response incomplete');
+    if (!(await store.finishPlay(env.DB, me.anon_id, roundId, lease, done, Date.now()))) return null;
+    return playView(env, { ...state, done });
   } catch (err) {
-    await store.advancePlay(env.DB, me.anon_id, roundId, step + 1, step, state.total); // let the button retry
+    await store.releasePlay(env.DB, me.anon_id, roundId, lease);
     throw err;
   }
-  await store.endPlay(env.DB, me.anon_id);
-  const challengeId = done.challenge_url && `px:${Math.round(done.score)}:${done.challenge_url}`;
-  return game.playEnd(done, challengeId?.length <= MAX_CUSTOM_ID ? challengeId : null, installUrl(env));
+}
+
+async function playAgain(env, i, [roundId]) {
+  const { me, state, current } = await playFor(env, i, roundId);
+  if (!state) return playView(env, current); // the prior rematch edit may have been lost
+  if (!state.done) deny('Finish this round before playing again.');
+  const lease = nonce();
+  if (!(await store.claimPlay(env.DB, me.anon_id, roundId, state.step, lease, Date.now()))) deny(BUSY);
+  try {
+    const r = await api.quickRound(env, { rematch: roundId });
+    const items = api.roundItems(r);
+    if (r.round_id === roundId || items.some((q) => state.items.some((old) => old.id === q.id))) throw new Error('rematch repeated a question');
+    if ((r.pack && r.pack !== state.pack) || (r.difficulty && r.difficulty !== state.difficulty)) throw new Error('rematch changed settings');
+    const next = { ...r, pack: state.pack, difficulty: state.difficulty };
+    if (!(await store.replacePlay(env.DB, me.anon_id, roundId, lease, next, items, Date.now()))) return null;
+    return game.playQuestion({ ...next, items, total: 0 }, 0);
+  } catch (err) {
+    await store.releasePlay(env.DB, me.anon_id, roundId, lease);
+    throw err;
+  }
+}
+
+async function playChallenge(env, i, [roundId]) {
+  const { state } = await playFor(env, i, roundId);
+  if (!state?.done?.challenge_url) deny(game.PLAY_ENDED);
+  const url = new URL(state.done.challenge_url, env.API_BASE);
+  const publicBase = new URL(env.API_BASE);
+  publicBase.hostname = publicBase.hostname.replace(/^bots\./, '');
+  if (url.origin !== publicBase.origin || !url.pathname.startsWith(`/c/${roundId}/`) || !/^\/c\/[\w-]+\/[\w-]+\/?$/.test(url.pathname)) throw new Error('invalid challenge link');
+  return game.challengePost(displayName(i.member ?? { user: i.user }), Math.round(state.done.score), url.href);
+}
+
+async function playFeedback(env, i, kind, [roundId, stepText, reason]) {
+  const { me, state } = await playFor(env, i, roundId);
+  if (!state) return null;
+  const step = Number(stepText);
+  if (!Number.isInteger(step) || step !== state.step - 1 || !state.last_result) deny('Report a question from its answer screen.');
+  if (kind === 'pf') return game.feedback(roundId, step);
+  if (reason === 'cancel') return state.last_result;
+  if (!['wrong', 'ambiguous', 'unit'].includes(reason)) deny('Choose one of the feedback buttons.');
+  await api.flag(env, { anon_id: me.anon_id, round_id: roundId, item_id: state.items[step].id, reason });
+  return { ...state.last_result, content: state.last_result.content + '\nThanks — reported for review.' };
 }

@@ -3,7 +3,7 @@
 # -> Create New App -> From an app manifest.
 display_information:
   name: "Who's Bluffing"
-  description: One question a day in your channel. Pick A or B, say how sure you are, and see who was bluffing at the reveal.
+  description: Ten questions. Say how sure you are. Play solo or find out which friends are bluffing.
   background_color: "#1d1c1d"
 features:
   bot_user:
@@ -12,8 +12,8 @@ features:
   slash_commands:
     - command: /bluff
       url: https://whosbluffing-slack.rongaijun41.workers.dev/slack/events
-      description: Post today's question, reveal the answer, set the channel, or see the leaderboard
-      usage_hint: "[setup #channel hour roast on|off | reveal | stats]"
+      description: Play trivia solo or with friends, or set up a daily question
+      usage_hint: "[party | play | setup #channel hour roast on|off | reveal | stats]"
       should_escape: true
 oauth_config:
   redirect_urls:

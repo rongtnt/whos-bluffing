@@ -77,9 +77,9 @@ test('confidence tap: contract payload to /api/round/answer, answer stored witho
   const [call] = apiCalls(calls, '/api/round/answer');
   assert.deepEqual(call.body, {
     round_id: 'dq-2026-10-31', item_id: 'p00042', choice: 1, conf: 80, rt_ms: 4000, anon_id: me,
-    community: `slack:${sha256(`T1:${SALT}`)}`, surface: 'slack',
+    community: `slack:${sha256(`T1:${SALT}`)}`, surface: 'slack', revision: true,
   });
-  assert.ok(!('revision' in call.body), 'a first answer is not a revision');
+  assert.equal(call.body.revision, true, 'the chosen open daily answer is authoritative even after an interrupted local save');
   assert.equal(call.headers['x-bluff-bot'], BOT_KEY);
 
   assert.equal(locked.url.href, PICKER_URL);
@@ -174,4 +174,25 @@ test('storage holds only the salted hash and the answer, plus the day\'s questio
   const columns = (table) => env.DB.rows(`PRAGMA table_info(${table})`).map((c) => c.name);
   assert.deepEqual(columns('answers'), ['team_id', 'anon_id', 'date', 'choice', 'conf', 'correct', 'points']);
   assert.deepEqual(columns('posts'), ['team_id', 'date', 'ts', 'channel_id', 'revealed', 'item_id', 'prompt', 'a', 'b']);
+});
+
+test('daily API write followed by failed local save: later changed choice revises the API and stores the same answer', async (t) => {
+  at(t, NOW);
+  const env = await setup();
+  let canonical, failSave = true;
+  const calls = mockFetch({ api: { '/api/round/answer': (call) => {
+    if (!canonical || call.body.revision) canonical = { choice: call.body.choice, conf: call.body.conf };
+    return { locked: true, points_pending: true };
+  } } });
+  const prepare = env.DB.prepare.bind(env.DB);
+  env.DB.prepare = (sql) => {
+    if (sql.includes('INSERT INTO answers') && failSave) { failSave = false; throw new Error('temporary storage failure'); }
+    return prepare(sql);
+  };
+  await answer(t, env, calls, 0, 80);
+  assert.equal(answers(env).length, 0);
+  assert.deepEqual(canonical, { choice: 0, conf: 80 });
+  await answer(t, env, calls, 1, 100);
+  assert.deepEqual(canonical, { choice: 1, conf: 100 });
+  assert.deepEqual(answers(env).map(({ choice, conf }) => ({ choice, conf })), [canonical]);
 });

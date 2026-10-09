@@ -166,3 +166,20 @@ test('a reveal delayed past yesterday still happens, drawn from the stored quest
   assert.equal(apiCalls(calls, '/api/round/daily-question').length, 0);
   assert.equal(apiCalls(calls, '/api/round/reveal')[0].query.date, DATE);
 });
+
+test('daily fetch/JSON failure or success without ts releases its claim, continues other workspaces and retries', async () => {
+  for (const broken of [() => { throw new Error('connection reset'); }, () => { throw new SyntaxError('invalid JSON'); }, () => ({ ok: true, ts: undefined })]) {
+    const env = makeEnv();
+    await install(env, 'T1', { channel: 'C1' });
+    await install(env, 'T2', { channel: 'C2' });
+    let fail = true;
+    const calls = mockFetch({ slack: { 'chat.postMessage': (c) => c.body.channel === 'C1' && fail ? broken() : { ts: tsAt(`${DATE}T14:00:01Z`) } } });
+    await runCron(env, `${DATE}T14:00:00Z`);
+    assert.deepEqual(env.DB.rows('SELECT team_id FROM posts'), [{ team_id: 'T2' }]);
+    fail = false;
+    await runCron(env, `${DATE}T15:00:00Z`);
+    assert.equal(slackCalls(calls, 'chat.postMessage').filter((c) => c.body.channel === 'C1').length, 2);
+    assert.equal(slackCalls(calls, 'chat.postMessage').filter((c) => c.body.channel === 'C2').length, 1);
+    assert.equal(env.DB.rows('SELECT * FROM posts WHERE ts IS NULL').length, 0);
+  }
+});

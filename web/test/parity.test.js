@@ -91,6 +91,10 @@ test('packs: the bar is 200 eligible pairs, and small fixtures can lower it', ()
   assert.ok(packAvailability(lowBar).brutal.length >= packAvailability(DATA).brutal.length);
 });
 
+test('chat topic availability matches the real web question pool', () => {
+  assert.deepEqual(json('public/pack-availability.json'), packAvailability(DATA));
+});
+
 test('home page: the question count, the pack chips and the question list are what the data says (scripts/sync-pages.js)', () => {
   const home = read('public/index.html');
   const count = servablePairs(DATA).size;

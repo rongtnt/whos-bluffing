@@ -2,17 +2,17 @@
   "about": "Every command of the Discord and Slack apps and the web shortcuts. scripts/sync-pages.js renders the cards on /commands, /discord and /slack from this file; test/parity.test.js checks the names against discord/src/commands.js and slack/src/game.js.",
   "discord": {
     "label": "Discord",
-    "intro": "Add Who's Bluffing to your apps, then type `/bluff party` in a chat to start a Memes round with friends. Replies marked “only you” are private. Server-only commands need the app added to that server.",
+    "intro": "Add Who's Bluffing to your apps, then use `/bluff party` with friends or `/bluff play` on your own. Choose a topic and difficulty, then start. Replies marked “only you” are private. Server-only commands need the app added to that server.",
     "commands": [
       {
         "name": "/bluff party",
-        "does": "Starts a shared Memes round. Friends tap Join to play the same ten questions privately. Joining shares your Discord display name and finished score in this chat. Tap Results to refresh completed scores; after you finish, Rematch starts a new shared round. Each round expires after one hour. Public posts follow the chat’s app permissions.",
+        "does": "Choose a topic and difficulty, then start a shared ten-question round. Friends tap Join and answer privately. Joining shares your Discord display name and finished score in this chat. Tap Results to refresh scores; after you finish, Rematch starts fresh questions at the same topic and difficulty. Each party expires after one hour. Public posts follow the chat’s app permissions.",
         "options": [],
         "who": "Anyone"
       },
       {
         "name": "/bluff play",
-        "does": "A private 10-question round (only you): pick A or B, say how sure you are, see the answer and your points, then Next. It ends with your score, your type and a Challenge button that posts your challenge link in the channel.",
+        "does": "Opens a private topic and difficulty picker. Play ten questions: pick an answer, say how sure you are, then see the answer, its sources and your points. Finish to see your score and type, challenge a friend, or play fresh questions at the same topic and difficulty.",
         "options": [],
         "who": "Anyone"
       },
@@ -85,14 +85,26 @@
       },
       {
         "q": "The app shows as offline",
-        "a": "That is normal. Who's Bluffing answers through Discord’s interactions endpoint and never connects to the live gateway, so it always looks offline while it works."
+        "a": "The game commands can still work even when Discord shows the bot as offline. Try `/bluff play`. If the command fails too, wait a moment and try again."
       }
     ]
   },
   "slack": {
     "label": "Slack",
-    "intro": "Type them in any channel. Anything else after `/bluff` shows the command list, only to you.",
+    "intro": "Use `/bluff play` on your own or `/bluff party` with friends. Choose a topic and difficulty, then start. Replies marked “only visible to you” are private. Daily channel questions are optional.",
     "commands": [
+      {
+        "name": "/bluff party",
+        "does": "Choose a topic and difficulty, then start a shared round in this channel. Friends tap Join to answer the same ten questions privately. Joining shares your Slack display name and final score in the channel. Results refreshes the scores; a finished player can start a fresh shared rematch. Parties expire after one hour.",
+        "options": [],
+        "who": "Any member"
+      },
+      {
+        "name": "/bluff play",
+        "does": "Opens a private topic and difficulty picker. Play ten questions, choose your confidence after each answer, and see the source and your points. Finish to see your score and type, share a friend challenge, or play fresh questions with the same settings.",
+        "options": [],
+        "who": "Any member"
+      },
       {
         "name": "/bluff",
         "does": "Posts today’s question in this channel. In the chosen channel (or when none is chosen yet) it becomes the day’s post; elsewhere it posts a copy whose answers count the same. After today’s reveal it posts nothing and says so.",
@@ -144,7 +156,7 @@
       },
       {
         "q": "The confidence buttons stopped working",
-        "a": "The private picker uses a Slack link that lasts 30 minutes after you tap A or B. Tap A or B again."
+        "a": "For a daily question, tap A or B again to open a fresh confidence picker. For a party, tap Join / Resume. Private game sessions and parties expire after one hour; start a new round after that."
       },
       {
         "q": "“Who's Bluffing is taking a break”",

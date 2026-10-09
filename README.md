@@ -26,8 +26,8 @@ Ten comparison questions ("Which is longer: the Nile or the Danube?"). Pick one,
 ## Play
 
 - **Web**: [whosbluffing.com](https://whosbluffing.com). Unlimited ten-question rounds by topic and difficulty.
-- **Discord**: one question a day in a channel, a private round with `/bluff play`. [Add it](https://whosbluffing.com/discord).
-- **Slack**: the same, with `/bluff`. [Add it](https://whosbluffing.com/slack).
+- **Discord**: topic and difficulty choices, private ten-question rounds with `/bluff play`, and shared rounds with `/bluff party`. [Add it](https://whosbluffing.com/discord).
+- **Slack**: private or shared ten-question rounds with `/bluff play` and `/bluff party`, plus optional daily channel questions. [Add it](https://whosbluffing.com/slack).
 - **Classroom**: a live calibration curve for a class at [/class](https://whosbluffing.com/class). **Full assessment** (5 minutes) at [/test](https://whosbluffing.com/test).
 
 ## Why

@@ -1,12 +1,14 @@
 # Who's Bluffing? for Discord
 
 A Cloudflare Worker that brings Who's Bluffing to Discord. Add it to your own apps, then use `/bluff party` in a
-server channel, DM or group DM: friends join the same ten Memes questions, answer privately, compare scores and rematch.
+server channel, DM or group DM: choose a topic and difficulty, then friends join the same ten questions, answer privately,
+compare scores and rematch. Memes/Normal is preselected for parties; All/Normal for solo play.
 Server installation also supports the optional daily question and server leaderboard.
 
 ## Party flow
 
-1. **`/bluff party`** posts a public lobby with **Join / Resume**, **Results** and **Rematch**. Personal installs use
+1. **`/bluff party`** opens a private topic/difficulty picker. **Start party** posts a public lobby with
+   **Join / Resume**, **Results** and **Rematch**. Only currently supported combinations appear. Personal installs use
    interaction replies only: no bot channel access, member list or privileged intent is needed. A channel that blocks
    public external-app replies gets a private explanation instead of an invisible lobby.
 2. **Join / Resume** explicitly agrees to share the clicker's Discord display name and final score in that chat.
@@ -14,13 +16,18 @@ Server installation also supports the optional daily question and server leaderb
    reset answers or duplicate completed plays. The installer and the person pressing Join can be different people.
 3. **Results** refreshes the public lobby, showing only finished participants (top ten when more than ten finish).
    Questions, choices, confidence and per-question feedback remain private. Every message disables pings.
-4. A finished participant can press **Rematch** to replace the lobby with one new shared Memes round, excluding the
+4. A finished participant can press **Rematch** to replace the lobby with a new shared round at the same topic/difficulty, excluding the
    previous ten questions. Simultaneous rematches converge on one child round. Unfinished friends can finish the old
    round privately and use **View results** there.
 
 Parties expire one hour after creation. Buttons check the chat, message, participant, step and expiry. Short operation
 leases prevent overlapping answers/completions/rematches; expired leases can retry after an interrupted request.
 No interaction tokens are stored. Lobby creation and joining never submit an answer or complete a round.
+
+`/bluff play` opens the same picker for a solo round. **Play again** keeps its topic and difficulty and excludes the
+previous ten questions. Answer screens show both options' values and sources, an authored **Why this answer** when
+available, and **Report question** with a Back button. Results use the web's short type labels. Private controls check
+the owner, chat and message; saved answers, results and rematches can resume after a failed Discord edit.
 
 ## What members see
 
@@ -46,8 +53,8 @@ No interaction tokens are stored. Lobby creation and joining never submit an ans
 
 | Command | Who | What |
 |---|---|---|
-| `/bluff party` | anyone | A public Memes lobby: friends Join the same ten, answer privately, compare Results and Rematch. |
-| `/bluff play` | anyone | A private 10-question round: A/B, then confidence, then the answer with points, then Next. Ends with score, type and roast line, plus a **Challenge** button that posts your challenge link in the channel. |
+| `/bluff party` | anyone | Choose topic/difficulty privately, then Start party: friends Join the same ten, answer privately, compare Results and Rematch. |
+| `/bluff play` | anyone | Choose topic/difficulty, then a private 10-question round: A/B, confidence, sources and points. Ends with score/type, **Play again** with the same settings, and **Challenge** to share the saved result. |
 | `/bluff question` | member, server install | Post today's question in this channel now. If today's is already up, it links to it. |
 | `/bluff stats` | member, server install | This server's 30-day leaderboard (top 10 by points) and participation, posted in the channel. |
 | `/bluff setup` | Manage Server | `channel`, `hour` (UTC, 0–23, default 14), `reveal` (hours from the post to the reveal, 2–23; new servers start at 20, servers added before this option keep 8), `roast` (on/off, default off). Every option is optional; a missing one keeps its value. The reply shows the hour in your time and in UTC. |
@@ -237,8 +244,10 @@ npx wrangler tail                              # live logs (short error codes on
 Apply migrations before deploying code that needs them. `0002_install_events.sql` adds the column the install events
 use; without it every install event fails, Discord retries it, and in the end Discord turns the Webhook Events URL off.
 The `reveal` option needs no migration: the column was there from the start, and the code writes 20 for new servers.
-`0003_parties.sql` adds transient party sessions and participants; apply it before this worker version. Register the
-updated global commands after deployment. Unit/integration tests use local data only and do not inflate live metrics.
+`0003_parties.sql` adds transient party sessions and participants. `0004_round_options.sql` adds transient pickers,
+selected settings, and retry-safe solo state; apply both before this worker version. The picker uses components under
+the existing `/bluff play` and `/bluff party` commands, so this update needs no command re-registration.
+Unit/integration tests use local data only and do not inflate live metrics.
 
 ## Data
 
@@ -250,11 +259,13 @@ Stored in D1:
 - For each daily post: its message id and the day's question as the API served it.
 - For each answer: choice and confidence under `sha256(guild_id:user_id:SALT)`, plus points and right/wrong once the
   reveal settles them. The API keeps daily points back until the reveal, so nobody can peek.
-- For a `/bluff play` round in progress: the round's questions and running score. Inactive state expires after one hour.
-- For a party: salted chat scope, the app's lobby message id, saved round/questions, expiry and rematch link.
+- For a private picker: salted player/chat identifiers, its message id, mode, selected topic/difficulty and one-hour expiry.
+- For a `/bluff play` round: its questions, selected settings, salted chat scope, private message id, running score,
+  latest answer feedback and completed result/challenge link. Inactive state expires after one hour.
+- For a party: salted chat scope, the app's lobby message id, selected settings, saved round/questions, expiry and rematch link.
 - For a participant who presses Join: salted player id, their display name (up to 32 characters), private message id,
   progress/latest answer feedback and final score. Names never go to the rounds API. Party state expires after one hour
-  and is deleted by the next successful hourly cleanup, which also removes inactive solo state.
+  and is deleted by the next successful hourly cleanup, which also removes inactive solo state and expired pickers.
 
 No member messages, raw Discord user ids or interaction tokens are stored. Daily leaderboard names are fetched only
 while drawing that leaderboard. Party names come from the person pressing Join, with consent shown on the lobby.

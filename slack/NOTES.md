@@ -1,4 +1,20 @@
-# Builder notes: Who's Bluffing? for Slack v0.2
+# Builder notes: Who's Bluffing? for Slack
+
+## Native full rounds (2026-10-09)
+
+`/bluff play` and `/bluff party` now use `play.js`, `play-store.js` and `play-ui.js`. The web-generated pack availability and labels drive the topic/difficulty picker; solo defaults to All/Normal, party to Memes/Normal. Both call the same web round/answer/complete API with `surface: slack` and existing salted identities. Per-answer feedback includes validated source links and a private Report question picker. Results use the web's short display labels.
+
+Migration `0004_play.sql` must run before deployment. It adds temporary sessions and players. Sessions expire one hour after creation, and hourly cleanup runs first; no raw user/channel IDs or response URLs are stored in those tables. Joining a public party opts into a transient display name and public finished score. Anonymous API answers/results have their separate existing retention.
+
+Leases serialize question/confidence/completion writes. The API's canonical choice/confidence and total handle a response lost after the API accepted an answer. Cached feedback and idempotent completion prevent repeated taps from adding points. Rematch uses the parent's settings and excludes the original ten; one child link converges concurrent retries, including interruption between linking and creating the child. Unfinished friends can still complete the original privately. Notices leave the game controls intact. Every click uses its own newly supplied response URL.
+
+Daily fixes: fetch/JSON failures and malformed successful sends release the pending post claim and do not stop other workspaces. Open daily picks always send `revision: true`, so an accepted API write followed by a failed local save cannot leave the two stores on different choices.
+
+Verified locally: 60 tests, including nine signed native-flow tests against the actual current question bank and real web scoring API on separate local SQLite. Solo, three-player party, source reporting, positive/negative scores, same-ten isolation, new-question rematches, unfinished-player continuity, expiry, spoofed/stale callbacks, overlapping taps and recovery after API/send/storage failure all pass. Wrangler dry-run bundles successfully (64.21 KiB, gzip 18.39 KiB). This is not a live Slack-client acceptance result; root performs that after deployment.
+
+Slack delivery is not a transaction with D1. If Slack accepts a public message but its response is lost, retry may duplicate that message; no history-read scope is added to try to reconcile it. Scored API answer/completion retries remain idempotent. Platform 3-second acknowledgments and fresh per-click response URLs follow [Slack's interaction contract](https://docs.slack.dev/interactivity/handling-user-interaction/).
+
+The sections below are historical v0.2 implementation evidence, not the current feature list.
 
 v0.2 replaces the v0.1 modal game (Play button, 5-range modal, day board, `/api/daily` client) with one in-channel question a day, a private confidence picker, a reveal, a Monday recap and `/bluff reveal`.
 

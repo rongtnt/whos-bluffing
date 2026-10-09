@@ -12,7 +12,7 @@ Who's Bluffing is an independent, unaffiliated, non-commercial project. No accou
 
 **Full assessment — what is stored when you finish:** your answers and confidence ratings, how long each question took, the language of the test, the two-letter country code supplied by our hosting provider (never your IP address), the optional demographic answers you choose to give (age band, education, native language, region), a random session identifier, and a class code if you entered one. Nothing is stored if you close the page before the end.
 
-**What is never stored:** IP address, browser fingerprint, device identifiers, cookies for tracking, names (apart from a nickname you choose for a challenge link or the display name you agree to share when joining a Discord group round), emails.
+**What is never stored:** IP address, browser fingerprint, device identifiers, cookies for tracking, names (apart from a nickname you choose for a challenge link or the display name you agree to share when joining a Slack or Discord group round), emails.
 
 **Repeat visits:** your browser keeps a random id (not linked to you) so that later sessions from the same browser can be tied together. This is what makes streaks and the practice-effect analysis possible, and it lets the research analysis keep only one full assessment per browser. Clearing site data removes it.
 
@@ -22,9 +22,13 @@ Who's Bluffing is an independent, unaffiliated, non-commercial project. No accou
 
 **Slack and Discord:** the chat apps store, per workspace or server, its id, the chosen channel, the bot token, the posting hour, the roast-mode setting, the ids of the messages they posted, and each day's answers (choice, confidence, points, right or wrong) keyed by a salted hash of the member id. They do not store member messages, raw member ids or emails. Daily leaderboards and recaps fetch display names from the platform while drawing them. With roast mode off (the default) nobody is named next to a wrong daily answer.
 
+**Private chat rounds:** the apps temporarily keep your selected topic and difficulty, questions, progress, score and challenge link so you can finish a round, recover from a failed response or play again. These records use your salted member hash and the chat scope, not your raw member id. Slack rounds expire one hour after creation; Discord solo rounds expire after one hour without activity. Expired records are removed on the next cleanup pass. Anonymous answers and completed scores remain with the game server under the rounds policy above.
+
 **Discord group rounds:** pressing Join agrees to share your Discord display name and final score with that chat. Your individual answers stay in your private game response. The app temporarily stores the group round, its chat scope, your salted member hash, display name, progress and completed score. Group sessions expire one hour after creation and their temporary records are removed on the next cleanup pass. Names from these sessions are not sent to the research API or included in research data. A score already posted in Discord can remain there after the app's temporary record expires. In direct messages and group DMs, anonymous player ids are scoped to that chat; the research API receives no raw chat id and does not count the chat as a server. Personal app installation does not enable scheduled server posts.
 
-**Public numbers:** monthly and daily active players are computed from anonymous ids once a day and published on the stats page using the definitions in `prereg/PREREG.md`.
+**Slack group rounds:** pressing Join agrees to share your Slack display name and final score in that channel. Individual answers stay in your private game response. The app temporarily stores the group round, hashed chat scope, salted member hash, display name, progress and completed score. Sessions expire one hour after creation and their temporary records are removed on the next cleanup pass. Group display names are not sent to the research API. A score already posted in Slack can remain there after the app's temporary record expires. Installing the app or playing a group round does not enable scheduled daily questions; a member must configure a channel separately.
+
+**Player counts:** the public status page shows Total Players, counted from anonymous ids. Daily active players, MAU (rolling 30 days) and annual activity (rolling 365 days) are available only to the project owner.
 
 **Retention:** indefinitely, as anonymous research data.
 

@@ -8,9 +8,9 @@ export async function get(db, id) {
   return p && { ...p, items: p.items && JSON.parse(p.items) };
 }
 
-export const create = (db, id, scope, message, now) => db.prepare(
-  'INSERT OR IGNORE INTO parties (id, scope, message_id, expires_at) VALUES (?, ?, ?, ?)',
-).bind(id, scope, message, now + LIFETIME).run();
+export const create = (db, id, scope, message, now, { pack = 'memes', difficulty = 'normal' } = {}) => db.prepare(
+  'INSERT OR IGNORE INTO parties (id, scope, message_id, expires_at, pack, difficulty) VALUES (?, ?, ?, ?, ?, ?)',
+).bind(id, scope, message, now + LIFETIME, pack, difficulty).run();
 
 export const bindMessage = (db, id, message) => db.prepare(
   'UPDATE parties SET message_id = ? WHERE id = ? AND message_id IS NULL',

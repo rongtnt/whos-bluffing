@@ -155,3 +155,16 @@ test('Monday recap: once per server at its hour, before the question; skipped wh
   await runCron(env, '2026-10-13T14:00:00Z'); // Tuesday: questions only
   assert.equal(channelPosts(calls).filter((c) => c.body.content.startsWith("**Who's Bluffing? · last week")).length, 1);
 });
+
+test('a malformed successful Discord post response releases the daily claim for retry', async () => {
+  const env = makeEnv(); await install(env, G1, { channel: C1, hour: 14 });
+  let fail = true;
+  const calls = mockFetch({ discord: (c) => {
+    if (c.method === 'POST' && c.path.includes('/channels/') && fail) { fail = false; return new Response('{broken'); }
+  } });
+  await runCron(env, '2026-10-06T14:00:00Z');
+  assert.equal(env.DB.rows('SELECT * FROM posts').length, 0);
+  await runCron(env, '2026-10-06T15:00:00Z');
+  assert.equal(env.DB.rows('SELECT message_id FROM posts')[0].message_id, '9001');
+  assert.equal(questionPosts(calls).length, 2);
+});

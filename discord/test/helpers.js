@@ -92,6 +92,7 @@ export function mockFetch({ discord = () => undefined, api = {}, apiDown = false
     const json = (data, status = 200) => new Response(JSON.stringify(data), { status, headers: { 'content-type': 'application/json' } });
     if (call.host === 'discord.com') {
       const custom = discord(call);
+      if (custom instanceof Response) return custom;
       if (custom) return json(custom.body ?? {}, custom.status ?? 200);
       if (call.method === 'POST' && /^\/api\/v10\/channels\/\d+\/messages$/.test(call.path)) return json({ id: '9001' });
       if (call.method === 'GET' && call.path.endsWith('/members')) return json([]);
@@ -109,6 +110,7 @@ export function mockFetch({ discord = () => undefined, api = {}, apiDown = false
     if (call.path === '/api/round') return json({ round_id: 'r1', mode: 'quick', date: DATE, items: roundItems() });
     if (call.path === '/api/round/complete') return json(COMPLETE);
     if (call.path === '/api/round/reveal') return json(REVEAL);
+    if (call.path === '/api/flag') return json({ ok: true });
     if (call.path === '/api/round/answer' && call.body.round_id.startsWith('dq-')) return json({ locked: true, points_pending: true });
     if (call.path === '/api/round/answer') {
       const b = call.body;

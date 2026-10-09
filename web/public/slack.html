@@ -4,13 +4,13 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <title>Free Slack Trivia App for Teams | Who's Bluffing?</title>
-<meta name="description" content="Bring daily trivia to Slack. Pick an answer, say how sure you are, and find out who's bluffing when the answer is revealed. Free, with a team leaderboard.">
+<meta name="description" content="Free ten-question trivia in Slack. Pick a topic, challenge your team, and find out who's bluffing. Private answers, shared scores and fresh rematches.">
 <meta name="robots" content="max-image-preview:large">
 <link rel="canonical" href="https://whosbluffing.com/slack">
 <meta property="og:type" content="website">
 <meta property="og:site_name" content="Who's Bluffing?">
 <meta property="og:title" content="Free Slack Trivia App for Teams | Who's Bluffing?">
-<meta property="og:description" content="Bring daily trivia to Slack. Pick an answer, say how sure you are, and find out who's bluffing when the answer is revealed. Free, with a team leaderboard.">
+<meta property="og:description" content="Free ten-question trivia in Slack. Pick a topic, challenge your team, and find out who's bluffing. Private answers, shared scores and fresh rematches.">
 <meta property="og:url" content="https://whosbluffing.com/slack">
 <meta property="og:image" content="https://whosbluffing.com/og.png">
 <meta property="og:image:width" content="1200">
@@ -31,7 +31,7 @@
   "@id": "https://whosbluffing.com/slack#app",
   "name": "Who's Bluffing? for Slack",
   "url": "https://whosbluffing.com/slack",
-  "description": "A free Slack trivia app with daily channel questions, private answers and a team leaderboard.",
+  "description": "A free Slack trivia app with ten-question rounds by topic and difficulty, private answers, shared friend scores and rematches.",
   "applicationCategory": "GameApplication",
   "operatingSystem": "Slack",
   "isAccessibleForFree": true,
@@ -65,12 +65,12 @@
     <div>
       <p class="eyebrow">Free Slack trivia app</p>
       <h1 id="slack-title">Who's Bluffing? for Slack</h1>
-      <p class="hero-sub">A little trivia for the coworker who always has an answer. Add a daily question to a Slack channel. Everyone picks an answer and says how sure they are, privately. When the answer is revealed, see who knew their stuff and who was bluffing.</p>
+      <p class="hero-sub">A little trivia for the coworker who always has an answer. Start <code>/bluff party</code>, pick a topic and difficulty, and let everyone join. Same ten questions, private answers. Compare scores, find out who was bluffing, then run it back with fresh questions.</p>
       <div class="actions">
         <a class="button primary" href="/slack" data-slack-install><svg class="i" viewBox="0 0 24 24" aria-hidden="true" focusable="false"><path d="M4.5 9h15M4.5 15h15M10 3.5 8 20.5M16 3.5l-2 17"/></svg><span>Add to Slack</span></a>
         <a class="button" href="#commands"><span>See the commands</span><svg class="i" viewBox="0 0 24 24" aria-hidden="true" focusable="false"><path d="M5 12h14M13 6l6 6-6 6"/></svg></a>
       </div>
-      <p class="fine">Free. One install per workspace. No message text, names or emails are stored.</p>
+      <p class="fine">Free. One install per workspace. Joining a group round shares your display name and final score in that channel.</p>
     </div>
     <figure class="chat-demo">
       <figcaption><span class="badge">Illustration</span></figcaption>
@@ -110,6 +110,22 @@
     <div class="section-head"><p class="eyebrow">Commands</p><h2 id="commands-title">Slash commands</h2><p class="lead">Type them in any channel. The same list, with Discord’s and the web game’s, is on the <a href="/commands#slack">commands page</a>.</p></div>
     <div class="search"><svg class="i" viewBox="0 0 24 24" aria-hidden="true" focusable="false"><circle cx="11" cy="11" r="6.5"/><path d="m16 16 4.5 4.5"/></svg><label class="sr-only" for="command-search">Search commands</label><input id="command-search" type="search" placeholder="Search commands" autocomplete="off" data-filter="cmd-slack"></div>
     <div class="cmds" id="cmd-slack"><!-- commands:slack -->
+      <article class="cmd" data-item>
+        <h3><code>/bluff party</code></h3>
+        <p>Choose a topic and difficulty, then start a shared round in this channel. Friends tap Join to answer the same ten questions privately. Joining shares your Slack display name and final score in the channel. Results refreshes the scores; a finished player can start a fresh shared rematch. Parties expire after one hour.</p>
+        <dl>
+          <div><dt>Options</dt><dd>None</dd></div>
+          <div><dt>Who can run it</dt><dd>Any member</dd></div>
+        </dl>
+      </article>
+      <article class="cmd" data-item>
+        <h3><code>/bluff play</code></h3>
+        <p>Opens a private topic and difficulty picker. Play ten questions, choose your confidence after each answer, and see the source and your points. Finish to see your score and type, share a friend challenge, or play fresh questions with the same settings.</p>
+        <dl>
+          <div><dt>Options</dt><dd>None</dd></div>
+          <div><dt>Who can run it</dt><dd>Any member</dd></div>
+        </dl>
+      </article>
       <article class="cmd" data-item>
         <h3><code>/bluff</code></h3>
         <p>Posts today’s question in this channel. In the chosen channel (or when none is chosen yet) it becomes the day’s post; elsewhere it posts a copy whose answers count the same. After today’s reveal it posts nothing and says so.</p>
@@ -160,10 +176,10 @@
     <div class="section-head"><p class="eyebrow">Privacy</p><h2 id="store-title">What we store</h2></div>
     <ul class="links">
       <li><div class="pt"><span class="ico"><svg class="i" viewBox="0 0 24 24" aria-hidden="true" focusable="false"><ellipse cx="12" cy="6" rx="7" ry="3"/><path d="M5 6v12c0 1.7 3.1 3 7 3s7-1.3 7-3V6M5 12c0 1.7 3.1 3 7 3s7-1.3 7-3"/></svg></span><span><b>Per workspace</b><span>The workspace id, the bot token, the chosen channel, the posting hour, roast mode, and each day’s post with its question.</span></span></div></li>
-      <li><div class="pt"><span class="ico"><svg class="i" viewBox="0 0 24 24" aria-hidden="true" focusable="false"><path d="M12 3 5 6v5.5c0 4.4 3 7.9 7 9.5 4-1.6 7-5.1 7-9.5V6z"/><path d="m9 12 2.2 2.2L15.5 10"/></svg></span><span><b>Per member</b><span>A or B, the confidence and, from the reveal on, the points, keyed by a salted hash of the member id. Never raw Slack ids.</span></span></div></li>
-      <li><div class="pt"><span class="ico"><svg class="i" viewBox="0 0 24 24" aria-hidden="true" focusable="false"><path d="M7 3h7l5 5v12a1 1 0 0 1-1 1H7a1 1 0 0 1-1-1V4a1 1 0 0 1 1-1z"/><path d="M14 3v5h5M9 13h6M9 17h6"/></svg></span><span><b>Never</b><span>Message text, names or emails. Display names are fetched only while a reveal, leaderboard or recap is drawn.</span></span></div></li>
+      <li><div class="pt"><span class="ico"><svg class="i" viewBox="0 0 24 24" aria-hidden="true" focusable="false"><path d="M12 3 5 6v5.5c0 4.4 3 7.9 7 9.5 4-1.6 7-5.1 7-9.5V6z"/><path d="m9 12 2.2 2.2L15.5 10"/></svg></span><span><b>Per member</b><span>Your choices, confidence, progress and points, keyed by a salted hash of your member id. Group rounds temporarily keep the display name you agree to share when joining.</span></span></div></li>
+      <li><div class="pt"><span class="ico"><svg class="i" viewBox="0 0 24 24" aria-hidden="true" focusable="false"><path d="M7 3h7l5 5v12a1 1 0 0 1-1 1H7a1 1 0 0 1-1-1V4a1 1 0 0 1 1-1z"/><path d="M14 3v5h5M9 13h6M9 17h6"/></svg></span><span><b>Never</b><span>Message text, raw member ids or emails. Daily leaderboard names are looked up while it is drawn; group display names expire with the temporary session.</span></span></div></li>
     </ul>
-    <p class="fine">The game server receives only hashed member and workspace ids. Full details: <a href="/privacy">privacy policy</a>.</p>
+    <p class="fine">Group answers stay private. Joining shares your display name and final score in the channel; temporary party records expire after one hour and are removed in the next cleanup. The game server receives only hashed member and workspace ids. Full details: <a href="/privacy">privacy policy</a>.</p>
   </div>
 </section>
 <section class="section" id="troubleshooting" aria-labelledby="trouble-title">
@@ -173,7 +189,7 @@
         <details><summary><span>Slack says <code>/bluff</code> is not a valid command</span></summary><p>Who's Bluffing isn’t installed in this workspace, or was removed. Install it again from the <a href="/slack">Add to Slack</a> link.</p></details>
         <details><summary><span>“I can’t post in that channel”</span></summary><p>The channel is private. Run <code>/invite @whosbluffing</code> in it, then <code>/bluff setup #channel</code> again. Public channels work without an invite.</p></details>
         <details><summary><span>The question didn’t post today</span></summary><p>The hour you type is read in your Slack time zone (or in UTC with <code>utc</code> after it) and kept in UTC; the setup reply shows both. Who's Bluffing checks at the top of every hour and posts once a day, as soon as your hour has come; if you set it up after that hour, today’s question posts at the next full hour. Run <code>/bluff setup #channel HH</code> to check the channel and hour.</p></details>
-        <details><summary><span>The confidence buttons stopped working</span></summary><p>The private picker uses a Slack link that lasts 30 minutes after you tap A or B. Tap A or B again.</p></details>
+        <details><summary><span>The confidence buttons stopped working</span></summary><p>For a daily question, tap A or B again to open a fresh confidence picker. For a party, tap Join / Resume. Private game sessions and parties expire after one hour; start a new round after that.</p></details>
         <details><summary><span>“Who's Bluffing is taking a break”</span></summary><p>The game server didn’t answer. Try again in a minute; the <a href="/status">status page</a> shows whether it is up.</p></details>
       <!-- /trouble --></div>
   </div>

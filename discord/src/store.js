@@ -169,27 +169,63 @@ export async function answerDays(db, guildId, from, to) {
 
 // ---- /bluff play ------------------------------------------------------------------------------------------
 
+export async function createSetup(db, s) {
+  // Solo state is per member, so a fresh solo picker also invalidates one in another channel of this server.
+  await db.prepare("DELETE FROM round_setups WHERE anon_id = ? AND (scope = ? OR mode = 'play') AND mode = ?").bind(s.anon_id, s.scope, s.mode).run();
+  await db.prepare('INSERT INTO round_setups (id, anon_id, scope, mode, pack, difficulty, expires_at) VALUES (?, ?, ?, ?, ?, ?, ?)')
+    .bind(s.id, s.anon_id, s.scope, s.mode, s.pack, s.difficulty, s.expires_at).run();
+}
+export const getSetup = (db, id) => db.prepare('SELECT * FROM round_setups WHERE id = ?').bind(id).first();
+export const bindSetup = (db, id, message) => db.prepare('UPDATE round_setups SET message_id = ? WHERE id = ?').bind(message, id).run();
+export const selectSetup = (db, s, pack, difficulty) => db.prepare(
+  'UPDATE round_setups SET pack = ?, difficulty = ?, revision = revision + 1 WHERE id = ? AND revision = ? AND started = 0',
+).bind(pack, difficulty, s.id, s.revision).run();
+export const claimSetup = async (db, s, now) => changedOne(await db.prepare(
+  'UPDATE round_setups SET started = 1, start_until = ? WHERE id = ? AND revision = ? AND started != 2 AND start_until <= ?',
+).bind(now + 30_000, s.id, s.revision, now).run());
+export const releaseSetup = (db, id) => db.prepare('UPDATE round_setups SET started = 0, start_until = 0 WHERE id = ? AND started = 1').bind(id).run();
+export const finishSetup = (db, id, roundId) => db.prepare('UPDATE round_setups SET started = 2, round_id = ? WHERE id = ?').bind(roundId, id).run();
+
 export async function getPlay(db, anonId) {
   const row = await db.prepare('SELECT * FROM play_state WHERE anon_id = ?').bind(anonId).first();
-  return row && { ...row, items: JSON.parse(row.items) };
+  return row && { ...row, items: JSON.parse(row.items), last_result: row.last_result && JSON.parse(row.last_result), done: row.done && JSON.parse(row.done) };
 }
 
 // A new round replaces the member's old one.
-export const startPlay = (db, anonId, roundId, items, now) =>
-  db.prepare(
-    `INSERT INTO play_state (anon_id, round_id, items, step, total, updated_at) VALUES (?, ?, ?, 0, 0, ?)
+export const startPlay = async (db, anonId, roundId, items, now, { pack = 'all', difficulty = 'normal', scope = null, message_id = null, setup_id } = {}) =>
+  changedOne(await db.prepare(
+    `INSERT INTO play_state (anon_id, round_id, items, step, total, updated_at, pack, difficulty, scope, message_id)
+     SELECT ?, ?, ?, 0, 0, ?, ?, ?, ?, ? WHERE EXISTS (SELECT 1 FROM round_setups WHERE id = ? AND started = 1)
      ON CONFLICT(anon_id) DO UPDATE SET round_id = excluded.round_id, items = excluded.items, step = 0, total = 0,
-       updated_at = excluded.updated_at`,
-  ).bind(anonId, roundId, JSON.stringify(items), now).run();
+       updated_at = excluded.updated_at, pack = excluded.pack, difficulty = excluded.difficulty,
+       scope = excluded.scope, message_id = excluded.message_id, last_result = NULL, done = NULL, lease = NULL, lease_until = 0`,
+  ).bind(anonId, roundId, JSON.stringify(items), now, pack, difficulty, scope, message_id, setup_id).run());
 
-// Moves the round from step `from` to `to`. False when another tap moved it first.
-export async function advancePlay(db, anonId, roundId, from, to, total) {
-  return changedOne(await db.prepare(
-    'UPDATE play_state SET step = ?, total = ? WHERE anon_id = ? AND round_id = ? AND step = ?',
-  ).bind(to, total, anonId, roundId, from).run());
-}
+export const claimPlay = async (db, anonId, roundId, step, lease, now) => changedOne(await db.prepare(
+  'UPDATE play_state SET lease = ?, lease_until = ? WHERE anon_id = ? AND round_id = ? AND step = ? AND lease_until <= ?',
+).bind(lease, now + 30_000, anonId, roundId, step, now).run());
 
-export const touchPlay = (db, anonId, now) =>
-  db.prepare('UPDATE play_state SET updated_at = ? WHERE anon_id = ?').bind(now, anonId).run();
+export const releasePlay = (db, anonId, roundId, lease) => db.prepare(
+  'UPDATE play_state SET lease = NULL, lease_until = 0 WHERE anon_id = ? AND round_id = ? AND lease = ?',
+).bind(anonId, roundId, lease).run();
 
-export const endPlay = (db, anonId) => db.prepare('DELETE FROM play_state WHERE anon_id = ?').bind(anonId).run();
+export const savePlayAnswer = async (db, anonId, roundId, lease, total, result) => changedOne(await db.prepare(
+  `UPDATE play_state SET step = step + 1, total = ?, last_result = ?, lease = NULL, lease_until = 0
+   WHERE anon_id = ? AND round_id = ? AND lease = ?`,
+).bind(total, JSON.stringify(result), anonId, roundId, lease).run());
+
+export const nextPlayQuestion = (db, anonId, roundId, step, now) => db.prepare(
+  'UPDATE play_state SET last_result = NULL, updated_at = ? WHERE anon_id = ? AND round_id = ? AND step = ? AND lease IS NULL',
+).bind(now, anonId, roundId, step).run();
+
+export const finishPlay = async (db, anonId, roundId, lease, done, now) => changedOne(await db.prepare(
+  `UPDATE play_state SET done = ?, total = ?, last_result = NULL, updated_at = ?, lease = NULL, lease_until = 0
+   WHERE anon_id = ? AND round_id = ? AND lease = ?`,
+).bind(JSON.stringify(done), Math.round(done.score), now, anonId, roundId, lease).run());
+
+// Compare-and-swap: a delayed rematch cannot overwrite a newer slash-command round.
+export const replacePlay = async (db, anonId, oldRoundId, lease, round, items, now) => changedOne(await db.prepare(
+  `UPDATE play_state SET round_id = ?, items = ?, pack = ?, difficulty = ?, step = 0, total = 0,
+   last_result = NULL, done = NULL, updated_at = ?, lease = NULL, lease_until = 0
+   WHERE anon_id = ? AND round_id = ? AND lease = ?`,
+).bind(round.round_id, JSON.stringify(items), round.pack, round.difficulty, now, anonId, oldRoundId, lease).run());

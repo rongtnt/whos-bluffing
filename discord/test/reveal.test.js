@@ -189,3 +189,14 @@ test('bluff line phrasing follows the prompt; anything else gets a plain fallbac
   assert.equal(bluffLine({ prompt: 'Pick the heavier one', a: 'a ton of feathers', b: 'x' }, bluff, null), "Someone was 100% sure it was a ton of feathers. It wasn't.");
   assert.equal(bluffLine(QUESTION, { choice: 1, conf: 90 }, null), "Someone was 90% sure the Danube is longer. It isn't.");
 });
+
+test('a malformed successful API reveal releases its claim and retries', async () => {
+  const env = makeEnv(); await install(env, GUILD, { channel: CHANNEL }); await addPost(env);
+  let fail = true;
+  const calls = mockFetch({ api: { '/api/round/reveal': () => fail ? (fail = false, new Response('{broken')) : REVEAL } });
+  await runCron(env, `${DATE}T22:00:00Z`);
+  assert.equal(env.DB.rows('SELECT revealed FROM posts')[0].revealed, 0);
+  await runCron(env, `${DATE}T23:00:00Z`);
+  assert.equal(env.DB.rows('SELECT revealed FROM posts')[0].revealed, 1);
+  assert.equal(messageEdits(calls).length, 1);
+});

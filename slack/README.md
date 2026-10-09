@@ -1,6 +1,20 @@
 # Who's Bluffing? for Slack
 
-A Cloudflare Worker that posts one Who's Bluffing question a day in a Slack channel. Members pick A or B and say how sure they are, privately. Hours later the answer is revealed in the same message, with the workspace's points and the day's biggest bluff. Every Monday a recap shows how well calibrated the workspace was last week.
+A Cloudflare Worker for ten-question trivia rounds in Slack. Members pick A or B, then say how sure they are. Solo rounds stay private; friends can join one shared round and compare finished scores. The optional daily question, delayed reveal and Monday recap remain available.
+
+## Full rounds
+
+`/bluff play` opens a private topic and difficulty picker. It offers exactly the combinations available on the website, generated in `web/public/pack-availability.json`. Start a round, pick an answer and confidence, then see the verdict, points and clickable sources. Report question opens a private reason picker without removing the game. The result shows the website's short type label, accuracy and confidence.
+
+- **Play again** gets ten new questions with the same topic and difficulty. An interrupted replay retries the same child round.
+- **Challenge friends here** explicitly posts your display name, score and a link to those same ten questions. A friend can open the link on the website. The result also includes the link to copy yourself. Nothing is shared before you choose it.
+- **`/bluff party`** opens the same picker, then posts a public lobby. Join explicitly shares your Slack display name and finished score in that channel. Each friend gets a private game; the lobby never shows their answers or question spoilers.
+- **Results** refreshes the public list of finished scores. A finished player can start one shared **Rematch** with new questions and the same settings. Friends still playing can finish the original privately. Old Join buttons lead to the current rematch.
+- Native sessions expire one hour after creation. Each click supplies a fresh Slack response URL, so ten questions do not reuse one URL's five-response allowance. URLs are never stored. Pending errors are separate private notices, leaving the game buttons available for retry.
+
+## Updating an existing install
+
+Apply `0004_play.sql` before deploying this version. It adds only the two temporary game tables; it does not change existing installs or daily scores. No new Slack scopes are needed. Update the manifest's description/usage hint if desired; the existing `/bluff` command and interactive request URL handle the new subcommands.
 
 ## What members see
 
@@ -20,7 +34,7 @@ A Cloudflare Worker that posts one Who's Bluffing question a day in a Slack chan
 
 Each answer scores 100 − 400 × (confidence − outcome)², with confidence as a fraction and outcome 1 when right, 0 when wrong. 50% always scores 0; 100% scores +100 when right and −300 when wrong. Honest confidence earns the most points over time.
 
-Nothing is scored before the reveal: when you lock in, the web API confirms the answer without saying whether it is right. At the reveal the Worker scores every answer against the revealed answer with this formula (the same one the API uses).
+For the daily question, nothing is scored before the reveal: the web API confirms the answer without saying whether it is right. At the reveal the Worker scores every answer with this formula. Full rounds use the same API scoring immediately after each answer.
 
 A **bluff** is a wrong answer at 80% or more. The reveal's bluff line and the recap's bluff count both use this rule.
 
@@ -43,6 +57,8 @@ A question can be answered until its reveal, and only on its day or the day afte
 
 | Command | What it does |
 |---|---|
+| `/bluff party` | Choose a topic and difficulty, then invite friends to the same ten questions. |
+| `/bluff play` | Choose a topic and difficulty for a private ten-question round. |
 | `/bluff` | Posts today's question in this channel. In the chosen channel (or when none is chosen yet) it becomes the day's post, and the hourly post skips that day; if the day's post is already in this channel, it says so instead of posting twice. Elsewhere it posts a copy: answers count the same, and the reveal happens on the day's post. After today's reveal it posts nothing and says so. |
 | `/bluff setup #channel [hour] [roast on\|off] [reveal N]` | Posts the question in #channel every day at that hour in your Slack time zone (0–23; add `utc` after the hour for UTC), and reveals the answer N hours later (2–23, default 8). Without an hour the hour is set to 14:00 UTC. |
 | `/bluff setup roast on\|off` | Changes roast mode only; channel and hour stay. `/bluff setup reveal N` changes only the reveal window, and both can go together (`/bluff setup roast on reveal 20`). |
@@ -69,7 +85,7 @@ You need a Cloudflare account (free plan is fine), a Slack workspace where you m
    ```bash
    npx wrangler d1 migrations apply whosbluffing-slack --remote
    ```
-3. **Point at the web API.** In `wrangler.toml` under `[vars]`, set `API_BASE` to the web deployment's origin. Default: `https://bots.whosbluffing.com`. Use the custom domain once it exists. No trailing slash, no `/api`. The Worker calls `/api/round/daily-question`, `/api/round/answer` and `/api/round/reveal` (see `docs/api-rounds.md`).
+3. **Point at the web API.** In `wrangler.toml` under `[vars]`, set `API_BASE` to the web deployment's origin. Default: `https://bots.whosbluffing.com`. No trailing slash, no `/api`. The Worker calls `/api/round`, `/api/round/answer`, `/api/round/complete`, `/api/flag`, `/api/round/daily-question` and `/api/round/reveal` (see `docs/api-rounds.md`).
 4. **Deploy once to get the URL**
    ```bash
    npx wrangler deploy
@@ -121,14 +137,15 @@ Updating a live install to the version with local times and `reveal N`: run step
 - **If Slack does not return your time zone**, the hour is taken as UTC and the reply says so.
 - **Daylight saving:** the stored hour is UTC, so when your clocks change the post moves an hour on your clock. Run setup again to move it back.
 
-The Worker runs at the top of every hour. Each run, in this order: reveals the questions that are due, posts Monday recaps, then posts today's question to each workspace once, as soon as its hour has come. If you set it up after that hour, today's question posts at the next full hour (and is revealed the reveal window after that).
+The Worker runs at the top of every hour. Each run removes expired native sessions, reveals questions that are due, posts Monday recaps, then posts today's question to each workspace as soon as its hour has come. Failures are isolated so cleanup and other workspaces still run. A failed daily send releases its claim for retry, including fetch/JSON failures. If you set up after the chosen hour, today's question posts at the next full hour.
 
 Public channels work without inviting the app. For a private channel, run `/invite @whosbluffing` in it before setup.
 
 ## Deploy and update
 
 ```bash
-npm test                                       # all tests, mocked Slack and rounds API
+npm test                                       # daily tests + native flows against the real local rounds API
+npx wrangler d1 migrations apply whosbluffing-slack --remote
 npx wrangler deploy --dry-run --outdir dist    # bundle check, uploads nothing
 npx wrangler deploy
 npx wrangler tail                              # live logs (short error codes only)
@@ -142,7 +159,9 @@ Stored in D1, and nothing else:
 - per workspace per day: the day's post (channel id and message timestamp), whether it was revealed, and the day's question as the API served it (item id, prompt and both options: the app's own text, kept so a late reveal can still be drawn);
 - per answer: `sha256(team_id:user_id:SALT)`, the date, A or B, the confidence, and, from the reveal on, whether it was right and its points.
 
-No member messages, names or emails. Display names are fetched from Slack only while a reveal, leaderboard or recap is drawn, and are never stored. The rounds API receives only the hashed member id and `slack:` + a hashed workspace id (`sha256(team_id:SALT)`), never raw Slack ids. Every call to it carries the `x-bluff-bot` header with `BOT_KEY`. The v0.1 table `scores` is no longer used.
+Native rounds additionally keep the question IDs/text, topic/difficulty, salted channel scope and player IDs, progress, feedback, score, lobby timestamp and rematch link in temporary tables. A party Join opts into storing that player's display name and showing their finished score. Solo names are not stored; an explicit solo challenge fetches the name only while sharing. Sessions expire after one hour and their temporary data is deleted on the next successful hourly cleanup. No raw user IDs, response URLs or interaction tokens are stored in those tables. This cleanup does not delete anonymous answers/results retained by the shared research API or messages already posted in Slack.
+
+No member messages or emails are collected. Daily display names are fetched only while a reveal, leaderboard or recap is drawn. The rounds API receives only the hashed member id and `slack:` + a hashed workspace id (`sha256(team_id:SALT)`), never raw Slack IDs or display names. Every call carries `x-bluff-bot` with `BOT_KEY`. The v0.1 `scores` table is no longer used.
 
 **Bot tokens are stored in plain text** in the D1 table `installs`.
 
@@ -154,9 +173,10 @@ No member messages, names or emails. Display names are fetched from Slack only w
 
 ## Limits
 
-- Names: only members of the channel the message is in (up to 1000 members) can be named. Others show as "a teammate". The same goes for the bluffer in roast mode ("Someone" when not found).
+- Daily names: only members of the channel the message is in (up to 1000 members) can be named. Party names are fetched individually only when that player joins.
 - Any member can run `/bluff setup` and `/bluff reveal`.
-- The confidence picker uses Slack's response link, which lasts 30 minutes after tapping A or B. After that, tap A or B again.
+- Each button interaction receives its own response link. The Worker sends within that link's 30-minute lifetime; old links are not reused between questions.
+- Delivery cannot be transactionally committed with Slack's servers. A network interruption after Slack accepts a public post but before its success reaches this Worker can result in a duplicate on retry. Answer and completion retries use API idempotency and do not double-count scores.
 - Copies posted with `/bluff` outside the chosen channel are not edited at the reveal; tapping them afterwards says the question is closed.
 - Changing the hour or the reveal window also moves the reveal of a question already posted that day, since the reveal time comes from the current settings. Its post and earlier "Locked in" replies keep the time they showed.
 - A member's time zone is read only from their Slack profile, once, at setup. It is not stored.

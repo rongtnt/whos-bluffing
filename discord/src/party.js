@@ -20,10 +20,10 @@ async function ready(env, p, rematch) {
   const lease = nonce();
   if (!(await store.claimRound(env.DB, p.id, lease, Date.now()))) deny(BUSY);
   try {
-    const r = await api.quickRound(env, { pack: 'memes', ...(rematch && { rematch }) });
-    if (r.items?.length !== 10 || new Set(r.items.map((q) => q.id)).size !== 10) throw new Error('party needs ten distinct questions');
+    const r = await api.quickRound(env, { pack: p.pack, difficulty: p.difficulty, ...(rematch && { rematch }) });
     // Store only public question fields, never API-added truth or answer keys.
-    const items = r.items.map(({ id, prompt, a, b }) => ({ id, prompt, a, b }));
+    const items = api.roundItems(r);
+    if ((r.pack && r.pack !== p.pack) || (r.difficulty && r.difficulty !== p.difficulty)) throw new Error('party settings changed');
     await store.saveRound(env.DB, p.id, lease, { round_id: r.round_id, items });
     return store.get(env.DB, p.id);
   } catch (err) {
@@ -34,8 +34,8 @@ async function ready(env, p, rematch) {
 
 const lobby = async (env, p) => game.partyLobby(p, await store.board(env.DB, p.id));
 
-export async function start(env, i, scope) {
-  await store.create(env.DB, i.id, scope, null, Date.now());
+export async function start(env, i, scope, settings) {
+  await store.create(env.DB, i.id, scope, null, Date.now(), settings);
   const p = await ready(env, await active(env, i.id, scope));
   return {
     message: await lobby(env, p),
@@ -50,10 +50,10 @@ export async function start(env, i, scope) {
 function view(p, player) {
   if (player.done) return game.partyDone(p, player);
   if (player.last_result) return player.last_result;
-  const state = { round_id: p.id, items: p.items, total: player.total };
+  const state = { ...p, round_id: p.id, total: player.total };
   if (player.step >= p.items.length) deny('Use See your score to finish this round.');
   const msg = game.playQuestion(state, player.step, 't');
-  msg.content = `**Memes party · ${game.esc(player.name)}**\n${msg.content}`;
+  msg.content = `**${game.settingsLabel(p)} party · ${game.esc(player.name)}**\n${msg.content}`;
   return msg;
 }
 
@@ -66,7 +66,7 @@ export async function publicAction(env, i, kind, id, { scope, me, name }) {
     // Concurrent presses of the previous Rematch converge on the same child, including after a failed API request.
     while (p.next_id) {
       const next = p.next_id;
-      await store.create(env.DB, next, scope, p.message_id, Date.now());
+      await store.create(env.DB, next, scope, p.message_id, Date.now(), p);
       p = await ready(env, await active(env, next, scope), p.round_id);
     }
     return lobby(env, p);
@@ -87,7 +87,7 @@ export async function publicAction(env, i, kind, id, { scope, me, name }) {
   if (!player?.done) deny('Finish this party’s ten questions before starting its rematch.');
   await store.setNext(env.DB, p.id, nonce());
   const parent = await store.get(env.DB, p.id);
-  await store.create(env.DB, parent.next_id, scope, p.message_id, Date.now());
+  await store.create(env.DB, parent.next_id, scope, p.message_id, Date.now(), p);
   return lobby(env, await ready(env, await active(env, parent.next_id, scope), p.round_id));
 }
 
@@ -100,10 +100,19 @@ export async function privateAction(env, i, kind, args, { scope, me }) {
     if (!player.done) deny('Finish your round to compare results.');
     return game.partyResults(p, await store.board(env.DB, p.id));
   }
+  if (kind === 'tf' || kind === 'tg') {
+    const step = Number(stepText);
+    if (!Number.isInteger(step) || step !== player.step - 1 || !player.last_result) deny('Report a question from its answer screen.');
+    if (kind === 'tf') return game.feedback(p.id, step, 't');
+    if (choiceText === 'cancel') return player.last_result;
+    if (!['wrong', 'ambiguous', 'unit'].includes(choiceText)) deny('Choose one of the feedback buttons.');
+    await api.flag(env, { anon_id: me.anon_id, round_id: p.round_id, item_id: p.items[step].id, reason: choiceText });
+    return { ...player.last_result, content: player.last_result.content + '\nThanks — reported for review.' };
+  }
   if (player.done) return game.partyDone(p, player);
   const step = Number(stepText);
   if (!/^\d+$/.test(stepText ?? '') || step !== player.step) return view(p, player);
-  const state = { round_id: p.id, items: p.items, total: player.total };
+  const state = { ...p, round_id: p.id, total: player.total };
   if (kind === 'ta' || kind === 'tc') {
     if (player.last_result || step >= p.items.length) return view(p, player);
     if (!['0', '1'].includes(choiceText)) deny('Please use one of the answer buttons.');
@@ -116,6 +125,7 @@ export async function privateAction(env, i, kind, args, { scope, me }) {
       const res = await api.answer(env, {
         ...me, round_id: p.round_id, item_id: p.items[step].id, choice, conf: Number(confText), rt_ms: Math.max(0, Date.now() - player.updated_at),
       });
+      if (!Number.isFinite(res.points) || typeof res.correct !== 'boolean' || !res.truth) throw new Error('answer response incomplete');
       const total = Math.round(res.total ?? player.total + res.points);
       // The API's first saved choice wins even when a response was lost and a retry chose another button.
       const result = game.playResult({ ...state, total }, step, res.choice ?? choice, res.conf ?? Number(confText), res, 't');
@@ -134,6 +144,7 @@ export async function privateAction(env, i, kind, args, { scope, me }) {
   if (!(await store.claimPlayer(env.DB, p.id, me.anon_id, step, lease, Date.now()))) deny(BUSY);
   try {
     const done = await api.complete(env, { ...me, round_id: p.round_id });
+    if (!Number.isFinite(done.score) || !Number.isFinite(done.accuracy) || !Number.isFinite(done.mean_conf)) throw new Error('score response incomplete');
     await store.finish(env.DB, p.id, me.anon_id, lease, done);
     player = await store.player(env.DB, p.id, me.anon_id);
     return game.partyDone(p, player);

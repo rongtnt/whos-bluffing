@@ -17,6 +17,7 @@ function secret(env, name) {
 
 export const anonId = (env, teamId, userId) => sha256Hex(`${teamId}:${userId}:${secret(env, 'SALT')}`);
 export const communityId = async (env, teamId) => `slack:${await sha256Hex(`${teamId}:${secret(env, 'SALT')}`)}`;
+export const playId = (env, teamId, value) => sha256Hex(`play:${teamId}:${value}:${secret(env, 'SALT')}`);
 
 // Every call carries the bot key (the API needs it for same-day reveals; the WAF exempts it from rate limits).
 // Throws on any non-2xx; err.status carries the HTTP status (absent on timeouts and network errors).
@@ -33,5 +34,8 @@ async function call(env, path, body) {
 // The response has no date field, so callers always pass the date and key storage by it.
 export const getQuestion = (env, date) => call(env, `/api/round/daily-question?date=${encodeURIComponent(date)}`);
 export const answer = (env, body) => call(env, '/api/round/answer', { ...body, surface: 'slack' });
+export const quickRound = (env, params) => call(env, `/api/round?${new URLSearchParams({ mode: 'quick', ...params })}`);
+export const complete = (env, body) => call(env, '/api/round/complete', { ...body, surface: 'slack' });
+export const flag = (env, body) => call(env, '/api/flag', body);
 export const getReveal = (env, date, community) =>
   call(env, `/api/round/reveal?${new URLSearchParams({ date, community })}`);

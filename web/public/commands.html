@@ -58,11 +58,11 @@
   </div>
   <section class="tab-panel" id="discord" role="tabpanel" aria-labelledby="tab-discord" tabindex="0">
     <h2>Discord</h2>
-    <p class="muted"><!-- intro:discord -->Add Who's Bluffing to your apps, then type <code>/bluff party</code> in a chat to start a Memes round with friends. Replies marked “only you” are private. Server-only commands need the app added to that server.<!-- /intro --></p>
+    <p class="muted"><!-- intro:discord -->Add Who's Bluffing to your apps, then use <code>/bluff party</code> with friends or <code>/bluff play</code> on your own. Choose a topic and difficulty, then start. Replies marked “only you” are private. Server-only commands need the app added to that server.<!-- /intro --></p>
     <div class="cmds" id="cmd-discord"><!-- commands:discord -->
       <article class="cmd" data-item>
         <h3><code>/bluff party</code></h3>
-        <p>Starts a shared Memes round. Friends tap Join to play the same ten questions privately. Joining shares your Discord display name and finished score in this chat. Tap Results to refresh completed scores; after you finish, Rematch starts a new shared round. Each round expires after one hour. Public posts follow the chat’s app permissions.</p>
+        <p>Choose a topic and difficulty, then start a shared ten-question round. Friends tap Join and answer privately. Joining shares your Discord display name and finished score in this chat. Tap Results to refresh scores; after you finish, Rematch starts fresh questions at the same topic and difficulty. Each party expires after one hour. Public posts follow the chat’s app permissions.</p>
         <dl>
           <div><dt>Options</dt><dd>None</dd></div>
           <div><dt>Who can run it</dt><dd>Anyone</dd></div>
@@ -70,7 +70,7 @@
       </article>
       <article class="cmd" data-item>
         <h3><code>/bluff play</code></h3>
-        <p>A private 10-question round (only you): pick A or B, say how sure you are, see the answer and your points, then Next. It ends with your score, your type and a Challenge button that posts your challenge link in the channel.</p>
+        <p>Opens a private topic and difficulty picker. Play ten questions: pick an answer, say how sure you are, then see the answer, its sources and your points. Finish to see your score and type, challenge a friend, or play fresh questions at the same topic and difficulty.</p>
         <dl>
           <div><dt>Options</dt><dd>None</dd></div>
           <div><dt>Who can run it</dt><dd>Anyone</dd></div>
@@ -134,14 +134,30 @@
         <details><summary><span>The server leaderboard says “a member” instead of names</span></summary><p>The <code>/bluff stats</code> leaderboard looks up server members. If everyone shows as “a member”, please <a href="https://github.com/rongtnt/whos-bluffing/issues">tell us on GitHub</a>. Only the first 1,000 members of a server can be named. Friend rounds use the display name you share when joining instead.</p></details>
         <details><summary><span>“This interaction failed”</span></summary><p>Update your Discord app (or reload the browser tab) and try again: older versions can’t show the buttons. If it keeps happening, the game server may be down for a moment; the <a href="/status">status page</a> shows whether it answers.</p></details>
         <details><summary><span>“I can’t post in that channel”</span></summary><p>Give Who's Bluffing the View Channel and Send Messages permissions in that channel, or pick another one with <code>/bluff setup channel:</code>.</p></details>
-        <details><summary><span>The app shows as offline</span></summary><p>That is normal. Who's Bluffing answers through Discord’s interactions endpoint and never connects to the live gateway, so it always looks offline while it works.</p></details>
+        <details><summary><span>The app shows as offline</span></summary><p>The game commands can still work even when Discord shows the bot as offline. Try <code>/bluff play</code>. If the command fails too, wait a moment and try again.</p></details>
       <!-- /trouble --></div>
     <p class="panel-cta"><a class="button primary" href="/discord"><span>Add to Discord</span><svg class="i" viewBox="0 0 24 24" aria-hidden="true" focusable="false"><path d="M5 12h14M13 6l6 6-6 6"/></svg></a></p>
   </section>
   <section class="tab-panel" id="slack" role="tabpanel" aria-labelledby="tab-slack" tabindex="0">
     <h2>Slack</h2>
-    <p class="muted"><!-- intro:slack -->Type them in any channel. Anything else after <code>/bluff</code> shows the command list, only to you.<!-- /intro --></p>
+    <p class="muted"><!-- intro:slack -->Use <code>/bluff play</code> on your own or <code>/bluff party</code> with friends. Choose a topic and difficulty, then start. Replies marked “only visible to you” are private. Daily channel questions are optional.<!-- /intro --></p>
     <div class="cmds" id="cmd-slack"><!-- commands:slack -->
+      <article class="cmd" data-item>
+        <h3><code>/bluff party</code></h3>
+        <p>Choose a topic and difficulty, then start a shared round in this channel. Friends tap Join to answer the same ten questions privately. Joining shares your Slack display name and final score in the channel. Results refreshes the scores; a finished player can start a fresh shared rematch. Parties expire after one hour.</p>
+        <dl>
+          <div><dt>Options</dt><dd>None</dd></div>
+          <div><dt>Who can run it</dt><dd>Any member</dd></div>
+        </dl>
+      </article>
+      <article class="cmd" data-item>
+        <h3><code>/bluff play</code></h3>
+        <p>Opens a private topic and difficulty picker. Play ten questions, choose your confidence after each answer, and see the source and your points. Finish to see your score and type, share a friend challenge, or play fresh questions with the same settings.</p>
+        <dl>
+          <div><dt>Options</dt><dd>None</dd></div>
+          <div><dt>Who can run it</dt><dd>Any member</dd></div>
+        </dl>
+      </article>
       <article class="cmd" data-item>
         <h3><code>/bluff</code></h3>
         <p>Posts today’s question in this channel. In the chosen channel (or when none is chosen yet) it becomes the day’s post; elsewhere it posts a copy whose answers count the same. After today’s reveal it posts nothing and says so.</p>
@@ -189,7 +205,7 @@
         <details><summary><span>Slack says <code>/bluff</code> is not a valid command</span></summary><p>Who's Bluffing isn’t installed in this workspace, or was removed. Install it again from the <a href="/slack">Add to Slack</a> link.</p></details>
         <details><summary><span>“I can’t post in that channel”</span></summary><p>The channel is private. Run <code>/invite @whosbluffing</code> in it, then <code>/bluff setup #channel</code> again. Public channels work without an invite.</p></details>
         <details><summary><span>The question didn’t post today</span></summary><p>The hour you type is read in your Slack time zone (or in UTC with <code>utc</code> after it) and kept in UTC; the setup reply shows both. Who's Bluffing checks at the top of every hour and posts once a day, as soon as your hour has come; if you set it up after that hour, today’s question posts at the next full hour. Run <code>/bluff setup #channel HH</code> to check the channel and hour.</p></details>
-        <details><summary><span>The confidence buttons stopped working</span></summary><p>The private picker uses a Slack link that lasts 30 minutes after you tap A or B. Tap A or B again.</p></details>
+        <details><summary><span>The confidence buttons stopped working</span></summary><p>For a daily question, tap A or B again to open a fresh confidence picker. For a party, tap Join / Resume. Private game sessions and parties expire after one hour; start a new round after that.</p></details>
         <details><summary><span>“Who's Bluffing is taking a break”</span></summary><p>The game server didn’t answer. Try again in a minute; the <a href="/status">status page</a> shows whether it is up.</p></details>
       <!-- /trouble --></div>
     <p class="panel-cta"><a class="button primary" href="/slack"><span>Add to Slack</span><svg class="i" viewBox="0 0 24 24" aria-hidden="true" focusable="false"><path d="M5 12h14M13 6l6 6-6 6"/></svg></a></p>

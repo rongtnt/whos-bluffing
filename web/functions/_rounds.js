@@ -539,8 +539,10 @@ export async function getRound(db, data, params, now, rand = Math.random) {
   });
   const live = new Set(await liveIds(db, data, [...authored, ...candidates.map((c) => c.id)]));
   const mix = DIFFICULTIES[difficulty].mix;
-  const ids = authored.length ? sampleVaried(data, [...live], seen, rand, difficulty, pack)
-    : orderQuick(data, LEVELS.flatMap((level) => candidates.filter((c) => c.level === level && live.has(c.id)).slice(0, mix[level]).map((c) => c.id)), rand);
+  const comparisonRound = () => orderQuick(data, LEVELS.flatMap((level) => candidates.filter((c) => c.level === level && live.has(c.id)).slice(0, mix[level]).map((c) => c.id)), rand);
+  let ids = authored.length ? sampleVaried(data, [...live], seen, rand, difficulty, pack) : comparisonRound();
+  // AI's small authored pool can run out on a rematch; use its existing sourced comparisons, with the same difficulty/tier and no previous questions.
+  if (!ids && previous && pack === 'ai') ids = comparisonRound();
   if (!ids || ids.length !== 10) return err(503, 'Not enough live questions for this round. Try another pack or difficulty.');
   const roundId = randomString(12, CODE_ALPHABET);
   await db.prepare('INSERT INTO rounds (round_id, mode, date, items, created_at, difficulty, pack) VALUES (?, ?, ?, ?, ?, ?, ?)')

@@ -1,0 +1,40 @@
+{
+  "easy": [
+    "all",
+    "ai",
+    "memes",
+    "geography",
+    "history",
+    "companies",
+    "languages",
+    "countries"
+  ],
+  "normal": [
+    "all",
+    "ai",
+    "politics",
+    "memes",
+    "geography",
+    "history",
+    "companies",
+    "products",
+    "languages",
+    "countries"
+  ],
+  "brutal": [
+    "all",
+    "ai",
+    "politics",
+    "memes",
+    "geography",
+    "elements",
+    "history",
+    "buildings",
+    "rivers",
+    "mountains",
+    "companies",
+    "products",
+    "languages",
+    "countries"
+  ]
+}
